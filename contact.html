@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Khaled Masoumifard — Contact</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+    .contact-intro p { color: var(--muted); margin-bottom: 1rem; font-size: 0.96rem; line-height: 1.7; }
+    .contact-links { margin-top: 2rem; display: flex; flex-direction: column; }
+    .contact-link {
+      display: grid; grid-template-columns: 80px 1fr;
+      gap: 1rem; align-items: center;
+      padding: 0.9rem 0; border-bottom: 1px solid var(--border);
+      text-decoration: none; color: var(--text); transition: color 0.2s;
+    }
+    .contact-link:first-child { border-top: 1px solid var(--border); }
+    .contact-link:hover { color: var(--accent); }
+    .contact-link:hover .contact-link-label { color: var(--accent); }
+    .contact-link-label {
+      font-family: var(--font-mono); font-size: 0.63rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); transition: color 0.2s;
+    }
+    .contact-link-value { font-size: 0.92rem; }
+    .location-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.8rem;
+    }
+    .location-card .section-label { margin-bottom: 1rem; }
+    .location-card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0.35rem; line-height: 1.6; }
+    .location-card strong { color: var(--text); font-weight: 500; }
+    .office-hours { margin-top: 1.6rem; padding-top: 1.6rem; border-top: 1px solid var(--border); }
+    @media (max-width: 620px) { .contact-grid { grid-template-columns: 1fr; gap: 2rem; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">About</a></li>
+    <li><a href="cv.html">CV</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="contact.html" class="active">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="page-header fade-up">
+    <span class="eyebrow">Get in Touch</span>
+    <h1>Contact</h1>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-intro fade-up">
+      <p>I'm open to collaborations, questions about my research, and academic discussions. Feel free to reach out by email — I typically respond within a few days.</p>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:masoumifardk@yahoo.com">
+          <span class="contact-link-label">Email</span>
+          <span class="contact-link-value">masoumifardk@yahoo.com</span>
+        </a>
+        <a class="contact-link" href="https://github.com/Xaleed" target="_blank">
+          <span class="contact-link-label">GitHub</span>
+          <span class="contact-link-value">github.com/Xaleed</span>
+        </a>
+        <a class="contact-link" href="https://www.linkedin.com/in/khaled-masoumifard-9b498294" target="_blank">
+          <span class="contact-link-label">LinkedIn</span>
+          <span class="contact-link-value">khaled-masoumifard</span>
+        </a>
+        <a class="contact-link" href="tel:+27847675183">
+          <span class="contact-link-label">Mobile</span>
+          <span class="contact-link-value">+27 84 767 5183</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="location-card fade-up">
+      <span class="section-label">Location</span>
+      <p><strong>Stellenbosch University</strong></p>
+      <p>MuViSU — Centre for Multi-dimensional Data Visualisation</p>
+      <p>Department of Statistics and Actuarial Science</p>
+      <p>Stellenbosch, Western Cape</p>
+      <p>South Africa</p>
+      <div class="office-hours">
+        <span class="section-label">Availability</span>
+        <p>By appointment — send an email to arrange a meeting or video call.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Khaled Masoumifard — Blog</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .blog-list { display: flex; flex-direction: column; }
+    .blog-item {
+      display: grid; grid-template-columns: 100px 1fr;
+      gap: 1.5rem; padding: 1.6rem 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none; color: inherit; transition: color 0.2s;
+    }
+    .blog-item:first-child { border-top: 1px solid var(--border); }
+    .blog-item:hover .blog-title { color: var(--accent); }
+    .blog-date-col { display: flex; flex-direction: column; align-items: flex-start; padding-top: 0.3rem; }
+    .blog-date { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); line-height: 1.4; }
+    .blog-category { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); margin-top: 0.4rem; }
+    .blog-title { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.3rem; line-height: 1.35; transition: color 0.2s; }
+    .blog-excerpt { font-size: 0.9rem; color: var(--muted); line-height: 1.55; }
+    .blog-read-time { font-family: var(--font-mono); font-size: 0.64rem; color: var(--muted); margin-top: 0.5rem; }
+    .blog-empty {
+      padding: 3rem 0; text-align: center;
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--muted); letter-spacing: 0.06em;
+      border-top: 1px solid var(--border);
+    }
+    @media (max-width: 560px) {
+      .blog-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      .blog-date-col { flex-direction: row; gap: 0.8rem; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">About</a></li>
+    <li><a href="cv.html">CV</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="blog.html" class="active">Blog</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="page-header fade-up">
+    <p class="eyebrow">Writing &amp; Notes</p>
+    <h1>Blog</h1>
+  </div>
+
+  <div class="blog-list fade-up">
+
+    <a class="blog-item" href="posts/post-1.html">
+      <div class="blog-date-col">
+        <span class="blog-date">Coming<br>soon</span>
+        <span class="blog-category">Methods</span>
+      </div>
+      <div>
+        <p class="blog-title">An introduction to compositional data analysis</p>
+        <p class="blog-excerpt">A walkthrough of the core ideas behind compositional data — why standard methods fail, and how the Dirichlet distribution and log-ratio transformations address these challenges.</p>
+        <p class="blog-read-time">Coming soon</p>
+      </div>
+    </a>
+
+    <a class="blog-item" href="posts/post-1.html">
+      <div class="blog-date-col">
+        <span class="blog-date">Coming<br>soon</span>
+        <span class="blog-category">Tutorial</span>
+      </div>
+      <div>
+        <p class="blog-title">Stochastic control and reinsurance: an intuitive guide</p>
+        <p class="blog-excerpt">Breaking down the mathematics of optimal reinsurance strategies — Hamilton-Jacobi-Bellman equations made accessible for practitioners.</p>
+        <p class="blog-read-time">Coming soon</p>
+      </div>
+    </a>
+
+    <a class="blog-item" href="posts/post-1.html">
+      <div class="blog-date-col">
+        <span class="blog-date">Coming<br>soon</span>
+        <span class="blog-category">Research Note</span>
+      </div>
+      <div>
+        <p class="blog-title">Detecting market manipulation with deep learning</p>
+        <p class="blog-excerpt">Notes from building LSTM and RNN models for large-scale trade surveillance — data challenges, model choices, and what worked in practice.</p>
+        <p class="blog-read-time">Coming soon</p>
+      </div>
+    </a>
+
+  </div>
+
+</main>
+
+<footer>
+  © 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Khaled Masoumifard — Projects</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 3rem; }
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1.5rem;
+      display: flex; flex-direction: column;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover { border-color: var(--accent); box-shadow: 0 4px 20px rgba(42,92,69,0.08); }
+    .project-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .project-lang { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+    .project-status { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+    .project-card h3 { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; }
+    .project-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.55; flex: 1; }
+    .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.9rem 0; }
+    .project-links { display: flex; gap: 0.8rem; margin-top: auto; }
+    .project-links a {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      border-bottom: 1px solid var(--border); transition: color 0.2s, border-color 0.2s;
+    }
+    .project-links a:hover { color: var(--accent); border-color: var(--accent); }
+    .section-divider {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin: 2.5rem 0 1.5rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    @media (max-width: 580px) { .projects-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">About</a></li>
+    <li><a href="cv.html">CV</a></li>
+    <li><a href="projects.html" class="active">Projects</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="page-header fade-up">
+    <p class="eyebrow">Code &amp; Software</p>
+    <h1>Projects &amp; Repositories</h1>
+  </div>
+
+  <p class="section-divider fade-up">Research Software &amp; Libraries</p>
+
+  <div class="projects-grid">
+
+    <div class="project-card fade-up">
+      <div class="project-meta">
+        <span class="project-lang">R</span>
+        <span class="project-status">Active</span>
+      </div>
+      <h3>Dirichlet Random Forest</h3>
+      <p class="project-desc">A machine learning library for predicting compositional data using Dirichlet-based random forest models. Developed as part of postdoctoral research at MuViSU, Stellenbosch University.</p>
+      <div class="project-tags">
+        <span class="tag">Compositional Data</span>
+        <span class="tag">Random Forest</span>
+        <span class="tag">Dirichlet</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-meta">
+        <span class="project-lang">R · Python</span>
+        <span class="project-status">Active</span>
+      </div>
+      <h3>Spatial ML Library</h3>
+      <p class="project-desc">Machine learning tools for spatial data analysis, combining statistical modeling and algorithm development for geographically structured datasets.</p>
+      <div class="project-tags">
+        <span class="tag">Spatial Data</span>
+        <span class="tag">Machine Learning</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-meta">
+        <span class="project-lang">R · Shiny · Django</span>
+        <span class="project-status">Deployed</span>
+      </div>
+      <h3>Insurance Analytics Dashboard</h3>
+      <p class="project-desc">An interactive Shiny dashboard for healthcare pricing and actuarial modeling, built for health insurance analytics at Mellat Insurance. Later deployed via a Django framework for production use.</p>
+      <div class="project-tags">
+        <span class="tag">Actuarial Science</span>
+        <span class="tag">Health Insurance</span>
+        <span class="tag">Shiny</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-meta">
+        <span class="project-lang">Python · PyTorch</span>
+        <span class="project-status">Research</span>
+      </div>
+      <h3>Market Surveillance System</h3>
+      <p class="project-desc">Deep learning models (LSTM, RNN) for detecting fraud and market manipulation in high-frequency trade transaction data. Developed for the Securities and Exchange Organization of Iran.</p>
+      <div class="project-tags">
+        <span class="tag">Market Surveillance</span>
+        <span class="tag">LSTM</span>
+        <span class="tag">Time Series</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="section-divider fade-up">Reproducibility Code</p>
+
+  <div class="projects-grid">
+
+    <div class="project-card fade-up">
+      <div class="project-meta">
+        <span class="project-lang">R</span>
+        <span class="project-status">Archived</span>
+      </div>
+      <h3>Dirichlet-RF Paper — Code</h3>
+      <p class="project-desc">Reproducibility code for <em>Dirichlet-random forest for predicting compositional data</em> (2025). Includes all scripts to reproduce results from the manuscript.</p>
+      <div class="project-tags">
+        <span class="tag">Reproducibility</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+        <a href="publications.html">Paper →</a>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-meta">
+        <span class="project-lang">R</span>
+        <span class="project-status">Archived</span>
+      </div>
+      <h3>Optimal Reinsurance — Code</h3>
+      <p class="project-desc">Code accompanying <em>Optimal dynamic reinsurance strategies in multidimensional portfolio</em> (Stochastic Analysis and Applications, 2021).</p>
+      <div class="project-tags">
+        <span class="tag">Reproducibility</span>
+        <span class="tag">Reinsurance</span>
+      </div>
+      <div class="project-links">
+        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+        <a href="publications.html">Paper →</a>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  © 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a>
+</footer>
+
+</body>
+</html>

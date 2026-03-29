@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Khaled Masoumifard — CV</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .cv-download-bar {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2.5rem; padding: 1rem 1.3rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .cv-download-bar p { font-size: 0.85rem; color: var(--muted); flex: 1; }
+
+    .cv-tab-bar { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+    .cv-tab-btn {
+      font-family: var(--font-mono); font-size: 0.62rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.38rem 1rem; border-radius: 999px;
+      border: 1px solid var(--border); background: transparent;
+      cursor: pointer; color: var(--muted); transition: all 0.2s;
+    }
+    .cv-tab-btn:hover { color: var(--text); border-color: var(--accent); }
+    .cv-tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+    .cv-panel { display: none; }
+    .cv-panel.active { display: block; animation: fadeUp 0.35s ease both; }
+
+    .cv-block { margin-bottom: 3.5rem; }
+    .cv-block-title {
+      font-family: var(--font-serif); font-size: 1.45rem; font-weight: 500;
+      color: var(--text); letter-spacing: -0.01em;
+      margin-bottom: 1.2rem; padding-bottom: 0.7rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .cv-block-title::before {
+      content: ''; width: 3px; height: 1em;
+      background: var(--accent); border-radius: 2px; flex-shrink: 0;
+    }
+
+    .cv-item {
+      display: grid; grid-template-columns: 110px 1fr;
+      gap: 1.5rem; padding: 1.2rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .cv-item:last-child { border-bottom: none; }
+    .cv-date {
+      font-family: var(--font-mono); font-size: 0.63rem;
+      color: var(--muted); padding-top: 0.22rem;
+      line-height: 1.5; letter-spacing: 0.03em;
+    }
+    .cv-role { font-weight: 500; font-size: 0.96rem; margin-bottom: 0.18rem; color: var(--text); }
+    .cv-org { color: var(--accent); font-size: 0.83rem; font-style: italic; margin-bottom: 0.35rem; }
+    .cv-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+    .cv-desc em { color: var(--text); font-style: italic; }
+
+    .awards-list { list-style: none; }
+    .award-item {
+      display: grid; grid-template-columns: 50px 1fr;
+      gap: 1.2rem; align-items: start;
+      padding: 0.85rem 0; border-bottom: 1px solid var(--border);
+    }
+    .award-item:last-child { border-bottom: none; }
+    .award-year { font-family: var(--font-mono); font-size: 0.63rem; color: var(--accent); padding-top: 0.12rem; }
+    .award-text { font-size: 0.92rem; color: var(--text); line-height: 1.5; }
+
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .skill-group-name {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.12em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 0.65rem;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    .refs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .ref-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.3rem 1.4rem;
+      transition: border-color 0.2s;
+    }
+    .ref-card:hover { border-color: var(--accent); }
+    .ref-name { font-weight: 500; font-size: 0.96rem; margin-bottom: 0.18rem; }
+    .ref-title { font-size: 0.82rem; color: var(--muted); font-style: italic; margin-bottom: 0.1rem; }
+    .ref-inst { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .ref-links { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .ref-links a {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      padding: 0.22rem 0.6rem; border: 1px solid var(--border);
+      border-radius: 3px; transition: all 0.2s;
+    }
+    .ref-links a:hover { color: white; background: var(--accent); border-color: var(--accent); }
+
+    /* Publications */
+    .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .filter-btn {
+      font-family: var(--font-mono); font-size: 0.63rem;
+      letter-spacing: 0.07em; text-transform: uppercase;
+      padding: 0.32rem 0.85rem; border-radius: 2px;
+      border: 1px solid var(--border); background: none;
+      cursor: pointer; color: var(--muted); transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .pub-year-group { margin-bottom: 2.5rem; }
+    .pub-year-heading {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    .pub-item {
+      display: grid; grid-template-columns: 4px 1fr;
+      gap: 1.4rem; padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+    }
+    .pub-item:last-child { border-bottom: none; }
+    .pub-accent-bar { width: 4px; background: var(--accent-light); border-radius: 2px; margin-top: 4px; flex-shrink: 0; }
+    .pub-title { font-size: 0.98rem; font-weight: 500; margin-bottom: 0.22rem; line-height: 1.4; }
+    .pub-authors { font-size: 0.86rem; color: var(--muted); font-style: italic; margin-bottom: 0.28rem; }
+    .pub-authors strong { color: var(--text); font-style: normal; }
+    .pub-venue { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+    .pub-links { display: flex; gap: 1rem; }
+    .pub-links a {
+      font-family: var(--font-mono); font-size: 0.62rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      border-bottom: 1px solid var(--border); transition: color 0.2s, border-color 0.2s;
+    }
+    .pub-links a:hover { color: var(--accent); border-color: var(--accent); }
+
+    @media (max-width: 580px) {
+      .cv-item { grid-template-columns: 1fr; gap: 0.3rem; }
+      .cv-date { font-size: 0.7rem; padding-bottom: 0.1rem; }
+      .skills-grid, .refs-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="index.html">About</a></li>
+    <li><a href="cv.html" class="active">CV</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="blog.html">Blog</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="page-header fade-up">
+    <span class="eyebrow">Curriculum Vitae</span>
+    <h1>Khaled Masoumifard</h1>
+  </div>
+
+  <div class="cv-download-bar fade-up">
+    <p>Full academic CV including all publications, talks, and teaching history.</p>
+    <a class="btn" href="assets/cv.pdf">↓ Download PDF</a>
+  </div>
+
+  <div class="cv-tab-bar fade-up">
+    <button class="cv-tab-btn active" onclick="switchTab('education',this)">Education</button>
+    <button class="cv-tab-btn" onclick="switchTab('experience',this)">Experience</button>
+    <button class="cv-tab-btn" onclick="switchTab('publications',this)">Publications</button>
+    <button class="cv-tab-btn" onclick="switchTab('awards',this)">Awards</button>
+    <button class="cv-tab-btn" onclick="switchTab('skills',this)">Skills</button>
+    <button class="cv-tab-btn" onclick="switchTab('references',this)">References</button>
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="cv-panel active" id="panel-education">
+    <div class="cv-block">
+      <p class="cv-block-title">Education</p>
+      <div class="cv-item">
+        <span class="cv-date">2021</span>
+        <div>
+          <div class="cv-role">Ph.D., Statistics</div>
+          <div class="cv-org">Shahid Beheshti University, Tehran, Iran</div>
+          <div class="cv-desc">Thesis: <em>Stochastic Optimization of the Dividend, Investment and Reinsurance Strategies</em></div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2015</span>
+        <div>
+          <div class="cv-role">M.Sc., Statistics</div>
+          <div class="cv-org">University of Tehran, Tehran, Iran</div>
+          <div class="cv-desc">Thesis: <em>Stochastic Comparisons of Series and Parallel Systems with Generalized Exponential Components</em></div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2012</span>
+        <div>
+          <div class="cv-role">B.Sc., Statistics</div>
+          <div class="cv-org">Razi University, Iran</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPERIENCE -->
+  <div class="cv-panel" id="panel-experience">
+    <div class="cv-block">
+      <p class="cv-block-title">Academic &amp; Professional Experience</p>
+      <div class="cv-item">
+        <span class="cv-date">2024 – present</span>
+        <div>
+          <div class="cv-role">Postdoctoral Fellow</div>
+          <div class="cv-org">MuViSU — Centre for Multi-dimensional Data Visualisation, Stellenbosch University</div>
+          <div class="cv-desc">Developing machine learning libraries for compositional and spatial data, with research in statistical modeling and algorithm development.</div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2022 – 2024</span>
+        <div>
+          <div class="cv-role">Data Scientist</div>
+          <div class="cv-org">Securities and Exchange Organization of Iran</div>
+          <div class="cv-desc">Monitored large-scale trade transaction data (thousands per minute) to detect fraud and market manipulation. Developed time-series models and deep learning architectures (LSTM, RNN) using Python, R, and Oracle BI.</div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2023 – 2024</span>
+        <div>
+          <div class="cv-role">Data Scientist <span style="font-weight:300;font-size:0.85em;">(Part-time)</span></div>
+          <div class="cv-org">Tejaratno Company, Tehran, Iran</div>
+          <div class="cv-desc">Actuarial modeling for health insurance and reinsurance, including rate-making and predictive analytics.</div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2021 – 2022</span>
+        <div>
+          <div class="cv-role">Lecturer <span style="font-weight:300;font-size:0.85em;">(Part-time)</span></div>
+          <div class="cv-org">Department of Mathematical Sciences, Shahid Beheshti University</div>
+          <div class="cv-desc">Taught and supervised students in statistics and actuarial science.</div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2020 – 2022</span>
+        <div>
+          <div class="cv-role">Quantitative Trading Researcher <span style="font-weight:300;font-size:0.85em;">(Freelance)</span></div>
+          <div class="cv-desc">Developed dynamic algorithms for high- and low-frequency trading. Designed mathematical models, applied deep learning, and processed large-scale online trading data.</div>
+        </div>
+      </div>
+      <div class="cv-item">
+        <span class="cv-date">2019 – 2021</span>
+        <div>
+          <div class="cv-role">Data Scientist</div>
+          <div class="cv-org">Mellat Insurance Company, Tehran, Iran</div>
+          <div class="cv-desc">Led healthcare pricing models for short- and long-term products. Co-supervised two PhD researchers and developed an interactive Shiny dashboard later deployed via Django.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PUBLICATIONS -->
+  <div class="cv-panel" id="panel-publications">
+    <div class="cv-block">
+      <p class="cv-block-title">Publications</p>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterPubs('all',this)">All</button>
+        <button class="filter-btn" onclick="filterPubs('journal',this)">Journal Articles</button>
+        <button class="filter-btn" onclick="filterPubs('conference',this)">Conference Papers</button>
+        <button class="filter-btn" onclick="filterPubs('book',this)">Book Chapters</button>
+      </div>
+      <div class="pub-year-group">
+        <p class="pub-year-heading">2025</p>
+        <div class="pub-item" data-type="book">
+          <div class="pub-accent-bar"></div>
+          <div>
+            <div class="pub-title">Dirichlet-random forest for predicting compositional data</div>
+            <div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div>
+            <div class="pub-venue">Environmental Statistics: Innovative Methods and Applications · 2025</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+          </div>
+        </div>
+        <div class="pub-item" data-type="journal">
+          <div class="pub-accent-bar"></div>
+          <div>
+            <div class="pub-title">Hazard Rate Order Between Parallel Systems With Multiple Types of Scaled Components</div>
+            <div class="pub-authors"><strong>Masoumifard, K.</strong>, Haidari, A., Torrado, N.</div>
+            <div class="pub-venue">Applied Stochastic Models in Business and Industry · 41(2), e70008 · 2025</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="https://doi.org/10.1002/asmb.70008" target="_blank">DOI</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="pub-year-group">
+        <p class="pub-year-heading">2023</p>
+        <div class="pub-item" data-type="journal">
+          <div class="pub-accent-bar"></div>
+          <div>
+            <div class="pub-title">On Bayesian credibility mean for finite mixture distributions</div>
+            <div class="pub-authors">Jahanbani, E., Najafabadi, A.T.P., <strong>Masoumifard, K.</strong></div>
+            <div class="pub-venue">Annals of Actuarial Science · pp. 1–25 · 2023</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="pub-year-group">
+        <p class="pub-year-heading">2021</p>
+        <div class="pub-item" data-type="journal">
+          <div class="pub-accent-bar"></div>
+          <div>
+            <div class="pub-title">Optimal dynamic reinsurance strategies in multidimensional portfolio</div>
+            <div class="pub-authors"><strong>Masoumifard, K.</strong>, Zokaei, M.</div>
+            <div class="pub-venue">Stochastic Analysis and Applications · 39(1), 1–21 · 2021</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+          </div>
+        </div>
+      </div>
+      <div class="pub-year-group">
+        <p class="pub-year-heading">2014</p>
+        <div class="pub-item" data-type="journal">
+          <div class="pub-accent-bar"></div>
+          <div>
+            <div class="pub-title">Stochastic comparisons of series and parallel systems with generalized exponential components</div>
+            <div class="pub-authors">Balakrishnan, N., Haidari, A., <strong>Masoumifard, K.</strong></div>
+            <div class="pub-venue">IEEE Transactions on Reliability · 64(1), 333–348 · 2014</div>
+            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AWARDS -->
+  <div class="cv-panel" id="panel-awards">
+    <div class="cv-block">
+      <p class="cv-block-title">Awards &amp; Honours</p>
+      <ul class="awards-list">
+        <li class="award-item"><span class="award-year">2020</span><span class="award-text">Best Paper Award — FINACT-IRAN Conference</span></li>
+        <li class="award-item"><span class="award-year">2020</span><span class="award-text">Best Doctoral Student Award — Shahid Beheshti University</span></li>
+        <li class="award-item"><span class="award-year">2012</span><span class="award-text">National Scholarship for Top Three Statistics Students — Iran</span></li>
+        <li class="award-item"><span class="award-year">2012</span><span class="award-text">First Place — Iran Statistics Student Competition</span></li>
+        <li class="award-item"><span class="award-year">2012</span><span class="award-text">Second Place — National Statistics Olympiad, Iran</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="cv-panel" id="panel-skills">
+    <div class="cv-block">
+      <p class="cv-block-title">Skills</p>
+      <div class="skills-grid">
+        <div>
+          <p class="skill-group-name">Programming</p>
+          <div class="skill-tags">
+            <span class="tag">R</span><span class="tag">Python</span><span class="tag">Julia</span>
+            <span class="tag">C++</span><span class="tag">PyTorch</span><span class="tag">Shiny</span>
+          </div>
+        </div>
+        <div>
+          <p class="skill-group-name">Data Science</p>
+          <div class="skill-tags">
+            <span class="tag">Statistical Modeling</span><span class="tag">Machine Learning</span>
+            <span class="tag">Deep Learning</span><span class="tag">LSTM / RNN</span>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <p class="skill-group-name">Finance &amp; Actuarial</p>
+          <div class="skill-tags">
+            <span class="tag">Market Surveillance</span><span class="tag">Algorithmic Trading</span>
+            <span class="tag">Health Insurance</span><span class="tag">Reinsurance</span>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <p class="skill-group-name">Languages</p>
+          <div class="skill-tags">
+            <span class="tag">Kurdish (Native)</span><span class="tag">Persian (Native)</span>
+            <span class="tag">English (Fluent)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCES -->
+  <div class="cv-panel" id="panel-references">
+    <div class="cv-block">
+      <p class="cv-block-title">References</p>
+      <div class="refs-grid">
+        <div class="ref-card">
+          <p class="ref-name">Sugnet Gardner-Lubbe</p>
+          <p class="ref-title">Professor</p>
+          <p class="ref-inst">Stellenbosch University</p>
+          <div class="ref-links">
+            <a href="https://researcherprofiles.sun.ac.za/1996-sugnet-lubbe" target="_blank">Profile</a>
+            <a href="https://scholar.google.co.za/citations?user=Wf0H128AAAAJ" target="_blank">Scholar</a>
+            <a href="mailto:sl@sun.ac.za">Email</a>
+          </div>
+        </div>
+        <div class="ref-card">
+          <p class="ref-name">Stephan van der Westhuizen</p>
+          <p class="ref-title">Lecturer</p>
+          <p class="ref-inst">Stellenbosch University</p>
+          <div class="ref-links">
+            <a href="https://researcherprofiles.sun.ac.za/8957-stephan-van-der-westhuizen" target="_blank">Profile</a>
+            <a href="https://scholar.google.com/citations?user=Qx6QxUgAAAAJ" target="_blank">Scholar</a>
+            <a href="mailto:svdw@sun.ac.za">Email</a>
+          </div>
+        </div>
+        <div class="ref-card">
+          <p class="ref-name">Amir T. Payandeh Najafabadi</p>
+          <p class="ref-title">Professor</p>
+          <p class="ref-inst">Shahid Beheshti University</p>
+          <div class="ref-links">
+            <a href="https://scholar.google.com/citations?user=Ghg08WgAAAAJ" target="_blank">Scholar</a>
+            <a href="mailto:amirtpayandeh@sbu.ac.ir">Email</a>
+          </div>
+        </div>
+        <div class="ref-card">
+          <p class="ref-name">Mohammad Zokaei</p>
+          <p class="ref-title">Professor</p>
+          <p class="ref-inst">Shahid Beheshti University</p>
+          <div class="ref-links">
+            <a href="mailto:m_zokaei@sbu.ac.ir">Email</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.cv-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.cv-tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + id).classList.add('active');
+    btn.classList.add('active');
+  }
+  function filterPubs(type, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.pub-item').forEach(item => {
+      item.style.display = (type === 'all' || item.dataset.type === type) ? 'grid' : 'none';
+    });
+    document.querySelectorAll('.pub-year-group').forEach(group => {
+      const visible = [...group.querySelectorAll('.pub-item')].some(i => i.style.display !== 'none');
+      group.style.display = visible ? 'block' : 'none';
+    });
+  }
+</script>
+</body>
+</html>
