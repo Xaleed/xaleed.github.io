@@ -11,52 +11,28 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
   <style>
-    /* ── Post layout ── */
+    /* ── Post header ── */
     .post-header { padding: 3.5rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
-    .post-meta {
-      display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-      margin-bottom: 1rem;
-    }
-    .post-category {
-      font-family: var(--font-mono); font-size: 0.62rem;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--accent);
-    }
-    .post-date {
-      font-family: var(--font-mono); font-size: 0.62rem;
-      color: var(--muted); letter-spacing: 0.04em;
-    }
-    .post-read-time {
-      font-family: var(--font-mono); font-size: 0.62rem;
-      color: var(--muted);
-    }
+    .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .post-category { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .post-date    { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
+    .post-read-time { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
     .post-meta-sep { color: var(--border); }
     .post-title {
-      font-size: clamp(1.7rem, 4vw, 2.4rem);
-      font-weight: 500; line-height: 1.18;
-      letter-spacing: -0.015em; margin-bottom: 1rem;
+      font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 500;
+      line-height: 1.18; letter-spacing: -0.015em; margin-bottom: 1rem;
     }
-    .post-subtitle {
-      font-size: 1.05rem; color: var(--muted);
-      line-height: 1.6; font-style: italic;
-      max-width: 620px;
-    }
+    .post-subtitle { font-size: 1.05rem; color: var(--muted); line-height: 1.6; font-style: italic; max-width: 620px; }
 
-    /* ── Post body typography ── */
-    .post-body { max-width: var(--max-w); }
-    .post-body p { margin-bottom: 1.3rem; font-size: 1rem; line-height: 1.82; }
+    /* ── Post body ── */
+    .post-body p  { margin-bottom: 1.3rem; font-size: 1rem; line-height: 1.82; }
     .post-body h2 {
       font-family: var(--font-serif); font-size: 1.55rem; font-weight: 500;
       margin: 2.8rem 0 0.9rem; letter-spacing: -0.01em;
       padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
     }
-    .post-body h3 {
-      font-family: var(--font-serif); font-size: 1.2rem; font-weight: 500;
-      margin: 2rem 0 0.6rem;
-    }
-    .post-body ul, .post-body ol {
-      margin: 0 0 1.3rem 1.4rem; line-height: 1.78;
-    }
+    .post-body h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 500; margin: 2rem 0 0.6rem; }
+    .post-body ul, .post-body ol { margin: 0 0 1.3rem 1.4rem; line-height: 1.78; }
     .post-body li { margin-bottom: 0.3rem; font-size: 1rem; }
     .post-body blockquote {
       border-left: 3px solid var(--accent); margin: 1.8rem 0;
@@ -73,124 +49,120 @@
       border-radius: var(--radius); padding: 1.2rem 1.4rem;
       overflow-x: auto; margin-bottom: 1.4rem;
     }
-    .post-body pre code {
-      background: none; border: none; padding: 0;
-      font-size: 0.83rem; line-height: 1.65;
-    }
+    .post-body pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.65; }
     .post-body figure { margin: 2rem 0; }
-    .post-body figure img {
-      width: 100%; border-radius: var(--radius);
-      border: 1px solid var(--border);
-    }
-    .post-body figcaption {
-      font-family: var(--font-mono); font-size: 0.65rem;
-      color: var(--muted); margin-top: 0.55rem; letter-spacing: 0.03em;
-    }
+    .post-body figure img { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); }
+    .post-body figcaption { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-top: 0.55rem; }
     .post-body strong { font-weight: 500; color: var(--text); }
     .post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
 
-    /* ── Post footer / tags ── */
+    /* ── Post footer ── */
     .post-footer {
-      margin-top: 3.5rem; padding-top: 2rem;
-      border-top: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 1rem;
+      margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
     .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
     .back-link {
-      font-family: var(--font-mono); font-size: 0.65rem;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--muted); text-decoration: none;
-      transition: color 0.2s;
+      font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s;
     }
     .back-link:hover { color: var(--accent); }
 
-    /* ── Comment section ── */
-    .comments-section {
-      margin-top: 4rem; padding-top: 2.5rem;
-      border-top: 2px solid var(--border);
-    }
-    .comments-heading {
-      font-family: var(--font-serif); font-size: 1.4rem; font-weight: 500;
-      margin-bottom: 0.3rem; letter-spacing: -0.01em;
-    }
-    .comments-subheading {
-      font-family: var(--font-mono); font-size: 0.63rem;
-      color: var(--muted); letter-spacing: 0.06em; margin-bottom: 2rem;
-    }
+    /* ══════════════════════════════════
+       COMMENT / MESSAGE SECTION
+    ══════════════════════════════════ */
+    .engage-section { margin-top: 4.5rem; padding-top: 2.5rem; border-top: 2px solid var(--border); }
 
-    /* Existing comments */
-    .comment-list { display: flex; flex-direction: column; gap: 1.4rem; margin-bottom: 2.5rem; }
-    .comment-item {
-      display: grid; grid-template-columns: 40px 1fr;
-      gap: 1rem; padding-bottom: 1.4rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .comment-item:last-child { border-bottom: none; }
-    .comment-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--accent-light);
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--font-mono); font-size: 0.75rem;
-      color: var(--accent); font-weight: 500; flex-shrink: 0;
-    }
-    .comment-author { font-weight: 500; font-size: 0.9rem; margin-bottom: 0.08rem; }
-    .comment-timestamp {
-      font-family: var(--font-mono); font-size: 0.6rem;
-      color: var(--muted); letter-spacing: 0.04em; margin-bottom: 0.5rem;
-    }
-    .comment-text { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+    .engage-heading { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: -0.01em; }
+    .engage-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 2rem; max-width: 580px; }
 
-    /* Comment form */
-    .comment-form {
+    /* ── Tabs ── */
+    .engage-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .engage-tab {
+      font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      padding: 0.7rem 1.4rem 0.65rem;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .engage-tab:hover { color: var(--text); }
+    .engage-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .engage-panel { display: none; }
+    .engage-panel.active { display: block; animation: fadeUp 0.3s ease both; }
+
+    /* ── Tab 1: Utterances (GitHub comments) ── */
+    .utterances-note {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .utterances-note-icon {
+      font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem;
+    }
+    .utterances-note p {
+      font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin: 0;
+    }
+    .utterances-note strong { color: var(--text); font-weight: 500; }
+
+    /* Utterances iframe injected by script — just needs a container */
+    #utterances-container .utterances { margin: 0 !important; }
+
+    /* ── Tab 2: Formspree (private message) ── */
+    .formspree-note {
+      background: var(--accent-light); border: 1px solid var(--border2);
+      border-radius: var(--radius); padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .formspree-note p { font-size: 0.85rem; color: var(--accent); line-height: 1.6; margin: 0; }
+    .formspree-note strong { font-weight: 500; }
+
+    .message-form {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 1.8rem;
     }
-    .comment-form-title {
-      font-family: var(--font-mono); font-size: 0.63rem;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 1.4rem; display: block;
-    }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .form-group:last-of-type { margin-bottom: 0; }
     .form-group label {
       font-family: var(--font-mono); font-size: 0.6rem;
       letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
     }
-    .form-group input, .form-group textarea {
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
       font-family: var(--font-serif); font-size: 0.95rem;
       background: var(--bg); border: 1px solid var(--border);
       border-radius: var(--radius); padding: 0.6rem 0.85rem;
-      color: var(--text); outline: none;
+      color: var(--text); outline: none; width: 100%;
       transition: border-color 0.2s;
-      width: 100%;
     }
-    .form-group input:focus, .form-group textarea:focus {
-      border-color: var(--accent);
-    }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
     .form-group textarea { resize: vertical; min-height: 130px; line-height: 1.65; }
-    .form-note {
-      font-family: var(--font-mono); font-size: 0.6rem;
-      color: var(--muted); margin-bottom: 1.2rem; line-height: 1.5;
-    }
-    .submit-row { display: flex; align-items: center; gap: 1rem; }
+    .submit-row { display: flex; align-items: center; gap: 1rem; margin-top: 1.4rem; }
     .submit-btn {
       font-family: var(--font-mono); font-size: 0.68rem;
       letter-spacing: 0.09em; text-transform: uppercase;
-      background: var(--accent); color: white;
-      border: none; padding: 0.62rem 1.4rem;
-      border-radius: var(--radius); cursor: pointer;
-      transition: opacity 0.2s;
+      background: var(--accent); color: white; border: none;
+      padding: 0.62rem 1.4rem; border-radius: var(--radius);
+      cursor: pointer; transition: opacity 0.2s;
     }
-    .submit-btn:hover { opacity: 0.88; }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .submit-status {
       font-family: var(--font-mono); font-size: 0.63rem;
       color: var(--accent); display: none;
     }
+    .submit-status.error { color: #dc2626; }
 
     @media (max-width: 580px) {
       .form-row { grid-template-columns: 1fr; }
       .post-footer { flex-direction: column; align-items: flex-start; }
+      .engage-tab { padding: 0.7rem 0.9rem 0.65rem; font-size: 0.6rem; }
     }
   </style>
 </head>
@@ -213,7 +185,7 @@
 
 <main>
 
-  <!-- POST HEADER -->
+  <!-- ── POST HEADER ── -->
   <div class="post-header fade-up">
     <div class="post-meta">
       <span class="post-category">Methods</span>
@@ -226,58 +198,37 @@
     <p class="post-subtitle">Why standard statistical methods fail on proportions, and how log-ratio transformations and the Dirichlet distribution offer a rigorous solution.</p>
   </div>
 
-  <!-- POST BODY — replace everything inside here with your content -->
+  <!-- ── POST BODY — replace everything inside here with your content ── -->
   <div class="post-body fade-up">
 
     <p>Compositional data appears whenever measurements represent parts of a whole — the proportion of species in an ecosystem, the allocation of a portfolio across assets, or the relative abundance of minerals in a rock sample. At first glance these look like ordinary multivariate data. They are not.</p>
 
     <h2>The problem with proportions</h2>
 
-    <p>The fundamental constraint is that components sum to a constant, usually 1. This creates a <strong>simplex</strong> geometry that ordinary Euclidean methods ignore. Running a linear regression on raw proportions, for example, can produce predicted values outside $[0,1]$, and correlations between components are artificially constrained by the sum constraint — a phenomenon known as <em>spurious correlation</em>, identified by Pearson as early as 1897.</p>
+    <p>The fundamental constraint is that components sum to a constant, usually 1. This creates a <strong>simplex</strong> geometry that ordinary Euclidean methods ignore. Running a linear regression on raw proportions can produce predicted values outside $[0,1]$, and correlations between components are artificially constrained — a phenomenon known as <em>spurious correlation</em>.</p>
 
     <blockquote>
       "The constant-sum constraint means that if one component increases, at least one other must decrease — regardless of any underlying relationship."
     </blockquote>
 
     <h2>Log-ratio transformations</h2>
+    <p>The solution, developed by John Aitchison in the 1980s, is to work in log-ratio space. Once transformed, standard multivariate methods apply. The ILR transformation is generally preferred because it produces an isometric embedding of the simplex in Euclidean space:</p>
 
-    <p>The solution, developed by John Aitchison in the 1980s, is to work in log-ratio space. The three most common transformations are:</p>
+    <p>$$\text{ilr}(\mathbf{x})_j = \sqrt{\frac{j}{j+1}} \log \frac{\left(\prod_{i=1}^j x_i\right)^{1/j}}{x_{j+1}}$$</p>
 
-    <ul>
-      <li><strong>ALR</strong> — additive log-ratio: $\text{alr}(\mathbf{x}) = \log(x_i / x_D)$ for a chosen reference component $x_D$</li>
-      <li><strong>CLR</strong> — centred log-ratio: $\text{clr}(\mathbf{x}) = \log(x_i / g(\mathbf{x}))$ where $g(\mathbf{x})$ is the geometric mean</li>
-      <li><strong>ILR</strong> — isometric log-ratio: an orthonormal basis representation that preserves distances</li>
-    </ul>
-
-    <p>Once transformed, standard multivariate methods apply without modification. The ILR transformation is generally preferred for modelling because it produces an isometric embedding of the simplex in Euclidean space.</p>
-
-    <h2>Example: a simple CLR in R</h2>
-
+    <h2>Example in R</h2>
     <pre><code>library(compositions)
 
-# Simulate compositional data (3 parts, 100 observations)
-x &lt;- rDirichlet(100, alpha = c(2, 5, 3))
-
-# Apply CLR transformation
+x     &lt;- rDirichlet(100, alpha = c(2, 5, 3))
 x_clr &lt;- clr(x)
-
-# Now safe to use standard PCA
-pca &lt;- prcomp(x_clr, scale. = FALSE)
+pca   &lt;- prcomp(x_clr, scale. = FALSE)
 biplot(pca)</code></pre>
 
-    <h2>The Dirichlet distribution</h2>
-
-    <p>For modelling compositional responses, the Dirichlet distribution is the natural choice. With concentration parameters $\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_K)$, the density is:</p>
-
-    <p>$$f(\mathbf{x}; \boldsymbol{\alpha}) = \frac{\Gamma(\alpha_0)}{\prod_{k=1}^K \Gamma(\alpha_k)} \prod_{k=1}^K x_k^{\alpha_k - 1}$$</p>
-
-    <p>where $\alpha_0 = \sum_{k=1}^K \alpha_k$. The mean of component $k$ is $\alpha_k / \alpha_0$, and the variance structure is determined by the total concentration $\alpha_0$ — larger values produce distributions more concentrated around the mean.</p>
-
-    <p>More content goes here — this template handles any length.</p>
+    <p>More content goes here. This template supports any length — equations, code, figures, and lists all work out of the box.</p>
 
   </div>
 
-  <!-- POST FOOTER -->
+  <!-- ── POST FOOTER ── -->
   <div class="post-footer fade-up">
     <div class="post-tags">
       <span class="tag">Compositional Data</span>
@@ -287,95 +238,157 @@ biplot(pca)</code></pre>
     <a class="back-link" href="../blog.html">← Back to Blog</a>
   </div>
 
-  <!-- COMMENTS SECTION -->
-  <div class="comments-section fade-up">
-    <h2 class="comments-heading">Comments</h2>
-    <p class="comments-subheading">All comments are moderated before appearing.</p>
+  <!-- ══════════════════════════════════════════
+       ENGAGE SECTION — Comments + Messages
+  ══════════════════════════════════════════ -->
+  <div class="engage-section fade-up">
 
-    <!-- Existing comments — remove this block if no comments yet -->
-    <div class="comment-list" id="comment-list">
-      <!-- Comments will appear here after submission -->
+    <h2 class="engage-heading">Discussion</h2>
+    <p class="engage-sub">
+      Have a question, correction, or thought about this post? Choose how you'd like to engage below.
+    </p>
+
+    <!-- Tab bar -->
+    <div class="engage-tabs">
+      <button class="engage-tab active" onclick="switchTab('comments', this)">
+        💬 Leave a Comment (Using GitHub)
+      </button>
+      <button class="engage-tab" onclick="switchTab('message', this)">
+        ✉️ Leave a Comment (Using Email)
+      </button>
     </div>
 
-    <!-- Comment form -->
-    <div class="comment-form">
-      <span class="comment-form-title">Leave a comment</span>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="c-name">Name</label>
-          <input type="text" id="c-name" placeholder="Your name" autocomplete="name">
-        </div>
-        <div class="form-group">
-          <label for="c-email">Email <span style="font-size:0.55rem;color:var(--muted)">(not published)</span></label>
-          <input type="email" id="c-email" placeholder="your@email.com" autocomplete="email">
-        </div>
+    <!-- ── TAB 1: GitHub / Utterances ── -->
+    <div class="engage-panel active" id="panel-comments">
+
+      <div class="utterances-note">
+        <span class="utterances-note-icon">ℹ️</span>
+        <p>
+          Comments are <strong>public and visible to all readers</strong> — they appear immediately after you post.
+          A free <a href="https://github.com" target="_blank" style="color:var(--accent);">GitHub account</a> is required.
+          If you don't have one, use the <strong>Private message</strong> tab instead.
+        </p>
       </div>
-      <div class="form-group" style="margin-bottom:1rem;">
-        <label for="c-text">Comment</label>
-        <textarea id="c-text" placeholder="Share your thoughts, questions, or corrections…"></textarea>
-      </div>
-      <p class="form-note">Your email is used only to generate an avatar initial and will never be displayed or shared.</p>
-      <div class="submit-row">
-        <button class="submit-btn" onclick="submitComment()">Submit comment</button>
-        <span class="submit-status" id="submit-status">✓ Comment submitted — awaiting moderation.</span>
-      </div>
+
+      <!-- Utterances injects itself here. Replace YOUR_GITHUB_USERNAME and YOUR_REPO_NAME below. -->
+      <div id="utterances-container"></div>
+      <script>
+        (function() {
+          const s = document.createElement('script');
+          s.src            = 'https://utteranc.es/client.js';
+          s.setAttribute('repo',            'Xaleed/Xaleed.github.io'); /* ← YOUR_USERNAME/YOUR_REPO */
+          s.setAttribute('issue-term',      'pathname');
+          s.setAttribute('label',           'comment');
+          s.setAttribute('theme',           'github-light');
+          s.setAttribute('crossorigin',     'anonymous');
+          s.async = true;
+          document.getElementById('utterances-container').appendChild(s);
+        })();
+      </script>
+
     </div>
-  </div>
+
+    <!-- ── TAB 2: Formspree private message ── -->
+    <div class="engage-panel" id="panel-message">
+
+      <div class="formspree-note">
+        <span style="font-size:1rem;flex-shrink:0;margin-top:0.1rem;">📬</span>
+        <p>
+          Comments are public and visible to all readers — they appear immediately after you post. 
+          A free GitHub account is required. If you don't have one, use the <strong>Using Email</strong> tab instead.
+        </p>
+      </div>
+
+      <div class="message-form">
+
+        <!-- Replace YOUR_FORMSPREE_ID with the ID from formspree.io, e.g. xpwzkjqb -->
+        <form id="formspree-form" action="https://formspree.io/f/mkopjedr" method="POST">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-name">Name *</label>
+              <input type="text" id="f-name" name="name" placeholder="Your name" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email * <span style="font-size:0.55rem;color:var(--muted)">(not published)</span></label>
+              <input type="email" id="f-email" name="email" placeholder="your@email.com" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="f-subject">Subject</label>
+            <input type="text" id="f-subject" name="subject" placeholder="e.g. Question about the CLR transformation">
+          </div>
+
+          <div class="form-group">
+            <label for="f-message">Message *</label>
+            <textarea id="f-message" name="message" placeholder="Your question, correction, or thought…" required></textarea>
+          </div>
+
+          <!-- Hidden field so you know which post the message came from -->
+          <input type="hidden" name="_subject" value="Blog message: Post Title">
+          <input type="hidden" name="post" value="post-template">
+
+          <div class="submit-row">
+            <button type="submit" class="submit-btn" id="formspree-btn">Send message</button>
+            <span class="submit-status" id="formspree-status"></span>
+          </div>
+
+        </form>
+      </div>
+
+    </div><!-- end panel-message -->
+
+  </div><!-- end engage-section -->
 
 </main>
 
 <footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
 
 <script>
-  /* ── Simple comment display (client-side only)
-     For persistent comments you will need a backend or a service
-     like Utterances (GitHub-based) or Formspree.                  ── */
+  /* ── Tab switching ── */
+  function switchTab(id, btn) {
+    document.querySelectorAll('.engage-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.engage-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+  }
 
-  const stored = JSON.parse(localStorage.getItem('comments-' + location.pathname) || '[]');
-  renderComments(stored);
+  /* ── Formspree AJAX submit (no page reload) ── */
+  const form   = document.getElementById('formspree-form');
+  const btn    = document.getElementById('formspree-btn');
+  const status = document.getElementById('formspree-status');
 
-  function submitComment() {
-    const name  = document.getElementById('c-name').value.trim();
-    const email = document.getElementById('c-email').value.trim();
-    const text  = document.getElementById('c-text').value.trim();
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
+    status.style.display = 'none';
+    status.className = 'submit-status';
 
-    if (!name || !text) {
-      alert('Please enter your name and a comment.');
-      return;
+    try {
+      const res = await fetch(form.action, {
+        method:  'POST',
+        body:    new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (res.ok) {
+        status.textContent     = '✓ Message sent — I will reply to your email.';
+        status.style.display   = 'inline';
+        form.reset();
+      } else {
+        throw new Error('Server error');
+      }
+    } catch {
+      status.textContent   = '✗ Something went wrong. Please try emailing me directly.';
+      status.className     = 'submit-status error';
+      status.style.display = 'inline';
     }
 
-    const comment = {
-      name,
-      initials: name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0,2),
-      text,
-      date: new Date().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
-    };
-
-    stored.push(comment);
-    localStorage.setItem('comments-' + location.pathname, JSON.stringify(stored));
-    renderComments(stored);
-
-    document.getElementById('c-name').value  = '';
-    document.getElementById('c-email').value = '';
-    document.getElementById('c-text').value  = '';
-    const status = document.getElementById('submit-status');
-    status.style.display = 'inline';
-    setTimeout(() => status.style.display = 'none', 4000);
-  }
-
-  function renderComments(list) {
-    const el = document.getElementById('comment-list');
-    if (!list.length) { el.innerHTML = ''; return; }
-    el.innerHTML = list.map(c => `
-      <div class="comment-item">
-        <div class="comment-avatar">${c.initials}</div>
-        <div>
-          <p class="comment-author">${c.name}</p>
-          <p class="comment-timestamp">${c.date}</p>
-          <p class="comment-text">${c.text.replace(/</g,'&lt;')}</p>
-        </div>
-      </div>`).join('');
-  }
+    btn.disabled    = false;
+    btn.textContent = 'Send message';
+  });
 </script>
 </body>
 </html>
