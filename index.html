@@ -108,67 +108,84 @@
     .slide-inner { opacity: 0; transform: translateY(16px); transition: opacity 0.5s ease, transform 0.5s ease; }
     .slide-inner.visible { opacity: 1; transform: translateY(0); }
 
-    /* ════════════════════
-       SLIDE 1 — PROFILE
-    ════════════════════ */
-    .profile-card {
-      background: rgba(255,255,255,0.93);
-      backdrop-filter: blur(24px) saturate(1.6);
-      border-radius: 20px;
-      box-shadow: 0 32px 90px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.12);
-      width: min(310px, calc(100vw - 2.5rem));
-      padding: 1.8rem 1.5rem 1.4rem;
-      display: flex; flex-direction: column; align-items: center; text-align: center;
-    }
-    .photo-ring {
-      width: 150px; height: 150px; border-radius: 50%; padding: 3px;
-      background: linear-gradient(135deg, #6d28d9, #0e7490);
-      margin-bottom: 1rem; flex-shrink: 0;
-    }
-    .photo-ring img {
-      width: 100%; height: 100%; border-radius: 50%;
-      object-fit: cover; object-position: center top; display: block;
-    }
-    .photo-placeholder {
-      width: 100%; height: 100%; border-radius: 50%;
-      background: linear-gradient(160deg,#c7d2fe,#a5f3fc);
-      display: flex; align-items: center; justify-content: center; font-size: 2rem;
-    }
-    .profile-name {
-      font-family: var(--serif); font-size: 1.6rem; font-weight: 600;
-      color: #1a1916; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 0.2rem;
-    }
-    .profile-role {
-      font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em;
-      text-transform: uppercase; color: #6d28d9; margin-bottom: 1rem;
-    }
-    .contact-list {
-      width: 100%; display: flex; flex-direction: column; gap: 0.38rem;
-      border-top: 1px solid var(--border); padding-top: 1rem; margin-bottom: 1rem;
-    }
-    .contact-item {
-      display: flex; align-items: center; gap: 0.55rem;
-      font-size: 0.76rem; color: #4b5563; text-align: left;
-    }
-    .contact-icon {
-      width: 22px; height: 22px; border-radius: 50%; background: #f3f0ff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.65rem; flex-shrink: 0;
-    }
+    /* ════════════════════════════════════════════════════════
+       SLIDE 1 — PROFILE CARD  ·  4 style options below
+       HOW TO SWITCH:
+         1. Find the ACTIVE block (no comment marks around it)
+         2. Wrap it in  /*  ...  */  to comment it out
+         3. Remove the  /*  ...  */  from the option you want
+    ════════════════════════════════════════════════════════ */
+
+    /* ── Shared photo ring — same for all options ── */
+    .photo-ring { width: 150px; height: 150px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #6d28d9, #0e7490); margin-bottom: 1rem; flex-shrink: 0; }
+    .photo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: center top; display: block; }
+    .photo-placeholder { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(160deg,#c7d2fe,#a5f3fc); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+
+    /* ┌─────────────────────────────────────────┐
+       │  OPTION 1 · White card  ← ACTIVE        │
+       └─────────────────────────────────────────┘ 
+    .profile-card { background: rgba(255,255,255,0.93); backdrop-filter: blur(24px) saturate(1.6); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.12); width: min(310px, calc(100vw - 2.5rem)); padding: 1.8rem 1.5rem 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .profile-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: #1a1916; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 0.2rem; }
+    .profile-role { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: #6d28d9; margin-bottom: 1rem; }
+    .contact-list { width: 100%; display: flex; flex-direction: column; gap: 0.38rem; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 1rem; margin-bottom: 1rem; }
+    .contact-item { display: flex; align-items: center; gap: 0.55rem; font-size: 0.76rem; color: #4b5563; text-align: left; }
+    .contact-icon { width: 22px; height: 22px; border-radius: 50%; background: #f3f0ff; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0; }
     .contact-item a { color: #4b5563; text-decoration: none; }
     .contact-item a:hover { color: #6d28d9; }
-    .social-row {
-      display: flex; gap: 0.45rem; justify-content: center;
-      border-top: 1px solid var(--border); padding-top: 1rem; width: 100%;
-    }
-    .s-btn {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #f3f0ff; border: none; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      color: #6b7280; text-decoration: none;
-      transition: background 0.2s, color 0.2s, transform 0.15s;
-    }
+    .social-row { display: flex; gap: 0.45rem; justify-content: center; border-top: 1px solid rgba(0,0,0,0.08); padding-top: 1rem; width: 100%; }
+    .s-btn { width: 32px; height: 32px; border-radius: 50%; background: #f3f0ff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.15s; }
     .s-btn:hover { background: #6d28d9; color: white; transform: translateY(-2px); }
+    */
+    /*
+    ┌─────────────────────────────────────────┐
+    │  OPTION 2 · Dark glass                  │
+    └─────────────────────────────────────────┘ */
+    .profile-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.5); width: min(310px, calc(100vw - 2.5rem)); padding: 1.8rem 1.5rem 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .profile-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: white; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 0.2rem; }
+    .profile-role { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: #a78bfa; margin-bottom: 1rem; }
+    .contact-list { width: 100%; display: flex; flex-direction: column; gap: 0.38rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-bottom: 1rem; }
+    .contact-item { display: flex; align-items: center; gap: 0.55rem; font-size: 0.76rem; color: rgba(255,255,255,0.65); text-align: left; }
+    .contact-icon { width: 22px; height: 22px; border-radius: 50%; background: rgba(109,40,217,0.25); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0; }
+    .contact-item a { color: rgba(255,255,255,0.65); text-decoration: none; }
+    .contact-item a:hover { color: #a78bfa; }
+    .social-row { display: flex; gap: 0.45rem; justify-content: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; width: 100%; }
+    .s-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(109,40,217,0.2); border: 1px solid rgba(167,139,250,0.25); cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .s-btn:hover { background: #6d28d9; color: white; transform: translateY(-2px); }
+   
+
+    /*
+    ┌─────────────────────────────────────────┐
+    │  OPTION 3 · Frosted dark violet         │
+    └─────────────────────────────────────────┘
+    .profile-card { background: rgba(15,10,40,0.72); backdrop-filter: blur(32px) saturate(1.4); -webkit-backdrop-filter: blur(32px) saturate(1.4); border: 1px solid rgba(109,40,217,0.35); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.6), 0 0 0 1px rgba(109,40,217,0.15), inset 0 1px 0 rgba(255,255,255,0.07); width: min(310px, calc(100vw - 2.5rem)); padding: 1.8rem 1.5rem 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .profile-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: white; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 0.2rem; }
+    .profile-role { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: #c4b5fd; margin-bottom: 1rem; }
+    .contact-list { width: 100%; display: flex; flex-direction: column; gap: 0.38rem; border-top: 1px solid rgba(109,40,217,0.3); padding-top: 1rem; margin-bottom: 1rem; }
+    .contact-item { display: flex; align-items: center; gap: 0.55rem; font-size: 0.76rem; color: rgba(255,255,255,0.6); text-align: left; }
+    .contact-icon { width: 22px; height: 22px; border-radius: 50%; background: rgba(109,40,217,0.35); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0; }
+    .contact-item a { color: rgba(255,255,255,0.6); text-decoration: none; }
+    .contact-item a:hover { color: #c4b5fd; }
+    .social-row { display: flex; gap: 0.45rem; justify-content: center; border-top: 1px solid rgba(109,40,217,0.3); padding-top: 1rem; width: 100%; }
+    .s-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(109,40,217,0.3); border: 1px solid rgba(167,139,250,0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; color: #c4b5fd; text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .s-btn:hover { background: #6d28d9; color: white; transform: translateY(-2px); }
+    */
+
+    /*
+    ┌─────────────────────────────────────────┐
+    │  OPTION 4 · No card — floats on bg      │
+    └─────────────────────────────────────────┘
+    .profile-card { background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; border: none; border-radius: 0; box-shadow: none; width: min(310px, calc(100vw - 2.5rem)); padding: 1.8rem 1.5rem 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .profile-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: white; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 0.2rem; text-shadow: 0 2px 18px rgba(0,0,0,0.7); }
+    .profile-role { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: #a78bfa; margin-bottom: 1rem; }
+    .contact-list { width: 100%; display: flex; flex-direction: column; gap: 0.38rem; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1rem; margin-bottom: 1rem; }
+    .contact-item { display: flex; align-items: center; gap: 0.55rem; font-size: 0.76rem; color: rgba(255,255,255,0.7); text-align: left; }
+    .contact-icon { width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0; }
+    .contact-item a { color: rgba(255,255,255,0.7); text-decoration: none; }
+    .contact-item a:hover { color: #a78bfa; }
+    .social-row { display: flex; gap: 0.45rem; justify-content: center; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1rem; width: 100%; }
+    .s-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.65); text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.15s; }
+    .s-btn:hover { background: #6d28d9; color: white; transform: translateY(-2px); }
+    */
 
     /* ════════════════════
        SLIDE 2 — BACKGROUND
