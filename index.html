@@ -110,16 +110,27 @@
 
     /* ════════════════════════════════════════════════════════
        SLIDE 1 — PROFILE CARD  ·  4 style options below
-       HOW TO SWITCH:
-         1. Find the ACTIVE block (no comment marks around it)
-         2. Wrap it in  /*  ...  */  to comment it out
-         3. Remove the  /*  ...  */  from the option you want
+     
     ════════════════════════════════════════════════════════ */
 
     /* ── Shared photo ring — same for all options ── */
     .photo-ring { width: 150px; height: 150px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #6d28d9, #0e7490); margin-bottom: 1rem; flex-shrink: 0; }
-    .photo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: center top; display: block; }
+    .photo-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: center 15%; display: block; }
     .photo-placeholder { width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(160deg,#c7d2fe,#a5f3fc); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+
+    /* ── Mobile card tweaks ── */
+    @media (max-width: 480px) {
+      .slide { align-items: flex-start; padding-top: 72px; overflow-y: auto; }
+      .profile-card { padding: 1rem 1.1rem 0.9rem; width: calc(100vw - 2rem); margin-bottom: 5rem; }
+      .photo-ring { width: 90px; height: 90px; margin-bottom: 0.6rem; }
+      .profile-name { font-size: 1.25rem; margin-bottom: 0.15rem; }
+      .profile-role { font-size: 0.55rem; margin-bottom: 0.65rem; }
+      .contact-list { gap: 0.22rem; padding-top: 0.65rem; margin-bottom: 0.65rem; }
+      .contact-item { font-size: 0.68rem; gap: 0.4rem; }
+      .contact-icon { width: 18px; height: 18px; font-size: 0.55rem; }
+      .social-row { padding-top: 0.65rem; gap: 0.35rem; }
+      .s-btn { width: 28px; height: 28px; }
+    }
 
     /* ┌─────────────────────────────────────────┐
        │  OPTION 1 · White card  ← ACTIVE        │
@@ -139,8 +150,8 @@
     /*
     ┌─────────────────────────────────────────┐
     │  OPTION 2 · Dark glass                  │
-    └─────────────────────────────────────────┘ */
-    .profile-card { background: rgba(255,255,255,0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.5); width: min(310px, calc(100vw - 2.5rem)); padding: 1.8rem 1.5rem 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    └─────────────────────────────────────────┘*/
+    .profile-card { background: rgba(255,255,255,0.065); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; box-shadow: 0 32px 90px rgba(0,0,0,0.5); width: min(310px, calc(100vw - 2.5rem)); padding: 1.8rem 1.5rem 1.4rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
     .profile-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: white; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 0.2rem; }
     .profile-role { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.14em; text-transform: uppercase; color: #a78bfa; margin-bottom: 1rem; }
     .contact-list { width: 100%; display: flex; flex-direction: column; gap: 0.38rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; margin-bottom: 1rem; }
@@ -151,7 +162,7 @@
     .social-row { display: flex; gap: 0.45rem; justify-content: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; width: 100%; }
     .s-btn { width: 32px; height: 32px; border-radius: 50%; background: rgba(109,40,217,0.2); border: 1px solid rgba(167,139,250,0.25); cursor: pointer; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.55); text-decoration: none; transition: background 0.2s, color 0.2s, transform 0.15s; }
     .s-btn:hover { background: #6d28d9; color: white; transform: translateY(-2px); }
-   
+    
 
     /*
     ┌─────────────────────────────────────────┐
@@ -382,7 +393,7 @@
         </div>
         <div class="contact-item">
           <span class="contact-icon">✉️</span>
-          <a href="mailto:masoumifardk@yahoo.com">masoumifardk@yahoo.com</a>
+          <a href="/cdn-cgi/l/email-protection#adc0ccdec2d8c0c4cbccdfc9c6edd4ccc5c2c283cec2c0"><span class="__cf_email__" data-cfemail="6904081a061c04000f081b0d02291008010606470a0604">[email&#160;protected]</span></a>
         </div>
         <div class="contact-item">
           <span class="contact-icon">🎓</span>
@@ -472,7 +483,7 @@
 
 <div class="credit">© 2026 Khaled Masoumifard</div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   /* ── Albums config ── */
   const albums = [
     { id:'mountains', label:'Stellenbosch Mountains', cover:'assets/img/mountains/cover.jpg', coverFallback:'https://images.unsplash.com/photo-1600270762567-f2e93dd3c47e?w=600&q=80', images:['assets/img/mountains/01.jpg','assets/img/mountains/02.jpg','assets/img/mountains/03.jpg','assets/img/mountains/04.jpg','assets/img/mountains/05.jpg'] },
