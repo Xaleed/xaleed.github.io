@@ -234,8 +234,12 @@
     .about-title em { font-style: italic; color: #a78bfa; }
     .glass-block {
       background: rgba(255,255,255,0.065);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px; padding: 1.1rem 1.2rem;
+      border-radius: 20px;
+      box-shadow: 0 32px 90px rgba(0,0,0,0.5);
+      padding: 1.1rem 1.2rem;
       margin-bottom: 0.85rem;
     }
     .glass-block:last-child { margin-bottom: 0; }
@@ -368,9 +372,10 @@
 
 <div id="bg">
   <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=1800&q=85')"></div>
-  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1800&q=85')"></div>
-  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1502920514313-52581002a659?w=1800&q=85')"></div>
+<!--  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1800&q=85')"></div>
+  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1502920514313-52581002a659?w=1800&q=85')"></div> -->
 </div>
+
 <div id="bg-overlay"></div>
 
 <nav class="topnav">
