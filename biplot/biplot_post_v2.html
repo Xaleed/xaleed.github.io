@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nonlinear Biplot Axes via B-Splines — Khaled Masoumifard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <style>
+    /* ── Post header ── */
+    .post-header { padding: 3.5rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+    .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .post-category { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .post-date    { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
+    .post-read-time { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
+    .post-meta-sep { color: var(--border); }
+    .post-title {
+      font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 500;
+      line-height: 1.18; letter-spacing: -0.015em; margin-bottom: 1rem;
+    }
+    .post-subtitle { font-size: 1.05rem; color: var(--muted); line-height: 1.6; font-style: italic; max-width: 620px; }
+
+    /* ── Post body ── */
+    .post-body p  { margin-bottom: 1.3rem; font-size: 1rem; line-height: 1.82; }
+    .post-body h2 {
+      font-family: var(--font-serif); font-size: 1.55rem; font-weight: 500;
+      margin: 2.8rem 0 0.9rem; letter-spacing: -0.01em;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    .post-body h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 500; margin: 2rem 0 0.6rem; }
+    .post-body ul, .post-body ol { margin: 0 0 1.3rem 1.4rem; line-height: 1.78; }
+    .post-body li { margin-bottom: 0.3rem; font-size: 1rem; }
+    .post-body blockquote {
+      border-left: 3px solid var(--accent); margin: 1.8rem 0;
+      padding: 0.5rem 0 0.5rem 1.4rem;
+      color: var(--muted); font-style: italic; font-size: 1rem;
+    }
+    .post-body code {
+      font-family: var(--font-mono); font-size: 0.82rem;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem; border-radius: 3px;
+    }
+    .post-body pre {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      overflow-x: auto; margin-bottom: 1.4rem;
+    }
+    .post-body pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.65; }
+    .post-body figure { margin: 2rem 0; }
+    .post-body figure img { width: 100%; border-radius: var(--radius); border: 1px solid var(--border); }
+    .post-body figcaption { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-top: 0.55rem; }
+    .post-body strong { font-weight: 500; color: var(--text); }
+    .post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── diagram box ── */
+    .diagram-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem 2rem; margin: 1.8rem 0; overflow-x: auto; }
+    .diagram-box svg { display: block; margin: 0 auto; }
+
+    /* ── code-link card ── */
+    .code-link-card {
+      display: flex; align-items: center; gap: 1.2rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.1rem 1.4rem;
+      margin: 1.6rem 0; text-decoration: none !important;
+      transition: border-color 0.2s;
+    }
+    .code-link-card:hover { border-color: var(--accent); }
+    .code-link-card-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .code-link-card-text { display: flex; flex-direction: column; gap: 0.2rem; }
+    .code-link-card-title { font-weight: 500; font-size: 0.95rem; color: var(--text); text-decoration: none; }
+    .code-link-card-sub { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 0.04em; }
+
+    /* ── upcoming badge ── */
+    .upcoming-badge {
+      display: inline-block; font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); padding: 0.2rem 0.6rem; border-radius: 20px;
+      vertical-align: middle; margin-left: 0.5rem;
+    }
+
+    /* ── summary table ── */
+    .summary-table { width: 100%; border-collapse: collapse; font-size: 0.93rem; line-height: 1.6; margin: 1.4rem 0; }
+    .summary-table th { text-align: left; padding: 0.5rem 1rem 0.5rem 0; font-weight: 500; border-bottom: 2px solid var(--border); }
+    .summary-table td { padding: 0.45rem 1rem 0.45rem 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .summary-table td:first-child { color: var(--muted); font-size: 0.88rem; white-space: nowrap; }
+
+    /* ── Post footer ── */
+    .post-footer {
+      margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .back-link {
+      font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ══════════════════════════════════
+       COMMENT / MESSAGE SECTION
+    ══════════════════════════════════ */
+    .engage-section { margin-top: 4.5rem; padding-top: 2.5rem; border-top: 2px solid var(--border); }
+    .engage-heading { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: -0.01em; }
+    .engage-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 2rem; max-width: 580px; }
+
+    /* ── Tabs ── */
+    .engage-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .engage-tab {
+      font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      padding: 0.7rem 1.4rem 0.65rem;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .engage-tab:hover { color: var(--text); }
+    .engage-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .engage-panel { display: none; }
+    .engage-panel.active { display: block; animation: fadeUp 0.3s ease both; }
+
+    /* ── Tab 1: Utterances ── */
+    .utterances-note {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .utterances-note-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .utterances-note p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin: 0; }
+    .utterances-note strong { color: var(--text); font-weight: 500; }
+    #utterances-container .utterances { margin: 0 !important; }
+
+    /* ── Tab 2: Formspree ── */
+    .formspree-note {
+      background: var(--accent-light); border: 1px solid var(--border2);
+      border-radius: var(--radius); padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .formspree-note p { font-size: 0.85rem; color: var(--accent); line-height: 1.6; margin: 0; }
+    .formspree-note strong { font-weight: 500; }
+
+    .message-form {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.8rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .form-group:last-of-type { margin-bottom: 0; }
+    .form-group label {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    }
+    .form-group input,
+    .form-group textarea {
+      font-family: var(--font-serif); font-size: 0.95rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.6rem 0.85rem;
+      color: var(--text); outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 130px; line-height: 1.65; }
+    .submit-row { display: flex; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+    .submit-btn {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      background: var(--accent); color: white; border: none;
+      padding: 0.62rem 1.4rem; border-radius: var(--radius);
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .submit-status { font-family: var(--font-mono); font-size: 0.63rem; color: var(--accent); display: none; }
+    .submit-status.error { color: #dc2626; }
+
+    @media (max-width: 580px) {
+      .form-row { grid-template-columns: 1fr; }
+      .post-footer { flex-direction: column; align-items: flex-start; }
+      .engage-tab { padding: 0.7rem 0.9rem 0.65rem; font-size: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html" class="active">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ── POST HEADER ── -->
+  <div class="post-header fade-up">
+    <div class="post-meta">
+      <span class="post-category">Statistics · Visualisation</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-date">June 2026</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-read-time">10 min read</span>
+    </div>
+    <h1 class="post-title">Nonlinear Biplot Axes via B-Splines</h1>
+    <p class="post-subtitle">
+      When a straight axis is not enough — how replacing linear projection axes
+      with smooth B-spline curves leads to better biplots for nonlinear data.
+    </p>
+  </div>
+
+  <!-- ── POST BODY ── -->
+  <div class="post-body fade-up">
+
+    <p>
+      This post is about an idea introduced by
+      <strong>Groenen, Le Roux &amp; Gardner-Lubbe (2015)</strong> in
+      <em>Spline-based nonlinear biplots</em>
+      (<a href="https://doi.org/10.1007/s11634-014-0179-1" target="_blank">Advances in Data Analysis and Classification, 9, 219–238</a>).
+      The method is implemented in the open-source R package
+      <strong><a href="https://github.com/MuViSU/biplotEZ" target="_blank">biplotEZ</a></strong>
+      (Gower, Gardner-Lubbe &amp; Le Roux, 2011),
+      with the core function in
+      <code>biplotEZ/R/plot2d.R</code> as <code>biplot.spline.axis()</code>.
+    </p>
+
+    <h2>What is a biplot?</h2>
+
+    <p>
+      Suppose we observe $n$ individuals, each measured on $q$ variables,
+      collected in a data matrix $\mathbf{Y}_{n \times q}$.
+      When $q$ is large the data lives in a high-dimensional space that
+      cannot be visualised directly.
+      A <strong>biplot</strong> is a low-dimensional plot — most commonly
+      two-dimensional — that simultaneously displays:
+    </p>
+    <ul>
+      <li>The <strong>observations</strong> (rows of $\mathbf{Y}$) — as <strong>points</strong> in the 2D plane.</li>
+      <li>The <strong>variables</strong> (columns of $\mathbf{Y}$) — as <strong>calibrated axes</strong> in the same plane.</li>
+    </ul>
+    <p>
+      The 2D coordinates for the observations are obtained by a
+      dimension-reduction method such as PCA, which compresses $\mathbf{Y}$
+      into the matrix $\mathbf{X}_{n \times 2}$.
+      The procedure is then carried out for one variable (column of $\mathbf{Y}$)
+      at a time: each variable produces one axis on the same plot.
+    </p>
+
+    <div class="diagram-box">
+      <svg width="600" height="115" viewBox="0 0 600 115"
+           xmlns="http://www.w3.org/2000/svg"
+           style="font-family:var(--font-mono,monospace);font-size:13px;fill:currentColor">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="currentColor"
+                  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <rect x="10" y="32" width="110" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+        <text x="65" y="53" text-anchor="middle" font-size="15" font-style="italic">Y</text>
+        <text x="65" y="72" text-anchor="middle" font-size="11" opacity="0.65">n × q</text>
+        <line x1="122" y1="58" x2="208" y2="58" stroke="currentColor" stroke-width="1.3" marker-end="url(#arr)" opacity="0.65"/>
+        <text x="165" y="47" text-anchor="middle" font-size="10" opacity="0.6">dimension</text>
+        <text x="165" y="59" text-anchor="middle" font-size="10" opacity="0.6">reduction</text>
+        <rect x="212" y="32" width="110" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+        <text x="267" y="53" text-anchor="middle" font-size="15" font-style="italic">X</text>
+        <text x="267" y="72" text-anchor="middle" font-size="11" opacity="0.65">n × 2</text>
+        <line x1="324" y1="58" x2="400" y2="58" stroke="currentColor" stroke-width="1.3" marker-end="url(#arr)" opacity="0.65"/>
+        <text x="362" y="47" text-anchor="middle" font-size="10" opacity="0.6">pick column</text>
+        <text x="362" y="59" text-anchor="middle" font-size="10" opacity="0.6">j of Y</text>
+        <rect x="404" y="32" width="110" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
+        <text x="459" y="53" text-anchor="middle" font-size="15" font-style="italic">y</text>
+        <text x="459" y="72" text-anchor="middle" font-size="11" opacity="0.65">n × 1</text>
+        <text x="459" y="100" text-anchor="middle" font-size="10" opacity="0.5">target variable</text>
+        <text x="531" y="55" text-anchor="start" font-size="10" opacity="0.55">→ find axis</text>
+        <text x="531" y="67" text-anchor="start" font-size="10" opacity="0.55">for variable j</text>
+      </svg>
+    </div>
+
+    <h2>The core idea of the paper</h2>
+
+    <p>
+      Rather than reviewing the full theory of biplots, let us focus on the
+      key idea that motivates this paper.
+      We start with the $n$ observations already projected onto the 2D plane
+      as $\mathbf{X}_{n \times 2}$, and a target variable
+      $\mathbf{y} \in \mathbb{R}^n$.
+    </p>
+
+    <p>
+      We want to place $n_\mu$ <strong>marker points</strong> —
+      labelled $\mu_1, \mu_2, \ldots, \mu_{n_\mu}$ — somewhere in this 2D plane,
+      so that they serve as a readable axis for the variable.
+      For each observation $i$, we find the marker point whose 2D location
+      $\mathbf{z}_k$ is closest to $\mathbf{x}_i$, and use its label as the
+      predicted value:
+    </p>
+
+    $$\hat{y}_i = \mu_{k_i^*}, \qquad
+      k_i^* = \underset{k}{\arg\min}\;\|\mathbf{x}_i - \mathbf{z}_k\|^2.$$
+
+    <p>The <strong>best placement</strong> is the one that minimises the total prediction error across all observations:</p>
+
+    $$\min_{\mathbf{z}_1,\ldots,\mathbf{z}_{n_\mu}}
+      \sum_{i=1}^{n}\bigl(y_i - \hat{y}_i\bigr)^2.$$
+
+    <p>
+      The classical biplot restricts the marker points to lie on a
+      <strong>straight line</strong> through the origin.
+      The key contribution of this paper is to allow them to lie on a
+      <strong>smooth curve</strong> instead — giving much better predictions
+      whenever the relationship between the 2D projection and the target
+      variable is nonlinear.
+    </p>
+
+    <h2>Representing the curve: B-splines</h2>
+
+    <p>
+      To avoid searching over all possible curves, the $n_\mu$ marker
+      positions are constrained to lie on a smooth
+      <strong>B-spline curve</strong>. This means all positions are
+      determined by a single coefficient matrix
+      $\mathbf{B} \in \mathbb{R}^{(u+v)\times 2}$:
+    </p>
+
+    $$\mathbf{Z} = \mathbf{M}\mathbf{B} \;\in\; \mathbb{R}^{n_\mu \times 2},$$
+
+    <p>
+      where $\mathbf{M}$ is the $n_\mu \times (u+v)$ B-spline basis matrix
+      evaluated at $\boldsymbol{\mu}$, $u$ is the polynomial degree, and $v$
+      is the number of interior knots.
+      Each row of $\mathbf{Z}$ is the 2D biplot position of one marker point.
+      The full loss function that is minimised is:
+    </p>
+
+    $$L(\mathbf{B})
+      = \frac{1}{C_1}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2
+      \;+\;
+      \frac{\lambda}{C_2}
+      \sum_{j=1}^{2}\sum_{k=2}^{n_\mu-1}
+      \bigl(Z_{k-1,j} - 2Z_{k,j} + Z_{k+1,j}\bigr)^2,$$
+
+    <p>
+      where the first term is the prediction error and the second penalises
+      the curvature of the curve (a smoothness penalty controlled by $\lambda \geq 0$).
+      The full mathematical details are in the upcoming post:
+    </p>
+
+    <a class="code-link-card" href="#" style="cursor:default;opacity:0.6">
+      <span class="code-link-card-icon">📐</span>
+      <span class="code-link-card-text">
+        <span class="code-link-card-title">Mathematical details: B-splines, loss function &amp; derivations
+          <span class="upcoming-badge">upcoming soon</span>
+        </span>
+        <span class="code-link-card-sub">Full derivations · B-spline basis · loss function · normalisation</span>
+      </span>
+    </a>
+
+    <h2>Numerical optimisation: Nelder–Mead with a warm start</h2>
+
+    <p>
+      Because the prediction $\hat{y}_i$ involves a nearest-neighbour step,
+      the loss $L(\mathbf{B})$ is <strong>non-smooth</strong> — gradients
+      do not exist and standard gradient-based methods cannot be used.
+      The <strong>Nelder–Mead simplex algorithm</strong> is used instead:
+      a derivative-free method that explores the parameter space using only
+      function evaluations.
+    </p>
+
+    <p>
+      The algorithm requires a starting point. In <code>biplotEZ</code> this is taken from the
+      <strong>regression biplot axis</strong> — the straight line obtained
+      by regressing $\mathbf{y}$ on $\mathbf{X}$:
+    </p>
+
+    $$\hat{\mathbf{b}}_{\mathrm{reg}}
+      = \left(\mathbf{X}^\top\mathbf{X}\right)^{-1}\mathbf{X}^\top\mathbf{y}
+      \;\in\; \mathbb{R}^{2}.$$
+
+    <p>The corresponding linear tick mark positions are</p>
+
+    $$\mathbf{Z}_{\mathrm{reg}}
+      = \frac{\boldsymbol{\mu}\,\hat{\mathbf{b}}_{\mathrm{reg}}^\top}
+             {\|\hat{\mathbf{b}}_{\mathrm{reg}}\|^2}
+      \;\in\; \mathbb{R}^{n_\mu \times 2},$$
+
+    <p>and the initial spline coefficients are the least-squares fit of the B-spline basis to this straight axis:</p>
+
+    $$\mathbf{B}_0
+      = \left(\mathbf{M}^\top\mathbf{M}\right)^{-1}
+        \mathbf{M}^\top\mathbf{Z}_{\mathrm{reg}}.$$
+
+    <p>
+      This ensures the optimiser starts from a curve that already resembles the classical
+      straight axis and then deforms it to minimise the loss. In R these three steps are:
+    </p>
+
+    <pre><code>Breg <- t(solve(t(X) %*% X) %*% t(X) %*% y)           # regression direction
+Zreg <- mu %*% Breg / sum(Breg^2)                       # linear tick positions
+Bvec <- as.vector(solve(t(M) %*% M) %*% t(M) %*% Zreg) # initial spline coefficients</code></pre>
+
+    <p>
+      For the full implementation — including the C++ Nelder–Mead code,
+      a line-by-line walkthrough of every function, and the multi-start
+      strategy for escaping local optima — see the companion code post:
+    </p>
+
+    <a class="code-link-card" href="biplot_code.html">
+      <span class="code-link-card-icon">💻</span>
+      <span class="code-link-card-text">
+        <span class="code-link-card-title">Code walkthrough: <code>biplot.spline.axis()</code> &amp; <code>LnjTinyNew.cpp</code></span>
+        <span class="code-link-card-sub">R · C++ · Rcpp · Nelder–Mead · biplotEZ</span>
+      </span>
+    </a>
+
+    <h2>Linear vs. spline axis at a glance</h2>
+
+    <div style="overflow-x:auto">
+      <table class="summary-table">
+        <thead>
+          <tr><th></th><th>Linear axis</th><th>Spline axis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Shape of axis</td><td>Straight line through origin</td><td>Smooth B-spline curve</td></tr>
+          <tr><td>Prediction</td><td>$\hat{y}_i = \mathbf{x}_i^\top\mathbf{b}_{\mathrm{reg}}$</td><td>$\hat{y}_i = \mu_{k^*}$, nearest point on curve</td></tr>
+          <tr><td>Fitting</td><td>Closed-form OLS</td><td>Nelder–Mead (derivative-free)</td></tr>
+          <tr><td>Tick spacing</td><td>Always equal</td><td>Data-driven (unequal)</td></tr>
+          <tr><td>Works well when</td><td>Relationship is linear</td><td>Relationship is nonlinear</td></tr>
+          <tr><td>Smoothness control</td><td>None</td><td>Via penalty $\lambda$</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>References</h2>
+    <ul style="line-height:1.9;font-size:0.95rem">
+      <li>Gower, J.C., Gardner-Lubbe, S., &amp; Le Roux, N.J. (2011). <em>Understanding Biplots</em>. Wiley, Chichester.</li>
+      <li>Groenen, P.J.F., Le Roux, N.J., &amp; Gardner-Lubbe, S. (2015). Spline-based nonlinear biplots. <em>Advances in Data Analysis and Classification</em>, 9, 219–238. <a href="https://doi.org/10.1007/s11634-014-0179-1" target="_blank">doi:10.1007/s11634-014-0179-1</a></li>
+      <li>Nelder, J.A., &amp; Mead, R. (1965). A simplex method for function minimisation. <em>The Computer Journal</em>, 7(4), 308–313.</li>
+      <li>biplotEZ: <a href="https://github.com/MuViSU/biplotEZ" target="_blank">github.com/MuViSU/biplotEZ</a></li>
+    </ul>
+
+  </div>
+
+  <!-- ── POST FOOTER ── -->
+  <div class="post-footer fade-up">
+    <div class="post-tags">
+      <span class="tag">Biplot</span>
+      <span class="tag">B-Splines</span>
+      <span class="tag">Visualisation</span>
+      <span class="tag">R</span>
+    </div>
+    <a class="back-link" href="../blog.html">← Back to Blog</a>
+  </div>
+
+  <!-- ── ENGAGE SECTION ── -->
+  <div class="engage-section fade-up">
+
+    <h2 class="engage-heading">Discussion</h2>
+    <p class="engage-sub">
+      Have a question, correction, or thought about this post? Choose how you'd like to engage below.
+    </p>
+
+    <div class="engage-tabs">
+      <button class="engage-tab active" onclick="switchTab('comments', this)">
+        💬 Leave a Comment (Using GitHub)
+      </button>
+      <button class="engage-tab" onclick="switchTab('message', this)">
+        ✉️ Leave a Comment (Using Email)
+      </button>
+    </div>
+
+    <!-- TAB 1: GitHub / Utterances -->
+    <div class="engage-panel active" id="panel-comments">
+      <div class="utterances-note">
+        <span class="utterances-note-icon">ℹ️</span>
+        <p>
+          Comments are <strong>public and visible to all readers</strong> — they appear immediately after you post.
+          A free <a href="https://github.com" target="_blank" style="color:var(--accent);">GitHub account</a> is required.
+          If you don't have one, use the <strong>Using Email</strong> tab instead.
+        </p>
+      </div>
+      <div id="utterances-container"></div>
+      <script>
+        (function() {
+          const s = document.createElement('script');
+          s.src = 'https://utteranc.es/client.js';
+          s.setAttribute('repo',        'Xaleed/Xaleed.github.io');
+          s.setAttribute('issue-term',  'pathname');
+          s.setAttribute('label',       'comment');
+          s.setAttribute('theme',       'github-light');
+          s.setAttribute('crossorigin', 'anonymous');
+          s.async = true;
+          document.getElementById('utterances-container').appendChild(s);
+        })();
+      </script>
+    </div>
+
+    <!-- TAB 2: Formspree private message -->
+    <div class="engage-panel" id="panel-message">
+      <div class="formspree-note">
+        <span style="font-size:1rem;flex-shrink:0;margin-top:0.1rem;">📬</span>
+        <p>Your message goes directly to me by email and is <strong>not published publicly</strong>.</p>
+      </div>
+      <div class="message-form">
+        <form id="formspree-form" action="https://formspree.io/f/mkopjedr" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-name">Name *</label>
+              <input type="text" id="f-name" name="name" placeholder="Your name" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email * <span style="font-size:0.55rem;color:var(--muted)">(not published)</span></label>
+              <input type="email" id="f-email" name="email" placeholder="your@email.com" required autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="f-subject">Subject</label>
+            <input type="text" id="f-subject" name="subject" placeholder="e.g. Question about the spline axis">
+          </div>
+          <div class="form-group">
+            <label for="f-message">Message *</label>
+            <textarea id="f-message" name="message" placeholder="Your question, correction, or thought…" required></textarea>
+          </div>
+          <input type="hidden" name="_subject" value="Blog: Nonlinear Biplot Axes">
+          <input type="hidden" name="post" value="biplot-intro">
+          <div class="submit-row">
+            <button type="submit" class="submit-btn" id="formspree-btn">Send message</button>
+            <span class="submit-status" id="formspree-status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div><!-- end engage-section -->
+
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.engage-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.engage-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+  }
+
+  const form   = document.getElementById('formspree-form');
+  const btn    = document.getElementById('formspree-btn');
+  const status = document.getElementById('formspree-status');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
+    status.style.display = 'none';
+    status.className = 'submit-status';
+
+    try {
+      const res = await fetch(form.action, {
+        method:  'POST',
+        body:    new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        status.textContent   = '✓ Sent — I will reply to your email.';
+        status.style.display = 'inline';
+        form.reset();
+      } else {
+        throw new Error('Server error');
+      }
+    } catch {
+      status.textContent   = '✗ Something went wrong. Please try emailing me directly.';
+      status.className     = 'submit-status error';
+      status.style.display = 'inline';
+    }
+
+    btn.disabled    = false;
+    btn.textContent = 'Send message';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pointers in Rcpp — Khaled Masoumifard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    /* ── Post layout ── */
+    .post-header { margin-bottom: 3rem; }
+    .post-meta {
+      display: flex; gap: 1.2rem; align-items: center;
+      font-family: var(--font-mono); font-size: 0.68rem;
+      color: var(--muted); margin-bottom: 1.1rem; flex-wrap: wrap;
+    }
+    .post-meta .category {
+      color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .post-title {
+      font-size: clamp(1.55rem, 4vw, 2.2rem);
+      font-weight: 600; line-height: 1.25; margin-bottom: 1rem;
+    }
+    .post-subtitle {
+      font-size: 1rem; color: var(--muted); line-height: 1.6;
+      max-width: 640px;
+    }
+    .post-divider {
+      border: none; border-top: 1px solid var(--border);
+      margin: 2.5rem 0;
+    }
+
+    /* ── Prose ── */
+    .post-body { max-width: 720px; }
+    .post-body p {
+      font-size: 0.97rem; line-height: 1.75;
+      color: var(--text); margin-bottom: 1.2rem;
+    }
+    .post-body h2 {
+      font-size: 1.25rem; font-weight: 600;
+      margin: 2.8rem 0 0.8rem; line-height: 1.3;
+    }
+    .post-body h3 {
+      font-size: 1rem; font-weight: 600;
+      font-family: var(--font-mono);
+      color: var(--accent);
+      margin: 2rem 0 0.6rem;
+    }
+    .post-body ul, .post-body ol {
+      padding-left: 1.4rem; margin-bottom: 1.2rem;
+    }
+    .post-body li {
+      font-size: 0.95rem; line-height: 1.7;
+      margin-bottom: 0.35rem; color: var(--text);
+    }
+
+    /* ── Code blocks ── */
+    .post-body pre {
+      background: var(--surface, #f5f5f5);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.4rem;
+      overflow-x: auto;
+      margin: 1.2rem 0 1.6rem;
+      position: relative;
+    }
+    .post-body pre code {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text);
+    }
+    .post-body code:not(pre code) {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      background: var(--surface, #f0f0f0);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.1em 0.4em;
+      color: var(--accent);
+    }
+    .lang-tag {
+      position: absolute; top: 0.55rem; right: 0.8rem;
+      font-family: var(--font-mono); font-size: 0.6rem;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    /* ── Diagram / memory boxes ── */
+    .mem-diagram {
+      background: var(--surface, #f5f5f5);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.2rem 1.4rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.8;
+      color: var(--text);
+      margin: 1.2rem 0 1.6rem;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* ── Callout box ── */
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 0.9rem 1.2rem;
+      margin: 1.6rem 0;
+      background: var(--surface, #f9f9f9);
+      border-radius: 0 6px 6px 0;
+    }
+    .callout p {
+      margin: 0 !important;
+      font-size: 0.9rem !important;
+      color: var(--muted) !important;
+    }
+    .callout strong { color: var(--text); }
+
+    /* ── Warning callout ── */
+    .callout-warn {
+      border-left: 3px solid #e05a2b;
+      padding: 0.9rem 1.2rem;
+      margin: 1.6rem 0;
+      background: var(--surface, #f9f9f9);
+      border-radius: 0 6px 6px 0;
+    }
+    .callout-warn p {
+      margin: 0 !important;
+      font-size: 0.9rem !important;
+      color: var(--muted) !important;
+    }
+    .callout-warn strong { color: var(--text); }
+
+    /* ── Table ── */
+    .post-body table {
+      width: 100%; border-collapse: collapse;
+      margin: 1.4rem 0 1.8rem;
+      font-size: 0.85rem;
+    }
+    .post-body th {
+      text-align: left; font-family: var(--font-mono);
+      font-size: 0.7rem; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      padding: 0.5rem 0.8rem;
+    }
+    .post-body td {
+      padding: 0.55rem 0.8rem;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5; color: var(--text);
+      vertical-align: top;
+    }
+    .post-body tr:last-child td { border-bottom: none; }
+    .post-body td code { font-size: 0.78rem; }
+
+    /* ── Section number badge ── */
+    .section-num {
+      display: inline-block;
+      font-family: var(--font-mono); font-size: 0.62rem;
+      color: var(--accent); letter-spacing: 0.08em;
+      text-transform: uppercase; margin-bottom: 0.3rem;
+    }
+
+    /* ── Back link ── */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.72rem;
+      color: var(--muted); text-decoration: none;
+      margin-bottom: 2.2rem; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ── Challenge blocks ── */
+    .challenge {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      margin: 1.4rem 0 1.8rem;
+      overflow: hidden;
+    }
+    .challenge-header {
+      padding: 0.7rem 1.1rem;
+      background: var(--surface, #f5f5f5);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono); font-size: 0.7rem;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.07em; display: flex;
+      justify-content: space-between; align-items: center;
+    }
+    .challenge-header span.ok  { color: #4caf50; font-size: 0.68rem; }
+    .challenge-header span.bad { color: #e05a2b; font-size: 0.68rem; }
+    .challenge pre {
+      margin: 0 !important; border: none !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+    }
+
+    /* ── Analogy box ── */
+    .analogy {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.3rem;
+      margin: 1.4rem 0;
+      background: var(--surface, #f9f9f9);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    .analogy-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html" class="active">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <a class="back-link fade-up" href="../blog.html">← Back to Blog</a>
+
+  <div class="post-header fade-up">
+    <div class="post-meta">
+      <span class="category">Tutorial</span>
+      <span>April 2026</span>
+      <span>25 min read</span>
+    </div>
+    <h1 class="post-title">Pointers in Rcpp</h1>
+    <p class="post-subtitle">
+      A hands-on walkthrough of pointers in C++ — what they are, why they matter,
+      and how to use them safely inside Rcpp while calling your functions cleanly from R.
+      Covers stack vs heap memory, when to use each, and the most common mistakes to avoid.
+    </p>
+  </div>
+
+  <hr class="post-divider"/>
+
+  <article class="post-body fade-up">
+
+    <!-- ══════════════════════════════════════════
+         01 — FOUNDATION: What is a pointer?
+    ══════════════════════════════════════════ -->
+    <span class="section-num">01 — Foundation</span>
+    <h2>What is a pointer?</h2>
+
+    <p>
+      Every variable you declare in C++ lives somewhere in RAM. When you write
+      <code>int x = 42;</code>, the compiler reserves a small slot in memory and
+      puts the value <code>42</code> inside it. That slot has an <em>address</em> —
+      a unique number that identifies exactly where in RAM it lives.
+    </p>
+
+    <p>
+      A <strong>pointer</strong> is a variable that stores that address. Instead of
+      holding a value like <code>42</code>, it holds a location like
+      <code>0x61fe14</code>. From that address you can read or modify whatever lives
+      there — without ever using the original variable's name.
+    </p>
+
+<div class="mem-diagram">RAM
+┌──────────────────────────┐
+│  address   │  value      │
+│  0x61fe14  │  42   ← x  │
+└──────────────────────────┘
+       ▲
+  p = 0x61fe14   (p stores the address)
+ *p = 42         (dereferencing gives the value)</div>
+
+    <pre><span class="lang-tag">cpp</span><code>int x = 42;      // value stored on the stack
+int* p = &x;     // p holds the ADDRESS of x
+                 // &x means "give me the address of x"
+
+*p = 100;        // dereference: write 100 to that address
+// x is now 100 — same slot, new value</code></pre>
+
+    <p>
+      The <code>&amp;</code> operator reads as <em>"address of"</em>.
+      The <code>*</code> operator reads as <em>"value at"</em>.
+    </p>
+
+
+    <!-- ══════════════════════════════════════════
+         02 — MEMORY: Stack vs Heap
+    ══════════════════════════════════════════ -->
+    <span class="section-num">02 — Memory</span>
+    <h2>Stack memory vs heap memory</h2>
+
+    <p>
+      C++ gives you two places to store data: the <strong>stack</strong> and the
+      <strong>heap</strong>. They behave very differently, and understanding the
+      difference is essential before writing any serious Rcpp code.
+    </p>
+
+    <div class="analogy">
+      <span class="analogy-label">Analogy</span>
+      The <strong>stack</strong> is like a stack of trays in a cafeteria. When a function starts,
+      a new tray is placed on top. When the function ends, that tray is removed instantly — everything
+      on it disappears automatically. The <strong>heap</strong> is like a huge warehouse. You walk in,
+      grab a box (<code>new</code>), fill it with stuff, and when you're done you must return the box
+      (<code>delete</code>). If you forget, the box sits there forever. That's a memory leak.
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Stack</th>
+          <th>Heap</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Allocation</td><td>Automatic</td><td>Manual — <code>new</code></td></tr>
+        <tr><td>Cleanup</td><td>Auto when scope exits</td><td>Manual — <code>delete</code></td></tr>
+        <tr><td>Speed</td><td>Very fast</td><td>Slightly slower</td></tr>
+        <tr><td>Risk</td><td>None</td><td>Leaks if <code>delete</code> forgotten</td></tr>
+        <tr><td>Size limit</td><td>Small (a few MB)</td><td>Large (available RAM)</td></tr>
+      </tbody>
+    </table>
+
+    <pre><span class="lang-tag">cpp</span><code>// Stack — automatic lifetime
+int x = 42;          // created here
+// ...               // lives until } closes
+                     // freed automatically
+
+// Heap — manual lifetime
+int* h = new int(42);  // YOU allocate
+*h = 100;              // use it
+delete h;              // YOU must free it
+h = nullptr;           // good practice: avoid dangling pointer</code></pre>
+
+    <div class="callout">
+      <p><strong>Rule for Rcpp:</strong> prefer stack variables for local temporaries.
+      If you need heap memory, always pair every <code>new</code> with a
+      <code>delete</code> — or better yet, use <code>Rcpp::NumericVector</code>
+      which is heap-allocated but managed automatically by R's garbage collector.</p>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         03 — WHY HEAP: Three problems
+    ══════════════════════════════════════════ -->
+    <span class="section-num">03 — Why heap</span>
+    <h2>Why you can't just use the stack for everything</h2>
+
+    <p>
+      The stack is fast and effortless, but it has three hard limits. Each one
+      forces you to reach for the heap.
+    </p>
+
+    <h3>Problem 1 — The stack is small</h3>
+
+    <p>
+      The stack is typically only 1–8 MB total. That sounds like a lot until you're
+      doing data analysis. One million doubles is already 8 MB.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>size_problem.cpp</span>
+        <span class="bad">✗ crashes</span>
+      </div>
+      <pre><code>void bad_size() {
+    double huge[5000000];   // ~40 MB — STACK OVERFLOW CRASH
+}</code></pre>
+    </div>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>size_fixed.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>void good_size(int n) {
+    double* huge = new double[n];   // heap: gigabytes available
+    // ... use it ...
+    delete[] huge;
+    huge = nullptr;
+}
+
+// In Rcpp — even better, R manages the heap for you:
+// [[Rcpp::export]]
+NumericVector make_data(int n) {
+    NumericVector out(n);   // heap, R GC frees it — no delete needed
+    return out;
+}</code></pre>
+    </div>
+
+    <h3>Problem 2 — Stack memory dies when the function ends</h3>
+
+    <p>
+      Stack memory belongs to its function's scope. The instant the function returns,
+      that memory is gone. You cannot keep it alive or share it with the caller.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>lifetime_problem.cpp</span>
+        <span class="bad">✗ dangling pointer</span>
+      </div>
+      <pre><code>double* bad_lifetime() {
+    double x = 42.0;   // lives on the stack
+    return &x;         // DANGER: x is destroyed after return!
+}                      // caller now holds a pointer to dead memory</code></pre>
+    </div>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>lifetime_fixed.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>double* good_lifetime() {
+    double* x = new double(42.0);   // heap — survives the function
+    return x;                       // caller must delete when done
+}
+
+// In Rcpp — the natural way to return data to R:
+// [[Rcpp::export]]
+NumericVector make_vector(int n) {
+    NumericVector result(n, 0.0);   // heap, R-managed
+    return result;                  // R takes ownership
+}</code></pre>
+    </div>
+
+    <h3>Problem 3 — The stack needs sizes known at compile time</h3>
+
+    <p>
+      The stack must know exactly how much space to reserve before your code even
+      runs. In Rcpp, sizes always come from R at runtime — so you can never use a
+      runtime variable as a stack array size.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>size_unknown.cpp</span>
+        <span class="bad">✗ illegal in standard C++</span>
+      </div>
+      <pre><code>void bad_unknown(int n) {
+    double arr[n];   // ERROR: n is not known at compile time
+}</code></pre>
+    </div>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>size_unknown_fixed.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>// std::vector — heap, auto-freed, exception-safe
+void good_vec(int n) {
+    std::vector&lt;double&gt; arr(n);
+    arr[0] = 1.0;
+}   // arr freed automatically here — even if an exception is thrown
+
+// In Rcpp — the everyday pattern:
+// [[Rcpp::export]]
+NumericVector double_it(NumericVector x) {
+    int n = x.size();          // stack: just a number
+    NumericVector out(n);      // heap: size known only at runtime
+    for (int i = 0; i &lt; n; i++) {
+        out[i] = x[i] * 2.0;
+    }
+    return out;
+}</code></pre>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         04 — SYNTAX: arr vs *arr
+    ══════════════════════════════════════════ -->
+    <span class="section-num">04 — Syntax</span>
+    <h2>Understanding <code>arr</code> vs <code>*arr</code></h2>
+
+    <p>
+      When you work with arrays and pointers, two expressions look similar but mean
+      very different things:
+    </p>
+
+<div class="mem-diagram">int arr[] = {3, 7, 1, 9, 4};
+
+index:   0     1     2     3     4
+       ┌────┬────┬────┬────┬────┐
+       │  3 │  7 │  1 │  9 │  4 │
+       └────┴────┴────┴────┴────┘
+addr: 0x100 0x104 0x108 0x10C 0x110
+        ↑
+       arr = 0x100   (the address of the first element)
+      *arr = 3       (the value at that address)</div>
+
+    <pre><span class="lang-tag">cpp</span><code>Rcout &lt;&lt; arr;    // 0x100  — the address
+Rcout &lt;&lt; *arr;   // 3      — the value
+
+arr++;           // move pointer to next address
+Rcout &lt;&lt; arr;    // 0x104
+Rcout &lt;&lt; *arr;   // 7</code></pre>
+
+    <table>
+      <thead><tr><th>Expression</th><th>Returns</th><th>Think of it as</th></tr></thead>
+      <tbody>
+        <tr><td><code>arr</code></td><td>address <code>0x100</code></td><td>the street address</td></tr>
+        <tr><td><code>*arr</code></td><td>value <code>3</code></td><td>what is inside the house</td></tr>
+        <tr><td><code>arr++</code></td><td>moves to next slot</td><td>walk to the next house</td></tr>
+        <tr><td><code>arr + size - 1</code></td><td>address of last element</td><td>last house on the street</td></tr>
+      </tbody>
+    </table>
+
+
+    <!-- ══════════════════════════════════════════
+         05 — MOTIVATION: Why pointers exist
+    ══════════════════════════════════════════ -->
+    <span class="section-num">05 — Motivation</span>
+    <h2>Why pointers exist — the problem they solve</h2>
+
+    <p>
+      In C++, function arguments are passed <em>by value</em> by default — the
+      function receives a copy, and any changes it makes stay local. Pointers break
+      that rule intentionally.
+    </p>
+
+    <pre><span class="lang-tag">cpp</span><code>// Without pointer — broken
+void broken(int a) {
+    a = 100;    // changes local copy only
+}               // caller's variable untouched
+
+// With pointer — works
+void works(int* a) {
+    *a = 100;   // writes to the caller's actual address
+}               // caller sees the change</code></pre>
+
+    <p>
+      This matters in three key situations:
+    </p>
+
+    <ul>
+      <li><strong>Modifying multiple variables</strong> — <code>return</code> can only send back one value; pointers let you change as many variables as you need.</li>
+      <li><strong>Working with arrays</strong> — arrays are passed as pointers automatically; you can walk through them without copying anything.</li>
+      <li><strong>Sharing state across calls</strong> — a pointer passed to every recursive call ensures they all read and write to the same memory location.</li>
+    </ul>
+
+
+    <!-- ══════════════════════════════════════════
+         06 — EXAMPLES: Detailed stack examples
+    ══════════════════════════════════════════ -->
+    <span class="section-num">06 — Stack in depth</span>
+    <h2>Detailed stack examples</h2>
+
+    <p>
+      Before moving to heap-heavy patterns, it helps to see exactly what "stack only"
+      looks like in real Rcpp code.
+    </p>
+
+    <h3>Example 1 — Pure scalar computation</h3>
+
+    <p>
+      When a function only needs simple numbers, everything stays on the stack.
+      The compiler handles allocation and cleanup automatically — there is literally
+      no allocation cost.
+    </p>
+
+    <pre><span class="lang-tag">cpp</span><code>// [[Rcpp::export]]
+double weighted_mean(NumericVector x, NumericVector w) {
+    int    n   = x.size();         // stack: tiny int
+    double num = 0.0, den = 0.0;   // stack: accumulators
+
+    for (int i = 0; i &lt; n; i++) {
+        double xi = x[i], wi = w[i];   // stack: one value at a time
+        num += xi * wi;
+        den += wi;
+    }
+
+    double result = num / den;   // stack: final answer
+    return result;
+    // ALL stack variables freed here automatically
+    // x and w (heap) are freed by R's GC
+}</code></pre>
+
+    <div class="callout">
+      <p><strong>When to use stack-only:</strong> any function that takes data from R and
+      returns a single scalar. Every intermediate value — counters, accumulators, loop
+      variables — is a plain number that belongs on the stack. Maximum speed, zero
+      allocation, zero cleanup code.</p>
+    </div>
+
+    <h3>Example 2 — Stack struct for related temporaries</h3>
+
+    <p>
+      If you have a few related scalars that travel together through a calculation,
+      a small struct keeps them tidy — and the whole struct still lives on the stack.
+    </p>
+
+    <pre><span class="lang-tag">cpp</span><code>struct Stats {         // stack-allocated struct
+    double mean;
+    double variance;
+    int    n;
+};
+
+Stats compute_stats(NumericVector x) {
+    Stats s;              // entire struct on the stack
+    s.n = x.size();
+    s.mean = 0.0;
+    for (int i = 0; i &lt; s.n; i++) s.mean += x[i];
+    s.mean /= s.n;
+
+    s.variance = 0.0;
+    for (int i = 0; i &lt; s.n; i++)
+        s.variance += pow(x[i] - s.mean, 2);
+    s.variance /= s.n;
+
+    return s;   // copied out, stack frame released automatically
+}</code></pre>
+
+    <p>
+      Keep structs small — a few scalars at most. If a struct field is a
+      <code>NumericVector</code>, that field's <em>data</em> lives on the heap even
+      though the struct shell itself is on the stack.
+    </p>
+
+
+    <!-- ══════════════════════════════════════════
+         07 — PRACTICE: Four pointer challenges
+    ══════════════════════════════════════════ -->
+    <span class="section-num">07 — Practice</span>
+    <h2>Four pointer challenges in Rcpp</h2>
+
+    <p>
+      The best way to understand pointers is to write them. Below are four classic
+      exercises, each highlighting a different aspect of pointer usage.
+    </p>
+
+    <!-- swap -->
+    <h3>Challenge 1 — Swap two numbers</h3>
+
+    <p>
+      Swapping two variables is impossible with a single return value.
+      Pointers make it straightforward: pass the addresses of both variables and
+      write through them directly.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>swap_ptr.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>#include &lt;Rcpp.h&gt;
+using namespace Rcpp;
+
+void swap_ptr(int* a, int* b) {
+    int temp = *a;   // save value at a
+    *a = *b;         // write b's value into a's address
+    *b = temp;       // write saved value into b's address
+}
+
+// [[Rcpp::export]]
+NumericVector swap_numbers(double a, double b) {
+    int x = (int)a, y = (int)b;
+    swap_ptr(&x, &y);          // pass addresses — works inside C++
+    return NumericVector::create(x, y);
+}</code></pre>
+    </div>
+
+<div class="mem-diagram">Before:  a → │ 10 │    b → │ 20 │
+
+temp = *a  →  temp = 10
+*a   = *b  →  a → │ 20 │
+*b   = temp →  b → │ 10 │   ✓ swapped</div>
+
+    <p>
+      Notice that <code>void</code> is used — no return value is needed because the
+      function writes directly to the addresses it received. The changes are already
+      in RAM when the function exits.
+    </p>
+
+    <!-- sum -->
+    <h3>Challenge 2 — Sum of an array</h3>
+
+    <p>
+      Walking through an array with a pointer instead of an index is a fundamental
+      C++ pattern. Each <code>arr++</code> advances the pointer by exactly one
+      <code>int</code>-sized step in memory.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>sum_array.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>int sum_ptr(int* arr, int size) {
+    int sum = 0;
+    for (int i = 0; i &lt; size; i++) {
+        sum += *arr;   // read value at current address
+        arr++;         // advance to next address
+    }
+    return sum;
+}
+
+// [[Rcpp::export]]
+int sum_array(NumericVector v) {
+    int* arr = new int[v.size()];
+    for (int i = 0; i &lt; v.size(); i++) arr[i] = (int)v[i];
+    int result = sum_ptr(arr, v.size());
+    delete[] arr;
+    return result;
+}</code></pre>
+    </div>
+
+    <!-- max -->
+    <h3>Challenge 3 — Find the maximum value</h3>
+
+    <p>
+      The same walking pattern applies here. Start by assuming the first element is
+      the maximum, then update whenever you find something larger.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>find_max.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>int max_ptr(int* arr, int size) {
+    int max = *arr;                 // assume first element is max
+    for (int i = 0; i &lt; size; i++) {
+        if (*arr &gt; max) max = *arr; // update if larger found
+        arr++;
+    }
+    return max;
+}
+
+// [[Rcpp::export]]
+int find_max(NumericVector v) {
+    int* arr = new int[v.size()];
+    for (int i = 0; i &lt; v.size(); i++) arr[i] = (int)v[i];
+    int result = max_ptr(arr, v.size());
+    delete[] arr;
+    return result;
+}</code></pre>
+    </div>
+
+    <!-- reverse -->
+    <h3>Challenge 4 — Reverse an array in place</h3>
+
+    <p>
+      This challenge introduces the <strong>two-pointer technique</strong>: one
+      pointer starts at the beginning of the array, another at the end, and they
+      walk toward each other swapping values until they meet in the middle.
+      Notice that <code>arr + size - 1</code> gives the address of the last element —
+      <code>size - 1</code> because arrays are zero-indexed.
+    </p>
+
+    <div class="challenge">
+      <div class="challenge-header">
+        <span>reverse_array.cpp</span>
+        <span class="ok">✓ correct</span>
+      </div>
+      <pre><code>void reverse_ptr(int* arr, int size) {
+    int* start = arr;              // address of first element
+    int* end   = arr + size - 1;   // address of last element
+
+    while (start &lt; end) {
+        swap_ptr(start, end);      // reuse our swap function!
+        start++;                   // move inward from left
+        end--;                     // move inward from right
+    }
+}
+
+// [[Rcpp::export]]
+NumericVector reverse_array(NumericVector v) {
+    int size = v.size();
+    int* arr = new int[size];
+    for (int i = 0; i &lt; size; i++) arr[i] = (int)v[i];
+    reverse_ptr(arr, size);
+    NumericVector result(size);
+    for (int i = 0; i &lt; size; i++) result[i] = arr[i];
+    delete[] arr;
+    return result;
+}</code></pre>
+    </div>
+
+<div class="mem-diagram">arr = {1, 2, 3, 4, 5}   size = 5
+
+start↓               ↓end
+│ 1 │ 2 │ 3 │ 4 │ 5 │   swap → │ 5 │ 2 │ 3 │ 4 │ 1 │
+    start↓       ↓end
+│ 5 │ 2 │ 3 │ 4 │ 1 │   swap → │ 5 │ 4 │ 3 │ 2 │ 1 │
+        start↓↑end
+│ 5 │ 4 │ 3 │ 2 │ 1 │   start == end → stop ✓</div>
+
+
+    <!-- ══════════════════════════════════════════
+         08 — RCPP PATTERNS: Real-world usage
+    ══════════════════════════════════════════ -->
+    <span class="section-num">08 — Rcpp patterns</span>
+    <h2>Real Rcpp patterns — stack, heap, and pointers together</h2>
+
+    <p>
+      In production Rcpp code you rarely choose just one memory model — you use all
+      three in the same function, each for the job it is best suited to.
+    </p>
+
+    <div class="analogy">
+      <span class="analogy-label">Mental model</span>
+      Rcpp is like having a very smart assistant (R's GC) who manages the warehouse
+      (heap) for you. You just say "I need a NumericVector of size n" and it handles
+      the reservation, tracking, and cleanup. You focus on the actual computation,
+      using the stack for all your arithmetic scaffolding.
+    </div>
+
+    <h3>Pattern 1 — Stack for scalars, GC heap for output</h3>
+
+    <pre><span class="lang-tag">cpp</span><code>// [[Rcpp::export]]
+NumericVector running_sum(NumericVector x) {
+    int n = x.size();          // stack: just an int
+    NumericVector out(n);      // heap: R GC owns it
+    double total = 0.0;        // stack: accumulator
+
+    for (int i = 0; i &lt; n; i++) {
+        total  += x[i];
+        out[i]  = total;
+    }
+    return out;   // R takes ownership — no delete needed ever
+}</code></pre>
+
+    <h3>Pattern 2 — Raw pointer for fast inner-loop access</h3>
+
+    <p>
+      <code>x.begin()</code> returns a raw pointer to the first element of R's internal
+      data. Using it directly in a tight loop avoids repeated bounds-checking and is
+      the fastest way to process large vectors.
+    </p>
+
+    <pre><span class="lang-tag">cpp</span><code>// [[Rcpp::export]]
+NumericVector scale_fast(NumericVector x, double factor) {
+    int n = x.size();
+    NumericVector out(n);
+    const double* xp = x.begin();    // raw pointer into R's heap data
+    double*       op = out.begin();  // raw pointer into output
+
+    for (int i = 0; i &lt; n; i++) {
+        op[i] = xp[i] * factor;      // direct memory access — fastest
+    }
+    return out;
+}</code></pre>
+
+    <h3>Pattern 3 — std::vector for scratch buffers</h3>
+
+    <p>
+      When you need temporary heap memory that R should never see, prefer
+      <code>std::vector</code> over raw <code>new</code>. Its destructor runs
+      automatically on every exit path — including early returns and exceptions.
+    </p>
+
+    <pre><span class="lang-tag">cpp</span><code>// [[Rcpp::export]]
+NumericVector smooth(NumericVector x, int w) {
+    int n = x.size();
+    std::vector&lt;double&gt; buf(n);   // heap scratch buffer — auto-freed
+
+    for (int i = 0; i &lt; n; i++) {
+        double sum = 0.0;
+        int    cnt = 0;
+        for (int j = i - w; j &lt;= i + w; j++) {
+            if (j &gt;= 0 &amp;&amp; j &lt; n) { sum += x[j]; cnt++; }
+        }
+        buf[i] = sum / cnt;
+    }
+
+    return NumericVector(buf.begin(), buf.end());
+    // buf freed here automatically — even if an exception was thrown above
+}</code></pre>
+
+
+    <!-- ══════════════════════════════════════════
+         09 — INTEGRATION: R/C++ boundary
+    ══════════════════════════════════════════ -->
+    <span class="section-num">09 — Integration</span>
+    <h2>Calling Rcpp from R — and the pointer boundary problem</h2>
+
+    <p>
+      One of the first surprises when bringing pointer-based code into Rcpp is that
+      <strong>raw pointers cannot cross the R/C++ boundary</strong>. If you mark a
+      function with <code>// [[Rcpp::export]]</code> and give it an <code>int*</code>
+      argument, you will get a compile error:
+    </p>
+
+    <pre><span class="lang-tag">error</span><code>error: cannot convert 'SEXP' to 'int*' in initialization</code></pre>
+
+    <p>
+      This happens because R passes objects as <code>SEXP</code> — R's internal
+      representation — and Rcpp does not know how to turn an <code>SEXP</code> into
+      a raw <code>int*</code>. The solution is to keep pointer logic <em>inside</em>
+      C++ and use Rcpp types at the boundary:
+    </p>
+
+    <table>
+      <thead><tr><th>Location</th><th>Use</th><th>Works?</th></tr></thead>
+      <tbody>
+        <tr><td>R → C++ argument</td><td><code>int*</code></td><td>❌ compile error</td></tr>
+        <tr><td>R → C++ argument</td><td><code>int</code> / <code>NumericVector</code></td><td>✓</td></tr>
+        <tr><td>Inside C++ only</td><td><code>int*</code>, <code>&amp;x</code></td><td>✓ works freely</td></tr>
+        <tr><td>C++ → R return</td><td><code>int*</code></td><td>❌ compile error</td></tr>
+        <tr><td>C++ → R return</td><td><code>NumericVector</code></td><td>✓</td></tr>
+      </tbody>
+    </table>
+
+    <p>
+      The clean pattern is a two-layer design: an internal C++ function that uses
+      pointers freely, and a thin exported wrapper that speaks Rcpp types:
+    </p>
+
+    <pre><span class="lang-tag">cpp</span><code>// Layer 1 — internal, not exported, uses pointers freely
+void swap_ptr(int* a, int* b) {
+    int temp = *a; *a = *b; *b = temp;
+}
+
+// Layer 2 — exported, speaks R's language
+// [[Rcpp::export]]
+NumericVector swap_numbers(double a, double b) {
+    int x = (int)a, y = (int)b;
+    swap_ptr(&x, &y);       // & works fine INSIDE C++
+    return NumericVector::create(x, y);
+}</code></pre>
+
+    <p>
+      Also note that R is <strong>pass by value</strong> by default. Even if you
+      could pass a pointer, R would copy the variable before sending it — so changes
+      inside C++ would not affect R's copy. The correct idiom is always to
+      <em>return</em> the modified values as a vector and reassign in R:
+    </p>
+
+    <pre><span class="lang-tag">r</span><code>library(Rcpp)
+sourceCpp("pointer_practice.cpp")
+
+# swap
+result &lt;- swap_numbers(10, 20)
+x &lt;- result[1]   # 20
+y &lt;- result[2]   # 10
+
+# sum
+sum_array(c(1, 2, 3, 4, 5))      # 15
+
+# max
+find_max(c(3, 7, 1, 9, 4))       # 9
+
+# reverse
+reverse_array(c(1, 2, 3, 4, 5))  # 5 4 3 2 1
+
+# running sum
+running_sum(c(1, 2, 3, 4, 5))    # 1 3 6 10 15</code></pre>
+
+
+    <!-- ══════════════════════════════════════════
+         10 — MISTAKES: Common bugs
+    ══════════════════════════════════════════ -->
+    <span class="section-num">10 — Common mistakes</span>
+    <h2>The four bugs that catch every beginner</h2>
+
+    <p>
+      Memory bugs are silent. The code compiles fine, often even runs fine most of
+      the time — then crashes on a larger dataset. Knowing these patterns in advance
+      is the only defence.
+    </p>
+
+    <h3>Mistake 1 — Returning a stack address</h3>
+
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake1.cpp</span><span class="bad">✗ undefined behaviour</span></div>
+      <pre><code>double* bad() {
+    double x = 42;
+    return &x;   // x is gone — caller holds a pointer to dead memory
+}</code></pre>
+    </div>
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake1_fixed.cpp</span><span class="ok">✓ correct</span></div>
+      <pre><code>NumericVector good() {
+    return NumericVector::create(42.0);   // heap, R-managed
+}</code></pre>
+    </div>
+
+    <h3>Mistake 2 — Memory leak via early return</h3>
+
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake2.cpp</span><span class="bad">✗ leak on early return</span></div>
+      <pre><code>void bad(int n) {
+    double* buf = new double[n];
+    if (n == 0) return;   // BUG: buf never deleted!
+    delete[] buf;
+}</code></pre>
+    </div>
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake2_fixed.cpp</span><span class="ok">✓ correct</span></div>
+      <pre><code>void good(int n) {
+    std::vector&lt;double&gt; buf(n);   // destructor runs on ANY exit path
+    if (n == 0) return;           // safe — std::vector cleans up
+}</code></pre>
+    </div>
+
+    <h3>Mistake 3 — delete vs delete[]</h3>
+
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake3.cpp</span><span class="bad">✗ wrong delete form</span></div>
+      <pre><code>double* arr = new double[100];
+delete arr;     // WRONG — must use delete[] for arrays</code></pre>
+    </div>
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake3_fixed.cpp</span><span class="ok">✓ correct</span></div>
+      <pre><code>double* arr = new double[100];
+delete[] arr;   // correct — matches new[]
+arr = nullptr;</code></pre>
+    </div>
+
+    <h3>Mistake 4 — Using a pointer after delete</h3>
+
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake4.cpp</span><span class="bad">✗ dangling pointer</span></div>
+      <pre><code>int* p = new int(5);
+delete p;
+*p = 10;        // undefined behaviour — p points to freed memory</code></pre>
+    </div>
+    <div class="challenge">
+      <div class="challenge-header"><span>mistake4_fixed.cpp</span><span class="ok">✓ correct</span></div>
+      <pre><code>int* p = new int(5);
+delete p;
+p = nullptr;    // always set to nullptr after delete
+// *p = 10;    // would now crash cleanly instead of silently corrupting</code></pre>
+    </div>
+
+    <div class="callout-warn">
+      <p><strong>The rule that prevents 90% of bugs:</strong> avoid raw <code>new</code>/<code>delete</code>
+      entirely. Use <code>NumericVector</code> for R data, <code>std::vector</code> for scratch buffers.
+      Let the destructors do the work.</p>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════
+         11 — DECISION GUIDE
+    ══════════════════════════════════════════ -->
+    <span class="section-num">11 — Decision guide</span>
+    <h2>When to use which — a quick reference</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Situation</th>
+          <th>Use</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Simple number inside a function</td>
+          <td><code>int x = 5;</code></td>
+          <td>Stack — zero cost, auto-freed</td>
+        </tr>
+        <tr>
+          <td>Data returned to R</td>
+          <td><code>NumericVector</code></td>
+          <td>GC heap — R manages lifetime</td>
+        </tr>
+        <tr>
+          <td>Data passed in from R</td>
+          <td><code>NumericVector</code></td>
+          <td>R already owns the memory</td>
+        </tr>
+        <tr>
+          <td>Scratch buffer, unknown size</td>
+          <td><code>std::vector&lt;double&gt;</code></td>
+          <td>Heap, auto-freed on any exit</td>
+        </tr>
+        <tr>
+          <td>Fast inner-loop access to vector</td>
+          <td><code>x.begin()</code> pointer</td>
+          <td>Direct memory access, fastest</td>
+        </tr>
+        <tr>
+          <td>C library needs raw pointer</td>
+          <td><code>new</code> / <code>delete</code></td>
+          <td>Only when forced — pair carefully</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      The one-sentence version: <strong>stack for numbers you calculate with,
+      <code>NumericVector</code> for data that touches R, <code>std::vector</code>
+      for scratch buffers — and never write raw <code>new</code> if you can
+      avoid it.</strong>
+    </p>
+
+
+    <!-- ══════════════════════════════════════════
+         12 — SUMMARY
+    ══════════════════════════════════════════ -->
+    <span class="section-num">12 — Summary</span>
+    <h2>Key rules to remember</h2>
+
+    <ul>
+      <li><code>arr</code> is the address — <em>where</em> something lives. <code>*arr</code> is the value — <em>what</em> lives there.</li>
+      <li>Assigning <code>x = 100</code> or <code>*p = 100</code> both change the same memory cell. No copy is made.</li>
+      <li>Use <code>void</code> as the return type when a function modifies variables through pointers — nothing needs to come back because the work is done directly in RAM.</li>
+      <li>Raw pointers (<code>int*</code>) cannot appear in <code>// [[Rcpp::export]]</code> function signatures. Keep pointer logic in unexported internal functions.</li>
+      <li>Always <code>delete[]</code> anything you allocated with <code>new[]</code>. For most Rcpp work, prefer <code>NumericVector</code> and <code>std::vector</code> and avoid manual heap management altogether.</li>
+      <li><code>arr + size - 1</code> points to the last element because arrays are zero-indexed. <code>arr + size</code> would be one past the end — undefined behaviour.</li>
+      <li>After any <code>delete</code>, immediately set the pointer to <code>nullptr</code> to prevent accidental use of freed memory.</li>
+      <li>Prefer <code>std::vector</code> over raw <code>new[]</code> for scratch buffers — its destructor runs on every exit path, including exceptions.</li>
+    </ul>
+
+    <hr class="post-divider"/>
+
+    <p style="font-size:0.88rem; color: var(--muted); line-height:1.6;">
+      The patterns covered here — swap, sum, max, reverse, running sum, smooth —
+      represent the core techniques that appear repeatedly in real Rcpp work: writing
+      through pointers, walking arrays, the two-pointer technique, scratch buffers,
+      and bridging cleanly between R and C++. Mastering these makes the step to more
+      advanced topics like custom data structures and memory-efficient algorithms
+      much more natural.
+    </p>
+
+  </article>
+
+</main>
+
+<footer>
+  © 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a>
+</footer>
+
+</body>
+</html>

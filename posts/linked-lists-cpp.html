@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Linked Lists in C++ — Khaled Masoumifard</title>
+
+  <!-- MathJax for equations -->
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+  <style>
+    /* ── Design tokens (mirrors your existing style.css variables) ── */
+    :root {
+      --bg:           #fafaf8;
+      --surface:      #f3f2ef;
+      --border:       #e2e0da;
+      --border2:      #c9c6be;
+      --text:         #1a1916;
+      --muted:        #7a776e;
+      --accent:       #2563eb;
+      --accent-light: #eff4ff;
+      --font-serif:   'Georgia', 'Times New Roman', serif;
+      --font-mono:    'Menlo', 'Consolas', 'Courier New', monospace;
+      --radius:       6px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-serif);
+      font-size: 1rem;
+      line-height: 1.75;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ── Nav ── */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 0; border-bottom: 1px solid var(--border);
+      margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.8rem;
+    }
+    .nav-logo {
+      font-family: var(--font-mono); font-size: 0.78rem;
+      letter-spacing: 0.06em; color: var(--text); text-decoration: none; font-weight: 500;
+    }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-mono); font-size: 0.65rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    /* ── Tag pill ── */
+    .tag {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    /* ── Post header ── */
+    .post-header { padding: 3.5rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+    .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .post-category { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .post-date    { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
+    .post-read-time { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
+    .post-meta-sep { color: var(--border2); }
+    .post-title {
+      font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 500;
+      line-height: 1.18; letter-spacing: -0.015em; margin-bottom: 1rem;
+    }
+    .post-subtitle { font-size: 1.05rem; color: var(--muted); line-height: 1.6; font-style: italic; max-width: 620px; }
+
+    /* ── Post body ── */
+    .post-body p  { margin-bottom: 1.3rem; font-size: 1rem; line-height: 1.82; }
+    .post-body h2 {
+      font-family: var(--font-serif); font-size: 1.55rem; font-weight: 500;
+      margin: 2.8rem 0 0.9rem; letter-spacing: -0.01em;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    .post-body h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 500; margin: 2rem 0 0.6rem; }
+    .post-body ul, .post-body ol { margin: 0 0 1.3rem 1.4rem; line-height: 1.78; }
+    .post-body li { margin-bottom: 0.3rem; font-size: 1rem; }
+    .post-body blockquote {
+      border-left: 3px solid var(--accent); margin: 1.8rem 0;
+      padding: 0.5rem 0 0.5rem 1.4rem;
+      color: var(--muted); font-style: italic; font-size: 1rem;
+    }
+    .post-body code {
+      font-family: var(--font-mono); font-size: 0.82rem;
+      background: var(--surface); border: 1px solid var(--border);
+      padding: 0.15rem 0.4rem; border-radius: 3px;
+    }
+    .post-body pre {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      overflow-x: auto; margin-bottom: 1.4rem;
+    }
+    .post-body pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.65; }
+    .post-body figure { margin: 2rem 0; }
+    .post-body figcaption { font-family: var(--font-mono); font-size: 0.65rem; color: var(--muted); margin-top: 0.55rem; }
+    .post-body strong { font-weight: 500; color: var(--text); }
+    .post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* ── Diagram box ── */
+    .diagram {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      margin-bottom: 1.4rem; overflow-x: auto;
+    }
+    .diagram pre {
+      background: none; border: none; padding: 0; margin: 0;
+      font-family: var(--font-mono); font-size: 0.83rem; line-height: 1.65;
+    }
+    .diagram-caption {
+      font-family: var(--font-mono); font-size: 0.62rem;
+      color: var(--muted); margin-top: 0.6rem; font-style: italic;
+    }
+
+    /* ── Post footer ── */
+    .post-footer {
+      margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .back-link {
+      font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* ── Engage section ── */
+    .engage-section { margin-top: 4.5rem; padding-top: 2.5rem; border-top: 2px solid var(--border); }
+    .engage-heading { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; letter-spacing: -0.01em; }
+    .engage-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 2rem; max-width: 580px; }
+
+    .engage-tabs { display: flex; gap: 0; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .engage-tab {
+      font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--muted);
+      background: none; border: none; cursor: pointer;
+      padding: 0.7rem 1.4rem 0.65rem;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .engage-tab:hover { color: var(--text); }
+    .engage-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    .engage-panel { display: none; }
+    .engage-panel.active { display: block; }
+
+    .utterances-note {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .utterances-note-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .utterances-note p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin: 0; }
+    .utterances-note strong { color: var(--text); font-weight: 500; }
+
+    .formspree-note {
+      background: var(--accent-light); border: 1px solid var(--border2);
+      border-radius: var(--radius); padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+    }
+    .formspree-note p { font-size: 0.85rem; color: var(--accent); line-height: 1.6; margin: 0; }
+    .formspree-note strong { font-weight: 500; }
+
+    .message-form {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.8rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .form-group:last-of-type { margin-bottom: 0; }
+    .form-group label {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+    }
+    .form-group input,
+    .form-group textarea {
+      font-family: var(--font-serif); font-size: 0.95rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.6rem 0.85rem;
+      color: var(--text); outline: none; width: 100%;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 130px; line-height: 1.65; }
+    .submit-row { display: flex; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+    .submit-btn {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.09em; text-transform: uppercase;
+      background: var(--accent); color: white; border: none;
+      padding: 0.62rem 1.4rem; border-radius: var(--radius);
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .submit-status { font-family: var(--font-mono); font-size: 0.63rem; color: var(--accent); display: none; }
+    .submit-status.error { color: #dc2626; }
+
+    footer {
+      margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+      font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted);
+    }
+    footer a { color: var(--muted); }
+
+    @media (max-width: 580px) {
+      .form-row { grid-template-columns: 1fr; }
+      .post-footer { flex-direction: column; align-items: flex-start; }
+      .engage-tab { padding: 0.7rem 0.9rem 0.65rem; font-size: 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html" class="active">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- ── POST HEADER ── -->
+  <div class="post-header">
+    <div class="post-meta">
+      <span class="post-category">Systems Programming</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-date">April 2026</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-read-time">15 min read</span>
+    </div>
+    <h1 class="post-title">Nodes in C++: How to Create, Link, and Delete </h1>
+    <p class="post-subtitle"> Nodes are the building block of many data structures — from linked lists and pointer chains in C++, to the decision-making branches of a decision tree in machine learning.</p>
+  </div>
+
+  <!-- ── POST BODY ── -->
+  <div class="post-body">
+
+    <p>At some point in learning C++, you will be asked to build a linked list from scratch. The exercise seems mechanical at first — create some structs, wire up some pointers — but it is one of the few moments in early programming where memory management stops being abstract. You are responsible for every byte you allocate. Nothing gets cleaned up for you.</p>
+
+    <p>This post builds the intuition from the ground up: what a pointer actually is, why heap allocation exists, what a Node looks like in memory, and how to implement the four operations every linked list needs. By the end, you will also understand why the order in which you do things — especially when deleting or inserting — matters more than it initially appears.</p>
+
+    <h2>Pointers</h2>
+
+    <p>A variable like <code>int x = 42</code> occupies a small region of memory on the <strong>stack</strong>. The stack is fast and automatically managed — when a function returns, everything it declared is gone. A pointer, by contrast, does not store a value. It stores the <em>address</em> of where a value lives.</p>
+
+    <pre><code>int  x = 42;     // value lives on the stack
+int* p = &x;     // p holds the ADDRESS of x
+*p = 100;        // dereference: go to that address, write 100
+cout &lt;&lt; x;       // prints 100</code></pre>
+
+    <p>The <code>&</code> operator means "give me the address of." The <code>*</code> operator on a pointer means "go to that address."</p>
+
+    <h2>The heap and why it exists</h2>
+
+    <p>The stack is convenient but limited: it only lives as long as the function that created it. If you want data to outlive a function call — or if you do not know at compile time how much data you will need — you reach for the <strong>heap</strong>.</p>
+
+    <pre><code>int* h = new int(42);   // allocate on heap, returns address
+*h = 100;               // use it
+delete h;               // YOU must free it
+h = nullptr;            // good practice — prevents dangling pointer</code></pre>
+
+    <blockquote>
+      "The heap gives you control over lifetime. It also gives you the responsibility for it. Forgetting <code>delete</code> is a memory leak; using a pointer after <code>delete</code> is undefined behaviour."
+    </blockquote>
+
+    <p>This asymmetry — the programmer allocates, the programmer frees — is the defining feature of manual memory management in C++. It is also why linked lists make such a good teaching exercise: every node you create on the heap must eventually be accounted for.</p>
+
+    <h2>What a Node actually is</h2>
+
+    <p>A <code>Node</code> is a struct that holds two things: some data, and a pointer to the next node of the same type. Think of it as a physical note card — on one side you write a value, on the other you write the address of the next card in the chain. The last card says "no next card" — represented in C++ as <code>nullptr</code>.</p>
+
+    <pre><code>struct Node {
+    int   value;         // the data this node carries
+    Node* next;          // address of the next node (or nullptr)
+
+    Node(int v) : value(v), next(nullptr) {}
+};</code></pre>
+
+<p style="font-family:var(--font-mono);font-size:0.78rem;color:var(--muted);">
+  Not familiar with constructors? →
+  <a href="node-constructor-deepdive.html" style="color:var(--accent);">
+    The Node constructor, line by line ↗
+  </a>
+</p>
+
+    <p>The constructor uses an <em>initializer list</em> — the <code>: value(v), next(nullptr)</code> part — to set both fields before the constructor body runs. It is equivalent to assigning inside the braces, but more idiomatic in C++.</p>
+
+    <p>When you write <code>Node* n = new Node(42)</code>, two things happen: a Node is allocated on the heap with <code>value = 42</code> and <code>next = nullptr</code>, and its address is stored in the pointer <code>n</code>. The variable <code>n</code> itself lives on the stack; the Node it points to lives on the heap.</p>
+
+    <div class="diagram">
+      <pre>  Stack              Heap
+  ┌───────────┐      ┌──────────────────────┐
+  │  n [addr] │ ───▶ │ value: 42 │ next: ∅  │
+  └───────────┘      └──────────────────────┘</pre>
+      <p class="diagram-caption">n is a stack variable holding a heap address. The Node lives on the heap.</p>
+    </div>
+
+    <p>To access fields through a pointer, use the arrow operator <code>-&gt;</code>. Writing <code>n-&gt;value</code> is exactly equivalent to <code>(*n).value</code> — dereference first, then access the field — but far more readable.</p>
+
+    <h2>Building a three-node list</h2>
+
+    <p>With the Node struct defined, building a chain of three nodes is straightforward. Create each node on the heap, then set each node's <code>next</code> pointer to the address of the following node.</p>
+
+    <pre><code>Node* node1 = new Node(10);
+Node* node2 = new Node(20);
+Node* node3 = new Node(30);
+
+node1-&gt;next = node2;   // 10 → 20
+node2-&gt;next = node3;   // 20 → 30
+// node3-&gt;next is already nullptr</code></pre>
+
+    <div class="diagram">
+      <pre>  node1              node2              node3
+  ┌────┬──────┐      ┌────┬──────┐      ┌────┬──────┐
+  │ 10 │  ●───┼─────▶│ 20 │  ●───┼─────▶│ 30 │  ∅   │
+  └────┴──────┘      └────┴──────┘      └────┴──────┘</pre>
+      <p class="diagram-caption">Each node's <code>next</code> holds the heap address of the following node.</p>
+    </div>
+
+    <p>To traverse this list, start at <code>node1</code> and follow <code>next</code> pointers until you reach <code>nullptr</code>. This pattern — a pointer called <code>current</code> that slides along the chain — appears in every list operation:</p>
+
+    <pre><code>Node* current = node1;
+while (current != nullptr) {
+    cout &lt;&lt; current-&gt;value &lt;&lt; " ";
+    current = current-&gt;next;
+}
+// prints: 10 20 30</code></pre>
+
+    <p>Cleanup requires deleting every heap-allocated node. With named variables, the safest order is <em>reverse</em>: deleting <code>node1</code> first would make <code>node2</code> and <code>node3</code> unreachable, their addresses lost forever. More generally, when you no longer have individual variable names, walk the list forward and save <code>next</code> before each delete:</p>
+
+    <pre><code>Node* current = node1;
+while (current != nullptr) {
+    Node* next = current-&gt;next;  // save BEFORE deleting
+    delete current;
+    current = next;
+}</code></pre>
+
+    <h2>The four core operations</h2>
+
+    <h3>1. Append — adding to the end</h3>
+
+    <p>Walk to the last node (the one whose <code>next</code> is <code>nullptr</code>), then attach a new node there. The walk terminates when <code>current-&gt;next == nullptr</code>, not when <code>current == nullptr</code>, because you need a reference to the last node — not a null pointer — to attach something to it.</p>
+
+    <pre><code>void append(Node* head, int newValue) {
+    Node* current = head;
+    while (current-&gt;next != nullptr) {
+        current = current-&gt;next;
+    }
+    current-&gt;next = new Node(newValue);
+}</code></pre>
+
+    <h3>2. Delete from the middle</h3>
+
+    <p>To remove a node, you need the node <em>before</em> it — so you can redirect its <code>next</code> pointer to skip the target. Walk until <code>current-&gt;next</code> is the node you want to remove, save its address, rewire, then delete.</p>
+
+    <pre><code>void deleteNode(Node* head, int target) {
+    Node* current = head;
+    while (current-&gt;next != nullptr) {
+        if (current-&gt;next-&gt;value == target) {
+            Node* toDelete      = current-&gt;next;
+            current-&gt;next       = current-&gt;next-&gt;next; // skip over it
+            delete toDelete;
+            return;
+        }
+        current = current-&gt;next;
+    }
+}</code></pre>
+
+    <div class="diagram">
+      <pre>  Before:  [10] ──▶ [20] ──▶ [30]   (deleting 20)
+
+  Step 1:  toDelete = address of [20]
+  Step 2:  [10]-&gt;next = [30]          ← skip over [20]
+  Step 3:  delete toDelete
+
+  After:   [10] ──▶ [30]</pre>
+      <p class="diagram-caption">The node is unlinked before it is deleted. If you deleted first, the next address would be unreadable.</p>
+    </div>
+
+    <h3>3. Insert into the middle</h3>
+
+    <p>Insertion requires careful ordering. You must attach the new node to the rest of the list <em>before</em> disconnecting the current link — otherwise you lose the tail of the list permanently. The rule is: new node grabs <code>current-&gt;next</code> first, then <code>current</code> points to the new node.</p>
+
+    <pre><code>void insertAfter(Node* head, int afterValue, int newValue) {
+    Node* current = head;
+    while (current != nullptr) {
+        if (current-&gt;value == afterValue) {
+            Node* newNode     = new Node(newValue);
+            newNode-&gt;next     = current-&gt;next;   // grab the tail first
+            current-&gt;next     = newNode;          // then redirect
+            return;
+        }
+        current = current-&gt;next;
+    }
+}</code></pre>
+
+    <blockquote>
+      "If you reverse those two assignments, <code>current-&gt;next</code> is overwritten before the new node can capture it. The tail of the list is gone."
+    </blockquote>
+
+    <h3>4. Reverse the list</h3>
+
+    <p>Reversing a linked list in-place requires flipping every arrow. The challenge is that once you redirect a pointer, you can no longer follow it forward — so you must keep three pointers: one for the previous node, one for the current node, and one to remember the next node before you redirect it.</p>
+
+    <pre><code>Node* reverse(Node* head) {
+    Node* prev    = nullptr;
+    Node* current = head;
+    Node* next    = nullptr;
+
+    while (current != nullptr) {
+        next          = current-&gt;next;  // remember where we came from
+        current-&gt;next = prev;           // flip the arrow
+        prev          = current;        // advance prev
+        current       = next;           // advance current
+    }
+
+    return prev;  // prev is now the new head
+}</code></pre>
+
+    <div class="diagram">
+      <pre>  Initial:   ∅ ← prev   current → [10] → [20] → [30]
+
+  Step 1:  next=[20], [10]-&gt;next=∅,  prev=[10], current=[20]
+           ∅ ← [10] ← prev   current → [20] → [30]
+
+  Step 2:  next=[30], [20]-&gt;next=[10], prev=[20], current=[30]
+           ∅ ← [10] ← [20] ← prev   current → [30]
+
+  Step 3:  next=∅,   [30]-&gt;next=[20], prev=[30], current=∅
+           ∅ ← [10] ← [20] ← [30] ← prev   current=∅  → STOP
+
+  New head = prev = [30]  ✓</pre>
+      <p class="diagram-caption">Three pointers slide forward in tandem. The list is reversed in a single pass, O(n) time, O(1) space.</p>
+    </div>
+
+    <h2>Putting it all together</h2>
+
+    <p>The following is a complete, compilable program that demonstrates all four operations in sequence. Each helper function is intentionally kept simple — a more production-ready implementation would wrap everything in a class, but that separation would obscure the pointer mechanics this post is about.</p>
+
+    <pre><code>#include &lt;iostream&gt;
+using namespace std;
+
+struct Node {
+    int   value;
+    Node* next;
+    Node(int v) : value(v), next(nullptr) {}
+};
+
+void printList(Node* head) {
+    Node* current = head;
+    while (current != nullptr) {
+        cout &lt;&lt; current-&gt;value;
+        if (current-&gt;next) cout &lt;&lt; " → ";
+        current = current-&gt;next;
+    }
+    cout &lt;&lt; " → nullptr\n";
+}
+
+void append(Node* head, int v) {
+    Node* cur = head;
+    while (cur-&gt;next) cur = cur-&gt;next;
+    cur-&gt;next = new Node(v);
+}
+
+void deleteNode(Node* head, int target) {
+    Node* cur = head;
+    while (cur-&gt;next) {
+        if (cur-&gt;next-&gt;value == target) {
+            Node* tmp = cur-&gt;next;
+            cur-&gt;next = cur-&gt;next-&gt;next;
+            delete tmp; return;
+        }
+        cur = cur-&gt;next;
+    }
+}
+
+void insertAfter(Node* head, int after, int v) {
+    Node* cur = head;
+    while (cur) {
+        if (cur-&gt;value == after) {
+            Node* n   = new Node(v);
+            n-&gt;next   = cur-&gt;next;
+            cur-&gt;next = n; return;
+        }
+        cur = cur-&gt;next;
+    }
+}
+
+Node* reverse(Node* head) {
+    Node* prev = nullptr, *cur = head, *next = nullptr;
+    while (cur) { next = cur-&gt;next; cur-&gt;next = prev; prev = cur; cur = next; }
+    return prev;
+}
+
+void deleteList(Node* head) {
+    while (head) { Node* next = head-&gt;next; delete head; head = next; }
+}
+
+int main() {
+    Node* head = new Node(10);
+    Node* n2   = new Node(20);
+    Node* n3   = new Node(30);
+    head-&gt;next = n2; n2-&gt;next = n3;
+
+    cout &lt;&lt; "Original:           "; printList(head);
+
+    append(head, 40);
+    cout &lt;&lt; "After append(40):   "; printList(head);
+
+    deleteNode(head, 20);
+    cout &lt;&lt; "After delete(20):   "; printList(head);
+
+    insertAfter(head, 10, 15);
+    cout &lt;&lt; "After insert(15,10):"; printList(head);
+
+    head = reverse(head);
+    cout &lt;&lt; "After reverse:      "; printList(head);
+
+    deleteList(head);
+    return 0;
+}</code></pre>
+
+    <pre><code>Original:            10 → 20 → 30 → nullptr
+After append(40):    10 → 20 → 30 → 40 → nullptr
+After delete(20):    10 → 30 → 40 → nullptr
+After insert(15,10): 10 → 15 → 30 → 40 → nullptr
+After reverse:       40 → 30 → 15 → 10 → nullptr</code></pre>
+
+    <h2>What to take away</h2>
+
+    <p>The linked list is not taught because it is the most efficient data structure — a <code>std::vector</code> will outperform it in almost every cache-friendly scenario. It is taught because it forces you to reason carefully about three things that most higher-level languages hide from you entirely: where data lives in memory, who is responsible for freeing it, and how the order of pointer assignments determines whether your program is correct or catastrophically wrong.</p>
+
+    <p>Once you are comfortable with singly linked lists, the natural next steps are doubly linked lists (arrows in both directions, enabling O(1) removal given a pointer to a node), and wrapping all of this into a proper class with constructors and a destructor that handles cleanup automatically. That is where modern C++ idioms — RAII, smart pointers, move semantics — start to make sense as solutions to problems you have now experienced firsthand.</p>
+
+  </div>
+
+  <!-- ── POST FOOTER ── -->
+  <div class="post-footer">
+    <div class="post-tags">
+      <span class="tag">C++</span>
+      <span class="tag">Data Structures</span>
+      <span class="tag">Pointers</span>
+      <span class="tag">Memory Management</span>
+    </div>
+    <a class="back-link" href="../blog.html">← Back to Blog</a>
+  </div>
+
+  <!-- ── ENGAGE SECTION ── -->
+  <div class="engage-section">
+
+    <h2 class="engage-heading">Discussion</h2>
+    <p class="engage-sub">
+      Have a question, correction, or thought about this post? Choose how you'd like to engage below.
+    </p>
+
+    <div class="engage-tabs">
+      <button class="engage-tab active" onclick="switchTab('comments', this)">
+        💬 Leave a Comment (Using GitHub)
+      </button>
+      <button class="engage-tab" onclick="switchTab('message', this)">
+        ✉️ Leave a Comment (Using Email)
+      </button>
+    </div>
+
+    <div class="engage-panel active" id="panel-comments">
+      <div class="utterances-note">
+        <span class="utterances-note-icon">ℹ️</span>
+        <p>
+          Comments are <strong>public and visible to all readers</strong> — they appear immediately after you post.
+          A free <a href="https://github.com" target="_blank" style="color:var(--accent);">GitHub account</a> is required.
+          If you don't have one, use the <strong>Private message</strong> tab instead.
+        </p>
+      </div>
+      <div id="utterances-container"></div>
+      <script>
+        (function() {
+          const s = document.createElement('script');
+          s.src = 'https://utteranc.es/client.js';
+          s.setAttribute('repo',        'Xaleed/Xaleed.github.io');
+          s.setAttribute('issue-term',  'pathname');
+          s.setAttribute('label',       'comment');
+          s.setAttribute('theme',       'github-light');
+          s.setAttribute('crossorigin', 'anonymous');
+          s.async = true;
+          document.getElementById('utterances-container').appendChild(s);
+        })();
+      </script>
+    </div>
+
+    <div class="engage-panel" id="panel-message">
+      <div class="formspree-note">
+        <span style="font-size:1rem;flex-shrink:0;margin-top:0.1rem;">📬</span>
+        <p>
+          Your message is <strong>private</strong> — only you and I will see it.
+          I will reply to your email address directly.
+        </p>
+      </div>
+      <div class="message-form">
+        <form id="formspree-form" action="https://formspree.io/f/mkopjedr" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-name">Name *</label>
+              <input type="text" id="f-name" name="name" placeholder="Your name" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="f-email">Email * <span style="font-size:0.55rem;color:var(--muted)">(not published)</span></label>
+              <input type="email" id="f-email" name="email" placeholder="your@email.com" required autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="f-subject">Subject</label>
+            <input type="text" id="f-subject" name="subject" placeholder="e.g. Question about the reverse operation">
+          </div>
+          <div class="form-group">
+            <label for="f-message">Message *</label>
+            <textarea id="f-message" name="message" placeholder="Your question, correction, or thought…" required></textarea>
+          </div>
+          <input type="hidden" name="_subject" value="Blog message: Linked Lists in C++">
+          <input type="hidden" name="post" value="linked-lists-cpp">
+          <div class="submit-row">
+            <button type="submit" class="submit-btn" id="formspree-btn">Send message</button>
+            <span class="submit-status" id="formspree-status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+<script>
+  function switchTab(id, btn) {
+    document.querySelectorAll('.engage-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.engage-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + id).classList.add('active');
+  }
+
+  const form   = document.getElementById('formspree-form');
+  const btn    = document.getElementById('formspree-btn');
+  const status = document.getElementById('formspree-status');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    btn.disabled = true; btn.textContent = 'Sending…';
+    status.style.display = 'none'; status.className = 'submit-status';
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST', body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        status.textContent = '✓ Message sent — I will reply to your email.';
+        status.style.display = 'inline'; form.reset();
+      } else { throw new Error(); }
+    } catch {
+      status.textContent = '✗ Something went wrong. Please try emailing me directly.';
+      status.className = 'submit-status error'; status.style.display = 'inline';
+    }
+    btn.disabled = false; btn.textContent = 'Send message';
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code Walkthrough: biplot.spline.axis() — Khaled Masoumifard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <script>
+    MathJax = { tex: { inlineMath: [['$','$'],['\\(','\\)']] }, svg: { fontCache: 'global' } };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+  <style>
+    .post-header { padding: 3.5rem 0 2.5rem; border-bottom: 1px solid var(--border); margin-bottom: 2.5rem; }
+    .post-meta { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .post-category { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+    .post-date, .post-read-time { font-family: var(--font-mono); font-size: 0.62rem; color: var(--muted); }
+    .post-meta-sep { color: var(--border); }
+    .post-title { font-size: clamp(1.7rem, 4vw, 2.4rem); font-weight: 500; line-height: 1.18; letter-spacing: -0.015em; margin-bottom: 1rem; }
+    .post-subtitle { font-size: 1.05rem; color: var(--muted); line-height: 1.6; font-style: italic; max-width: 620px; }
+
+    .post-body p  { margin-bottom: 1.3rem; font-size: 1rem; line-height: 1.82; }
+    .post-body h2 { font-family: var(--font-serif); font-size: 1.55rem; font-weight: 500; margin: 2.8rem 0 0.9rem; letter-spacing: -0.01em; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .post-body h3 { font-family: var(--font-serif); font-size: 1.2rem; font-weight: 500; margin: 2rem 0 0.6rem; }
+    .post-body ul, .post-body ol { margin: 0 0 1.3rem 1.4rem; line-height: 1.78; }
+    .post-body li { margin-bottom: 0.4rem; font-size: 1rem; }
+    .post-body blockquote { border-left: 3px solid var(--accent); margin: 1.8rem 0; padding: 0.5rem 0 0.5rem 1.4rem; color: var(--muted); font-style: italic; }
+    .post-body code { font-family: var(--font-mono); font-size: 0.82rem; background: var(--surface); border: 1px solid var(--border); padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .post-body pre { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1.4rem; overflow-x: auto; margin-bottom: 1.4rem; }
+    .post-body pre code { background: none; border: none; padding: 0; font-size: 0.83rem; line-height: 1.65; }
+    .post-body strong { font-weight: 500; color: var(--text); }
+    .post-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* annotated code block */
+    .code-section {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin: 1.8rem 0; overflow: hidden;
+    }
+    .code-section-header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0.65rem 1.2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .code-section-title {
+      font-family: var(--font-mono); font-size: 0.68rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+    }
+    .code-section-file {
+      font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent);
+    }
+    .code-section pre {
+      margin: 0; border: none; border-radius: 0;
+      background: var(--surface); padding: 1.2rem 1.4rem;
+    }
+    .code-section-note {
+      border-top: 1px solid var(--border);
+      background: var(--bg); padding: 0.85rem 1.2rem;
+      font-size: 0.88rem; color: var(--muted); line-height: 1.65;
+    }
+    .code-section-note strong { color: var(--text); font-weight: 500; }
+
+    /* math annotation pill */
+    .math-pill {
+      display: inline-block; font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.06em; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 0.18rem 0.55rem; color: var(--muted);
+      vertical-align: middle; margin-left: 0.3rem;
+    }
+
+    /* back link card */
+    .nav-card {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.3rem;
+      text-decoration: none !important; margin: 1.4rem 0;
+      transition: border-color 0.2s;
+    }
+    .nav-card:hover { border-color: var(--accent); }
+    .nav-card-text { display: flex; flex-direction: column; gap: 0.15rem; }
+    .nav-card-title { font-weight: 500; font-size: 0.95rem; color: var(--text); }
+    .nav-card-sub { font-family: var(--font-mono); font-size: 0.63rem; color: var(--muted); }
+
+    /* post footer */
+    .post-footer { margin-top: 3.5rem; padding-top: 2rem; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .post-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .back-link { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .back-link:hover { color: var(--accent); }
+
+    /* engage */
+    .engage-section { margin-top: 4.5rem; padding-top: 2.5rem; border-top: 2px solid var(--border); }
+    .engage-heading { font-family: var(--font-serif); font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .engage-sub { font-size: 0.9rem; color: var(--muted); line-height: 1.65; margin-bottom: 2rem; max-width: 580px; }
+    .engage-tabs { display: flex; margin-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .engage-tab { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); background: none; border: none; cursor: pointer; padding: 0.7rem 1.4rem 0.65rem; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.2s, border-color 0.2s; }
+    .engage-tab:hover { color: var(--text); }
+    .engage-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .engage-panel { display: none; }
+    .engage-panel.active { display: block; }
+    .utterances-note { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.8rem; }
+    .utterances-note p { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin: 0; }
+    .formspree-note { background: var(--accent-light); border: 1px solid var(--border2); border-radius: var(--radius); padding: 1rem 1.2rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.8rem; }
+    .formspree-note p { font-size: 0.85rem; color: var(--accent); line-height: 1.6; margin: 0; }
+    .message-form { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem; }
+    .form-group label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .form-group input, .form-group textarea { font-family: var(--font-serif); font-size: 0.95rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.6rem 0.85rem; color: var(--text); outline: none; width: 100%; transition: border-color 0.2s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { resize: vertical; min-height: 130px; line-height: 1.65; }
+    .submit-row { display: flex; align-items: center; gap: 1rem; margin-top: 1.4rem; }
+    .submit-btn { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase; background: var(--accent); color: white; border: none; padding: 0.62rem 1.4rem; border-radius: var(--radius); cursor: pointer; transition: opacity 0.2s; }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .submit-status { font-family: var(--font-mono); font-size: 0.63rem; color: var(--accent); display: none; }
+    .submit-status.error { color: #dc2626; }
+    @media (max-width: 580px) { .form-row { grid-template-columns: 1fr; } .post-footer { flex-direction: column; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html" class="active">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <div class="post-header fade-up">
+    <div class="post-meta">
+      <span class="post-category">Code · Statistics</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-date">June 2026</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-read-time">15 min read</span>
+    </div>
+    <h1 class="post-title">Code Walkthrough: <code style="font-size:1.4rem">biplot.spline.axis()</code></h1>
+    <p class="post-subtitle">
+      A line-by-line guide to the R orchestration and C++ loss function
+      that fit a nonlinear spline axis in the <code>biplotEZ</code> package.
+    </p>
+  </div>
+
+  <div class="post-body fade-up">
+
+    <p>
+      This post is a companion to
+      <a href="biplot_intro.html">Nonlinear Biplot Axes via B-Splines</a>.
+      Here we go through the actual code in
+      <a href="https://github.com/MuViSU/biplotEZ" target="_blank">biplotEZ</a>,
+      matching every block to the mathematical step it implements.
+      The two files of interest are:
+    </p>
+    <ul>
+      <li><code>biplotEZ/R/plot2d.R</code> — R orchestration: <code>biplot.spline.axis()</code></li>
+      <li><code>LnjTinyNew.cpp</code> — C++ (Rcpp) loss function and Nelder–Mead optimiser</li>
+    </ul>
+
+    <a class="nav-card" href="biplot_intro.html">
+      <span style="font-size:1.3rem">←</span>
+      <span class="nav-card-text">
+        <span class="nav-card-title">Back to the intro post</span>
+        <span class="nav-card-sub">Nonlinear Biplot Axes via B-Splines — motivation &amp; overview</span>
+      </span>
+    </a>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 1 — Subsampling <span class="math-pill">R</span></h2>
+
+    <p>
+      The loss function requires an $O(n \times n_\mu)$ nearest-neighbour
+      search per evaluation. Because the optimiser calls it many times,
+      the cost scales poorly with $n$. The dataset is therefore capped
+      at $n^* = 103$ observations drawn uniformly at random without
+      replacement:
+      $\mathcal{S} \subset \{1,\ldots,n\}$, $|\mathcal{S}| = 103$.
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Subsampling</span>
+        <span class="code-section-file">biplotEZ/R/plot2d.R</span>
+      </div>
+      <pre><code>if (n > 103) {
+    my.sample <- sample(1:n, size = 103, replace = FALSE)
+    X <- X[my.sample, ]
+    Y <- Y[my.sample, ]
+    n <- nrow(X)
+}</code></pre>
+      <div class="code-section-note">
+        <strong>Why 103?</strong> An empirical constant chosen by the package authors to balance speed
+        against estimation quality. The subsampled loss is an unbiased estimator of the full loss,
+        so the optimised spline is statistically consistent.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 2 — Building the B-spline basis matrix $\mathbf{M}$ <span class="math-pill">R</span></h2>
+
+    <p>
+      The marker grid $\boldsymbol{\mu}$ spans the range of $\mathbf{y}$
+      with a 30% extension, and is augmented with "nice" tick values from
+      <code>pretty()</code> so the axis reads cleanly.
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Marker grid</span>
+        <span class="code-section-file">biplotEZ/R/plot2d.R</span>
+      </div>
+      <pre><code>rangey  <- max(y) - min(y)
+mu      <- seq(from = min(y) - .3*rangey,
+               to   = max(y) + .3*rangey,
+               length.out = nmu)
+markers <- (pretty(ytilde) - means[j]) / sd[j]
+mu      <- sort(unique(c(mu, markers)))
+nmu     <- length(mu)</code></pre>
+      <div class="code-section-note">
+        The grid is in the <em>standardised</em> scale of $\mathbf{y}$.
+        Tick labels are back-transformed to the original scale later:
+        $\mu_{\text{original}} = \mu \cdot \sigma_j + \bar{y}_j$.
+      </div>
+    </div>
+
+    <p>
+      The B-spline basis $\mathbf{M} \in \mathbb{R}^{n_\mu \times (u+v)}$
+      is built with interior knots placed at the empirical quantiles of
+      $\mathbf{y}$, then <strong>centred</strong> so the curve passes
+      through the biplot origin at $\mu = 0$ (the mean of $\mathbf{y}$):
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">B-spline basis</span>
+        <span class="code-section-file">biplotEZ/R/plot2d.R</span>
+      </div>
+      <pre><code>if (v > 0) {
+    knots <- seq.int(0, 1, length.out = v + 2)[-c(1, v+2)]
+    knots <- stats::quantile(y, knots)
+    M <- splines::bs(mu, knots = knots, degree = u, intercept = FALSE)
+} else {
+    M <- splines::bs(mu, df = u + v, degree = u, intercept = FALSE)
+}
+# Centre so the spline passes through the origin at the mean of y
+M <- scale(M, scale = FALSE, center = M[which.min(abs(mu)), ])</code></pre>
+      <div class="code-section-note">
+        <strong>Centring.</strong> The row of $\mathbf{M}$ closest to $\mu = 0$ is subtracted
+        from every row. This guarantees $Z(0) = \mathbf{0}$ for any $\mathbf{B}$,
+        so the axis always passes through the biplot origin at the variable mean.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 3 — Initialising from the regression axis <span class="math-pill">R</span></h2>
+
+    <p>
+      Because the loss is non-smooth, a good starting point matters.
+      The initial spline is set to the best B-spline approximation of the
+      classical straight (regression) axis:
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Warm start: regression → spline initialisation</span>
+        <span class="code-section-file">biplotEZ/R/plot2d.R</span>
+      </div>
+      <pre><code># Step 3a: regression direction  b_reg = (X'X)^{-1} X'y
+Breg <- t(solve(t(X) %*% X) %*% t(X) %*% y)
+
+# Step 3b: linear tick positions  Z_reg = mu * b_reg / ||b_reg||^2
+Zreg <- mu %*% Breg / sum(Breg^2)
+
+# Step 3c: initial spline coefficients  B_0 = (M'M)^{-1} M' Z_reg
+Bvec <- as.vector(solve(t(M) %*% M) %*% t(M) %*% Zreg)</code></pre>
+      <div class="code-section-note">
+        <strong>Step 3a</strong> is ordinary least squares of $\mathbf{y}$ on $\mathbf{X}$.
+        <strong>Step 3b</strong> places each tick mark $\mu_k$ at position
+        $\mathbf{z}_k = \mu_k\,\mathbf{b}_{\mathrm{reg}} / \|\mathbf{b}_{\mathrm{reg}}\|^2$
+        on the regression line.
+        <strong>Step 3c</strong> finds the spline coefficients that make
+        $\mathbf{MB}_0 \approx \mathbf{Z}_{\mathrm{reg}}$, i.e.\ the spline
+        that best approximates the straight regression axis.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 4 — The loss function: <code>alfunc()</code> <span class="math-pill">C++</span></h2>
+
+    <p>
+      For any candidate <code>Bvec</code>, the scalar loss
+      $L(\mathbf{B}) = S_1/C_1 + \lambda S_2/C_2$
+      is evaluated in <code>alfunc()</code>.
+      It has two stages.
+    </p>
+
+    <h3>Stage A — Reconstruct the trajectory $\mathbf{Z} = \mathbf{MB}$</h3>
+
+    <p>
+      <code>Bvec</code> stores the two columns of $\mathbf{B}$ concatenated.
+      Column $j$ (zero-indexed) starts at offset $j \times (u+v)$.
+      The entry $Z_{i,j} = \sum_k M_{i,k}\,\texttt{Bvec}[j\cdot(u+v)+k]$:
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Z = M · B  from BVEC</span>
+        <span class="code-section-file">LnjTinyNew.cpp — alfunc()</span>
+      </div>
+      <pre><code>for (int j = 0; j < p; j++) {
+    int bvec_offset = j * uv;          // column j starts here in BVEC
+    for (int i = 0; i < nmu; i++) {
+        Z(i, j) = 0.0;
+        for (int k = 0; k < uv; k++) {
+            Z(i, j) += M(i, k) * BVEC[bvec_offset + k];
+        }
+    }
+}</code></pre>
+      <div class="code-section-note">
+        <strong>Memory layout.</strong> <code>BVEC[0 … uv-1]</code> = first column of $\mathbf{B}$
+        (controls the $x_1$ coordinate of the curve).
+        <code>BVEC[uv … 2·uv-1]</code> = second column (controls $x_2$).
+        No matrix object for $\mathbf{B}$ is ever created — the product
+        $\mathbf{MB}$ is formed directly, saving memory and improving cache locality.
+      </div>
+    </div>
+
+    <h3>Stage B — Nearest-neighbour prediction and error accumulation</h3>
+
+    <p>
+      For each observation $i$, scan all $n_\mu$ curve points and find
+      the one closest to $\mathbf{x}_i$. Use its label $\mu_{k^*}$ as
+      $\hat{y}_i$ and accumulate $(y_i - \hat{y}_i)^2$:
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Nearest-neighbour projection + error accumulation</span>
+        <span class="code-section-file">LnjTinyNew.cpp — alfunc()</span>
+      </div>
+      <pre><code>double temp1 = 0.0;
+
+for (int i = 0; i < n; i++) {
+    int    closest_idx = 0;
+    double rmin        = 1.0e9;
+
+    // find the curve point z_k closest to x_i
+    for (int j = 0; j < nmu; j++) {
+        double temp_dist = 0.0;
+        for (int k = 0; k < p; k++) {
+            double diff = X(i, k) - Z(j, k);
+            temp_dist  += diff * diff;           // ||x_i - z_k||^2
+        }
+        if (temp_dist < rmin) {
+            rmin        = temp_dist;
+            closest_idx = j;                     // k* for this observation
+        }
+    }
+
+    // squared prediction error  (y_i - mu_{k*})^2
+    double diff = Y[i] - MU[closest_idx];
+    temp1      += diff * diff;                   // accumulate S_1
+}</code></pre>
+      <div class="code-section-note">
+        <strong>Why squared distance, not Euclidean?</strong>
+        Taking the square root is unnecessary because we only need the
+        <em>minimum</em> — squared distance preserves the ordering and
+        avoids a costly <code>sqrt</code> call inside the inner loop.
+      </div>
+    </div>
+
+    <h3>Stage C — Normalisation and roughness penalty</h3>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Final loss: normalise + optional roughness penalty</span>
+        <span class="code-section-file">LnjTinyNew.cpp — alfunc()</span>
+      </div>
+      <pre><code>// Normalised prediction error  S1 / C1
+double loss = temp1 / CONST1;
+
+// Roughness penalty  lambda * S2 / C2  (discrete second differences of Z)
+if (LAMBDA > 0.0 && nmu > 2) {
+    double temp2 = 0.0;
+    for (int j = 0; j < p; j++) {
+        for (int i = 1; i < (nmu - 1); i++) {
+            double diff = Z(i-1, j) - 2.0 * Z(i, j) + Z(i+1, j);
+            temp2 += diff * diff;
+        }
+    }
+    loss += LAMBDA * temp2 / CONST2;
+}
+return loss;</code></pre>
+      <div class="code-section-note">
+        <strong>The penalty term</strong>
+        $S_2 = \sum_{j=1}^{2}\sum_{k=2}^{n_\mu-1}(Z_{k-1,j}-2Z_{k,j}+Z_{k+1,j})^2$
+        is the sum of squared discrete second differences of the curve coordinates —
+        the discrete analogue of $\int[Z_j''(\mu)]^2\,d\mu$.
+        Setting $\lambda = 0$ recovers the pure prediction loss.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 5 — The Nelder–Mead optimiser <span class="math-pill">C++</span></h2>
+
+    <p>
+      Because $L(\mathbf{B})$ is non-differentiable (the nearest-neighbour
+      step creates discontinuities), the
+      <strong>Nelder–Mead simplex algorithm</strong> is used.
+      It works by maintaining a simplex of $d+1$ vertices in
+      $\mathbb{R}^d$ (where $d = 2(u+v)$ is the length of <code>Bvec</code>)
+      and iteratively replacing the worst vertex using three moves:
+    </p>
+    <ul>
+      <li><strong>Reflection</strong> ($\alpha = -1$): mirror the worst point through the centroid of the rest.</li>
+      <li><strong>Expansion</strong> ($\alpha = 2$): extend the reflection further if it improved.</li>
+      <li><strong>Contraction</strong> ($\alpha = 0.5$): pull back toward the centroid if reflection failed.</li>
+    </ul>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Simplex initialisation: varset()</span>
+        <span class="code-section-file">LnjTinyNew.cpp</span>
+      </div>
+      <pre><code>// Build the initial simplex: d+1 vertices
+// Row 0: Bvec unchanged
+// Row i (i=1..d): Bvec with TAU added to the i-th component
+NumericMatrix varset(NumericVector BVEC, int U, int V, int P, double TAU) {
+    int andim = (U + V) * P;
+    NumericMatrix AP(andim + 1, andim);
+    for (int j = 0; j < andim; j++) AP(0, j) = BVEC[j];
+    for (int i = 1; i <= andim; i++) {
+        for (int j = 0; j < andim; j++) AP(i, j) = BVEC[j];
+        AP(i, i - 1) += TAU;     // perturb one coordinate by TAU
+    }
+    return AP;
+}</code></pre>
+      <div class="code-section-note">
+        <strong>TAU</strong> is the initial simplex step size. A larger TAU explores
+        more of the parameter space but may overshoot; a smaller TAU stays closer
+        to the warm start. It is set via <code>spline.control$tau</code>.
+      </div>
+    </div>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Simplex move: amotry()</span>
+        <span class="code-section-file">LnjTinyNew.cpp</span>
+      </div>
+      <pre><code>// Try a new point by extrapolating through the simplex face
+// FAC = -1 → reflection,  FAC = 2 → expansion,  FAC = 0.5 → contraction
+double amotry(NumericMatrix& PMAT, NumericVector& YVEK,
+              NumericVector& PSUM, int IHI, double FAC, ...) {
+    int ndim = PMAT.ncol();
+    NumericVector PTRY(ndim);
+    double fac1 = (1.0 - FAC) / ndim;
+    double fac2 = fac1 - FAC;
+    for (int j = 0; j < ndim; j++)
+        PTRY[j] = PSUM[j] * fac1 - PMAT(IHI, j) * fac2;
+    double ytry = alfunc(PTRY, ...);       // evaluate loss at new point
+    if (ytry < YVEK[IHI]) {               // accept if better than worst
+        YVEK[IHI] = ytry;
+        for (int j = 0; j < ndim; j++) {
+            PSUM[j]    = PSUM[j] - PMAT(IHI, j) + PTRY[j];
+            PMAT(IHI, j) = PTRY[j];
+        }
+    }
+    return ytry;
+}</code></pre>
+      <div class="code-section-note">
+        <code>IHI</code> is the index of the current worst (highest-loss) vertex.
+        <code>PSUM</code> is the sum of all vertex vectors — maintaining it incrementally
+        avoids recomputing the centroid from scratch at every iteration.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 6 — Two-stage restart and multi-start <span class="math-pill">R + C++</span></h2>
+
+    <p>
+      <code>optimize_spline()</code> runs the Nelder–Mead simplex
+      <strong>twice in sequence</strong> (two stages): Stage 1 optimises
+      from the warm start; Stage 2 re-runs from Stage 1's best solution
+      with the same step size, correcting for any premature shrinkage
+      of the simplex.
+    </p>
+
+    <p>
+      Back in R, <code>biplot.spline.axis()</code> wraps this in a
+      <strong>multi-start loop</strong> of $\gamma + 1$ runs.
+      Each run perturbs the current best <code>Bvec</code> by Gaussian noise:
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Multi-start loop with basin-hopping</span>
+        <span class="code-section-file">biplotEZ/R/plot2d.R</span>
+      </div>
+      <pre><code>for (gammacounter in 2:(gamma + 1)) {
+    if (nSameSolutionConsecutively >= bigsigmaactivate) {
+        # Stuck in the same basin — escape with a large perturbation
+        temp <- optimtouse(outBestSolutions[, which.min(outBestValues)]
+                           + rnorm((u+v)*2, mean = 0, sd = bigsigma))
+    } else {
+        # Normal small perturbation around the current best
+        temp <- optimtouse(outBestSolutions[, which.min(outBestValues)]
+                           + rnorm((u+v)*2, mean = 0, sd = smallsigma))
+    }
+    # ... track distinct solutions and update best
+}</code></pre>
+      <div class="code-section-note">
+        <strong>Basin-hopping.</strong> If the same local minimum has been found
+        <code>bigsigmaactivate</code> times in a row, a larger noise standard deviation
+        (<code>bigsigma</code>) is used to jump to a different region of the parameter
+        space. This is a simple but effective strategy for escaping local optima in
+        non-convex problems.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Step 7 — Extracting the final axis points <span class="math-pill">R</span></h2>
+
+    <p>
+      After all restarts, the best <code>Bvec</code> is used to compute
+      the final curve $\mathbf{Z} = \mathbf{MB}$.
+      Tick marks are flagged and back-transformed to the original scale:
+    </p>
+
+    <div class="code-section">
+      <div class="code-section-header">
+        <span class="code-section-title">Final axis points</span>
+        <span class="code-section-file">biplotEZ/R/plot2d.R</span>
+      </div>
+      <pre><code>axis.points <- cbind(
+    M %*% matrix(outBestSolutions[, which.min(outBestValues)], ncol = 2),
+    mu,   # marker value (standardised scale)
+    0     # tick flag (1 = nice tick, 0 = grid point only)
+)
+# Flag the nice tick marks
+for (i in 1:nrow(axis.points))
+    if (any(zapsmall(axis.points[i, 3] - markers) == 0))
+        axis.points[i, 4] <- 1
+# Back-transform to original scale
+axis.points[, 3] <- axis.points[, 3] * sd[j] + means[j]</code></pre>
+      <div class="code-section-note">
+        The output is an $n_\mu \times 4$ matrix: columns 1–2 are the 2D biplot
+        coordinates of each tick mark, column 3 is its value in the original
+        variable scale, and column 4 flags whether it should be drawn as a
+        visible tick mark.
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <h2>Summary of the full pipeline</h2>
+
+    <div style="overflow-x:auto;margin:1.4rem 0">
+      <table style="width:100%;border-collapse:collapse;font-size:0.9rem;line-height:1.65">
+        <thead>
+          <tr style="border-bottom:2px solid var(--border)">
+            <th style="text-align:left;padding:0.5rem 1rem 0.5rem 0;font-weight:500;white-space:nowrap">Step</th>
+            <th style="text-align:left;padding:0.5rem 1rem;font-weight:500">What it does</th>
+            <th style="text-align:left;padding:0.5rem 0 0.5rem 0.5rem;font-weight:500">Where</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">1. Subsample</td><td style="padding:0.4rem 1rem">Cap $n$ at 103 for speed</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">plot2d.R</td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">2. Basis $\mathbf{M}$</td><td style="padding:0.4rem 1rem">Build B-spline basis, centre it</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">plot2d.R</td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">3. Warm start</td><td style="padding:0.4rem 1rem">Initialise $\mathbf{B}_0$ from regression axis</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">plot2d.R</td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">4. Loss</td><td style="padding:0.4rem 1rem">Compute $L(\mathbf{B}) = S_1/C_1 + \lambda S_2/C_2$</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">alfunc()</td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">5. Optimise</td><td style="padding:0.4rem 1rem">Two-stage Nelder–Mead simplex</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">amoeba()</td></tr>
+          <tr style="border-bottom:1px solid var(--border)"><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">6. Multi-start</td><td style="padding:0.4rem 1rem">$\gamma+1$ restarts with basin-hopping</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">plot2d.R</td></tr>
+          <tr><td style="padding:0.4rem 1rem 0.4rem 0;color:var(--muted)">7. Output</td><td style="padding:0.4rem 1rem">Extract axis points, flag ticks, back-transform</td><td style="padding:0.4rem 0 0.4rem 0.5rem;font-family:var(--font-mono);font-size:0.75rem">plot2d.R</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <a class="nav-card" href="biplot_intro.html">
+      <span style="font-size:1.3rem">←</span>
+      <span class="nav-card-text">
+        <span class="nav-card-title">Back to the intro post</span>
+        <span class="nav-card-sub">Nonlinear Biplot Axes via B-Splines — motivation &amp; overview</span>
+      </span>
+    </a>
+
+  </div>
+
+  <div class="post-footer fade-up">
+    <div class="post-tags">
+      <span class="tag">R</span>
+      <span class="tag">C++</span>
+      <span class="tag">Rcpp</span>
+      <span class="tag">Nelder–Mead</span>
+      <span class="tag">biplotEZ</span>
+    </div>
+    <a class="back-link" href="../blog.html">← Back to Blog</a>
+  </div>
+
+  <div class="engage-section fade-up">
+    <h2 class="engage-heading">Discussion</h2>
+    <p class="engage-sub">Have a question, correction, or thought? Choose how you'd like to engage.</p>
+    <div class="engage-tabs">
+      <button class="engage-tab active" onclick="switchTab('comments',this)">💬 Comment (GitHub)</button>
+      <button class="engage-tab" onclick="switchTab('message',this)">✉️ Comment (Email)</button>
+    </div>
+    <div class="engage-panel active" id="panel-comments">
+      <div class="utterances-note">
+        <span style="font-size:1rem;flex-shrink:0;margin-top:0.1rem">ℹ️</span>
+        <p>Comments are <strong>public</strong>. A free <a href="https://github.com" target="_blank" style="color:var(--accent)">GitHub account</a> is required. Use the Email tab for a private message.</p>
+      </div>
+      <div id="utterances-container"></div>
+      <script>
+        (function(){
+          const s=document.createElement('script');
+          s.src='https://utteranc.es/client.js';
+          s.setAttribute('repo','Xaleed/Xaleed.github.io');
+          s.setAttribute('issue-term','pathname');
+          s.setAttribute('label','comment');
+          s.setAttribute('theme','github-light');
+          s.setAttribute('crossorigin','anonymous');
+          s.async=true;
+          document.getElementById('utterances-container').appendChild(s);
+        })();
+      </script>
+    </div>
+    <div class="engage-panel" id="panel-message">
+      <div class="formspree-note">
+        <span style="font-size:1rem;flex-shrink:0;margin-top:0.1rem">📬</span>
+        <p>Your message goes directly to me by email and is <strong>not published publicly</strong>.</p>
+      </div>
+      <div class="message-form">
+        <form id="formspree-form" action="https://formspree.io/f/mkopjedr" method="POST">
+          <div class="form-row">
+            <div class="form-group"><label for="f-name">Name *</label><input type="text" id="f-name" name="name" placeholder="Your name" required></div>
+            <div class="form-group"><label for="f-email">Email *</label><input type="email" id="f-email" name="email" placeholder="your@email.com" required></div>
+          </div>
+          <div class="form-group"><label for="f-subject">Subject</label><input type="text" id="f-subject" name="subject" placeholder="e.g. Question about alfunc()"></div>
+          <div class="form-group"><label for="f-message">Message *</label><textarea id="f-message" name="message" required placeholder="Your question or thought…"></textarea></div>
+          <input type="hidden" name="_subject" value="Blog: biplot code walkthrough">
+          <input type="hidden" name="post" value="biplot-code">
+          <div class="submit-row">
+            <button type="submit" class="submit-btn" id="formspree-btn">Send message</button>
+            <span class="submit-status" id="formspree-status"></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+<script>
+  function switchTab(id,btn){
+    document.querySelectorAll('.engage-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.engage-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+id).classList.add('active');
+  }
+  const form=document.getElementById('formspree-form'),btn=document.getElementById('formspree-btn'),status=document.getElementById('formspree-status');
+  form.addEventListener('submit',async function(e){
+    e.preventDefault(); btn.disabled=true; btn.textContent='Sending…'; status.style.display='none'; status.className='submit-status';
+    try{
+      const res=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}});
+      if(res.ok){status.textContent='✓ Sent — I will reply to your email.';status.style.display='inline';form.reset();}
+      else throw new Error();
+    }catch{status.textContent='✗ Something went wrong. Try emailing me directly.';status.className='submit-status error';status.style.display='inline';}
+    btn.disabled=false; btn.textContent='Send message';
+  });
+</script>
+</body>
+</html>
