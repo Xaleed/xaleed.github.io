@@ -118,10 +118,20 @@
     }
     .pub-item:last-child { border-bottom: none; }
     .pub-accent-bar { width: 4px; background: var(--accent-light); border-radius: 2px; margin-top: 4px; flex-shrink: 0; }
+    .pub-accent-bar.submitted { background: #aaa; }
     .pub-title { font-size: 0.98rem; font-weight: 500; margin-bottom: 0.22rem; line-height: 1.4; }
     .pub-authors { font-size: 0.86rem; color: var(--muted); font-style: italic; margin-bottom: 0.28rem; }
     .pub-authors strong { color: var(--text); font-style: normal; }
     .pub-venue { font-family: var(--font-mono); font-size: 0.65rem; color: var(--accent); letter-spacing: 0.04em; margin-bottom: 0.5rem; }
+    .pub-venue.submitted-venue { color: var(--muted); }
+    .pub-badge {
+      display: inline-block; font-family: var(--font-mono); font-size: 0.55rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.15rem 0.5rem; border-radius: 2px;
+      margin-left: 0.5rem; vertical-align: middle;
+    }
+    .pub-badge.inpress { background: #e8f4e8; color: #2d7a2d; }
+    .pub-badge.under-review { background: #f0f0f0; color: #666; }
     .pub-links { display: flex; gap: 1rem; }
     .pub-links a {
       font-family: var(--font-mono); font-size: 0.62rem;
@@ -131,10 +141,40 @@
     }
     .pub-links a:hover { color: var(--accent); border-color: var(--accent); }
 
+    /* Software */
+    .software-item {
+      display: grid; grid-template-columns: 4px 1fr;
+      gap: 1.4rem; padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+    }
+    .software-item:last-child { border-bottom: none; }
+    .software-accent-bar { width: 4px; background: #4a9eff; border-radius: 2px; margin-top: 4px; flex-shrink: 0; }
+    .software-name { font-size: 0.98rem; font-weight: 500; margin-bottom: 0.18rem; }
+    .software-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin-bottom: 0.4rem; }
+    .software-meta { font-family: var(--font-mono); font-size: 0.63rem; color: var(--accent); margin-bottom: 0.4rem; }
+
+    /* Conferences */
+    .conf-item {
+      display: grid; grid-template-columns: 60px 1fr;
+      gap: 1.4rem; padding: 1.1rem 0; border-bottom: 1px solid var(--border);
+    }
+    .conf-item:last-child { border-bottom: none; }
+    .conf-year { font-family: var(--font-mono); font-size: 0.63rem; color: var(--muted); padding-top: 0.22rem; }
+    .conf-title { font-size: 0.96rem; font-weight: 500; margin-bottom: 0.15rem; }
+    .conf-authors { font-size: 0.84rem; color: var(--muted); font-style: italic; margin-bottom: 0.2rem; }
+    .conf-venue { font-family: var(--font-mono); font-size: 0.63rem; color: var(--accent); margin-bottom: 0.35rem; }
+    .conf-scope {
+      display: inline-block; font-family: var(--font-mono); font-size: 0.55rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.15rem 0.5rem; border-radius: 2px;
+    }
+    .conf-scope.intl { background: #e8f0ff; color: #2a5dcc; }
+    .conf-scope.natl { background: #fff3e8; color: #b86a00; }
+
     @media (max-width: 580px) {
       .cv-item { grid-template-columns: 1fr; gap: 0.3rem; }
       .cv-date { font-size: 0.7rem; padding-bottom: 0.1rem; }
       .skills-grid, .refs-grid { grid-template-columns: 1fr; }
+      .conf-item { grid-template-columns: 1fr; gap: 0.3rem; }
     }
   </style>
 </head>
@@ -170,6 +210,8 @@
     <button class="cv-tab-btn active" onclick="switchTab('education',this)">Education</button>
     <button class="cv-tab-btn" onclick="switchTab('experience',this)">Experience</button>
     <button class="cv-tab-btn" onclick="switchTab('publications',this)">Publications</button>
+    <button class="cv-tab-btn" onclick="switchTab('software',this)">Software</button>
+    <button class="cv-tab-btn" onclick="switchTab('conferences',this)">Conferences</button>
     <button class="cv-tab-btn" onclick="switchTab('awards',this)">Awards</button>
     <button class="cv-tab-btn" onclick="switchTab('skills',this)">Skills</button>
     <button class="cv-tab-btn" onclick="switchTab('references',this)">References</button>
@@ -266,30 +308,67 @@
       <div class="filter-bar">
         <button class="filter-btn active" onclick="filterPubs('all',this)">All</button>
         <button class="filter-btn" onclick="filterPubs('journal',this)">Journal Articles</button>
-        <button class="filter-btn" onclick="filterPubs('conference',this)">Conference Papers</button>
+        <button class="filter-btn" onclick="filterPubs('submitted',this)">Submitted</button>
         <button class="filter-btn" onclick="filterPubs('book',this)">Book Chapters</button>
       </div>
+
+      <!-- 2026 -->
       <div class="pub-year-group">
-        <p class="pub-year-heading">2025</p>
+        <p class="pub-year-heading">2026</p>
+
         <div class="pub-item" data-type="book">
           <div class="pub-accent-bar"></div>
           <div>
-            <div class="pub-title">Dirichlet-random forest for predicting compositional data</div>
+            <div class="pub-title">
+              Dirichlet-random forest for predicting compositional data
+              <span class="pub-badge inpress">In Press</span>
+            </div>
             <div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div>
-            <div class="pub-venue">Environmental Statistics: Innovative Methods and Applications · 2025</div>
-            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+            <div class="pub-venue">In A. Bekker et al. (Eds.), <em>Environmental modelling with contemporary statistics: Learning, directionality, and space-time dynamics</em> · CRC Press · ISBN 9781032903910</div>
+            <div class="pub-links"><a href="#">DOI</a></div>
           </div>
         </div>
+
+        <div class="pub-item" data-type="submitted">
+          <div class="pub-accent-bar submitted"></div>
+          <div>
+            <div class="pub-title">
+              Random forest models for compositional data
+              <span class="pub-badge under-review">Under Review</span>
+            </div>
+            <div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Lubbe, S.</div>
+            <div class="pub-venue submitted-venue">South African Statistical Journal · Submitted 2026</div>
+          </div>
+        </div>
+
+        <div class="pub-item" data-type="submitted">
+          <div class="pub-accent-bar submitted"></div>
+          <div>
+            <div class="pub-title">
+              A machine learning framework for modelling compositional soil properties in digital soil mapping
+              <span class="pub-badge under-review">Under Review</span>
+            </div>
+            <div class="pub-authors">van der Westhuizen, S., <strong>Masoumifard, K.</strong></div>
+            <div class="pub-venue submitted-venue">Mathematical Geosciences · Submitted 2026</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2025 -->
+      <div class="pub-year-group">
+        <p class="pub-year-heading">2025</p>
         <div class="pub-item" data-type="journal">
           <div class="pub-accent-bar"></div>
           <div>
             <div class="pub-title">Hazard Rate Order Between Parallel Systems With Multiple Types of Scaled Components</div>
             <div class="pub-authors"><strong>Masoumifard, K.</strong>, Haidari, A., Torrado, N.</div>
             <div class="pub-venue">Applied Stochastic Models in Business and Industry · 41(2), e70008 · 2025</div>
-            <div class="pub-links"><a href="#">PDF</a><a href="https://doi.org/10.1002/asmb.70008" target="_blank">DOI</a></div>
+            <div class="pub-links"><a href="https://doi.org/10.1002/asmb.70008" target="_blank">DOI</a></div>
           </div>
         </div>
       </div>
+
+      <!-- 2023 -->
       <div class="pub-year-group">
         <p class="pub-year-heading">2023</p>
         <div class="pub-item" data-type="journal">
@@ -298,10 +377,12 @@
             <div class="pub-title">On Bayesian credibility mean for finite mixture distributions</div>
             <div class="pub-authors">Jahanbani, E., Najafabadi, A.T.P., <strong>Masoumifard, K.</strong></div>
             <div class="pub-venue">Annals of Actuarial Science · pp. 1–25 · 2023</div>
-            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+            <div class="pub-links"><a href="#">DOI</a></div>
           </div>
         </div>
       </div>
+
+      <!-- 2021 -->
       <div class="pub-year-group">
         <p class="pub-year-heading">2021</p>
         <div class="pub-item" data-type="journal">
@@ -310,10 +391,12 @@
             <div class="pub-title">Optimal dynamic reinsurance strategies in multidimensional portfolio</div>
             <div class="pub-authors"><strong>Masoumifard, K.</strong>, Zokaei, M.</div>
             <div class="pub-venue">Stochastic Analysis and Applications · 39(1), 1–21 · 2021</div>
-            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+            <div class="pub-links"><a href="#">DOI</a></div>
           </div>
         </div>
       </div>
+
+      <!-- 2014 -->
       <div class="pub-year-group">
         <p class="pub-year-heading">2014</p>
         <div class="pub-item" data-type="journal">
@@ -322,10 +405,62 @@
             <div class="pub-title">Stochastic comparisons of series and parallel systems with generalized exponential components</div>
             <div class="pub-authors">Balakrishnan, N., Haidari, A., <strong>Masoumifard, K.</strong></div>
             <div class="pub-venue">IEEE Transactions on Reliability · 64(1), 333–348 · 2014</div>
-            <div class="pub-links"><a href="#">PDF</a><a href="#">DOI</a></div>
+            <div class="pub-links"><a href="#">DOI</a></div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- SOFTWARE -->
+  <div class="cv-panel" id="panel-software">
+    <div class="cv-block">
+      <p class="cv-block-title">Software</p>
+      <div class="software-item">
+        <div class="software-accent-bar"></div>
+        <div>
+          <div class="software-name">DirichletRF &mdash; Dirichlet Random Forest</div>
+          <div class="software-meta">R · CRAN · Version 0.1.0 · Published 2026-03-23</div>
+          <div class="software-desc">
+            Implementation of the Dirichlet Random Forest algorithm for compositional response data. Supports maximum likelihood estimation (MLE) and method-of-moments (MOM) parameter estimation for the Dirichlet distribution. Provides averaging-based and parameter-based prediction strategies.
+          </div>
+          <div class="pub-authors" style="margin-bottom:0.4rem;"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Lubbe, S.</div>
+          <div class="pub-links">
+            <a href="https://CRAN.R-project.org/package=DirichletRF" target="_blank">CRAN</a>
+            <a href="https://doi.org/10.32614/CRAN.package.DirichletRF" target="_blank">DOI</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFERENCES -->
+  <div class="cv-panel" id="panel-conferences">
+    <div class="cv-block">
+      <p class="cv-block-title">Conference Presentations</p>
+
+      <div class="conf-item">
+        <span class="conf-year">2025</span>
+        <div>
+          <div class="conf-title">Dirichlet-random forest for predicting compositional data</div>
+          <div class="conf-authors">Masoumifard, K., van der Westhuizen, S., Gardner-Lubbe, S.</div>
+          <div class="conf-venue">Data Science, Statistics &amp; Visualisation (DSSV) Conference · JDSSV · Book of Abstracts</div>
+          <span class="conf-scope intl">International</span>
+          &nbsp;<a href="https://iasc-isi.org/dssv2025/programme/" target="_blank"
+             style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);">Programme ↗</a>
+        </div>
+      </div>
+
+      <div class="conf-item">
+        <span class="conf-year">2025</span>
+        <div>
+          <div class="conf-title">Random forest model for compositional data</div>
+          <div class="conf-authors">Masoumifard, K.</div>
+          <div class="conf-venue">66th Annual Conference of the South African Statistical Association (SASA)</div>
+          <span class="conf-scope natl">National</span>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -392,7 +527,7 @@
           <div class="ref-links">
             <a href="https://researcherprofiles.sun.ac.za/1996-sugnet-lubbe" target="_blank">Profile</a>
             <a href="https://scholar.google.co.za/citations?user=Wf0H128AAAAJ" target="_blank">Scholar</a>
-            <a href="mailto:sl@sun.ac.za">Email</a>
+            <a href="mailto:slubbe@sun.ac.za">Email</a>
           </div>
         </div>
         <div class="ref-card">
@@ -402,7 +537,7 @@
           <div class="ref-links">
             <a href="https://researcherprofiles.sun.ac.za/8957-stephan-van-der-westhuizen" target="_blank">Profile</a>
             <a href="https://scholar.google.com/citations?user=Qx6QxUgAAAAJ" target="_blank">Scholar</a>
-            <a href="mailto:svdw@sun.ac.za">Email</a>
+            <a href="mailto:stephanvdw@sun.ac.za">Email</a>
           </div>
         </div>
         <div class="ref-card">
@@ -411,7 +546,7 @@
           <p class="ref-inst">Shahid Beheshti University</p>
           <div class="ref-links">
             <a href="https://scholar.google.com/citations?user=Ghg08WgAAAAJ" target="_blank">Scholar</a>
-            <a href="mailto:amirtpayandeh@sbu.ac.ir">Email</a>
+            <a href="mailto:amirtpayandeh@gmail.com">Email</a>
           </div>
         </div>
         <div class="ref-card">
@@ -419,7 +554,7 @@
           <p class="ref-title">Professor</p>
           <p class="ref-inst">Shahid Beheshti University</p>
           <div class="ref-links">
-            <a href="mailto:m_zokaei@sbu.ac.ir">Email</a>
+            <a href="mailto:zokaei31@gmail.com">Email</a>
           </div>
         </div>
       </div>

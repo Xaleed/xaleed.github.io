@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Random Forest Models for Compositional Data – DirichletRF</title>
+<link rel="stylesheet" href="../css/style.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f4ef;
+    --slide-bg: #ffffff;
+    --primary: #2a5c45;
+    --accent: #c8860a;
+    --blue: #1a4a7a;
+    --red: #b51700;
+    --text: #1c1c1c;
+    --muted: #5a5a5a;
+    --border: #d4cfc8;
+    --green-light: #e8f5ee;
+    --blue-light: #e8f0f8;
+    --node-fill: #ddeeff;
+    --leaf-fill: #d4f0df;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ── PROGRESS BAR ── */
+  #progress-bar {
+    position: fixed; top: 0; left: 0;
+    height: 3px; background: var(--accent);
+    transition: width 0.3s ease; z-index: 100;
+  }
+
+  /* ── HEADER NAV ── */
+  header {
+    width: 100%; max-width: 960px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    font-size: 12px; color: var(--muted);
+    letter-spacing: .05em; text-transform: uppercase;
+  }
+  header .logo { display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--primary); }
+  header .logo svg { width: 22px; height: 22px; }
+
+  /* ── SLIDE CONTAINER ── */
+  .slide-wrapper {
+    width: 100%; max-width: 960px;
+    padding: 0 24px 32px;
+  }
+
+  .slide {
+    background: var(--slide-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 48px 56px;
+    min-height: 520px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+  .slide::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+  }
+
+  /* ── SLIDE TYPES ── */
+  .slide-title {
+    align-items: center; justify-content: center; text-align: center;
+    gap: 20px;
+  }
+  .slide-title .title-main {
+    font-family: 'Source Serif 4', serif;
+    font-size: 2.1rem; font-weight: 700;
+    line-height: 1.25; color: var(--primary);
+    max-width: 700px;
+  }
+  .slide-title .authors {
+    font-size: .95rem; color: var(--muted);
+    line-height: 1.7;
+  }
+  .slide-title .authors u { color: var(--text); font-weight: 600; }
+  .slide-title .affil {
+    font-size: .8rem; color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 14px; margin-top: 4px;
+  }
+  .qr-badge {
+    display: inline-flex; flex-direction: column; align-items: center;
+    gap: 6px; margin-top: 8px;
+  }
+  .qr-badge img { width: 80px; height: 80px; border: 1px solid var(--border); border-radius: 6px; }
+  .qr-badge span { font-size: .72rem; color: var(--muted); letter-spacing: .04em; }
+
+  /* slide header */
+  .slide h2 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.45rem; font-weight: 700;
+    color: var(--primary); margin-bottom: 28px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary);
+  }
+
+  /* bullet lists */
+  .bullet-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+  .bullet-list li {
+    display: flex; gap: 14px; align-items: flex-start;
+    font-size: .97rem; line-height: 1.6;
+  }
+  .bullet-list li .arrow {
+    color: var(--blue); font-size: 1.1rem; margin-top: 1px; flex-shrink: 0;
+  }
+
+  /* formula boxes */
+  .formula-box {
+    background: var(--blue-light);
+    border: 1px solid #b8ccdf;
+    border-radius: 8px;
+    padding: 18px 24px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: .95rem;
+  }
+  .formula-box.green {
+    background: var(--green-light);
+    border-color: #a8d4b8;
+  }
+
+  /* two-col layout */
+  .two-col { display: flex; gap: 36px; align-items: flex-start; }
+  .col { flex: 1; }
+
+  /* tree SVG wrapper */
+  .tree-svg-wrap { display: flex; justify-content: center; }
+  svg.tree { overflow: visible; }
+
+  /* tables */
+  .results-table {
+    width: 100%; border-collapse: collapse; font-size: .9rem;
+    margin: 12px 0;
+  }
+  .results-table th {
+    background: var(--primary); color: #fff;
+    padding: 10px 14px; text-align: left;
+    font-weight: 600; font-size: .85rem;
+  }
+  .results-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+  .results-table tr:last-child td { border-bottom: none; }
+  .results-table .best { color: var(--blue); font-weight: 700; }
+  .results-table tr:nth-child(even) td { background: #f9f8f6; }
+
+  /* param table */
+  .param-table {
+    width: 100%; border-collapse: collapse; font-size: .88rem;
+    margin: 12px 0;
+  }
+  .param-table th {
+    background: var(--blue); color: #fff;
+    padding: 9px 14px; text-align: left; font-size: .82rem;
+  }
+  .param-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .param-table tr:last-child td { border-bottom: none; }
+  .param-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem; color: var(--blue);
+    background: var(--blue-light); padding: 1px 5px; border-radius: 3px;
+  }
+  .param-table .highlight-row td { background: #eef3fb; }
+
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .85rem; color: var(--blue);
+    background: var(--blue-light); padding: 1px 5px; border-radius: 3px;
+  }
+
+  /* info blocks */
+  .info-block {
+    background: var(--blue-light); border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 12px 0;
+    font-size: .93rem;
+  }
+  .info-block.green { background: var(--green-light); border-color: var(--primary); }
+
+  /* numbered steps */
+  .steps { display: flex; flex-direction: column; gap: 10px; margin: 10px 0; }
+  .step { display: flex; gap: 12px; align-items: flex-start; font-size: .9rem; }
+  .step .num {
+    min-width: 24px; height: 24px;
+    background: var(--blue); color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: .75rem; font-weight: 700; flex-shrink: 0;
+  }
+
+  /* conclusion highlight */
+  .conclusion-item {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: #f3f9f5; border: 1px solid #b8d8c4;
+    border-radius: 8px; padding: 16px 18px; margin-bottom: 14px;
+  }
+  .conclusion-item .icon { font-size: 1.4rem; flex-shrink: 0; }
+
+  /* thank you */
+  .thank-you {
+    align-items: center; justify-content: center;
+    text-align: center; gap: 24px;
+  }
+  .thank-you h1 {
+    font-family: 'Source Serif 4', serif;
+    font-size: 3rem; font-weight: 700; color: var(--primary);
+  }
+  .thank-you .rf-logo { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .thank-you .rf-logo img { width: 96px; }
+  .thank-you .rf-logo span { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--primary); }
+
+  /* slide counter chip */
+  .slide-chip {
+    position: absolute; top: 16px; right: 20px;
+    font-size: .72rem; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 20px;
+  }
+
+  /* ── NAVIGATION ── */
+  .nav {
+    display: flex; align-items: center; justify-content: center;
+    gap: 16px; padding: 16px 0 32px;
+  }
+  .nav button {
+    padding: 10px 28px;
+    border: 2px solid var(--primary);
+    background: transparent; color: var(--primary);
+    border-radius: 40px; font-size: .9rem; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+    font-family: 'Inter', sans-serif;
+  }
+  .nav button:hover { background: var(--primary); color: #fff; }
+  .nav button:disabled { opacity: .3; cursor: default; }
+  .nav button:disabled:hover { background: transparent; color: var(--primary); }
+  .nav .counter {
+    font-size: .85rem; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 60px; text-align: center;
+  }
+
+  /* TOC dots */
+  .toc-dots {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 12px;
+  }
+  .toc-dots .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border); cursor: pointer; transition: background .2s;
+  }
+  .toc-dots .dot.active { background: var(--primary); }
+  .toc-dots .dot:hover { background: var(--accent); }
+
+  /* keyboard hint */
+  .kbd-hint { font-size: .72rem; color: var(--muted); text-align: center; padding-bottom: 8px; }
+  .kbd-hint kbd {
+    background: #eee; border: 1px solid #ccc;
+    border-radius: 3px; padding: 1px 5px; font-size: .7rem;
+  }
+
+  /* MJX formula resize */
+  .MathJax { font-size: 1.05em !important; }
+
+  /* split diagram */
+  .split-diagram {
+    display: flex; justify-content: center; align-items: flex-start;
+    gap: 16px; margin: 20px 0; flex-wrap: wrap;
+  }
+  .node-box {
+    background: var(--blue-light); border: 1.5px solid #b8ccdf;
+    border-radius: 8px; padding: 12px 16px; text-align: center;
+    font-size: .82rem; line-height: 1.5; min-width: 140px;
+  }
+  .node-box strong { display: block; margin-bottom: 4px; color: var(--blue); }
+  .node-connector { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: .8rem; color: var(--muted); padding-top: 28px; gap: 4px; }
+  .arrow-down { font-size: 1.4rem; color: var(--blue); }
+
+  /* tree viz */
+  .tree-container { display: flex; justify-content: center; overflow-x: auto; padding: 10px 0; }
+  .tree-node-row { display: flex; justify-content: center; gap: 8px; margin: 6px 0; }
+  .tree-node {
+    background: var(--node-fill); border: 1.5px solid #99bbdd;
+    border-radius: 50%; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: .72rem; font-weight: 600; color: var(--blue);
+    position: relative;
+  }
+  .tree-leaf {
+    background: var(--leaf-fill); border: 1.5px solid #88cc99;
+    border-radius: 5px; padding: 4px 8px;
+    font-size: .68rem; font-weight: 600; color: var(--primary);
+    text-align: center; min-width: 64px;
+  }
+
+  section.slide-section-label {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--accent); font-weight: 600; margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<header>
+  <div class="logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 22,20 2,20"/><path d="M12 8v6M9 14l3 3 3-3"/></svg>
+    DirichletRF
+  </div>
+  <span>SASA 2025 · Stellenbosch University</span>
+</header>
+
+<div class="slide-wrapper">
+  <div class="toc-dots" id="toc-dots"></div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 1 – Title
+  ══════════════════════════════════════════ -->
+  <div class="slide slide-title active" data-index="0">
+    <div class="title-main">Random Forest Models for Compositional Data</div>
+    <div class="authors">
+      <u>Khaled Masoumifard</u>&nbsp;&nbsp;·&nbsp;&nbsp;Stephan van der Westhuizen&nbsp;&nbsp;·&nbsp;&nbsp;Sugnet Gardner-Lubbe
+    </div>
+    <div class="affil">
+      Dept. of Statistics and Actuarial Science · Stellenbosch University · South Africa
+    </div>
+    <div class="qr-badge">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://github.com/Xaleed/DirichletRF.git" alt="QR code for GitHub">
+      <span>GitHub repository</span>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 2 – Overview
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="1">
+    <div class="slide-chip">2 / 13</div>
+    <h2>What Is This Talk About?</h2>
+    <ul class="bullet-list">
+      <li><span class="arrow">▶</span><span><strong>Compositional data</strong> — Key characteristics and modeling challenges</span></li>
+      <li><span class="arrow">▶</span><span><strong>Machine learning: Random Forest</strong> — Modeling complex relationships</span></li>
+      <li><span class="arrow">▶</span><span><strong>Dirichlet Random Forest model</strong> — Introduction and motivation</span></li>
+      <li><span class="arrow">▶</span><span><strong>Comparison results</strong> — Evaluating model performance</span></li>
+      <li><span class="arrow">▶</span><span><strong>DirichletRF R package</strong></span></li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 3 – Compositional data
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="2">
+    <div class="slide-chip">3 / 13</div>
+    <h2>Compositional Data</h2>
+    <p style="margin-bottom:14px;font-size:.95rem;">A <em>simplex</em> is a convex space of all vectors with non-negative components that sum to a constant.</p>
+    <div class="formula-box">
+      \[S^c_k = \left\{ (y_1, \dots, y_k)^\top \in \mathbb{R}^k \;\middle|\; y_i \geq 0,\; \sum_{i=1}^k y_i = c \right\}\]
+    </div>
+    <p style="font-size:.93rem;margin-bottom:14px;">It is common to set <strong><em>c</em> = 1</strong>. We refer to data from this space as <em>compositional data</em>.</p>
+    <div class="info-block">
+      <strong>Example:</strong> Consider <strong>Y</strong> = (50, 20, 30) — the number of students in mathematics, statistics, and computer science. The corresponding compositional vector is:
+      \[\left(\frac{50}{100},\;\frac{20}{100},\;\frac{30}{100}\right) = (0.5,\; 0.2,\; 0.3)\]
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 4 – Why ML / RF
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="3">
+    <div class="slide-chip">4 / 13</div>
+    <h2>Machine Learning: Random Forest</h2>
+    <ul class="bullet-list" style="gap:22px;">
+      <li>
+        <span class="arrow">▶</span>
+        <span>
+          <strong>Why machine learning?</strong><br>
+          For compositional responses: many predictors with complex non-linear patterns that traditional models cannot capture.
+        </span>
+      </li>
+      <li>
+        <span class="arrow">▶</span>
+        <span>
+          <strong>Common approaches:</strong><br>
+          Apply ML without considering the simplex geometry, or transform data (log-ratio transformations) to real space — risking distortion and bias.
+        </span>
+      </li>
+      <li>
+        <span class="arrow">▶</span>
+        <span>
+          <strong>Why Random Forests?</strong><br>
+          RFs are flexible and their splitting rules can be easily adapted to respect the simplex structure.
+        </span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 5 – Decision tree
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="4">
+    <div class="slide-chip">5 / 13</div>
+    <h2>Random Forest: Tree Structure</h2>
+    <div class="two-col" style="align-items:center;gap:48px;">
+      <div class="col" style="flex:0 0 200px;">
+        <div style="text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:8px;">Node split</div>
+        <!-- simple split diagram -->
+        <svg width="200" height="150" viewBox="0 0 200 150">
+          <rect x="55" y="5" width="90" height="44" rx="6" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="100" y="22" text-anchor="middle" font-size="11" fill="#1a4a7a" font-weight="600">S = (y₁,…,yₙ)</text>
+          <text x="100" y="40" text-anchor="middle" font-size="10" fill="#5a5a5a">parent node</text>
+          <circle cx="100" cy="70" r="4" fill="#1a4a7a"/>
+          <line x1="100" y1="49" x2="100" y2="66" stroke="#1a4a7a" stroke-width="1.5"/>
+          <line x1="100" y1="70" x2="50" y2="100" stroke="#1a4a7a" stroke-width="1.5" marker-end="url(#arr)"/>
+          <line x1="100" y1="70" x2="150" y2="100" stroke="#1a4a7a" stroke-width="1.5" marker-end="url(#arr)"/>
+          <rect x="20" y="100" width="55" height="30" rx="5" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="47" y="119" text-anchor="middle" font-size="11" fill="#1a4a7a" font-weight="600">S₁</text>
+          <rect x="125" y="100" width="55" height="30" rx="5" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="152" y="119" text-anchor="middle" font-size="11" fill="#1a4a7a" font-weight="600">S₂</text>
+          <text x="72" y="92" text-anchor="middle" font-size="9" fill="#c8860a">criteria = ?</text>
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#1a4a7a"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+      <div class="col">
+        <div style="text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:12px;">A binary decision tree</div>
+        <!-- full tree SVG -->
+        <svg width="300" height="200" viewBox="0 0 300 200">
+          <!-- level 0 -->
+          <circle cx="150" cy="20" r="18" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="150" y="24" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">Root</text>
+          <!-- level 1 -->
+          <circle cx="75" cy="80" r="16" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="75" y="84" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">L1</text>
+          <circle cx="225" cy="80" r="16" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="225" y="84" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">R1</text>
+          <line x1="135" y1="33" x2="89" y2="66" stroke="#99bbdd" stroke-width="1.5"/>
+          <line x1="165" y1="33" x2="211" y2="66" stroke="#99bbdd" stroke-width="1.5"/>
+          <!-- level 2 -->
+          <circle cx="38" cy="140" r="15" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="38" y="144" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">L2</text>
+          <circle cx="112" cy="140" r="15" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="112" y="144" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">L2</text>
+          <circle cx="188" cy="140" r="15" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="188" y="144" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">L2</text>
+          <circle cx="262" cy="140" r="15" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <text x="262" y="144" text-anchor="middle" font-size="10" font-weight="600" fill="#1a4a7a">L2</text>
+          <line x1="62" y1="92" x2="47" y2="127" stroke="#99bbdd" stroke-width="1.5"/>
+          <line x1="88" y1="92" x2="103" y2="127" stroke="#99bbdd" stroke-width="1.5"/>
+          <line x1="212" y1="92" x2="198" y2="127" stroke="#99bbdd" stroke-width="1.5"/>
+          <line x1="238" y1="92" x2="251" y2="127" stroke="#99bbdd" stroke-width="1.5"/>
+          <!-- level 3 dots -->
+          <text x="38" y="185" text-anchor="middle" font-size="16" fill="#99bbdd">⋮</text>
+          <text x="112" y="185" text-anchor="middle" font-size="16" fill="#99bbdd">⋮</text>
+          <text x="188" y="185" text-anchor="middle" font-size="16" fill="#99bbdd">⋮</text>
+          <text x="262" y="185" text-anchor="middle" font-size="16" fill="#99bbdd">⋮</text>
+        </svg>
+      </div>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted);margin-top:12px;">
+      A random forest is a collection of decision trees. At each node we must choose a <em>criterion</em> to split the data optimally.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 6 – MSE splitting
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="5">
+    <div class="slide-chip">6 / 13</div>
+    <h2>MSE Splitting & Its Limitation</h2>
+    <!-- split diagram -->
+    <div class="split-diagram">
+      <div class="node-box" style="min-width:150px;">
+        <strong>Parent Node</strong>
+        Covariate: \(X^{n\times m}\)<br>Response: \(Y^{n\times k}\)
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:10px;gap:4px;">
+        <div style="font-size:.78rem;color:var(--red);font-weight:600;">(c, i) = ?</div>
+        <svg width="120" height="40" viewBox="0 0 120 40">
+          <line x1="0" y1="20" x2="50" y2="20" stroke="#1a4a7a" stroke-width="2"/>
+          <line x1="60" y1="20" x2="120" y2="20" stroke="#1a4a7a" stroke-width="2"/>
+          <circle cx="60" cy="20" r="5" fill="#1a4a7a"/>
+          <polygon points="45,15 55,20 45,25" fill="#1a4a7a"/>
+          <polygon points="115,15 105,20 115,25" fill="#1a4a7a"/>
+        </svg>
+        <div style="display:flex;gap:60px;font-size:.77rem;color:var(--muted);">
+          <span>\(x_{ij}\leq c\)</span><span>\(x_{ij}>c\)</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div class="node-box">
+          <strong>Left Child</strong>
+          \(Y^{n_1\times k}\)<br>
+          MSE = \(\text{MSE}(Y^{n_1},c,i)\)
+        </div>
+        <div class="node-box">
+          <strong>Right Child</strong>
+          \(Y^{n_2\times k}\)<br>
+          MSE = \(\text{MSE}(Y^{n_2},c,i)\)
+        </div>
+      </div>
+    </div>
+    <div class="formula-box" style="margin-top:4px;">
+      \[(c^*, i^*) = \operatorname{argmin}_{i,c}\!\left(\text{MSE}(Y^{n_1},c,i)+\text{MSE}(Y^{n_2},c,i)\right)\]
+    </div>
+    <div class="info-block" style="margin-top:12px;">
+      <strong>⚠ Problem:</strong> In simplex space the component variance depends on the mean. Under the Dirichlet distribution: \[V(X_i)=\frac{E(X_i)\left(1-E(X_i)\right)}{\alpha_0+1}\]
+      This violates the <em>homoscedasticity</em> assumption of MSE. → Solution: use <strong>Dirichlet log-likelihood</strong>.
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 7 – Dirichlet distribution
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="6">
+    <div class="slide-chip">7 / 13</div>
+    <h2>Dirichlet Distribution</h2>
+    <div class="formula-box green" style="font-size:1rem;">
+      \[f_{\mathbf{Z}}((z_1,\ldots,z_k);\,\boldsymbol{\alpha}) = \frac{\Gamma(\alpha_0)}{\prod_{i=1}^k\Gamma(\alpha_i)}\prod_{i=1}^k z_i^{\alpha_i-1}, \quad z_i\in[0,1],\;\textstyle\sum z_i=1\]
+    </div>
+    <ul class="bullet-list" style="margin-top:24px;gap:18px;">
+      <li>
+        <span class="arrow" style="color:var(--primary);">▶</span>
+        <span>The sum-constant requirement of the simplex is <strong>directly satisfied</strong> — no transformation needed.</span>
+      </li>
+      <li>
+        <span class="arrow" style="color:var(--primary);">▶</span>
+        <span><strong>Extensions available:</strong> Zero-inflated Dirichlet and Kummer–Dirichlet for special cases.</span>
+      </li>
+      <li>
+        <span class="arrow" style="color:var(--primary);">▶</span>
+        <span>The concentration parameter \(\alpha_0 = \sum_{i=1}^k \alpha_i\) controls the spread of the distribution across the simplex.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 8 – Dirichlet log-likelihood splitting
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="7">
+    <div class="slide-chip">8 / 13</div>
+    <h2>Dirichlet Log-Likelihood Splitting</h2>
+    <div class="split-diagram">
+      <div class="node-box" style="min-width:155px;">
+        <strong>Parent Node</strong>
+        \(X^{n\times m}\), \(Y^{n\times k}\)
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:10px;gap:4px;">
+        <div style="font-size:.78rem;color:var(--red);font-weight:600;">(c, i) = ?</div>
+        <svg width="80" height="30" viewBox="0 0 80 30">
+          <line x1="0" y1="15" x2="80" y2="15" stroke="#1a4a7a" stroke-width="2"/>
+          <circle cx="40" cy="15" r="4" fill="#1a4a7a"/>
+          <polygon points="30,10 40,15 30,20" fill="#1a4a7a"/>
+          <polygon points="73,10 63,15 73,20" fill="#1a4a7a"/>
+        </svg>
+        <div style="display:flex;gap:20px;font-size:.77rem;color:var(--muted);">
+          <span>\(X_i\leq c\)</span><span>\(X_i>c\)</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div class="node-box">
+          <strong>Left Child</strong>
+          \(Y^{n_1\times k}\)<br>
+          \(\ell = \mathcal{L}(Y^{n_1},c,i)\)
+        </div>
+        <div class="node-box">
+          <strong>Right Child</strong>
+          \(Y^{n_2\times k}\)<br>
+          \(\ell = \mathcal{L}(Y^{n_2},c,i)\)
+        </div>
+      </div>
+    </div>
+    <div class="formula-box" style="margin-top:4px;">
+      \[(c^*, i^*) = \operatorname{argmax}_{i,c}\!\left(\max_{\boldsymbol{\alpha}}\mathcal{L}(Y^{n_1},c,i)+\max_{\boldsymbol{\alpha}}\mathcal{L}(Y^{n_2},c,i)\right)\]
+    </div>
+    <p style="font-size:.88rem;color:var(--muted);margin-top:10px;">
+      With this modification we obtain the <strong>Dirichlet Random Forest (DirichletRF)</strong> — applicable directly to compositional data without any transformation.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 9 – Prediction
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="8">
+    <div class="slide-chip">9 / 13</div>
+    <h2>Prediction Based on DirichletRF</h2>
+    <div class="two-col">
+      <div class="col" style="flex:0 0 200px;display:flex;flex-direction:column;align-items:center;">
+        <!-- traversal tree -->
+        <svg width="180" height="240" viewBox="0 0 180 240">
+          <!-- nodes -->
+          <ellipse cx="90" cy="20" rx="22" ry="16" fill="#ddeeff" stroke="#99bbdd" stroke-width="1.5"/>
+          <ellipse cx="50" cy="70" rx="20" ry="15" fill="#ddeeff" stroke="#2a5c45" stroke-width="2"/>
+          <text x="110" y="74" text-anchor="middle" font-size="11" fill="#99bbdd">⋮</text>
+          <ellipse cx="70" cy="120" rx="20" ry="15" fill="#ddeeff" stroke="#2a5c45" stroke-width="2"/>
+          <text x="30" y="124" text-anchor="middle" font-size="11" fill="#99bbdd">⋮</text>
+          <ellipse cx="55" cy="170" rx="20" ry="15" fill="#ddeeff" stroke="#2a5c45" stroke-width="2"/>
+          <text x="90" y="174" text-anchor="middle" font-size="11" fill="#99bbdd">⋮</text>
+          <!-- leaf -->
+          <rect x="20" y="200" width="130" height="28" rx="5" fill="#d4f0df" stroke="#88cc99" stroke-width="1.5"/>
+          <text x="85" y="218" text-anchor="middle" font-size="9.5" font-weight="600" fill="#2a5c45">{y₁, y₂, …, yₙ}</text>
+          <!-- highlighted path arrows -->
+          <defs><marker id="barr" markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#2a5c45"/></marker></defs>
+          <line x1="90" y1="36" x2="53" y2="56" stroke="#2a5c45" stroke-width="2" marker-end="url(#barr)"/>
+          <line x1="104" y1="30" x2="108" y2="60" stroke="#99bbdd" stroke-width="1.5" stroke-dasharray="4"/>
+          <line x1="51" y1="85" x2="68" y2="106" stroke="#2a5c45" stroke-width="2" marker-end="url(#barr)"/>
+          <line x1="38" y1="78" x2="33" y2="110" stroke="#99bbdd" stroke-width="1.5" stroke-dasharray="4"/>
+          <line x1="66" y1="135" x2="57" y2="156" stroke="#2a5c45" stroke-width="2" marker-end="url(#barr)"/>
+          <line x1="84" y1="128" x2="88" y2="160" stroke="#99bbdd" stroke-width="1.5" stroke-dasharray="4"/>
+          <line x1="55" y1="185" x2="65" y2="199" stroke="#2a5c45" stroke-width="2" marker-end="url(#barr)"/>
+        </svg>
+      </div>
+      <div class="col">
+        <div class="steps" style="margin-bottom:16px;">
+          <div class="step"><div class="num">1</div><span>Start at root node</span></div>
+          <div class="step"><div class="num">2</div><span>Traverse tree based on decision rules</span></div>
+          <div class="step"><div class="num">3</div><span>Reach terminal node with observations</span></div>
+        </div>
+        <div class="info-block" style="margin-bottom:12px;">
+          <strong>Default Approach</strong><br>
+          Mean: \(\hat{y} = \frac{1}{n}\sum_{i=1}^n y_i\) &nbsp;·&nbsp; Expectation: \(\hat{E}(Y_i)=\frac{\hat\alpha_i}{\sum_j\hat\alpha_j}\)<br>
+          Random Forest: average across all trees.
+        </div>
+        <div class="info-block green">
+          <strong>Distributional Approach</strong><br>
+          Collect terminal nodes from all trees and construct an empirical probability function over the simplex.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 10 – Evaluation & Transformations
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="9">
+    <div class="slide-chip">10 / 13</div>
+    <h2>Performance Evaluation</h2>
+    <div class="info-block" style="margin-bottom:18px;">
+      <strong>Transformation-based RF baselines</strong><br>
+      <code>CLR-RF</code> and <code>ILR-RF</code>: data transformed to log-ratio space → standard RF → predictions mapped back to simplex.
+      \[\text{CLR}(\mathbf{y}) = \left(\ln\frac{y_1}{g(\mathbf{y})},\ldots,\ln\frac{y_k}{g(\mathbf{y})}\right);\quad g(\mathbf{y})=\left(\prod_{i=1}^k y_i\right)^{1/k}\]
+      \[\text{ILR}(\mathbf{y}) = \text{CLR}(\mathbf{y})\,\Phi,\quad \Phi\text{ orthonormal basis}\]
+    </div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;">
+      <div class="info-block" style="flex:1;min-width:200px;">
+        <strong>1. Aitchison Distance</strong><br>
+        \[AC = \frac{1}{n}\sum_{i=1}^n\sqrt{\sum_{j=1}^k\left(\log\frac{Y_{ij}}{g(\mathbf{Y}_i)}-\log\frac{\hat Y_{ij}}{g(\hat{\mathbf{Y}}_i)}\right)^2}\]
+        <em style="font-size:.8rem;">Accounts for simplex geometry.</em>
+      </div>
+      <div class="info-block" style="flex:1;min-width:180px;">
+        <strong>2. RMSE</strong><br>
+        \[\text{RMSE}_k = \sqrt{\frac{1}{n}\sum_{i=1}^n(Y_{ij}-\hat Y_{ij})^2}\]
+        <em style="font-size:.8rem;">Standard metric. Lower = better.</em>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 11 – Results
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="10">
+    <div class="slide-chip">11 / 13</div>
+    <h2>Results: Soil Texture Data (KwaZulu-Natal)</h2>
+    <p style="font-size:.88rem;margin-bottom:14px;color:var(--muted);">
+      685 samples · compositional parts: sand, silt, clay · 120 covariates at 250 m resolution<br>
+      Source: Agricultural Research Council – Institute of Soil, Climate and Water, South Africa
+    </p>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>RF-CLR</th>
+          <th>RF-ILR</th>
+          <th style="color:#90caf9;">Dirichlet-RF ✦</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Aitchison distance</td><td>1.08</td><td>1.08</td><td class="best">0.98</td></tr>
+        <tr><td>clay RMSE</td><td>20.09</td><td>20.14</td><td class="best">17.85</td></tr>
+        <tr><td>silt RMSE</td><td>13.94</td><td>13.91</td><td class="best">12.41</td></tr>
+        <tr><td>sand RMSE</td><td>29.79</td><td>29.83</td><td class="best">25.93</td></tr>
+        <tr><td>mean RMSE</td><td>22.25</td><td>22.28</td><td class="best">19.54</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:.85rem;color:var(--muted);margin-top:10px;">
+      ✦ Dirichlet-RF outperforms CLR-RF and ILR-RF across <em>all</em> metrics in this real-data application.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 12 – Package
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="11">
+    <div class="slide-chip">12 / 13</div>
+    <h2>DirichletRF R Package</h2>
+    <div class="two-col" style="gap:32px;">
+      <div class="col">
+        <ul class="bullet-list" style="margin-bottom:16px;gap:12px;">
+          <li><span class="arrow" style="color:var(--primary);">▶</span><span>Dirichlet distribution-based splits (likelihood maximisation)</span></li>
+          <li><span class="arrow" style="color:var(--primary);">▶</span><span>Parallel processing (Unix/Mac fork, Windows cluster)</span></li>
+          <li><span class="arrow" style="color:var(--primary);">▶</span><span>Two modes: <strong>Prediction</strong> vs. <strong>Distributional</strong></span></li>
+          <li><span class="arrow" style="color:var(--primary);">▶</span><span>Two estimation methods: <strong>MoM</strong> (default) and <strong>MLE</strong></span></li>
+        </ul>
+        <div style="background:#1c1c2e;border-radius:8px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:#90caf9;margin-top:8px;">
+          <span style="color:#888;"># Install from GitHub</span><br>
+          devtools::install_github(<span style="color:#a8d8a8;">"Xaleed/DirichletRF"</span>)
+        </div>
+      </div>
+      <div class="col">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Default</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><code>B</code></td><td>100</td><td>Number of trees</td></tr>
+            <tr><td><code>d_max</code></td><td>10</td><td>Max tree depth</td></tr>
+            <tr><td><code>n_min</code></td><td>5</td><td>Min leaf samples</td></tr>
+            <tr><td><code>m_try</code></td><td>√p</td><td>Covariates per split</td></tr>
+            <tr class="highlight-row"><td><code>method</code></td><td>"mom"</td><td>"mom" or "mle"</td></tr>
+            <tr class="highlight-row"><td><code>store_samples</code></td><td>FALSE</td><td>Memory mode</td></tr>
+            <tr><td><code>n_cores</code></td><td>−1</td><td>Parallel cores</td></tr>
+            <tr class="highlight-row"><td><code>use_leaf_predictions</code></td><td>TRUE</td><td>Pre-computed vs. weight-based</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SLIDE 13 – Conclusion & Thank You
+  ══════════════════════════════════════════ -->
+  <div class="slide" data-index="12">
+    <div class="slide-chip">13 / 13</div>
+    <h2>Conclusion</h2>
+    <div style="margin-bottom:12px;">
+      <div class="conclusion-item">
+        <div class="icon">🌲</div>
+        <div><strong>For compositional data</strong>, we adapt Random Forest splitting rules to respect the geometry of the simplex — avoiding the limitations and potential bias of traditional transformations to real space.</div>
+      </div>
+      <div class="conclusion-item">
+        <div class="icon">📊</div>
+        <div><strong>Based on comparison results</strong>, the model shows strong and stable performance across a wide range of scenarios.</div>
+      </div>
+      <div class="conclusion-item">
+        <div class="icon">📦</div>
+        <div><strong>Open-source implementation</strong> available as the <code>DirichletRF</code> R package on GitHub.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:32px;margin-top:16px;">
+      <div style="text-align:center;">
+        <div style="font-family:'Source Serif 4',serif;font-size:2rem;font-weight:700;color:var(--primary);margin-bottom:8px;">Thank You!</div>
+        <div style="font-size:.82rem;color:var(--muted);">Questions welcome</div>
+      </div>
+      <div style="text-align:center;">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://github.com/Xaleed/DirichletRF.git" alt="QR" style="width:80px;border:1px solid var(--border);border-radius:6px;">
+        <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">github.com/Xaleed/DirichletRF</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end slide-wrapper -->
+
+<div class="toc-dots" id="toc-dots-bottom"></div>
+<div class="nav">
+  <button id="prev-btn" disabled>← Prev</button>
+  <span class="counter" id="counter">1 / 13</span>
+  <button id="next-btn">Next →</button>
+</div>
+<div class="kbd-hint">Keyboard: <kbd>←</kbd> <kbd>→</kbd> to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const counter = document.getElementById('counter');
+  const progressBar = document.getElementById('progress-bar');
+
+  // build dots
+  ['toc-dots','toc-dots-bottom'].forEach(id => {
+    const container = document.getElementById(id);
+    for (let i = 0; i < total; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.addEventListener('click', () => goTo(i));
+      container.appendChild(d);
+    }
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(total - 1, n));
+    slides[current].classList.add('active');
+    counter.textContent = (current + 1) + ' / ' + total;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+    progressBar.style.width = ((current + 1) / total * 100) + '%';
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    // re-typeset MathJax in the new slide
+    if (window.MathJax && window.MathJax.typesetPromise) {
+      MathJax.typesetPromise([slides[current]]);
+    }
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // init progress
+  progressBar.style.width = (1 / total * 100) + '%';
+</script>
+</body>
+</html>
