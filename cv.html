@@ -170,6 +170,39 @@
     .conf-scope.intl { background: #e8f0ff; color: #2a5dcc; }
     .conf-scope.natl { background: #fff3e8; color: #b86a00; }
 
+    /* ── Postdoc project links ── */
+    .postdoc-projects {
+      margin-top: 0.9rem;
+      display: flex; flex-direction: column; gap: 0.45rem;
+    }
+    .postdoc-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.6rem 0.9rem;
+      background: var(--accent-light); border: 1px solid var(--border2);
+      border-radius: var(--radius); text-decoration: none;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .postdoc-link:hover {
+      background: #ddd6fe; border-color: var(--accent);
+      transform: translateX(3px);
+    }
+    .postdoc-icon { font-size: 1rem; flex-shrink: 0; }
+    .postdoc-link-text {
+      display: flex; flex-direction: column; flex: 1;
+    }
+    .postdoc-link-label {
+      font-family: var(--font-mono); font-size: 0.57rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.08rem;
+    }
+    .postdoc-link-title {
+      font-size: 0.84rem; font-weight: 500; color: var(--text);
+    }
+    .postdoc-arrow {
+      font-family: var(--font-mono); font-size: 0.8rem;
+      color: var(--accent); flex-shrink: 0;
+    }
+
     @media (max-width: 580px) {
       .cv-item { grid-template-columns: 1fr; gap: 0.3rem; }
       .cv-date { font-size: 0.7rem; padding-bottom: 0.1rem; }
@@ -257,6 +290,32 @@
           <div class="cv-role">Postdoctoral Fellow</div>
           <div class="cv-org">MuViSU — Centre for Multi-dimensional Data Visualisation, Stellenbosch University</div>
           <div class="cv-desc">Developing machine learning libraries for compositional and spatial data, with research in statistical modeling and algorithm development.</div>
+          <div class="postdoc-projects">
+            <a class="postdoc-link" href="posts/postdoc-compositional-rf.html">
+              <span class="postdoc-icon">🌿</span>
+              <span class="postdoc-link-text">
+                <span class="postdoc-link-label">Research thread 1</span>
+                <span class="postdoc-link-title">Random Forest for Compositional Data</span>
+              </span>
+              <span class="postdoc-arrow">→</span>
+            </a>
+            <a class="postdoc-link" href="posts/postdoc-spatial-rf.html">
+              <span class="postdoc-icon">🗺️</span>
+              <span class="postdoc-link-text">
+                <span class="postdoc-link-label">Research thread 2</span>
+                <span class="postdoc-link-title">Random Forest for Spatial Data</span>
+              </span>
+              <span class="postdoc-arrow">→</span>
+            </a>
+            <a class="postdoc-link" href="posts/postdoc-biplot-splines.html">
+              <span class="postdoc-icon">📐</span>
+              <span class="postdoc-link-text">
+                <span class="postdoc-link-label">Research thread 3</span>
+                <span class="postdoc-link-title">Nonlinear Biplot Axes via B-Splines</span>
+              </span>
+              <span class="postdoc-arrow">→</span>
+            </a>
+          </div>
         </div>
       </div>
       <div class="cv-item">
@@ -265,6 +324,16 @@
           <div class="cv-role">Data Scientist</div>
           <div class="cv-org">Securities and Exchange Organization of Iran</div>
           <div class="cv-desc">Monitored large-scale trade transaction data (thousands per minute) to detect fraud and market manipulation. Developed time-series models and deep learning architectures (LSTM, RNN) using Python, R, and Oracle BI.</div>
+          <div class="postdoc-projects" style="margin-top:0.75rem;">
+            <a class="postdoc-link" href="posts/seo_iran.html">
+              <span class="postdoc-icon">📈</span>
+              <span class="postdoc-link-text">
+                <span class="postdoc-link-label">See more details</span>
+                <span class="postdoc-link-title">Market Surveillance &amp; Fraud Detection</span>
+              </span>
+              <span class="postdoc-arrow">→</span>
+            </a>
+          </div>
         </div>
       </div>
       <div class="cv-item">
@@ -273,6 +342,16 @@
           <div class="cv-role">Data Scientist <span style="font-weight:300;font-size:0.85em;">(Part-time)</span></div>
           <div class="cv-org">Tejaratno Company, Tehran, Iran</div>
           <div class="cv-desc">Actuarial modeling for health insurance and reinsurance, including rate-making and predictive analytics.</div>
+          <div class="postdoc-projects" style="margin-top:0.75rem;">
+            <a class="postdoc-link" href="posts/reinsurance_pricing.html">
+              <span class="postdoc-icon">📊</span>
+              <span class="postdoc-link-text">
+                <span class="postdoc-link-label">See more details</span>
+                <span class="postdoc-link-title">Reinsurance Pricing Model — Mathematical Framework</span>
+              </span>
+              <span class="postdoc-arrow">→</span>
+            </a>
+          </div>
         </div>
       </div>
       <div class="cv-item">

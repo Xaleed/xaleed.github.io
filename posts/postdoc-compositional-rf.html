@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RF for Compositional Data — Khaled Masoumifard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <!-- MathJax for rendering math -->
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['\\[','\\]'], ['$$','$$']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <style>
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.63rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      margin-bottom: 2.5rem; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .post-body { max-width: 720px; }
+    .post-body p { margin-bottom: 1.2rem; font-size: 0.97rem; line-height: 1.8; }
+    .post-body h2 {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 500;
+      margin: 2.5rem 0 0.9rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+    .post-body h2::before {
+      content: ''; width: 3px; height: 1em;
+      background: var(--accent); border-radius: 2px; flex-shrink: 0;
+    }
+
+    /* Simplex box */
+    .simplex-box {
+      background: #eef3ff; border: 1px solid #b8ccff;
+      border-radius: var(--radius); padding: 1.4rem 1.8rem;
+      margin: 1.5rem 0; text-align: center;
+      font-size: 1.05rem;
+    }
+
+    /* Bullet list */
+    .post-body ul {
+      margin: 0.6rem 0 1.2rem 1.2rem;
+    }
+    .post-body ul li { font-size: 0.95rem; line-height: 1.75; margin-bottom: 0.5rem; }
+    .post-body ul li strong { color: var(--text); }
+
+    /* Decision tree visual (pure CSS / SVG inline) */
+    .tree-diagram {
+      display: flex; justify-content: center; align-items: flex-start;
+      gap: 3rem; flex-wrap: wrap;
+      margin: 1.8rem 0; padding: 1.5rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .tree-diagram svg { max-width: 100%; height: auto; }
+
+    /* Output strip */
+    .output-strip {
+      background: var(--surface); border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.4rem; margin: 1.5rem 0;
+      font-size: 0.88rem; color: var(--muted); line-height: 1.7;
+    }
+    .output-strip strong { color: var(--text); }
+
+    /* Blog sub-items (copied from blog.html pattern) */
+    .blog-subitems {
+      display: flex; flex-direction: column; gap: 0.6rem;
+      margin-top: 1.5rem;
+    }
+    .blog-subitem {
+      display: flex; align-items: flex-start; gap: 1rem;
+      padding: 1rem 1.1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .blog-subitem:hover { border-color: var(--accent); background: var(--accent-light); }
+    .sub-icon { font-size: 1.3rem; flex-shrink: 0; padding-top: 0.1rem; }
+    .sub-text { display: flex; flex-direction: column; gap: 0.15rem; }
+    .sub-label {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+    }
+    .sub-title { font-size: 0.93rem; font-weight: 500; color: var(--text); }
+    .sub-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+
+    @media (max-width: 580px) {
+      .tree-diagram { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html" class="active">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <a class="back-link" href="../cv.html">← Back to CV</a>
+
+  <div class="page-header fade-up">
+    <span class="eyebrow">Postdoctoral Research · Thread 1</span>
+    <h1>Random Forest for Compositional Data</h1>
+  </div>
+
+  <div class="post-body fade-up">
+
+    <h2>What is Compositional Data?</h2>
+    <p>
+      Compositional data are vectors whose components are non-negative and sum to a constant —
+      for example, soil texture proportions (sand, silt, clay) that together always add to 100%.
+      These data live in a constrained geometric space called the <em>simplex</em>.
+    </p>
+
+    <p>
+      A simplex \(S^c_k\) is a convex space of all vectors with non-negative components summing to a constant \(c\):
+    </p>
+
+    <div class="simplex-box">
+      \[
+        S^c_k = \left\{ (y_1, \dots, y_k)^\top \in \mathbb{R}^k \;\middle|\; y_i \geq 0,\; \sum_{i=1}^k y_i = c \right\}
+      \]
+    </div>
+
+    <h2>Motivation</h2>
+    <ul>
+      <li>
+        <strong>Why machine learning?</strong>
+        When we work with compositional responses, we often have many predictors and very complex
+        non-linear relationships. Traditional models usually cannot capture these patterns well.
+        Machine learning is designed to handle this complexity and discover relationships that classical
+        methods might miss.
+      </li>
+      <li>
+        <strong>What is common in the context of compositional data?</strong>
+        Often, machine-learning models are applied <em>without</em> considering the simplex geometry,
+        or the data are transformed to real space before modelling — approaches that may distort
+        distances and introduce bias.
+      </li>
+      <li>
+        <strong>Why Random Forests?</strong>
+        Random Forests provide a flexible framework whose splitting rules can be adapted to respect
+        the simplex structure.
+      </li>
+    </ul>
+
+    <h2>Decision Trees &amp; Splitting</h2>
+    <p>
+      A random forest model is a collection of decision trees. In a binary decision tree, we start
+      by placing all the data in a single node. Then we split this node into two subnodes. We repeat
+      the same process for each subnode and continue splitting until we reach a predefined stopping
+      criterion. A node that is no longer split is called a terminal node or a leaf.
+    </p>
+    <p>
+      The first thing we need to decide is how to split each node — we need a <em>criterion</em>.
+    </p>
+
+    <!-- Simple node-split diagram -->
+    <div class="tree-diagram">
+      <svg viewBox="0 0 260 170" width="260" xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="11">
+        <!-- Parent -->
+        <rect x="75" y="8" width="110" height="44" rx="4" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.2"/>
+        <text x="130" y="26" text-anchor="middle" fill="#1a1916" font-size="10" font-family="serif">S = (y₁, y₂, …, yₙ)</text>
+        <text x="130" y="41" text-anchor="middle" fill="#6b6860" font-size="9">parent node</text>
+        <!-- line down -->
+        <line x1="130" y1="52" x2="130" y2="82" stroke="#6d28d9" stroke-width="1.5"/>
+        <circle cx="130" cy="85" r="4" fill="#6d28d9"/>
+        <!-- split lines -->
+        <line x1="130" y1="85" x2="65" y2="120" stroke="#6d28d9" stroke-width="1.5"/>
+        <line x1="130" y1="85" x2="195" y2="120" stroke="#6d28d9" stroke-width="1.5"/>
+        <!-- Children -->
+        <rect x="20" y="120" width="90" height="36" rx="4" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.2"/>
+        <text x="65" y="141" text-anchor="middle" fill="#1a1916" font-size="11" font-family="serif">S₁</text>
+        <rect x="150" y="120" width="90" height="36" rx="4" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.2"/>
+        <text x="195" y="141" text-anchor="middle" fill="#1a1916" font-size="11" font-family="serif">S₂</text>
+        <!-- criteria label -->
+        <text x="148" y="90" fill="#6d28d9" font-size="9" font-family="monospace">criteria = ?</text>
+      </svg>
+
+      <!-- Binary tree diagram -->
+      <svg viewBox="0 0 280 200" width="280" xmlns="http://www.w3.org/2000/svg" font-family="serif" font-size="10">
+        <!-- Root -->
+        <circle cx="140" cy="20" r="16" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.2"/>
+        <text x="140" y="24" text-anchor="middle" fill="#1a1916">Root</text>
+        <!-- Level 1 -->
+        <line x1="130" y1="35" x2="80" y2="68" stroke="#9ca3af" stroke-width="1"/>
+        <line x1="150" y1="35" x2="200" y2="68" stroke="#9ca3af" stroke-width="1"/>
+        <circle cx="80"  cy="76" r="14" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+        <text x="80"  y="80" text-anchor="middle" fill="#1a1916">L1</text>
+        <circle cx="200" cy="76" r="14" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+        <text x="200" y="80" text-anchor="middle" fill="#1a1916">R1</text>
+        <!-- Level 2 left -->
+        <line x1="72"  y1="89" x2="50"  y2="122" stroke="#9ca3af" stroke-width="1"/>
+        <line x1="88"  y1="89" x2="110" y2="122" stroke="#9ca3af" stroke-width="1"/>
+        <circle cx="50"  cy="130" r="12" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+        <text x="50"  y="134" text-anchor="middle" fill="#1a1916">L2</text>
+        <circle cx="110" cy="130" r="12" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+        <text x="110" y="134" text-anchor="middle" fill="#1a1916">L2</text>
+        <!-- Level 2 right -->
+        <line x1="192" y1="89" x2="170" y2="122" stroke="#9ca3af" stroke-width="1"/>
+        <line x1="208" y1="89" x2="230" y2="122" stroke="#9ca3af" stroke-width="1"/>
+        <circle cx="170" cy="130" r="12" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+        <text x="170" y="134" text-anchor="middle" fill="#1a1916">L2</text>
+        <circle cx="230" cy="130" r="12" fill="#ede9fe" stroke="#6d28d9" stroke-width="1"/>
+        <text x="230" y="134" text-anchor="middle" fill="#1a1916">L2</text>
+        <!-- dots -->
+        <text x="50"  y="170" text-anchor="middle" fill="#9ca3af" font-size="14">⋮</text>
+        <text x="110" y="170" text-anchor="middle" fill="#9ca3af" font-size="14">⋮</text>
+        <text x="170" y="170" text-anchor="middle" fill="#9ca3af" font-size="14">⋮</text>
+        <text x="230" y="170" text-anchor="middle" fill="#9ca3af" font-size="14">⋮</text>
+      </svg>
+    </div>
+
+    <h2>Outputs &amp; Impact</h2>
+    <div class="output-strip">
+      During this period, I have first-authored a <strong>book chapter</strong>, submitted
+      <strong>two journal articles</strong>, and am currently preparing an additional manuscript.
+      In parallel, I have developed an open-source <strong>R package</strong> for compositional
+      data analysis, based on a novel distributional and interpretable random forest framework.
+    </div>
+
+    <h2>Resources</h2>
+
+    <div class="blog-subitems">
+
+      <a class="blog-subitem" href="dirichletrf-package.html">
+        <div class="sub-icon">📦</div>
+        <div class="sub-text">
+          <span class="sub-label">R Package</span>
+          <span class="sub-title">DirichletRF — R library for compositional data</span>
+          <span class="sub-desc">Overview of the package: installation, key features, function reference, and a quick-start guide for fitting Dirichlet Random Forests in R.</span>
+        </div>
+      </a>
+
+      <a class="blog-subitem" href="dirichletrf-talk.html">
+        <div class="sub-icon">▶</div>
+        <div class="sub-text">
+          <span class="sub-label">Slide Deck · 13 slides</span>
+          <span class="sub-title">Interactive SASA presentation</span>
+          <span class="sub-desc">Walk through the full talk — from compositional data and the simplex, to Dirichlet log-likelihood splitting, prediction, and comparison results on soil texture data.</span>
+        </div>
+      </a>
+
+    </div>
+
+  </div><!-- /post-body -->
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+</body>
+</html>

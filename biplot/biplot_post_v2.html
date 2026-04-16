@@ -256,38 +256,20 @@
       The procedure is then carried out for one variable (column of $\mathbf{Y}$)
       at a time: each variable produces one axis on the same plot.
     </p>
-
-    <div class="diagram-box">
-      <svg width="600" height="115" viewBox="0 0 600 115"
-           xmlns="http://www.w3.org/2000/svg"
-           style="font-family:var(--font-mono,monospace);font-size:13px;fill:currentColor">
-        <defs>
-          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5"
-                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-            <path d="M2 1L8 5L2 9" fill="none" stroke="currentColor"
-                  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </marker>
-        </defs>
-        <rect x="10" y="32" width="110" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
-        <text x="65" y="53" text-anchor="middle" font-size="15" font-style="italic">Y</text>
-        <text x="65" y="72" text-anchor="middle" font-size="11" opacity="0.65">n × q</text>
-        <line x1="122" y1="58" x2="208" y2="58" stroke="currentColor" stroke-width="1.3" marker-end="url(#arr)" opacity="0.65"/>
-        <text x="165" y="47" text-anchor="middle" font-size="10" opacity="0.6">dimension</text>
-        <text x="165" y="59" text-anchor="middle" font-size="10" opacity="0.6">reduction</text>
-        <rect x="212" y="32" width="110" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
-        <text x="267" y="53" text-anchor="middle" font-size="15" font-style="italic">X</text>
-        <text x="267" y="72" text-anchor="middle" font-size="11" opacity="0.65">n × 2</text>
-        <line x1="324" y1="58" x2="400" y2="58" stroke="currentColor" stroke-width="1.3" marker-end="url(#arr)" opacity="0.65"/>
-        <text x="362" y="47" text-anchor="middle" font-size="10" opacity="0.6">pick column</text>
-        <text x="362" y="59" text-anchor="middle" font-size="10" opacity="0.6">j of Y</text>
-        <rect x="404" y="32" width="110" height="52" rx="6" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.5"/>
-        <text x="459" y="53" text-anchor="middle" font-size="15" font-style="italic">y</text>
-        <text x="459" y="72" text-anchor="middle" font-size="11" opacity="0.65">n × 1</text>
-        <text x="459" y="100" text-anchor="middle" font-size="10" opacity="0.5">target variable</text>
-        <text x="531" y="55" text-anchor="start" font-size="10" opacity="0.55">→ find axis</text>
-        <text x="531" y="67" text-anchor="start" font-size="10" opacity="0.55">for variable j</text>
-      </svg>
+    <div class="row">
+      $\mathbf{Y} \in \mathbb{R}^{n \times q}$
+      <span class="arrow">   →   </span>
+      $\mathbf{X} \in \mathbb{R}^{n \times 2}$
+      <span class="label">&nbsp; (dimension reduction)</span>
     </div>
+    
+    <div class="row">
+      $\mathbf{Y} \in \mathbb{R}^{n \times q}$
+      <span class="arrow">→</span>
+      $\mathbf{y} \in \mathbb{R}^{n \times 1}$
+      <span class="label">&nbsp; (choose column $j$)</span>
+    </div>
+    
 
     <h2>The core idea of the paper</h2>
 
@@ -296,55 +278,172 @@
       key idea that motivates this paper.
       We start with the $n$ observations already projected onto the 2D plane
       as $\mathbf{X}_{n \times 2}$, and a target variable
-      $\mathbf{y} \in \mathbb{R}^n$.
+      $\mathbf{y} \in \mathbb{R}^{n\times 1}$.
     </p>
 
     <p>
-      We want to place $n_\mu$ <strong>marker points</strong> —
-      labelled $\mu_1, \mu_2, \ldots, \mu_{n_\mu}$ — somewhere in this 2D plane,
-      so that they serve as a readable axis for the variable.
-      For each observation $i$, we find the marker point whose 2D location
-      $\mathbf{z}_k$ is closest to $\mathbf{x}_i$, and use its label as the
-      predicted value:
+    We place all $\mathbf{X}_{n \times 2}$ points on a single two-dimensional plot, where each column corresponds to one dimension.
     </p>
 
-    $$\hat{y}_i = \mu_{k_i^*}, \qquad
-      k_i^* = \underset{k}{\arg\min}\;\|\mathbf{x}_i - \mathbf{z}_k\|^2.$$
+    <p>
+    We aim to introduce $n_\mu$ <strong>marker points</strong>, denoted $\mu_1, \mu_2, \ldots, \mu_{n_\mu}$, within this 2D space so that they form a meaningful and interpretable axis for the variable.
+    </p>
 
-    <p>The <strong>best placement</strong> is the one that minimises the total prediction error across all observations:</p>
+    <p>
+    The question is how to determine the locations of these points.
+    </p>
+
+    <p>
+    Our approach is to define a parametric representation, denoted by
+    $\mathbf{z}_k = \big(z_{k,1}, z_{k,2})$
+    for the $k$-th marker. The parameter representation is then optimized by solving the following problem.
+    </p>
+
+    
+
 
     $$\min_{\mathbf{z}_1,\ldots,\mathbf{z}_{n_\mu}}
       \sum_{i=1}^{n}\bigl(y_i - \hat{y}_i\bigr)^2.$$
 
-    <p>
-      The classical biplot restricts the marker points to lie on a
-      <strong>straight line</strong> through the origin.
-      The key contribution of this paper is to allow them to lie on a
-      <strong>smooth curve</strong> instead — giving much better predictions
-      whenever the relationship between the 2D projection and the target
-      variable is nonlinear.
-    </p>
-
-    <h2>Representing the curve: B-splines</h2>
+      where
+      $$\hat{y}_i = \mu_{k_i^*}, \qquad
+      k_i^* = \underset{k}{\arg\min}\;\|\mathbf{x}_i - \mathbf{z}_k\|^2.$$
 
     <p>
-      To avoid searching over all possible curves, the $n_\mu$ marker
-      positions are constrained to lie on a smooth
-      <strong>B-spline curve</strong>. This means all positions are
-      determined by a single coefficient matrix
-      $\mathbf{B} \in \mathbb{R}^{(u+v)\times 2}$:
+    <p>
+      OK, let’s formalise the problem in more detail.
+    </p>
     </p>
 
-    $$\mathbf{Z} = \mathbf{M}\mathbf{B} \;\in\; \mathbb{R}^{n_\mu \times 2},$$
+
+
+
+
+
+    <h3>Goal</h3>
 
     <p>
-      where $\mathbf{M}$ is the $n_\mu \times (u+v)$ B-spline basis matrix
-      evaluated at $\boldsymbol{\mu}$, $u$ is the polynomial degree, and $v$
-      is the number of interior knots.
-      Each row of $\mathbf{Z}$ is the 2D biplot position of one marker point.
-      The full loss function that is minimised is:
+    Our goal is to construct a two-dimensional smooth trajectory of the form
+    \[
+      \mathbf{Z}(\mu) = \bigl(Z_1(\mu),\, Z_2(\mu)\bigr),
+    \]
+    where each component $Z_j(\mu)$, $j = 1, 2$, is a piecewise polynomial of
+    degree $u$ defined over consecutive intervals separated by $v$ interior knots. I will explain this in more detail:
     </p>
 
+    <h3>B-Spline Basis</h3>
+
+    <p>
+    For a spline of degree $u$ with $v$ interior knots, each component admits the
+    B-spline representation
+    \[
+      Z_j(\mu)
+      = \sum_{i=1}^{u+v} \beta_{ji}\, B_{i,u}(\mu),
+      \qquad j = 1, 2,
+    \]
+    where $B_{i,u}(\mu)$ denotes the $i$-th B-spline basis function of degree $u$,
+    defined recursively (see Hastie et al., 2009, Appendix to Chapter~5).
+    </p>
+    <p>
+    The estimation problem therefore reduces to finding the coefficients
+    \[
+      \beta_{ji}, \qquad j = 1, 2,\; i = 1, \ldots, u+v.
+    \]
+    </p>
+
+
+
+    <p>
+    In matrix form, evaluating $\mathbf{Z}$ at a grid of $n_\mu$ marker values
+    $\boldsymbol{\mu} = (\mu_1, \mu_2, \ldots, \mu_{n_\mu})$ gives
+    \[
+  \mathbf{Z}
+  = \mathbf{M}\mathbf{B}
+  =
+  \underbrace{%
+    \begin{pmatrix}
+      B_{1,u}(\mu_1)       & \cdots & B_{u+v,u}(\mu_1) \\
+      \vdots               & \ddots & \vdots \\
+      B_{1,u}(\mu_{n_\mu}) & \cdots & B_{u+v,u}(\mu_{n_\mu})
+    \end{pmatrix}%
+  }_{\mathbf{M} \;\in\; \mathbb{R}^{n_\mu \times (u+v)}}
+  \underbrace{%
+    \begin{pmatrix}
+      \beta_{11}     & \beta_{21}     \\
+      \vdots         & \vdots         \\
+      \beta_{1,u+v}  & \beta_{2,u+v}
+    \end{pmatrix}%
+  }_{\mathbf{B} \;\in\; \mathbb{R}^{(u+v) \times 2}}.
+
+    \]
+   
+    Each row $\mathbf{Z}(\mu_i) = \bigl(Z_1(\mu_i),\, Z_2(\mu_i)\bigr)$ is a
+    point on the trajectory in $\mathbb{R}^2$.
+    </p>
+
+    <h3>Algorithm</h3>
+
+    <ol>
+
+      <li>
+        <strong>Input.</strong>
+        Let $\boldsymbol{\mu}$ be a vector of $n_\mu$ equally spaced marker
+        values,
+        \[
+          \boldsymbol{\mu} = (\mu_1, \mu_2, \ldots, \mu_{n_\mu}),
+        \]
+        spanning the range of the observed variable (with a small extension beyond the
+        observed range to allow extrapolation at the axis ends).
+        The interior knots of $\mathbf{M}$ are placed at quantiles of the data.
+      </li>
+
+      <li>
+        <strong>Compute trajectory coordinates.</strong>
+        For each $\mu_i$, evaluate the trajectory $\mathbf{Z}(\mu_i)$, yielding
+        \[
+          \mathbf{Z}
+          =
+          \begin{pmatrix}
+            \mathbf{Z}(\mu_1) \\ \vdots \\ \mathbf{Z}(\mu_{n_\mu})
+          \end{pmatrix}
+          =
+          \begin{pmatrix}
+            Z_1(\mu_1) & Z_2(\mu_1) \\
+            \vdots     & \vdots     \\
+            Z_1(\mu_{n_\mu}) & Z_2(\mu_{n_\mu})
+          \end{pmatrix}
+          = \mathbf{M}\mathbf{B}.
+        \]
+        For each observation $i$ with covariate pair
+        $(x_{i1}, x_{i2})$, define the Euclidean distance from that point to
+        each trajectory location as
+        \[
+          d_i(\mu_k)
+          = \sqrt{(x_{i1} - Z_1(\mu_k))^2 + (x_{i2} - Z_2(\mu_k))^2},
+          \qquad k = 1, \ldots, n_\mu.
+        \]
+        The predicted response for observation $i$ is the marker value at the
+        closest trajectory point:
+        \[
+          \hat{y}_i
+          = \arg\min_{\mu_k}\; d_i(\mu_k).
+        \]
+      </li>
+
+      <li>
+        <strong>Loss minimisation.</strong>
+        The coefficient matrix $\mathbf{B}$ is estimated by minimising
+        \[
+          L(\mathbf{B} \mid u, v)
+          = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2.
+        \]
+        </li>
+
+    </ol>
+
+    <p>
+      
+In the library, the loss function is augmented with a smoothness penalty that controls the curvature of the trajectory. The corresponding parameters are set by default following the specification in the paper.
     $$L(\mathbf{B})
       = \frac{1}{C_1}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2
       \;+\;

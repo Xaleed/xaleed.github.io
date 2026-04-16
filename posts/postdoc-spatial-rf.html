@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RF for Spatial Data — Khaled Masoumifard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$','$']], displayMath: [['\\[','\\]'], ['$$','$$']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <style>
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.63rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      margin-bottom: 2.5rem; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .post-body { max-width: 720px; }
+    .post-body p { margin-bottom: 1.2rem; font-size: 0.97rem; line-height: 1.8; }
+    .post-body h2 {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 500;
+      margin: 2.5rem 0 0.9rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+    .post-body h2::before {
+      content: ''; width: 3px; height: 1em;
+      background: var(--accent); border-radius: 2px; flex-shrink: 0;
+    }
+
+    .math-block {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.6rem;
+      margin: 1.4rem 0; overflow-x: auto;
+      font-size: 1.05rem;
+    }
+
+    /* Notation table */
+    .notation-table {
+      width: 100%; border-collapse: collapse; margin: 1.2rem 0;
+      font-size: 0.88rem;
+    }
+    .notation-table th {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); padding: 0.5rem 0.8rem;
+      border-bottom: 2px solid var(--border); text-align: left;
+    }
+    .notation-table td {
+      padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border);
+      vertical-align: top; line-height: 1.6;
+    }
+    .notation-table td:first-child {
+      font-family: var(--font-mono); font-size: 0.82rem;
+      color: var(--accent); white-space: nowrap;
+    }
+    .notation-table tr:last-child td { border-bottom: none; }
+
+    /* Status badge */
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 0.3rem 0.75rem; border-radius: 999px;
+      background: #fff3e8; color: #b86a00;
+      border: 1px solid #f5c68a; margin-top: 1rem;
+    }
+    .status-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: #f59e0b; display: block;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.35; }
+    }
+
+    .spatial-diagram {
+      display: flex; justify-content: center;
+      margin: 1.8rem 0;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html" class="active">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <a class="back-link" href="../cv.html">← Back to CV</a>
+
+  <div class="page-header fade-up">
+    <span class="eyebrow">Postdoctoral Research · Thread 2</span>
+    <h1>Random Forest for Spatial Data</h1>
+  </div>
+
+  <div class="post-body fade-up">
+
+    <span class="status-badge">Ongoing research</span>
+
+    <h2>Setup &amp; Notation</h2>
+    <p>
+      Let \(\mathcal{D} = \{(\mathbf{X}(s_i),\, Y(s_i),\, s_i)\}_{i=1}^n\) be a spatial dataset,
+      where:
+    </p>
+
+    <table class="notation-table">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>\(s_i \in \mathbb{R}^m\)</td>
+          <td>Spatial location of the \(i\)-th observation in an \(m\)-dimensional domain</td>
+        </tr>
+        <tr>
+          <td>\(\mathbf{X}(s_i) \in \mathbb{R}^p\)</td>
+          <td>Covariate vector at location \(s_i\)</td>
+        </tr>
+        <tr>
+          <td>\(Y(s_i) \in \mathbb{R}\)</td>
+          <td>Response variable at location \(s_i\)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>The Spatial Model</h2>
+    <p>
+      Consider the traditional spatial regression model:
+    </p>
+
+    <div class="math-block">
+      \[
+        y(s) = f\!\left(\mathbf{X}(s)\right) + \eta(s) + e
+      \]
+    </div>
+
+    <p>where the three components play distinct roles:</p>
+    <ul style="margin: 0.4rem 0 1.2rem 1.2rem;">
+      <li style="font-size:0.95rem; line-height:1.75; margin-bottom:0.5rem;">
+        \(f(\mathbf{X}(s))\) — a deterministic function of the covariates
+      </li>
+      <li style="font-size:0.95rem; line-height:1.75; margin-bottom:0.5rem;">
+        \(\eta(s)\) — <em>spatially structured residuals</em>, capturing dependence across locations
+      </li>
+      <li style="font-size:0.95rem; line-height:1.75;">
+        \(e\) — pure noise
+      </li>
+    </ul>
+
+    <!-- Simple spatial field illustration -->
+    <div class="spatial-diagram">
+      <svg viewBox="0 0 340 180" width="340" xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="10">
+        <!-- Grid background -->
+        <rect x="10" y="10" width="200" height="160" rx="4" fill="#f2f0ec" stroke="#e2ddd6" stroke-width="1"/>
+        <!-- Gradient spatial points -->
+        <circle cx="50"  cy="40"  r="9" fill="rgba(109,40,217,0.75)"/>
+        <circle cx="90"  cy="60"  r="7" fill="rgba(109,40,217,0.55)"/>
+        <circle cx="130" cy="45"  r="8" fill="rgba(109,40,217,0.65)"/>
+        <circle cx="170" cy="70"  r="6" fill="rgba(109,40,217,0.40)"/>
+        <circle cx="60"  cy="100" r="7" fill="rgba(109,40,217,0.50)"/>
+        <circle cx="110" cy="120" r="9" fill="rgba(109,40,217,0.80)"/>
+        <circle cx="160" cy="130" r="6" fill="rgba(109,40,217,0.45)"/>
+        <circle cx="80"  cy="150" r="7" fill="rgba(109,40,217,0.60)"/>
+        <circle cx="145" cy="90"  r="5" fill="rgba(109,40,217,0.35)"/>
+        <!-- Legend -->
+        <text x="20" y="175" fill="#6b6860" font-size="9">Spatial domain  s ∈ ℝᵐ</text>
+        <!-- Arrow to RF box -->
+        <line x1="215" y1="90" x2="245" y2="90" stroke="#6d28d9" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <defs>
+          <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#6d28d9"/>
+          </marker>
+        </defs>
+        <!-- RF box -->
+        <rect x="248" y="55" width="85" height="70" rx="4" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.2"/>
+        <text x="290" y="78" text-anchor="middle" fill="#6d28d9" font-size="9" font-weight="bold">Random</text>
+        <text x="290" y="91" text-anchor="middle" fill="#6d28d9" font-size="9" font-weight="bold">Forest</text>
+        <text x="290" y="108" text-anchor="middle" fill="#6b6860" font-size="8">f(X(s))</text>
+        <text x="290" y="120" text-anchor="middle" fill="#6b6860" font-size="8">η(s)</text>
+      </svg>
+    </div>
+
+    <h2>Approach</h2>
+    <p>
+      In this project, we employ a random forest model to obtain estimates for both \(f(\cdot)\),
+      the covariate effect, and \(\eta(\cdot)\), the spatially structured residual component.
+      By embedding spatial dependence directly into the forest framework, the model can learn
+      location-dependent patterns that purely feature-based approaches would miss.
+    </p>
+
+  </div>
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+</body>
+</html>

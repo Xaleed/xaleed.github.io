@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Scientist — Securities and Exchange Organization of Iran</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    background: #fafaf8;
+    padding: 0;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 64px 72px 80px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Georgia', sans-serif; font-size: 13px;
+    color: #3a5fa0; text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid #c0cfe8; border-radius: 4px;
+    background: #f0f4fb;
+    transition: background 0.2s, border-color 0.2s;
+    margin-bottom: 2rem;
+  }
+  .back-link:hover { background: #dde6f5; border-color: #3a5fa0; }
+
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 24px;
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-family: 'Georgia', serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  header .subtitle {
+    font-size: 14px;
+    color: #555;
+    font-style: italic;
+    letter-spacing: 0.3px;
+  }
+
+  header .meta {
+    display: flex; gap: 2rem; margin-top: 14px; flex-wrap: wrap;
+  }
+
+  header .meta-item {
+    font-family: 'Georgia', sans-serif;
+    font-size: 13px; color: #3a5fa0;
+    display: flex; align-items: center; gap: 0.4rem;
+  }
+
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .section-num {
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #3a5fa0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .section h2 {
+    font-family: 'Georgia', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    border-bottom: 1px solid #e0e0d8;
+    padding-bottom: 8px;
+    flex: 1;
+  }
+
+  p {
+    margin-bottom: 14px;
+    color: #2a2a2a;
+    font-size: 15.5px;
+  }
+
+  .highlight-box {
+    background: #f5f5f0;
+    border-left: 3px solid #3a5fa0;
+    border-radius: 0 4px 4px 0;
+    padding: 18px 24px;
+    margin: 20px 0;
+  }
+
+  .highlight-box p { margin-bottom: 0; }
+
+  .tag-row {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 16px 0;
+  }
+
+  .tag {
+    font-family: 'Georgia', sans-serif;
+    font-size: 12.5px;
+    padding: 0.28rem 0.75rem;
+    border-radius: 3px;
+    border: 1px solid #c0cfe8;
+    background: #f0f4fb;
+    color: #3a5fa0;
+    letter-spacing: 0.03em;
+  }
+
+  .pattern-list {
+    list-style: none;
+    margin: 16px 0;
+  }
+
+  .pattern-list li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 0.75rem;
+    padding: 10px 0;
+    border-bottom: 1px solid #e8e8e0;
+    font-size: 15px;
+    color: #2a2a2a;
+    align-items: start;
+  }
+
+  .pattern-list li:last-child { border-bottom: none; }
+
+  .pattern-list .icon {
+    font-size: 1rem;
+    padding-top: 2px;
+  }
+
+  .pattern-list strong {
+    color: #1a1a1a;
+  }
+
+  .note {
+    background: #fffbf0;
+    border: 1px solid #e8d890;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #555;
+    margin: 16px 0;
+  }
+
+  .note strong { color: #7a6010; }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid #ddddd5;
+    font-size: 12.5px;
+    color: #888;
+    font-style: italic;
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 36px 24px 48px; }
+  }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; padding: 32px 48px; }
+    .back-link { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back-link" href="../cv.html">← Back to CV</a>
+
+  <header>
+    <h1>Data Scientist</h1>
+    <div class="subtitle">Securities and Exchange Organization of Iran</div>
+    <div class="meta">
+      <span class="meta-item">📅 2022 – 2024</span>
+      <span class="meta-item">📍 Tehran, Iran</span>
+      <span class="meta-item">🏛️ Full-time</span>
+    </div>
+  </header>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 1</span>
+      <h2>Role Overview</h2>
+    </div>
+    <p>
+      Monitored high-frequency trading data — thousands of transactions per second — to detect and prevent fraud and market manipulation in real time. Developed time-series models and deep learning architectures using Python and R, and leveraged Oracle BI for large-scale data processing and visualization.
+    </p>
+    <div class="tag-row">
+      <span class="tag">Python</span>
+      <span class="tag">R</span>
+      <span class="tag">Oracle BI</span>
+      <span class="tag">LSTM</span>
+      <span class="tag">RNN</span>
+      <span class="tag">Time-Series Modeling</span>
+      <span class="tag">Market Surveillance</span>
+      <span class="tag">Deep Learning</span>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 2</span>
+      <h2>Real-Time Surveillance Systems</h2>
+    </div>
+    <p>
+      Designed and implemented real-time surveillance systems to identify suspicious trading behaviors <em>before execution</em>, enabling proactive intervention rather than purely retrospective investigation.
+    </p>
+    <div class="highlight-box">
+      <p>The core challenge was operating at scale: the system had to process and flag anomalous patterns within a stream of thousands of transactions per second, with low enough latency to act before orders were executed.</p>
+    </div>
+    <p>Key manipulation patterns detected by the system:</p>
+    <ul class="pattern-list">
+      <li>
+        <span class="icon">⚡</span>
+        <span><strong>Spoofing</strong> — Identifying traders placing large orders with the intent to cancel before execution, artificially moving prices to benefit a pre-positioned trade.</span>
+      </li>
+      <li>
+        <span class="icon">🔄</span>
+        <span><strong>Circular / Coordinated Group Trading</strong> — Detecting clusters of accounts engaging in wash trades or coordinated buy-sell cycles to create the appearance of market activity.</span>
+      </li>
+      <li>
+        <span class="icon">🚩</span>
+        <span><strong>Other Market Abuse Strategies</strong> — Flagging layering, momentum ignition, and other patterns indicative of intentional price distortion.</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 3</span>
+      <h2>Post-Trade Analysis</h2>
+    </div>
+    <p>
+      Conducted post-trade analysis to uncover fraudulent activities and identify involved traders. This complemented the real-time system by enabling deeper investigation of flagged cases and building evidentiary records for regulatory action.
+    </p>
+    <div class="note">
+      <strong>Note:</strong> Post-trade analysis allowed for reconstruction of trading timelines, network analysis of coordinated accounts, and statistical profiling of behavioral anomalies that are too subtle to catch in a live stream.
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 4</span>
+      <h2>Dashboards &amp; Stakeholder Tools</h2>
+    </div>
+    <p>
+      Built interactive dashboards and analytical tools in Oracle BI, enabling non-technical stakeholders — including regulators and compliance officers — to monitor market behavior and investigate anomalies efficiently without requiring direct access to raw data or code.
+    </p>
+    <p>
+      The goal was to translate complex statistical outputs into actionable views: summary indicators, drill-down capabilities per trader or instrument, and alert queues ranked by anomaly severity.
+    </p>
+  </div>
+
+  <footer>
+    Securities and Exchange Organization of Iran &nbsp;·&nbsp; 2022 – 2024 &nbsp;·&nbsp; Khaled Masoumifard
+  </footer>
+
+</div>
+</body>
+</html>

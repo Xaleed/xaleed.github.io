@@ -165,7 +165,7 @@
       <li><code>LnjTinyNew.cpp</code> — C++ (Rcpp) loss function and Nelder–Mead optimiser</li>
     </ul>
 
-    <a class="nav-card" href="biplot_intro.html">
+    <a class="nav-card" href="biplot_post_v2.html">
       <span style="font-size:1.3rem">←</span>
       <span class="nav-card-text">
         <span class="nav-card-title">Back to the intro post</span>
@@ -197,20 +197,14 @@
     n <- nrow(X)
 }</code></pre>
       <div class="code-section-note">
-        <strong>Why 103?</strong> An empirical constant chosen by the package authors to balance speed
-        against estimation quality. The subsampled loss is an unbiased estimator of the full loss,
-        so the optimised spline is statistically consistent.
+        <strong>Why 103?</strong> Selected by the package authors, likely intended to strike a balance between computational speed and estimation accuracy.
       </div>
     </div>
 
     <!-- ══════════════════════════════════════════════════════ -->
     <h2>Step 2 — Building the B-spline basis matrix $\mathbf{M}$ <span class="math-pill">R</span></h2>
 
-    <p>
-      The marker grid $\boldsymbol{\mu}$ spans the range of $\mathbf{y}$
-      with a 30% extension, and is augmented with "nice" tick values from
-      <code>pretty()</code> so the axis reads cleanly.
-    </p>
+   
 
     <div class="code-section">
       <div class="code-section-header">
@@ -231,12 +225,7 @@ nmu     <- length(mu)</code></pre>
       </div>
     </div>
 
-    <p>
-      The B-spline basis $\mathbf{M} \in \mathbb{R}^{n_\mu \times (u+v)}$
-      is built with interior knots placed at the empirical quantiles of
-      $\mathbf{y}$, then <strong>centred</strong> so the curve passes
-      through the biplot origin at $\mu = 0$ (the mean of $\mathbf{y}$):
-    </p>
+  
 
     <div class="code-section">
       <div class="code-section-header">
@@ -262,11 +251,7 @@ M <- scale(M, scale = FALSE, center = M[which.min(abs(mu)), ])</code></pre>
     <!-- ══════════════════════════════════════════════════════ -->
     <h2>Step 3 — Initialising from the regression axis <span class="math-pill">R</span></h2>
 
-    <p>
-      Because the loss is non-smooth, a good starting point matters.
-      The initial spline is set to the best B-spline approximation of the
-      classical straight (regression) axis:
-    </p>
+    <p>The Nelder–Mead method requires initial parameter values. These are set at the R level, after which the remaining computations are carried out in C++.</p>
 
     <div class="code-section">
       <div class="code-section-header">

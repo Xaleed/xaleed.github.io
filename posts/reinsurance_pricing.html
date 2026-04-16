@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reinsurance Pricing Model — Mathematical Framework</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #1a1a1a;
+    background: #fafaf8;
+    padding: 0;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 64px 72px 80px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 24px;
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-family: 'Georgia', serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  header .subtitle {
+    font-size: 14px;
+    color: #555;
+    font-style: italic;
+    letter-spacing: 0.3px;
+  }
+
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .section-num {
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #3a5fa0;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .section h2 {
+    font-family: 'Georgia', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    border-bottom: 1px solid #e0e0d8;
+    padding-bottom: 8px;
+    flex: 1;
+  }
+
+  p {
+    margin-bottom: 14px;
+    color: #2a2a2a;
+    font-size: 15.5px;
+  }
+
+  .math-block {
+    background: #f5f5f0;
+    border-left: 3px solid #3a5fa0;
+    border-radius: 0 4px 4px 0;
+    padding: 18px 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .math-block.center {
+    text-align: center;
+    border-left: none;
+    border-top: 1px solid #ddddd5;
+    border-bottom: 1px solid #ddddd5;
+    background: #f8f8f4;
+    border-radius: 0;
+    padding: 20px 24px;
+  }
+
+  .cases-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    font-size: 14.5px;
+  }
+
+  .cases-table th {
+    background: #eeeee8;
+    padding: 10px 16px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #ccccc5;
+  }
+
+  .cases-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid #e8e8e0;
+    vertical-align: middle;
+  }
+
+  .cases-table tr:last-child td { border-bottom: none; }
+  .cases-table tr:nth-child(even) td { background: #f9f9f5; }
+
+  .notation-grid {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 6px 20px;
+    margin: 14px 0 20px;
+    font-size: 14.5px;
+  }
+
+  .notation-grid .sym {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #3a5fa0;
+    padding: 3px 0;
+    white-space: nowrap;
+  }
+
+  .notation-grid .def {
+    color: #2a2a2a;
+    padding: 3px 0;
+  }
+
+  .note {
+    background: #fffbf0;
+    border: 1px solid #e8d890;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #555;
+    margin: 16px 0;
+  }
+
+  .note strong { color: #7a6010; }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid #ddddd5;
+    font-size: 12.5px;
+    color: #888;
+    font-style: italic;
+    text-align: center;
+  }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Georgia', sans-serif; font-size: 13px;
+    color: #3a5fa0; text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid #c0cfe8; border-radius: 4px;
+    background: #f0f4fb;
+    transition: background 0.2s, border-color 0.2s;
+    margin-bottom: 2rem;
+    display: inline-flex;
+  }
+  .back-link:hover { background: #dde6f5; border-color: #3a5fa0; }
+
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; padding: 32px 48px; }
+    .back-link { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <a class="back-link" href="../cv.html">← Back to CV</a>
+
+  <header>
+    <h1>Reinsurance Pricing Model</h1>
+    <div class="subtitle">Mathematical Framework — Non-Proportional &amp; Proportional Treaties</div>
+  </header>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 1</span>
+      <h2>Inflation Adjustment</h2>
+    </div>
+    <p>Let \( r_i \) be the annual inflation rate for year \( i \), and \( d_i \) a development factor. The cumulative inflation factor bringing losses to the most recent year's value is:</p>
+    <div class="math-block center">
+      \[
+        \text{EffectiveInflation}_i = \prod_{j=i+1}^{n} (1 + r_j)
+      \]
+    </div>
+    <p>Inflation- and development-adjusted loss and premium for observation \( i \):</p>
+    <div class="math-block center">
+      \[
+        L^*_i = L_i \cdot \text{EffectiveInflation}_i \cdot d_i
+        \qquad
+        P^*_i = P_i \cdot \text{EffectiveInflation}_i
+      \]
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 2</span>
+      <h2>Proportional Reinsurance — Quota Share &amp; Surplus</h2>
+    </div>
+
+    <div class="notation-grid">
+      <span class="sym">\(S\)</span><span class="def">Insured sum (capital value)</span>
+      <span class="sym">\(Q\)</span><span class="def">Quota share treaty limit</span>
+      <span class="sym">\(\alpha\)</span><span class="def">Cedant retention ratio under quota share</span>
+      <span class="sym">\(T\)</span><span class="def">Surplus treaty limit (maximum ceded capacity)</span>
+      <span class="sym">\(c_{QS},\, c_S\)</span><span class="def">Commission rates for quota share and surplus treaties</span>
+    </div>
+
+    <p><strong>Insurer (cedant) retention share:</strong></p>
+    <div class="math-block center">
+      \[
+        \phi_{\text{ins}}(S) =
+        \begin{cases}
+          \alpha & \text{if } S \leq Q \\[6pt]
+          \dfrac{Q}{S}\,\alpha & \text{if } S > Q
+        \end{cases}
+      \]
+    </div>
+
+    <p><strong>Reinsurer share under quota share:</strong></p>
+    <div class="math-block center">
+      \[
+        \phi_{\text{re}}(S) =
+        \begin{cases}
+          1 - \alpha & \text{if } S \leq Q \\[6pt]
+          \dfrac{Q}{S}(1 - \alpha) & \text{if } S > Q
+        \end{cases}
+      \]
+    </div>
+
+    <p><strong>Reinsurer share under surplus treaty:</strong></p>
+    <div class="math-block center">
+      \[
+        \phi_{\text{surp}}(S) =
+        \begin{cases}
+          0 & \text{if } S \leq Q \\[6pt]
+          1 - \dfrac{Q}{S} & \text{if } Q < S \leq Q + T \\[6pt]
+          \dfrac{T}{S} & \text{if } S > Q + T
+        \end{cases}
+      \]
+    </div>
+
+    <p><strong>Residual (excess) share not covered by either treaty:</strong></p>
+    <div class="math-block center">
+      \[
+        \phi_{\text{exc}}(S) = 1 - \phi_{\text{ins}}(S) - \phi_{\text{re}}(S) - \phi_{\text{surp}}(S)
+      \]
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 3</span>
+      <h2>Excess of Loss (XL) Layer</h2>
+    </div>
+    <p>For a single ground-up loss \(x\), the amount ceded under a layer of \(m\) in excess of retention \(l\) is:</p>
+    <div class="math-block center">
+      \[
+        Z(x) = \min\!\bigl(\max(x - l,\; 0),\; m\bigr)
+      \]
+    </div>
+    <p>The annual aggregate ceded loss with \(K\) reinstatements available is capped at \((K+1)\cdot m\):</p>
+    <div class="math-block center">
+      \[
+        A_t = \min\!\left(\sum_{i} Z(x_{i,t}),\;\; (K+1)\cdot m\right)
+      \]
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 4</span>
+      <h2>Burning Cost Rate</h2>
+    </div>
+    <p>The empirical burning cost rate is the ratio of inflation-adjusted ceded losses to adjusted premium across all observation years:</p>
+    <div class="math-block center">
+      \[
+        \text{BC} = \frac{\displaystyle\sum_{t} A_t}{\displaystyle\sum_{t} P^*_t}
+      \]
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 5</span>
+      <h2>Loss on Line (LOL)</h2>
+    </div>
+    <p>Loss on Line expresses the expected layer loss as a fraction of the layer limit, scaled by projected premium income (EGNPI):</p>
+    <div class="math-block center">
+      \[
+        \text{LOL} = \frac{\text{BC} \times \text{EGNPI}}{m}
+      \]
+    </div>
+    <div class="notation-grid">
+      <span class="sym">EGNPI</span><span class="def">Estimated Gross Net Premium Income for the prospective period</span>
+      <span class="sym">\(m\)</span><span class="def">Layer limit</span>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 6</span>
+      <h2>Rate on Line with Reinstatements — Poisson Model</h2>
+    </div>
+    <p>Let \(\lambda = \text{LOL}\) be the expected number of layer exhaustions per year, and \(c_k\) the reinstatement premium factor payable upon the \(k\)-th reinstatement (\(k = 0, \ldots, K-1\)).</p>
+
+    <p>The cost loading factor, which accounts for reinstatement premiums received by the reinsurer, is:</p>
+    <div class="math-block center">
+      \[
+        C(\lambda, \{c_k\}) = \sum_{k=0}^{K-1} p_k \left(1 + \sum_{j=0}^{k-1} c_j\right)
+        \;+\; \left(1 - \sum_{k=0}^{K-1} p_k\right)\left(1 + \sum_{j=0}^{K-1} c_j\right)
+      \]
+    </div>
+    <p>where \(p_k = e^{-\lambda}\,\dfrac{\lambda^k}{k!}\) is the Poisson probability of exactly \(k\) exhaustions.</p>
+
+    <p><strong>Rate on Line and initial flat premium:</strong></p>
+    <div class="math-block center">
+      \[
+        \text{ROL} = \frac{\text{LOL}}{C(\lambda, \{c_k\})}, \qquad \Pi_0 = \text{ROL} \times m
+      \]
+    </div>
+
+    <p><strong>Profit-adjusted premium</strong> at target profit margin \(\theta\):</p>
+    <div class="math-block center">
+      \[
+        \Pi_{\text{adj}} = \text{ROL}\!\left(\frac{\lambda}{1-\theta},\;\frac{\text{LOL}}{1-\theta}\right) \times m
+      \]
+    </div>
+    <div class="note"><strong>Note:</strong> The profit adjustment scales both \(\lambda\) and LOL upward by \(\tfrac{1}{1-\theta}\), which increases the expected frequency of exhaustion seen by the reinsurer and thus raises the premium to embed the required margin.</div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 7</span>
+      <h2>Frequency–Severity Model</h2>
+    </div>
+    <p><strong>Frequency:</strong> The number of large losses in a period follows a Poisson distribution:</p>
+    <div class="math-block center">
+      \[
+        N \sim \mathrm{Poisson}(\hat{\lambda}), \qquad \hat{\lambda} = n_{\text{policies}} \times \hat{p}
+      \]
+    </div>
+    <p>where \(\hat{p}\) is the empirical large-loss frequency per policy estimated from historical data.</p>
+
+    <p><strong>Severity:</strong> Individual large-loss severity is modelled by a Pareto distribution fitted by maximum likelihood:</p>
+    <div class="math-block center">
+      \[
+        X \sim \mathrm{Pareto}(\hat{\alpha},\;\hat{\sigma})
+      \]
+    </div>
+    <p>The MLE estimate of the shape parameter \(\hat{\alpha}\) is:</p>
+    <div class="math-block center">
+      \[
+        \hat{\alpha} = \frac{n}{\displaystyle\sum_{i=1}^n \ln\!\left(\frac{x_i}{x_{\min}}\right)}
+      \]
+    </div>
+    <p>The mean of the fitted distribution (valid for \(\hat{\alpha} > 1\)):</p>
+    <div class="math-block center">
+      \[
+        \mathbb{E}[X] = \frac{\hat{\alpha}\,\hat{\sigma}}{\hat{\alpha} - 1}
+      \]
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 8</span>
+      <h2>Monte Carlo Premium Estimation</h2>
+    </div>
+    <p>For simulation run \(i = 1, \ldots, N_{\text{sim}}\), draw \(N_i \sim \mathrm{Poisson}(\hat{\lambda})\) losses and compute the aggregate ceded loss:</p>
+    <div class="math-block center">
+      \[
+        X_i = \sum_{j=1}^{N_i} Z(Y_{i,j}), \qquad Y_{i,j} \sim \mathrm{Pareto}(\hat{\alpha}, \hat{\sigma})
+      \]
+    </div>
+    <p>Define the expected aggregate ceded loss up to \(k\) reinstatements and the per-reinstatement layer expectations:</p>
+    <div class="math-block center">
+      \[
+        R_k = \mathbb{E}\!\left[\min\bigl(X,\,(k+1)m\bigr)\right]
+        \;\approx\;
+        \frac{1}{N_{\text{sim}}}\sum_{i=1}^{N_{\text{sim}}} \min\bigl(X_i,\,(k+1)m\bigr)
+      \]
+    </div>
+    <div class="math-block center">
+      \[
+        r_k = \mathbb{E}\!\left[\min\!\bigl(\max(X - km,\,0),\,m\bigr)\right]
+      \]
+    </div>
+    <p>The initial premium with \(K\) paid reinstatements at uniform rate \(c\):</p>
+    <div class="math-block center">
+      \[
+        \Pi_0 = \frac{R_K}{1 + c\;\dfrac{\displaystyle\sum_{k=0}^{K-1} r_k}{m}}
+      \]
+    </div>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">§ 9</span>
+      <h2>Confidence Interval for Premium Estimate</h2>
+    </div>
+    <p>A \((1-\alpha)\)-level Student \(t\)-interval on the simulated aggregate loss distribution \(\{R_K^{(i)}\}\):</p>
+    <div class="math-block center">
+      \[
+        \bar{X} \;\pm\; t_{\alpha/2,\;n-1} \cdot \frac{s}{\sqrt{n}}
+      \]
+    </div>
+    <p>where \(\bar{X}\) and \(s\) are the sample mean and standard deviation of the \(N_{\text{sim}}\) simulated aggregate ceded losses, and \(t_{\alpha/2,\,n-1}\) is the critical value from the \(t\)-distribution with \(n-1\) degrees of freedom.</p>
+  </div>
+
+  <footer>
+    Reinsurance Pricing Model — Mathematical Framework &nbsp;·&nbsp; Generated from actuarial source code
+  </footer>
+
+</div>
+</body>
+</html>

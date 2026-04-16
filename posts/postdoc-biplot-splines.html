@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nonlinear Biplot Axes via B-Splines — Khaled Masoumifard</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .back-link {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      font-family: var(--font-mono); font-size: 0.63rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      margin-bottom: 2.5rem; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    .post-body { max-width: 720px; }
+    .post-body p { margin-bottom: 1.2rem; font-size: 0.97rem; line-height: 1.8; }
+    .post-body h2 {
+      font-family: var(--font-serif); font-size: 1.3rem; font-weight: 500;
+      margin: 2.5rem 0 0.9rem; padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.7rem;
+    }
+    .post-body h2::before {
+      content: ''; width: 3px; height: 1em;
+      background: var(--accent); border-radius: 2px; flex-shrink: 0;
+    }
+
+    /* Citation card */
+    .citation-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 1rem 1.4rem; margin: 1.5rem 0;
+      font-size: 0.88rem; color: var(--muted); line-height: 1.7;
+    }
+    .citation-card em { color: var(--text); }
+    .citation-card strong { color: var(--accent); }
+
+    /* Code mention */
+    code {
+      font-family: var(--font-mono); font-size: 0.82em;
+      background: var(--accent-light); color: var(--accent);
+      padding: 0.1rem 0.4rem; border-radius: 3px;
+    }
+
+    /* Tech strip */
+    .tech-strip {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin: 1rem 0 1.5rem;
+    }
+
+    /* Spline illustration */
+    .spline-diagram {
+      display: flex; justify-content: center;
+      margin: 1.8rem 0;
+    }
+
+    /* Reference links */
+    .ref-row {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.4rem;
+    }
+    .ref-row a {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      padding: 0.22rem 0.6rem; border: 1px solid var(--border);
+      border-radius: 3px; transition: all 0.2s;
+    }
+    .ref-row a:hover { color: white; background: var(--accent); border-color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
+  <button class="nav-toggle" aria-label="Toggle menu"
+    onclick="document.querySelector('.nav-links').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="../index.html">About</a></li>
+    <li><a href="../cv.html" class="active">CV</a></li>
+    <li><a href="../projects.html">Projects</a></li>
+    <li><a href="../blog.html">Blog</a></li>
+    <li><a href="../contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+  <a class="back-link" href="../cv.html">← Back to CV</a>
+
+  <div class="page-header fade-up">
+    <span class="eyebrow">Postdoctoral Research · Thread 3</span>
+    <h1>Nonlinear Biplot Axes via B-Splines</h1>
+  </div>
+
+  <div class="post-body fade-up">
+
+    <h2>Background</h2>
+    <p>
+      A biplot is a simultaneous display of the rows and columns of a data matrix in a low-dimensional space,
+      typically used to visualise multivariate structure. Classical biplot axes are <em>linear</em> —
+      they cannot faithfully represent nonlinear relationships between variables and the projected scores.
+    </p>
+    <p>
+      This work implements the spline-based nonlinear biplot axis method introduced by
+      Groenen, Le Roux &amp; Gardner-Lubbe (2015), which replaces straight calibrated axes with
+      smooth curves parameterised by B-splines, enabling accurate reading of nonlinear data structure
+      directly from the biplot display.
+    </p>
+
+    <div class="citation-card">
+      <strong>Original paper:</strong><br/>
+      Groenen, P.J.F., Le Roux, N.J. &amp; Gardner-Lubbe, S. (2015).
+      <em>Spline-based nonlinear biplots.</em>
+      <em>Advances in Data Analysis and Classification</em>, 9, 219–238.
+      <div class="ref-row">
+        <a href="https://doi.org/10.1007/s11634-014-0179-1" target="_blank">DOI ↗</a>
+      </div>
+    </div>
+
+    <!-- B-spline curve illustration -->
+    <div class="spline-diagram">
+      <svg viewBox="0 0 360 180" width="360" xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="10">
+        <!-- Grid lines -->
+        <line x1="30" y1="20" x2="30"  y2="160" stroke="#e2ddd6" stroke-width="1"/>
+        <line x1="30" y1="160" x2="340" y2="160" stroke="#e2ddd6" stroke-width="1"/>
+        <!-- Light grid -->
+        <line x1="30"  y1="120" x2="340" y2="120" stroke="#e2ddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="30"  y1="80"  x2="340" y2="80"  stroke="#e2ddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="30"  y1="40"  x2="340" y2="40"  stroke="#e2ddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="115" y1="20"  x2="115" y2="160" stroke="#e2ddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="200" y1="20"  x2="200" y2="160" stroke="#e2ddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <line x1="285" y1="20"  x2="285" y2="160" stroke="#e2ddd6" stroke-width="0.5" stroke-dasharray="3,4"/>
+        <!-- Linear axis (dashed, grey) -->
+        <line x1="40" y1="150" x2="330" y2="40" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+        <!-- B-spline curve (nonlinear axis) -->
+        <path d="M40,148 C80,145 95,130 115,115 C140,96 155,88 180,72 C210,52 240,38 290,32 C310,30 320,31 330,32"
+              fill="none" stroke="#6d28d9" stroke-width="2.2"/>
+        <!-- Knot marks on spline -->
+        <circle cx="115" cy="115" r="4" fill="#6d28d9" opacity="0.7"/>
+        <circle cx="180" cy="72"  r="4" fill="#6d28d9" opacity="0.7"/>
+        <circle cx="260" cy="36"  r="4" fill="#6d28d9" opacity="0.7"/>
+        <!-- Scale tick labels on spline -->
+        <text x="111" y="110" fill="#6d28d9" font-size="8">1</text>
+        <text x="176" y="68"  fill="#6d28d9" font-size="8">2</text>
+        <text x="256" y="32"  fill="#6d28d9" font-size="8">3</text>
+        <!-- Legend -->
+        <line x1="40" y1="175" x2="70" y2="175" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="75" y="178" fill="#6b6860" font-size="8">Linear axis</text>
+        <line x1="150" y1="175" x2="180" y2="175" stroke="#6d28d9" stroke-width="2.2"/>
+        <text x="185" y="178" fill="#6d28d9" font-size="8">B-spline axis</text>
+        <!-- Axis labels -->
+        <text x="335" y="165" fill="#6b6860" font-size="8">PC1</text>
+        <text x="32"  y="18"  fill="#6b6860" font-size="8">PC2</text>
+      </svg>
+    </div>
+
+    <h2>My Contribution</h2>
+    <p>
+      The original implementation was written in Fortran for computational performance.
+      My work involved <strong>rewriting this core numerical code in C++</strong>, making it
+      easier to maintain, extend, and integrate with modern R packages.
+    </p>
+
+    <div class="tech-strip">
+      <span class="tag">Fortran → C++</span>
+      <span class="tag">B-Splines</span>
+      <span class="tag">Nonlinear Biplots</span>
+      <span class="tag">Rcpp</span>
+      <span class="tag">biplotEZ</span>
+    </div>
+
+    <h2>Implementation in biplotEZ</h2>
+    <p>
+      The method is implemented in the open-source R package
+      <strong>biplotEZ</strong> (Gower, Gardner-Lubbe &amp; Le Roux, 2011).
+      The core function lives in <code>biplotEZ/R/plot2d.R</code> as
+      <code>biplot.spline.axis()</code>.
+    </p>
+
+    <div class="citation-card">
+      <strong>R package:</strong><br/>
+      Gower, J.C., Gardner-Lubbe, S. &amp; Le Roux, N.J. (2011).
+      <em>biplotEZ — Biplots for Everyone.</em>
+      <div class="ref-row">
+        <a href="https://CRAN.R-project.org/package=biplotEZ" target="_blank">CRAN ↗</a>
+        <a href="https://github.com/MuViSU/biplotEZ" target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+
+    <p>
+      The biplot post on this site contains an interactive walkthrough of the method — you can
+      explore the nonlinear axis construction visually.
+    </p>
+
+    <div style="margin-top: 1rem;">
+      <a class="btn" href="../biplot/biplot_post_v2.html">View biplot post →</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
+
+</body>
+</html>
