@@ -1,0 +1,2278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kent on the Sphere &mdash; Khaled Masoumifard</title>
+<meta name="description" content="An interactive tutorial on the Kent distribution for compositional data: rotatable spheres, live sliders for kappa and beta, and the Householder basis explained.">
+<style>
+:root{color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;
+  background:#f8f8f6;color:#141412}
+img{max-width:100%}
+[hidden]:not([hidden=until-found i]){display:none!important}
+.backlink{display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;flex:none;
+  border:1px solid var(--rule-2);color:var(--ink-2);text-decoration:none;
+  font-size:14px;line-height:1;margin-right:2px}
+.backlink:hover{background:var(--wash);color:var(--ink)}
+</style>
+</head>
+<body><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f8f8f6;
+  --surface:#fcfcfb;
+  --surface-2:#f1f1ec;
+  --ink:#141412;
+  --ink-2:#4d4c48;
+  --muted:#8a8883;
+  --rule:#e2e1da;
+  --rule-2:#cdccc3;
+  --chrome:#2b3a44;
+  --mu:#eb6834;
+  --g2:#2a78d6;
+  --g3:#1baf7a;
+  --basis:#4a3aa7;
+  --wash:rgba(20,20,18,0.045);
+  --shadow:rgba(20,20,18,0.07);
+  --sphere:#dedcd2;
+  --grat:#b9b7ab;
+  --dot:#5a5955;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d0d0c;
+    --surface:#1a1a19;
+    --surface-2:#232321;
+    --ink:#f4f3ef;
+    --ink-2:#c3c2b7;
+    --muted:#8d8b84;
+    --rule:#2c2c2a;
+    --rule-2:#3c3b38;
+    --chrome:#b9c6ce;
+    --mu:#d95926;
+    --g2:#3987e5;
+    --g3:#199e70;
+    --basis:#9085e9;
+    --wash:rgba(255,255,255,0.05);
+    --shadow:rgba(0,0,0,0.4);
+    --sphere:#35342f;
+    --grat:#54534c;
+    --dot:#a9a7a0;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d0d0c;
+  --surface:#1a1a19;
+  --surface-2:#232321;
+  --ink:#f4f3ef;
+  --ink-2:#c3c2b7;
+  --muted:#8d8b84;
+  --rule:#2c2c2a;
+  --rule-2:#3c3b38;
+  --chrome:#b9c6ce;
+  --mu:#d95926;
+  --g2:#3987e5;
+  --g3:#199e70;
+  --basis:#9085e9;
+  --wash:rgba(255,255,255,0.05);
+  --shadow:rgba(0,0,0,0.4);
+  --sphere:#35342f;
+  --grat:#54534c;
+  --dot:#a9a7a0;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:17px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:"Instrument Serif",Georgia,serif;font-weight:400;text-wrap:balance;letter-spacing:.005em}
+.mono,code,.num,.eyebrow,.plate-n,figcaption,th,td,.ctl-l,.tag{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky;
+  top:env(safe-area-inset-top,0px);
+  z-index:40;
+  background:var(--bg);
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{
+  max-width:960px;margin-inline:auto;
+  padding:9px 20px;
+  display:flex;align-items:center;gap:14px;
+}
+.brand{font-family:"Instrument Serif",serif;font-size:1.06rem;line-height:1;white-space:nowrap}
+.brand .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mu);margin-right:7px;vertical-align:baseline}
+.here{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.tocbtn{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule-2);color:var(--ink-2);
+  padding:5px 11px;border-radius:2px;cursor:pointer;white-space:nowrap;
+}
+.tocbtn:hover{background:var(--wash);color:var(--ink)}
+.toc{
+  position:fixed;inset:0;z-index:50;display:none;
+  background:color-mix(in srgb,var(--bg) 93%,transparent);
+  backdrop-filter:blur(6px);
+  overflow-y:auto;
+  padding:calc(env(safe-area-inset-top,0px) + 56px) 20px 60px;
+}
+.toc.open{display:block}
+.toc-in{max-width:760px;margin-inline:auto}
+.toc h3{font-size:1.5rem;margin:0 0 4px}
+.toc ol{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px}
+.toc a{
+  display:flex;gap:12px;align-items:baseline;
+  text-decoration:none;color:var(--ink);
+  padding:8px 10px;border-radius:2px;line-height:1.35;
+}
+.toc a:hover{background:var(--wash)}
+.toc .n{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--muted);min-width:2.1em}
+
+/* ---------- layout ---------- */
+.wrap{max-width:960px;margin-inline:auto;padding-inline:20px;padding-block:0 96px}
+.col{max-width:67ch;margin-inline:auto}
+.part{padding-block:14px 8px;scroll-margin-top:70px}
+.part + .part{border-top:1px solid var(--rule);margin-top:44px;padding-top:44px}
+.eyebrow{
+  font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);
+  display:flex;align-items:center;gap:10px;margin-bottom:6px;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--rule)}
+h2{font-size:clamp(1.7rem,4.4vw,2.35rem);margin:0 0 .5em;line-height:1.14}
+h3{font-size:1.28rem;margin:2em 0 .4em;line-height:1.25}
+h4{font-size:1.02rem;margin:1.6em 0 .3em;font-family:"Source Serif 4",serif;font-weight:700}
+p{margin:0 0 1.05em}
+.lede{font-size:1.1rem;color:var(--ink-2)}
+ul,ol{margin:0 0 1.05em;padding-left:1.25em}
+li{margin-bottom:.4em}
+strong{font-weight:700}
+a{color:var(--ink);text-decoration-color:var(--rule-2);text-underline-offset:2px}
+
+/* ---------- hero ---------- */
+.hero{padding-block:52px 34px}
+.hero h1{font-size:clamp(2.6rem,8.5vw,4.4rem);line-height:1.02;margin:0 0 .28em}
+.hero .sub{font-size:1.16rem;color:var(--ink-2);max-width:56ch}
+.hero .meta{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:20px;
+}
+
+/* ---------- semantic colour ---------- */
+.c-mu{color:var(--mu)}
+.c-g2{color:var(--g2)}
+.c-g3{color:var(--g3)}
+.c-b{color:var(--basis)}
+.key{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 0;padding:0;list-style:none}
+.key li{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink-2);display:flex;align-items:center;gap:7px;margin:0}
+.key i{width:11px;height:11px;border-radius:50%;display:block;flex:none}
+
+/* ---------- callouts ---------- */
+.note{
+  border-left:2px solid var(--rule-2);
+  padding:2px 0 2px 18px;margin:1.4em 0;color:var(--ink-2);
+}
+.note .tag{display:block;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.2em}
+.note p:last-child{margin-bottom:0}
+.note.warm{border-left-color:var(--mu)}
+.note.warm .tag{color:var(--mu)}
+
+.words{margin:1.4em 0;border:1px solid var(--rule);border-radius:3px;background:var(--surface);padding:16px 18px}
+.words .tag{display:block;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.5em}
+.words dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:baseline}
+.words dt{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink);white-space:nowrap}
+.words dd{margin:0;color:var(--ink-2);font-size:.95rem;line-height:1.55}
+@media (max-width:520px){
+  .words dl{grid-template-columns:1fr;gap:1px}
+  .words dd{margin-bottom:8px}
+}
+
+/* ---------- plates (figures) ---------- */
+.plate{
+  margin:30px 0 34px;
+  border:1px solid var(--rule);
+  border-radius:3px;
+  background:var(--surface);
+  overflow:hidden;
+}
+.plate-head{
+  display:flex;align-items:baseline;gap:12px;
+  padding:9px 14px;border-bottom:1px solid var(--rule);
+  background:var(--surface-2);
+}
+.plate-n{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);white-space:nowrap}
+.plate-t{font-size:.78rem;color:var(--ink-2);font-family:"IBM Plex Mono",monospace;line-height:1.35}
+.plate-body{padding:10px}
+figcaption{
+  font-size:.76rem;line-height:1.6;color:var(--ink-2);
+  padding:10px 14px 13px;border-top:1px solid var(--rule);
+}
+figcaption b{color:var(--ink);font-weight:500}
+.plot{width:100%;height:420px}
+.plot.tall{height:480px}
+.plot.short{height:320px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid2 .plot,.grid3 .plot{height:300px}
+@media (max-width:700px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .plot{height:330px}
+  .plot.tall{height:360px}
+}
+.panel-t{
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink-2);
+  text-align:center;padding:4px 0 0;
+}
+.hint{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--muted);text-align:right;padding:2px 6px 0}
+
+/* ---------- controls ---------- */
+.ctl-row{
+  display:flex;flex-wrap:wrap;gap:14px 26px;
+  padding:12px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2);
+}
+.ctl{display:flex;flex-direction:column;gap:5px;flex:1 1 200px;min-width:0}
+.ctl-l{font-size:.7rem;letter-spacing:.06em;color:var(--ink-2);display:flex;justify-content:space-between;gap:10px}
+.ctl-l b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;cursor:pointer;margin:0;
+}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--rule-2);border-radius:2px}
+input[type=range]::-moz-range-track{height:2px;background:var(--rule-2);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;
+  background:var(--ink);margin-top:-6.5px;border:0;
+}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--ink);border:0}
+input[type=range]:focus-visible{outline:2px solid var(--mu);outline-offset:3px;border-radius:3px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.06em;
+  background:var(--surface);border:1px solid var(--rule-2);color:var(--ink-2);
+  padding:6px 12px;border-radius:2px;cursor:pointer;
+}
+.btn:hover{background:var(--wash);color:var(--ink)}
+.btn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* ---------- tables & matrices ---------- */
+.scroll{overflow-x:auto;margin:1.3em 0;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.78rem}
+th,td{padding:7px 12px;text-align:left;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td.t{font-family:"Source Serif 4",serif;font-size:.86rem;white-space:normal;min-width:16ch}
+.num{font-variant-numeric:tabular-nums}
+
+.mats{display:flex;flex-wrap:wrap;gap:16px 26px;padding:14px;align-items:flex-start}
+.mbox{display:flex;align-items:center;gap:9px}
+.mlab{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2)}
+.mgrid{
+  display:grid;gap:2px 12px;
+  font-family:"IBM Plex Mono",monospace;font-size:.76rem;font-variant-numeric:tabular-nums;
+  padding:5px 10px;border-left:2px solid var(--rule-2);border-right:2px solid var(--rule-2);
+  text-align:right;
+}
+.mgrid span{padding:1px 0}
+
+.pill{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.72rem;
+  padding:2px 8px;border-radius:99px;border:1px solid var(--rule-2);color:var(--ink-2);
+  background:var(--surface);white-space:nowrap;
+}
+
+/* ---------- inline svg figures ---------- */
+.svgbox{width:100%;padding:6px 4px}
+.svgbox svg{display:block;width:100%;height:auto}
+.s-lbl{font-family:"IBM Plex Mono",monospace;font-size:13px}
+.s-sm{font-family:"IBM Plex Mono",monospace;font-size:11px}
+
+/* ---------- quiz ---------- */
+.q{counter-reset:qq;list-style:none;padding:0}
+.q li{
+  counter-increment:qq;position:relative;padding-left:2.6em;margin-bottom:1em;
+}
+.q li::before{
+  content:"Q" counter(qq);position:absolute;left:0;top:.15em;
+  font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--mu);letter-spacing:.06em;
+}
+
+.bigfive{list-style:none;padding:0;counter-reset:bf}
+.bigfive li{counter-increment:bf;display:flex;gap:16px;padding:14px 0;border-top:1px solid var(--rule)}
+.bigfive li::before{
+  content:counter(bf);font-family:"Instrument Serif",serif;font-size:1.9rem;line-height:1;
+  color:var(--mu);min-width:1.1em;
+}
+.bigfive b{display:block;margin-bottom:.15em}
+
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+mjx-container[display="true"]{margin:1.1em 0 !important}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js"></script>
+<script>
+if(!window.Plotly){document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"><\/scr'+'ipt>');}
+window.MathJax={
+  tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],packages:{'[+]':['boldsymbol']}},
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code'],enableMenu:false},
+  chtml:{scale:1.0,matchFontHeight:false}
+};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="backlink" href="../blog.html" title="Back to the blog">&larr;</a>
+    <span class="brand"><span class="dot"></span>Kent on the Sphere</span>
+    <span class="here" id="here">Part 1 &middot; What is directional data?</span>
+    <button class="tocbtn" id="tocbtn" aria-expanded="false">Contents</button>
+  </div>
+</div>
+
+<nav class="toc" id="toc" hidden>
+  <div class="toc-in">
+    <h3>Contents</h3>
+    <p style="color:var(--ink-2);font-size:.9rem;margin:0">Seventeen parts, built in order. Each one only uses ideas from the parts before it.</p>
+    <ol id="toclist"></ol>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section class="hero">
+  <div class="col">
+    <div class="meta">A tutorial &middot; directional statistics for compositional data</div>
+    <h1>The Kent distribution, from zero</h1>
+    <p class="sub">A distribution for data that live on a sphere &mdash; and why square roots turn proportions into exactly that kind of data.</p>
+    <ul class="key">
+      <li><i style="background:var(--mu)"></i>\(\boldsymbol\mu\) &mdash; mean direction</li>
+      <li><i style="background:var(--g2)"></i>\(\boldsymbol\gamma_2\) &mdash; long axis</li>
+      <li><i style="background:var(--g3)"></i>\(\boldsymbol\gamma_3\) &mdash; short axis</li>
+      <li><i style="background:var(--basis)"></i>\(\mathbf B\) &mdash; the rulers</li>
+    </ul>
+    <div class="note" style="margin-top:26px">
+      <span class="tag">How to read this</span>
+      <p>Every figure is live. Drag the 3D pictures to rotate them. Move the sliders and watch the shapes change. All the numbers in Part 15 are computed in your browser from the twelve soil samples shown there, so nothing can disagree with anything else.</p>
+    </div>
+  </div>
+</section>
+
+<section class="part" id="p1" data-title="What is directional data?">
+  <div class="col">
+    <div class="eyebrow">Part 1</div>
+    <h2>What is directional data?</h2>
+    <p class="lede">Some numbers measure <em>how much</em>. Other numbers measure <em>which way</em>. These two kinds of number need different distributions.</p>
+
+    <h3>Ordinary data live on a straight line</h3>
+    <p>Think of the height of a person: 1.62 m, 1.78 m, 1.91 m. These numbers sit on a straight line. The line has no end and no beginning. Big numbers are far from small numbers. This is <strong>Euclidean data</strong>. The normal distribution was built for exactly this.</p>
+
+    <h3>Directional data live on a circle or a sphere</h3>
+    <p>Now think of wind direction. You measure it as an angle: 0&deg; is north, 90&deg; is east, and so on. After 359&deg; you do not get 360&deg; &mdash; you come back to 0&deg;. The line has been bent into a closed loop. This is <strong>circular data</strong>.</p>
+    <p>Two examples to feel the difference:</p>
+    <ul>
+      <li>On a line, 350 and 10 are very far apart. The distance is 340.</li>
+      <li>On a circle, 350&deg; and 10&deg; are very close. The distance is only 20&deg;. Both are almost north.</li>
+    </ul>
+
+    <h4>Why the ordinary average fails</h4>
+    <p>Suppose you record two wind directions: 350&deg; and 10&deg;. Both winds come from almost exactly north. The ordinary average is</p>
+    \[ \frac{350 + 10}{2} = 180^\circ , \]
+    <p>which is <strong>south</strong>. The answer is the exact opposite of the truth. The ordinary average is wrong because it does not know that the scale wraps around.</p>
+    <p>The correct method is to turn each angle into a point on the circle first, average the <em>points</em>, and then read off the direction:</p>
+    \[ \mathbf u_1=(\cos 350^\circ,\sin 350^\circ)=(0.985,-0.174),\qquad \mathbf u_2=(\cos 10^\circ,\sin 10^\circ)=(0.985,\;0.174). \]
+    <p>The average of these two points is \((0.985,\,0)\). Its direction is \(0^\circ\): north. Correct.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 1</span><span class="plate-t">the same two numbers on a line and on a circle</span></div>
+    <div class="plate-body"><div class="svgbox" id="fig1"></div></div>
+    <figcaption>Left: on a straight line, <b>350</b> and <b>10</b> look far apart, and their midpoint is 180. Right: on the circle the same two angles are neighbours near north, and the correct mean direction is 0&deg;. The line answer, 180&deg;, points the opposite way.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>From the circle to the sphere</h3>
+    <p>A direction in a flat world needs one angle. A direction in a three-dimensional world needs two angles &mdash; think of longitude and latitude on the Earth. Every possible direction in 3D can be drawn as one point on the surface of a ball. That surface is called the <strong>sphere</strong>, and that is where the Kent distribution lives.</p>
+
+    <div class="note warm">
+      <span class="tag">The one sentence to keep</span>
+      <p>Directional data are data whose <em>size</em> carries no information &mdash; only the <em>direction</em> matters. So we force every observation to have length exactly 1, and we model the resulting points on a sphere.</p>
+    </div>
+
+    <h4>Why not just use the normal distribution?</h4>
+    <ul>
+      <li><strong>Wrong support.</strong> A normal distribution puts probability everywhere in \(\mathbb R^k\). But our data can only be at distance 1 from the origin. Almost all of the normal's probability sits where no data can ever be.</li>
+      <li><strong>Wrong mean.</strong> The average of points on a sphere is usually <em>inside</em> the sphere, not on it. So the "mean" is not a direction at all.</li>
+      <li><strong>No wrap-around.</strong> The normal distribution thinks 350&deg; and 10&deg; are far apart, as we just saw.</li>
+    </ul>
+    <p>So we need distributions that are defined <em>on the sphere itself</em>. The von Mises&ndash;Fisher distribution and the Kent distribution are two of them.</p>
+  </div>
+</section>
+
+
+<section class="part" id="p2" data-title="The sphere">
+  <div class="col">
+    <div class="eyebrow">Part 2</div>
+    <h2>The sphere</h2>
+    <p class="lede">One definition, and then a picture you can turn around with your finger.</p>
+
+    <p>The unit sphere in \(k\) dimensions is written</p>
+    \[ S^{k-1}=\bigl\{\mathbf u\in\mathbb R^{k}: \|\mathbf u\|=1\bigr\}. \]
+    <p>Read it slowly:</p>
+    <div class="words">
+      <span class="tag">What the symbols say</span>
+      <dl>
+        <dt>\(\mathbf u\)</dt><dd>a list of \(k\) numbers, for example \((u_1,u_2,u_3)\).</dd>
+        <dt>\(\mathbb R^{k}\)</dt><dd>all possible lists of \(k\) real numbers.</dd>
+        <dt>\(\|\mathbf u\|\)</dt><dd>the length of the vector, \(\sqrt{u_1^2+\cdots+u_k^2}\).</dd>
+        <dt>\(\|\mathbf u\|=1\)</dt><dd>we keep only the lists whose length is exactly 1.</dd>
+        <dt>\(S^{k-1}\)</dt><dd>the set of all such lists. The superscript is \(k-1\), not \(k\), because the surface has one dimension less than the space it sits in.</dd>
+      </dl>
+    </div>
+    <p>Why \(k-1\)? Take \(k=3\). A point in \(\mathbb R^3\) needs three numbers. But a point on the sphere needs only two &mdash; longitude and latitude &mdash; because the third number is forced by \(\|\mathbf u\|=1\). One constraint removes one dimension. So \(S^{2}\) is a two-dimensional surface living inside three-dimensional space.</p>
+
+    <h4>A point <em>is</em> a direction</h4>
+    <p>Stand at the centre of the ball. Point your arm at some point on the surface. Your arm now shows a direction. Every direction hits the surface in exactly one place, and every place on the surface corresponds to exactly one direction. So "point on the sphere" and "direction in space" are two names for the same thing.</p>
+    <p>Three examples with \(k=3\):</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>point</th><th>check the length</th><th>where it is</th></tr></thead>
+        <tbody>
+          <tr><td>\((0,0,1)\)</td><td>\(0+0+1=1\) &#10003;</td><td class="t">the north pole</td></tr>
+          <tr><td>\((1,0,0)\)</td><td>\(1+0+0=1\) &#10003;</td><td class="t">on the equator, facing us</td></tr>
+          <tr><td>\((0.5,0.5,0.7071)\)</td><td>\(0.25+0.25+0.5=1\) &#10003;</td><td class="t">north of the equator, between the first two axes</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>And a non-example: \((1,1,1)\) is <em>not</em> on the sphere, because \(1+1+1=3\neq1\). To put it on the sphere, divide by its length \(\sqrt3\): \((0.577,0.577,0.577)\). Dividing a vector by its own length is called <strong>normalising</strong>. We will do it many times.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 2</span><span class="plate-t">\(S^2\) with the three points from the table</span></div>
+    <div class="plate-body"><div class="plot" id="fig2"></div><div class="hint">drag to rotate &middot; scroll to zoom</div></div>
+    <figcaption>The grey mesh is the surface of the sphere; the faint lines are like the lines of longitude and latitude on a globe. Each marked point is one unit vector. The thin line from the centre to a point is the "arm" you point with &mdash; that is the direction the point stands for.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p3" data-title="Compositions become points on a sphere">
+  <div class="col">
+    <div class="eyebrow">Part 3</div>
+    <h2>Compositions become points on a sphere</h2>
+    <p class="lede">This is the bridge. It is one square root, and it is exact &mdash; no approximation anywhere.</p>
+
+    <h3>What a composition is</h3>
+    <p>A <strong>composition</strong> is a vector of proportions. The parts are never negative, and they add up to one:</p>
+    \[ \mathbf z=(z_1,\dots,z_k),\qquad z_j\ge0,\qquad \sum_{j=1}^{k}z_j=1. \]
+    <p>Soil texture is a good example: the fractions of sand, silt and clay in a sample. Another: the market share of three brands. Another: the fraction of a budget spent on three categories.</p>
+    <p>The set of all such vectors is called the <strong>simplex</strong>, written \(\Delta^{k-1}\). For \(k=3\) the simplex is a flat triangle sitting in 3D space, with corners at \((1,0,0)\), \((0,1,0)\) and \((0,0,1)\).</p>
+
+    <h3>The square-root transformation</h3>
+    <p>Take the square root of every part:</p>
+    \[ \mathbf u=\sqrt{\mathbf z}=\bigl(\sqrt{z_1},\dots,\sqrt{z_k}\bigr). \]
+    <p>Work through the example \(\mathbf z=(0.25,\,0.25,\,0.50)\):</p>
+    \[ \mathbf u=\bigl(\sqrt{0.25},\ \sqrt{0.25},\ \sqrt{0.50}\bigr)=(0.5,\ 0.5,\ 0.7071). \]
+    <p>Now check the length of \(\mathbf u\):</p>
+    \[ \|\mathbf u\|^2=0.5^2+0.5^2+0.7071^2=0.25+0.25+0.50=1 . \]
+    <p>So \(\|\mathbf u\|=1\), which means \(\mathbf u\) is on the sphere. And notice that this is the third point from the table in Part 2 &mdash; it was a composition all along.</p>
+
+    <div class="note warm">
+      <span class="tag">Why it always works</span>
+      <p>Squaring undoes the square root: \(u_j^2=z_j\). So \(\sum_j u_j^2=\sum_j z_j=1\), which is exactly the condition \(\|\mathbf u\|=1\). <em>The constraint "the parts sum to one" becomes the constraint "the squares sum to one".</em> A composition automatically becomes a unit vector. Nothing is lost: you get the composition back with \(\mathbf z=\mathbf u^2\), componentwise.</p>
+    </div>
+
+    <h3>Which part of the sphere?</h3>
+    <p>Square roots are never negative, so every coordinate of \(\mathbf u\) satisfies \(u_j\ge0\). This means \(\mathbf u\) can only land in the corner of the sphere where all coordinates are positive. That corner is called the <strong>positive orthant</strong> of the sphere. For \(k=3\) it is one eighth of the globe &mdash; the piece between the three positive axes.</p>
+    <p>So the picture is:</p>
+    <ul>
+      <li>flat triangle (the simplex) &nbsp;&longleftrightarrow;&nbsp; curved eighth of the sphere,</li>
+      <li>one point of the triangle for each point of the curved piece, and back again,</li>
+      <li>the corners of the triangle go to the poles of the three axes; the centre \((\tfrac13,\tfrac13,\tfrac13)\) goes to \((0.577,0.577,0.577)\).</li>
+    </ul>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 3</span><span class="plate-t">simplex &rarr; square root &rarr; sphere</span></div>
+    <div class="plate-body">
+      <div class="svgbox" id="fig3a"></div>
+      <div class="plot" id="fig3b"></div>
+      <div class="hint">drag to rotate</div>
+    </div>
+    <figcaption>Top: the three stages as a diagram. Bottom: the real thing in 3D. The flat triangle is the simplex &mdash; every composition of three parts is one point on it. The curved patch is the positive eighth of the sphere. Each grey line joins a composition to its square root. The square root pushes each point outward onto the curved surface, and the mapping is one-to-one.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>What does the square root actually <em>do</em>?</h3>
+    <p>Two things are worth knowing.</p>
+    <p><strong>1. It inflates the small parts.</strong> Compare \(z=0.01\) and \(z=0.04\). On the simplex they differ by 0.03. After the square root they are 0.1 and 0.2, which differ by 0.1 &mdash; more than three times as much. Small proportions get more room. This is usually what we want: the difference between 1% and 4% of a soil being clay is scientifically large, but on a raw scale it looks tiny.</p>
+    <p><strong>2. It gives a sensible notion of distance.</strong> Once on the sphere, the natural distance between two compositions is the angle between them. This angle is closely related to the classical <em>Hellinger distance</em> between two probability vectors. In short, the geometry you get is not arbitrary &mdash; it is the geometry statisticians already use for comparing sets of proportions.</p>
+
+    <div class="note">
+      <span class="tag">Compared with log-ratio methods</span>
+      <p>The usual alternative in compositional data analysis is a log-ratio transform (alr, clr, ilr). Those need every part to be strictly positive, because \(\log 0=-\infty\). The square root has no such problem: \(z_j=0\) simply maps to \(u_j=0\), a point on the boundary of the orthant. This is why the square-root/sphere route is attractive when zeros occur, which happens constantly in real data.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="part" id="p4" data-title="Why not just use von Mises–Fisher?">
+  <div class="col">
+    <div class="eyebrow">Part 4</div>
+    <h2>Why not just use von Mises&ndash;Fisher?</h2>
+    <p class="lede">We need a distribution on the sphere. The simplest good one is von Mises&ndash;Fisher. Let us learn it first, then find out what it cannot do.</p>
+
+    <h3>The density</h3>
+    <p>The von Mises&ndash;Fisher distribution, written vMF, has density</p>
+    \[ f(\mathbf u)=c_k(\kappa)\,\exp\bigl(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u\bigr),\qquad \mathbf u\in S^{k-1}. \]
+    <p>It has only two parameters.</p>
+    <div class="words">
+      <span class="tag">The two parameters</span>
+      <dl>
+        <dt>\(\boldsymbol\mu\)</dt><dd>the <strong>mean direction</strong>. A unit vector, \(\|\boldsymbol\mu\|=1\). This is where the distribution is centred &mdash; the peak, the most likely direction.</dd>
+        <dt>\(\kappa\ge0\)</dt><dd>the <strong>concentration</strong>. A single positive number saying how tightly the data cluster around \(\boldsymbol\mu\). It is like the reciprocal of a variance: large \(\kappa\) means small spread.</dd>
+        <dt>\(c_k(\kappa)\)</dt><dd>the normalising constant. It only makes the density integrate to one; it carries no shape information. For \(k=3\) it equals \(\kappa/(4\pi\sinh\kappa)\).</dd>
+      </dl>
+    </div>
+
+    <h4>Reading the exponent</h4>
+    <p>The only place \(\mathbf u\) appears is in \(\boldsymbol\mu^{\!\top}\mathbf u\). This is the dot product of two unit vectors, so</p>
+    \[ \boldsymbol\mu^{\!\top}\mathbf u=\cos\vartheta , \]
+    <p>where \(\vartheta\) is the angle between \(\mathbf u\) and \(\boldsymbol\mu\). So the density is</p>
+    \[ f(\mathbf u)\propto e^{\kappa\cos\vartheta}. \]
+    <p>Everything now follows from this one formula:</p>
+    <ul>
+      <li>\(\vartheta=0\) (you are at \(\boldsymbol\mu\)): \(\cos\vartheta=1\), the density is at its largest. So \(\boldsymbol\mu\) is the mode.</li>
+      <li>\(\vartheta=90^\circ\): \(\cos\vartheta=0\), the density equals the uniform level.</li>
+      <li>\(\vartheta=180^\circ\) (the opposite point): \(\cos\vartheta=-1\), the density is at its smallest.</li>
+      <li>\(\kappa=0\): the exponent is 0 everywhere, so the density is flat. vMF with \(\kappa=0\) is the <strong>uniform</strong> distribution on the sphere.</li>
+      <li>\(\kappa\) large: \(e^{\kappa\cos\vartheta}\) falls away very fast as \(\vartheta\) grows, so the data hug \(\boldsymbol\mu\).</li>
+    </ul>
+
+    <h4>How much spread, in numbers</h4>
+    <p>When \(\kappa\) is large, a useful rule of thumb is that the typical angular distance from \(\boldsymbol\mu\) is about \(1/\sqrt\kappa\) radians. So \(\kappa=100\) gives a cloud of radius roughly \(0.1\) radians \(\approx 6^\circ\). We will make this precise in Part 7.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 4</span><span class="plate-t">vMF: the effect of \(\kappa\)</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="s4k"><span class="ctl-l"><span>concentration \(\kappa\)</span><b id="v4k">20</b></span>
+        <input type="range" id="s4k" min="0" max="120" step="1" value="20"></label>
+    </div>
+    <div class="plate-body">
+      <div class="grid3">
+        <div><div class="plot" id="fig4a"></div><div class="panel-t">&kappa; = 2 &nbsp;(almost uniform)</div></div>
+        <div><div class="plot" id="fig4b"></div><div class="panel-t">&kappa; = 20 &nbsp;(moderate)</div></div>
+        <div><div class="plot" id="fig4c"></div><div class="panel-t">&kappa; = 150 &nbsp;(tight)</div></div>
+      </div>
+      <div class="plot" id="fig4live" style="height:380px"></div>
+      <div class="hint">drag to rotate the globe</div>
+    </div>
+    <figcaption>Top row: 300 simulated points for three values of \(\kappa\), seen looking straight down the <b class="c-mu">\(\boldsymbol\mu\)</b> axis, with the black curves showing where the density takes 90%, 70%, 50%, 30% and 10% of its peak value. As \(\kappa\) grows the cloud shrinks. Note that the axis scale is different in each panel, otherwise the third panel would be a single dot. Bottom: the same sample drawn on the globe, with \(\kappa\) set by the slider.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h3>The limitation: vMF can only make round clouds</h3>
+    <p>Look again at the contours in Figure 4. They are <strong>circles</strong>. Always. This is not an accident of the picture; it is forced by the formula.</p>
+    <p>Here is the argument in three lines. The density depends on \(\mathbf u\) only through the angle \(\vartheta\). Two points at the same angle from \(\boldsymbol\mu\) therefore get exactly the same density, no matter which side of \(\boldsymbol\mu\) they are on. The set of points at a fixed angle from \(\boldsymbol\mu\) is a circle around \(\boldsymbol\mu\). So the contours are circles.</p>
+    <p>The technical name for this property is <strong>rotational symmetry</strong> about \(\boldsymbol\mu\): if you spin the sphere around the \(\boldsymbol\mu\) axis, the density does not change at all.</p>
+
+    <h4>A numerical demonstration</h4>
+    <p>Let \(\boldsymbol\mu=(0,0,1)\) and \(\kappa=10\). Take two points that are the same distance from \(\boldsymbol\mu\) but in different tangent directions:</p>
+    \[ \mathbf u_a=(0.3,\;0,\;0.9539),\qquad \mathbf u_b=(0,\;0.3,\;0.9539). \]
+    <p>Both have \(\boldsymbol\mu^{\!\top}\mathbf u=0.9539\), so both have exponent \(10\times0.9539=9.539\). The vMF density is <em>identical</em> at the two points. vMF has no way to say "the data spread further in the first direction than in the second".</p>
+
+    <div class="note warm">
+      <span class="tag">Why this matters for compositions</span>
+      <p>Take soil texture \((\text{sand},\text{silt},\text{clay})\). In many places, sand and clay trade off against each other while silt stays nearly constant. On the sphere that is a cloud which is <em>long</em> in one tangent direction and <em>narrow</em> in the other &mdash; an ellipse, not a circle. vMF must pick one number, \(1/\kappa\), to describe both directions. It will either exaggerate the silt variation or understate the sand&ndash;clay variation. There is no setting of \(\kappa\) that gets both right.</p>
+    </div>
+
+    <p>That is the gap. The Kent distribution fills it.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 5</span><span class="plate-t">round versus elliptical &mdash; the whole point of Kent</span></div>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="plot" id="fig5a"></div><div class="panel-t">von Mises&ndash;Fisher &nbsp;(&kappa; = 60)</div></div>
+        <div><div class="plot" id="fig5b"></div><div class="panel-t">Kent &nbsp;(&kappa; = 60, &beta; = 24)</div></div>
+      </div>
+    </div>
+    <figcaption>Both panels look straight down the <b class="c-mu">\(\boldsymbol\mu\)</b> axis and use the same scale. Left: vMF contours are perfect circles; the spread is the same in every direction. Right: Kent contours are ellipses; the cloud reaches further along <b class="c-g2">\(\boldsymbol\gamma_2\)</b> than along <b class="c-g3">\(\boldsymbol\gamma_3\)</b>. Everything else in this tutorial is about how to describe, estimate and interpret that ellipse.</figcaption>
+  </figure>
+</section>
+
+<section class="part" id="p5" data-title="The Kent distribution">
+  <div class="col">
+    <div class="eyebrow">Part 5</div>
+    <h2>The Kent distribution</h2>
+    <p class="lede">Now we are ready. Kent takes the vMF exponent and adds one extra piece, which bends the circles into ellipses.</p>
+
+    <h3>The density</h3>
+    <p>For \(\mathbf u\in S^{2}\) (the ordinary sphere, \(k=3\)) the Kent density is</p>
+    \[ f(\mathbf u)=\frac{1}{c(\kappa,\beta)}\, \exp\Bigl\{\underbrace{\kappa\,\boldsymbol\mu^{\!\top}\mathbf u}_{\text{the vMF part}} \;+\;\underbrace{\beta\bigl[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\bigr]}_{\text{the new part}}\Bigr\}. \]
+    <p>Set \(\beta=0\) and the new part disappears: you are back to vMF exactly. So Kent <em>contains</em> vMF as a special case. It can never fit worse.</p>
+
+    <h3>Every term, one at a time</h3>
+
+    <h4>\(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u\) &nbsp;&mdash;&nbsp; the pull toward the centre</h4>
+    <p><em>What it is:</em> a number times the cosine of the angle to \(\boldsymbol\mu\).<br>
+    <em>Its job:</em> it makes the density large near \(\boldsymbol\mu\) and small far away.<br>
+    <em>Statistically:</em> it fixes the location and the overall tightness.<br>
+    <em>Geometrically:</em> on its own it would produce circular contours around \(\boldsymbol\mu\).<br>
+    <em>If \(\kappa\) grows:</em> the cloud shrinks toward \(\boldsymbol\mu\) in all directions at once.</p>
+
+    <h4>\((\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\) &nbsp;&mdash;&nbsp; how far along the first axis</h4>
+    <p>\(\boldsymbol\gamma_2\) is a unit vector perpendicular to \(\boldsymbol\mu\). The dot product \(\boldsymbol\gamma_2^{\!\top}\mathbf u\) measures how far \(\mathbf u\) has moved away from \(\boldsymbol\mu\) <em>in the \(\boldsymbol\gamma_2\) direction</em>. It is a coordinate. Squaring it removes the sign, so moving left and moving right count the same. This is why the ellipse is symmetric.</p>
+
+    <h4>\((\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\) &nbsp;&mdash;&nbsp; how far along the second axis</h4>
+    <p>The same thing, for the other direction. \(\boldsymbol\gamma_3\) is perpendicular to both \(\boldsymbol\mu\) and \(\boldsymbol\gamma_2\).</p>
+
+    <h4>\(\beta\bigl[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\bigr]\) &nbsp;&mdash;&nbsp; the difference</h4>
+    <p>This is the heart of Kent. Notice the minus sign. The term <em>adds</em> density when \(\mathbf u\) leans toward \(\boldsymbol\gamma_2\) and <em>subtracts</em> density when \(\mathbf u\) leans toward \(\boldsymbol\gamma_3\). So the distribution becomes generous in one direction and stingy in the other. That stretches the cloud into an ellipse.</p>
+    <p>Why a difference and not two separate numbers? Because on the sphere \((\boldsymbol\mu^{\!\top}\mathbf u)^2+(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2+(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2=1\) always. Adding the same constant to all three squared terms changes nothing except the normalising constant. So only the <em>difference</em> between the two tangent directions is identifiable. Writing the coefficients as \(\beta_2=\beta\) and \(\beta_3=-\beta\), which sum to zero, is exactly the standard way of removing that redundancy.</p>
+
+    <h4>\(c(\kappa,\beta)\) &nbsp;&mdash;&nbsp; the normalising constant</h4>
+    <p>The number that makes the density integrate to 1 over the sphere. It does not depend on \(\boldsymbol\mu,\boldsymbol\gamma_2,\boldsymbol\gamma_3\) at all, because rotating the sphere cannot change a total. For \(k=3\) it is an infinite series of Bessel functions,</p>
+    \[ c(\kappa,\beta)=2\pi\sum_{j\ge0}\frac{\Gamma(j+\tfrac12)}{\Gamma(j+1)}\,\beta^{2j}\Bigl(\frac{2}{\kappa}\Bigr)^{2j+\frac12} I_{2j+\frac12}(\kappa), \]
+    <p>which a computer evaluates in a few terms. You do not need it to understand the shape, and you do not need it for contours or simulation, because those only use <em>ratios</em> of densities and the constant cancels.</p>
+
+    <h3>A numerical example</h3>
+    <p>Take \(\boldsymbol\mu=(0,0,1)\), \(\boldsymbol\gamma_2=(1,0,0)\), \(\boldsymbol\gamma_3=(0,1,0)\), \(\kappa=10\), \(\beta=3\). Use the same two points as in Part 4:</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th></th><th>\(\mathbf u_a=(0.3,0,0.9539)\)</th><th>\(\mathbf u_b=(0,0.3,0.9539)\)</th></tr></thead>
+        <tbody>
+          <tr><td>\(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u\)</td><td>\(10\times0.9539=9.539\)</td><td>\(10\times0.9539=9.539\)</td></tr>
+          <tr><td>\((\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\)</td><td>\(0.3^2=0.09\)</td><td>\(0^2=0\)</td></tr>
+          <tr><td>\((\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\)</td><td>\(0^2=0\)</td><td>\(0.3^2=0.09\)</td></tr>
+          <tr><td>\(\beta[\,\cdot-\cdot\,]\)</td><td>\(3(0.09-0)=+0.27\)</td><td>\(3(0-0.09)=-0.27\)</td></tr>
+          <tr><td><strong>total exponent</strong></td><td><strong>9.809</strong></td><td><strong>9.269</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The ratio of the two densities is \(e^{9.809-9.269}=e^{0.54}\approx1.72\). The point lying in the \(\boldsymbol\gamma_2\) direction is 1.72 times more likely than the point lying the same distance away in the \(\boldsymbol\gamma_3\) direction. Under vMF that ratio would have been exactly 1. That single number is the whole difference between the two models.</p>
+
+    <div class="note">
+      <span class="tag">Where Kent sits in the bigger family</span>
+      <p>Both vMF and Kent belong to the <em>Fisher&ndash;Bingham</em> family, \(f(\mathbf u)\propto\exp(\boldsymbol\theta^{\!\top}\mathbf u+\mathbf u^{\!\top}A\mathbf u)\). You get Kent by choosing \(\boldsymbol\theta=\kappa\boldsymbol\mu\) and \(A=\boldsymbol\Gamma\,\mathrm{diag}(0,\beta,-\beta)\,\boldsymbol\Gamma^{\!\top}\), where \(\boldsymbol\Gamma=[\boldsymbol\mu,\boldsymbol\gamma_2,\boldsymbol\gamma_3]\). The essential restriction is that \(\boldsymbol\mu\) is an eigenvector of \(A\): the linear pull and the axes of the quadratic part point in compatible directions. That is what keeps the density unimodal, symmetric about \(\boldsymbol\mu\), and elliptical.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="part" id="p6" data-title="Every parameter, one by one">
+  <div class="col">
+    <div class="eyebrow">Part 6</div>
+    <h2>Every parameter, one by one</h2>
+    <p class="lede">Five objects: \(\boldsymbol\mu\), \(\boldsymbol\gamma_2\), \(\boldsymbol\gamma_3\), \(\kappa\), \(\beta\). Two of them are numbers; three are directions.</p>
+
+    <h3>\(\boldsymbol\mu\) &mdash; the mean direction</h3>
+    <p>A unit vector. It says <em>where</em> the cloud of data sits on the sphere. It is the mode (the highest point of the density) and also the mean direction (the average of the data, normalised). Change \(\boldsymbol\mu\) and the whole cloud slides to a different place on the globe; its shape does not change.</p>
+
+    <h3>\(\boldsymbol\gamma_2\) &mdash; the long axis</h3>
+    <p>A unit vector perpendicular to \(\boldsymbol\mu\). It points along the direction in which the data spread the <em>most</em>. Changing \(\boldsymbol\gamma_2\) rotates the ellipse around the \(\boldsymbol\mu\) axis, like turning a steering wheel. The cloud stays in the same place and keeps the same shape; only its orientation changes.</p>
+
+    <h3>\(\boldsymbol\gamma_3\) &mdash; the short axis</h3>
+    <p>A unit vector perpendicular to \(\boldsymbol\mu\) <em>and</em> to \(\boldsymbol\gamma_2\). The direction of <em>least</em> spread. In three dimensions \(\boldsymbol\gamma_3\) is not really a free choice: once you know \(\boldsymbol\mu\) and \(\boldsymbol\gamma_2\), the only remaining perpendicular direction is \(\pm\boldsymbol\gamma_3\).</p>
+
+    <h3>The orthogonality constraints</h3>
+    \[ \boldsymbol\mu^{\!\top}\boldsymbol\gamma_2=0,\qquad \boldsymbol\mu^{\!\top}\boldsymbol\gamma_3=0,\qquad \boldsymbol\gamma_2^{\!\top}\boldsymbol\gamma_3=0 . \]
+    <p>A dot product of two unit vectors is zero exactly when they are at 90&deg;. So these three equations say: all three vectors are mutually perpendicular. They form a right-angled frame, like the corner of a room.</p>
+    <p>Why must this be true?</p>
+    <ul>
+      <li><strong>\(\boldsymbol\mu^{\!\top}\boldsymbol\gamma_2=0\) and \(\boldsymbol\mu^{\!\top}\boldsymbol\gamma_3=0\).</strong> \(\boldsymbol\gamma_2\) and \(\boldsymbol\gamma_3\) describe how the data spread <em>around</em> \(\boldsymbol\mu\). "Around" means sideways, not along. A direction with a component along \(\boldsymbol\mu\) would be partly describing "closer to or further from the centre", which is already the job of \(\kappa\). Perpendicular means the jobs do not overlap.</li>
+      <li><strong>\(\boldsymbol\gamma_2^{\!\top}\boldsymbol\gamma_3=0\).</strong> The two axes of an ellipse are always at right angles. If \(\boldsymbol\gamma_2\) and \(\boldsymbol\gamma_3\) were at, say, 60&deg;, they would partly measure the same thing and the two numbers \(\lambda_2,\lambda_3\) would not separate cleanly into "most spread" and "least spread".</li>
+    </ul>
+    <p>Put the three vectors side by side as columns of a matrix:</p>
+    \[ \boldsymbol\Gamma=[\,\boldsymbol\mu\;\;\boldsymbol\gamma_2\;\;\boldsymbol\gamma_3\,],\qquad \boldsymbol\Gamma^{\!\top}\boldsymbol\Gamma=I_3 . \]
+    <p>A matrix with this property is called <strong>orthogonal</strong>. It represents a rotation of the coordinate axes. So the three constraints together are just saying: \(\boldsymbol\Gamma\) is a rotation that takes the standard axes to the natural axes of the data.</p>
+
+    <h3>\(\kappa\) &mdash; concentration</h3>
+    <p>How tightly the data cluster. Large \(\kappa\) means a small, tight cloud. Small \(\kappa\) means a big, loose cloud. \(\kappa\) alone does not change the <em>shape</em> of the ellipse, only its size.</p>
+
+    <h3>\(\beta\) &mdash; ovalness</h3>
+    <p>How much longer the long axis is than the short axis. \(\beta=0\) gives a circle. Larger \(\beta\) gives a more stretched ellipse. \(\beta\) alone does not move the cloud or change its overall location.</p>
+
+    <h3>The constraint \(0\le 2\beta<\kappa\)</h3>
+    <p>This one looks technical but has a clear geometric reason. In Part 7 we will show that the variance of the data along each axis is</p>
+    \[ \lambda_2=\frac{1}{\kappa-2\beta}\quad(\text{along }\boldsymbol\gamma_2), \qquad \lambda_3=\frac{1}{\kappa+2\beta}\quad(\text{along }\boldsymbol\gamma_3). \]
+    <p>Now read the condition off these formulas:</p>
+    <ul>
+      <li>If \(2\beta<\kappa\), then \(\kappa-2\beta>0\) and \(\lambda_2\) is a positive, finite variance. Good.</li>
+      <li>If \(2\beta=\kappa\), then \(\lambda_2=\infty\). The cloud is infinitely long in the \(\boldsymbol\gamma_2\) direction &mdash; it stops being a bump around \(\boldsymbol\mu\).</li>
+      <li>If \(2\beta>\kappa\), then \(\lambda_2\) is negative, which is impossible for a variance. What actually happens is that \(\boldsymbol\mu\) stops being the peak: the density develops two peaks on either side of \(\boldsymbol\mu\) along \(\boldsymbol\gamma_2\), like a saddle. The model is still a valid density, but it is no longer the "one elliptical bump" that we wanted.</li>
+      <li>\(\beta\ge0\) is a labelling convention, not a real restriction. If \(\beta\) were negative, the roles of \(\boldsymbol\gamma_2\) and \(\boldsymbol\gamma_3\) would simply swap. We fix \(\beta\ge0\) so that \(\boldsymbol\gamma_2\) always means "long axis".</li>
+    </ul>
+    <p>Two useful consequences:</p>
+    \[ \kappa=\frac12\Bigl(\frac1{\lambda_2}+\frac1{\lambda_3}\Bigr),\qquad \beta=\frac14\Bigl(\frac1{\lambda_3}-\frac1{\lambda_2}\Bigr). \]
+    <p>These are how we will turn estimated variances into estimated parameters in Part 15. Check the direction of the logic: \(\lambda_2>\lambda_3\) (more spread along \(\boldsymbol\gamma_2\)) gives \(1/\lambda_3>1/\lambda_2\), hence \(\beta>0\). Consistent.</p>
+    <p>The ellipse's semi-axes are proportional to \(\sqrt{\lambda_2}\) and \(\sqrt{\lambda_3}\), so the shape of the ellipse &mdash; how oval it is &mdash; is measured by</p>
+    \[ \frac{\text{long semi-axis}}{\text{short semi-axis}}=\sqrt{\frac{\lambda_2}{\lambda_3}}=\sqrt{\frac{\kappa+2\beta}{\kappa-2\beta}} . \]
+    <p>With \(\kappa=60,\beta=24\): the ratio is \(\sqrt{108/12}=\sqrt9=3\). The ellipse is three times longer than it is wide.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 6</span><span class="plate-t">move the two sliders and watch the ellipse</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="s6k"><span class="ctl-l"><span>\(\kappa\) &mdash; concentration</span><b id="v6k">60</b></span>
+        <input type="range" id="s6k" min="4" max="300" step="1" value="60"></label>
+      <label class="ctl" for="s6b"><span class="ctl-l"><span>\(\beta\) &mdash; ovalness (as a fraction of \(\kappa/2\))</span><b id="v6b">0.80</b></span>
+        <input type="range" id="s6b" min="0" max="0.94" step="0.01" value="0.80"></label>
+    </div>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="plot" id="fig6a"></div><div class="panel-t">tangent view &mdash; fixed scale</div></div>
+        <div><div class="plot" id="fig6b"></div><div class="panel-t">on the globe</div></div>
+      </div>
+      <div class="scroll" style="margin:10px 0 0">
+        <table><tbody>
+          <tr><td>\(\kappa\)</td><td class="num" id="o6k">60</td><td>\(\beta\)</td><td class="num" id="o6b">24.0</td><td>\(2\beta<\kappa\)?</td><td class="num" id="o6ok">yes</td></tr>
+          <tr><td>\(\lambda_2\)</td><td class="num" id="o6l2">0.0833</td><td>\(\lambda_3\)</td><td class="num" id="o6l3">0.00926</td><td>axis ratio</td><td class="num" id="o6r">3.00</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <figcaption>The second slider is shown as a fraction of its maximum, because the legal range of \(\beta\) depends on \(\kappa\): the condition is \(\beta&lt;\kappa/2\). Slide \(\beta\) to 0 and the ellipse becomes a circle &mdash; that is vMF. Slide \(\beta\) to the right and the ellipse stretches along <b class="c-g2">\(\boldsymbol\gamma_2\)</b>. Slide \(\kappa\) and the whole shape shrinks or grows without changing how oval it is, as long as you leave the \(\beta\) slider alone. The left panel keeps a fixed scale so you can see the size change; the right panel shows the same distribution on the globe.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p7" data-title="The picture that explains everything">
+  <div class="col">
+    <div class="eyebrow">Part 7</div>
+    <h2>The picture that explains everything</h2>
+    <p class="lede">The sphere, the mean direction, the flat plane that touches it, and the ellipse drawn on that plane.</p>
+
+    <h3>What is the tangent plane?</h3>
+    <p>Put a sphere on a table. The table touches the sphere at exactly one point. That table is the <strong>tangent plane</strong> at that point. Formally, the tangent plane (or tangent space) at \(\boldsymbol\mu\) is</p>
+    \[ T_{\boldsymbol\mu}=\{\mathbf v\in\mathbb R^{k}:\boldsymbol\mu^{\!\top}\mathbf v=0\}, \]
+    <p>the set of all directions perpendicular to \(\boldsymbol\mu\). For \(k=3\) it is an ordinary flat plane, and it is two-dimensional. In general it has \(k-1\) dimensions &mdash; one less than the space, because the direction "straight up along \(\boldsymbol\mu\)" has been removed.</p>
+    <p>Why do we care? Because near \(\boldsymbol\mu\), the curved sphere and the flat plane are almost the same. If the data are concentrated (large \(\kappa\)), the cloud occupies only a small patch, and on a small patch the Earth looks flat. This lets us borrow everything we know about the multivariate normal distribution.</p>
+
+    <h3>Tangent coordinates</h3>
+    <p>For an observation \(\mathbf u\), define its <strong>tangent part</strong></p>
+    \[ \mathbf v=(I-\boldsymbol\mu\boldsymbol\mu^{\!\top})\mathbf u . \]
+    <p>In words: take \(\mathbf u\) and throw away the piece that points along \(\boldsymbol\mu\). What is left is the sideways displacement. It lies in the tangent plane. Then the two numbers</p>
+    \[ v_2=\boldsymbol\gamma_2^{\!\top}\mathbf u,\qquad v_3=\boldsymbol\gamma_3^{\!\top}\mathbf u \]
+    <p>are the coordinates of that displacement along the two axes. Notice \(\boldsymbol\gamma_m^{\!\top}\mathbf v=\boldsymbol\gamma_m^{\!\top}\mathbf u\) because \(\boldsymbol\gamma_m\) is perpendicular to \(\boldsymbol\mu\) &mdash; so you can use \(\mathbf u\) directly. These are exactly the quantities that appear in the Kent density.</p>
+
+    <h3>The key approximation</h3>
+    <p>When \(\kappa\) is large, write \(\vartheta\) for the angle from \(\boldsymbol\mu\). A second-order Taylor expansion gives \(\cos\vartheta\approx1-\tfrac12(v_2^2+v_3^2)\), so the Kent exponent becomes</p>
+    \[ \kappa\cos\vartheta+\beta(v_2^2-v_3^2) \;\approx\; \kappa-\tfrac12\bigl[(\kappa-2\beta)v_2^2+(\kappa+2\beta)v_3^2\bigr]. \]
+    <p>Compare this with the exponent of a two-dimensional normal density with independent components, \(-\tfrac12\bigl(v_2^2/\lambda_2+v_3^2/\lambda_3\bigr)\). They match exactly when</p>
+    \[ \boxed{\;\lambda_2=\frac1{\kappa-2\beta},\qquad \lambda_3=\frac1{\kappa+2\beta}\;} \]
+    <p>So: <strong>near its centre, a Kent distribution is a two-dimensional normal distribution drawn on the tangent plane</strong>, with variance \(\lambda_2\) along \(\boldsymbol\gamma_2\) and variance \(\lambda_3\) along \(\boldsymbol\gamma_3\). This is the single most useful fact in the whole subject. It is where the \(\lambda\)'s come from, it explains the constraint on \(\beta\), and it is what makes estimation easy.</p>
+    <p>For vMF, set \(\beta=0\): both variances are \(1/\kappa\). Same in every direction. Round. Exactly as we saw in Figure 4.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 7</span><span class="plate-t">sphere, mean direction, tangent plane, data cloud, axes</span></div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <button class="btn" id="b7sphere" aria-pressed="true">sphere</button>
+        <button class="btn" id="b7plane" aria-pressed="true">tangent plane</button>
+        <button class="btn" id="b7data" aria-pressed="true">data</button>
+        <button class="btn" id="b7axes" aria-pressed="true">axes</button>
+        <button class="btn" id="b7reset">reset view</button>
+      </div>
+    </div>
+    <div class="plate-body"><div class="plot tall" id="fig7"></div><div class="hint">drag to rotate &middot; try looking straight down the orange arrow</div></div>
+    <figcaption>The <b class="c-mu">orange arrow</b> is \(\boldsymbol\mu\), here the square root of the composition \((0.50,0.30,0.20)\). It pierces the sphere at the centre of the data. The pale square is the tangent plane \(T_{\boldsymbol\mu}\); it touches the sphere at exactly that point. The grey dots are 250 draws from a Kent distribution. Inside the plane sit the two axes: <b class="c-g2">\(\boldsymbol\gamma_2\)</b>, along which the cloud is long, and <b class="c-g3">\(\boldsymbol\gamma_3\)</b>, along which it is short. Rotate until you are looking down the orange arrow and the cloud becomes the flat ellipse of the next figure.</figcaption>
+  </figure>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 8</span><span class="plate-t">looking straight down \(\boldsymbol\mu\) &mdash; the ellipse, fully labelled</span></div>
+    <div class="plate-body"><div class="svgbox" id="fig8"></div></div>
+    <figcaption>Now we are standing on the tangent plane, looking at it face on. \(\boldsymbol\mu\) points directly at you, out of the screen, so it appears as a single point at the centre. The ellipse is one contour of the density &mdash; the "one standard deviation" contour. Its semi-axis along <b class="c-g2">\(\boldsymbol\gamma_2\)</b> has length \(\sqrt{\lambda_2}\); its semi-axis along <b class="c-g3">\(\boldsymbol\gamma_3\)</b> has length \(\sqrt{\lambda_3}\). Because \(\lambda_2&gt;\lambda_3\), the first is longer: there is more spread along \(\boldsymbol\gamma_2\).</figcaption>
+  </figure>
+
+  <div class="col">
+    <div class="note warm">
+      <span class="tag">Say this out loud until it is automatic</span>
+      <p>\(\lambda_2>\lambda_3\) means <em>more spread along \(\boldsymbol\gamma_2\) than along \(\boldsymbol\gamma_3\)</em>. The \(\lambda\)'s are variances on the tangent plane. Their square roots are the lengths of the ellipse's semi-axes. And \(\lambda_2>\lambda_3\) is the same statement as \(\beta>0\).</p>
+    </div>
+  </div>
+</section>
+
+<section class="part" id="p8" data-title="The second-moment matrix">
+  <div class="col">
+    <div class="eyebrow">Part 8</div>
+    <h2>The second-moment matrix</h2>
+    <p class="lede">One matrix that stores how the data are spread out in every direction at once.</p>
+
+    <h3>Definition</h3>
+    \[ \hat M=\frac1n\sum_{i=1}^{n}\mathbf u_i\mathbf u_i^{\!\top}. \]
+    <p>Take this apart.</p>
+    <div class="words">
+      <span class="tag">Reading the formula</span>
+      <dl>
+        <dt>\(\mathbf u_i\)</dt><dd>the \(i\)-th observation, a unit vector with \(k\) entries. A \(k\times1\) column.</dd>
+        <dt>\(\mathbf u_i^{\!\top}\)</dt><dd>the same thing written as a row, \(1\times k\).</dd>
+        <dt>\(\mathbf u_i\mathbf u_i^{\!\top}\)</dt><dd>column times row \(=\) a \(k\times k\) matrix. Its \((j,l)\) entry is \(u_{ij}u_{il}\). This is called an <em>outer product</em>.</dd>
+        <dt>\(\frac1n\sum_i\)</dt><dd>average these \(n\) matrices, entry by entry.</dd>
+        <dt>\(\hat M\)</dt><dd>a \(k\times k\) symmetric matrix. Entry \((j,l)\) is the average of \(u_{ij}u_{il}\) over the sample.</dd>
+      </dl>
+    </div>
+    <p>So the diagonal entry \(\hat M_{jj}\) is the average of \(u_{ij}^2\): how much of the data's "energy" lies along coordinate axis \(j\). The off-diagonal entry \(\hat M_{jl}\) is the average of \(u_{ij}u_{il}\): whether coordinates \(j\) and \(l\) tend to be large together.</p>
+    <p>Note carefully: this is the <em>raw</em> second moment, not the covariance. We do not subtract a mean. That is on purpose. On a sphere the natural centre is a direction, not a point, and \(\hat M\) handles that naturally.</p>
+
+    <h3>Why the trace is always 1</h3>
+    <p>The <strong>trace</strong> of a matrix is the sum of its diagonal entries. For our matrix,</p>
+    \[ \operatorname{tr}(\hat M)=\sum_{j=1}^{k}\hat M_{jj} =\frac1n\sum_{i=1}^{n}\sum_{j=1}^{k}u_{ij}^2 =\frac1n\sum_{i=1}^{n}\|\mathbf u_i\|^2 =\frac1n\sum_{i=1}^{n}1 =1 . \]
+    <p>The reason is simply that every observation has length one. So \(\operatorname{tr}(\hat M)=1\) is not an assumption &mdash; it is automatic, and it is a very good arithmetic check on your code. If you compute \(\hat M\) and the trace is not 1, something is wrong.</p>
+
+    <h3>A worked example</h3>
+    <p>Suppose a sample gives</p>
+    \[ \hat M=\begin{pmatrix}0.03&0.02&0\\0.02&0.03&0\\0&0&0.94\end{pmatrix}. \]
+    <p>Trace: \(0.03+0.03+0.94=1.00\). &#10003;</p>
+    <p>What do the numbers say?</p>
+    <ul>
+      <li><strong>\(\hat M_{33}=0.94\) is huge.</strong> Almost all of the length of every observation is in the third coordinate. So all the data are clustered near \((0,0,\pm1)\) &mdash; near the north pole. Since compositions have non-negative entries, it is the north pole: \(\hat\mu\approx(0,0,1)\).</li>
+      <li><strong>\(\hat M_{11}=\hat M_{22}=0.03\) are small.</strong> Only a little of the data's energy is sideways. Together they account for \(0.06\), which is the total spread away from the pole.</li>
+      <li><strong>\(\hat M_{12}=0.02\) is not zero.</strong> The first and second coordinates move together. When \(u_{i1}\) is positive, \(u_{i2}\) tends to be positive too. So the sideways cloud is <em>tilted</em> &mdash; it lies along the diagonal direction \((1,1,0)\), not along either coordinate axis.</li>
+      <li><strong>\(\hat M_{13}=\hat M_{23}=0\).</strong> No systematic link between the sideways position and the height. This is what we expect for a symmetric bump centred at the pole.</li>
+    </ul>
+
+    <h3>A useful identity</h3>
+    <p>Split the trace into the part along \(\hat{\boldsymbol\mu}\) and the part in the tangent plane. Because \([\hat{\boldsymbol\mu},\mathbf b_1,\mathbf b_2]\) is an orthogonal frame,</p>
+    \[ \underbrace{\operatorname{tr}(\hat M)}_{=1} =\underbrace{\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}}_{\text{along }\hat{\boldsymbol\mu}} +\underbrace{\operatorname{tr}(S_L)}_{\text{in the tangent plane}} \qquad\Longrightarrow\qquad \operatorname{tr}(S_L)=1-\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}. \]
+    <p>In the example, \(\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}=0.94\), so the total tangent spread must be \(1-0.94=0.06\). Remember that number; we are about to compute \(S_L\) and its diagonal will sum to exactly 0.06.</p>
+
+    <h3>How do we get \(\hat{\boldsymbol\mu}\)?</h3>
+    <p>Two equivalent-in-practice recipes:</p>
+    <ol>
+      <li><strong>Normalised sample mean.</strong> Compute \(\bar{\mathbf u}=\frac1n\sum_i\mathbf u_i\) (this vector is <em>inside</em> the sphere, not on it), then set \(\hat{\boldsymbol\mu}=\bar{\mathbf u}/\|\bar{\mathbf u}\|\). The length \(\bar R=\|\bar{\mathbf u}\|\) is between 0 and 1 and is itself informative: \(\bar R\) near 1 means very concentrated data, \(\bar R\) near 0 means scattered data. This is the standard choice for Kent.</li>
+      <li><strong>Leading eigenvector of \(\hat M\).</strong> The direction that captures the most of \(\operatorname{tr}(\hat M)\). This ignores the sign of the data and is the right choice for axial data.</li>
+    </ol>
+    <p>For concentrated compositional data the two give almost the same answer. We use the first.</p>
+  </div>
+</section>
+
+
+<section class="part" id="p9" data-title="A basis for the tangent plane">
+  <div class="col">
+    <div class="eyebrow">Part 9</div>
+    <h2>A basis for the tangent plane</h2>
+    <p class="lede">The Householder construction. This is where most confusion lives, so we go slowly.</p>
+
+    <h3>The problem</h3>
+    <p>We have the tangent plane at \(\hat{\boldsymbol\mu}\): a flat, two-dimensional plane floating in three-dimensional space. We want to describe points on it using <em>two</em> numbers, not three. To do that we need two reference directions inside the plane. That pair of directions is called a <strong>basis</strong>.</p>
+
+    <div class="note warm">
+      <span class="tag">The rulers on a table</span>
+      <p>Put two rulers flat on a table, crossing at right angles at some point. Now any spot on the table can be described by two numbers: "40 cm along the first ruler, 15 cm along the second". Those two rulers <em>are</em> a basis for the table.</p>
+      <p>Here is the crucial part. <strong>You could have put the rulers down at any angle.</strong> Rotate both rulers by 30&deg; and they still work perfectly: every spot still gets two numbers. The numbers change, but the spots do not move. <em>The rulers are your choice; the table and whatever is lying on it are not.</em></p>
+    </div>
+
+    <h3>The Householder construction</h3>
+    <p>We need a rule that, given any \(\hat{\boldsymbol\mu}\), produces two perpendicular unit vectors inside the tangent plane. It must be automatic and it must never break down. The Householder reflection does this.</p>
+    <p>A <strong>reflection</strong> is a mirror. Pick a mirror plane; the reflection sends every point to its mirror image. If \(\mathbf h\) is the direction perpendicular to the mirror, the reflection matrix is</p>
+    \[ H=I-\frac{2\,\mathbf h\mathbf h^{\!\top}}{\mathbf h^{\!\top}\mathbf h}. \]
+    <p>Now the trick. We want a mirror that sends the first coordinate axis \(\mathbf e_1=(1,0,0)^{\!\top}\) onto \(\hat{\boldsymbol\mu}\). The mirror that does this is the one perpendicular to their difference. So set</p>
+    \[ \mathbf h=\mathbf e_1-\hat{\boldsymbol\mu}. \]
+    <p>Then, as a short calculation confirms, \(H\mathbf e_1=\hat{\boldsymbol\mu}\).</p>
+
+    <h4>Why does that help?</h4>
+    <p>\(H\) is orthogonal, so its three columns are mutually perpendicular unit vectors. Its first column is \(H\mathbf e_1=\hat{\boldsymbol\mu}\). Therefore <strong>the other two columns are automatically perpendicular to \(\hat{\boldsymbol\mu}\)</strong> &mdash; which means they lie in the tangent plane. Collect them:</p>
+    \[ H=[\,\hat{\boldsymbol\mu}\;\;\mathbf b_1\;\;\mathbf b_2\,],\qquad \mathbf B(\hat{\boldsymbol\mu})=[\,\mathbf b_1\;\;\mathbf b_2\,]\ \ (3\times2). \]
+    <p>Done. \(\mathbf B(\hat{\boldsymbol\mu})\) is our pair of rulers. It satisfies \(\mathbf B^{\!\top}\mathbf B=I_2\) (the rulers are unit length and perpendicular) and \(\mathbf B^{\!\top}\hat{\boldsymbol\mu}=\mathbf 0\) (they lie in the plane).</p>
+
+    <h4>Worked numerically for \(\hat{\boldsymbol\mu}=(0,0,1)\)</h4>
+    <p>\(\mathbf h=\mathbf e_1-\hat{\boldsymbol\mu}=(1,0,-1)\), and \(\mathbf h^{\!\top}\mathbf h=2\). So</p>
+    \[ H=I-\mathbf h\mathbf h^{\!\top} =\begin{pmatrix}1&0&0\\0&1&0\\0&0&1\end{pmatrix} -\begin{pmatrix}1&0&-1\\0&0&0\\-1&0&1\end{pmatrix} =\begin{pmatrix}0&0&1\\0&1&0\\1&0&0\end{pmatrix}. \]
+    <p>Column 1 is \((0,0,1)=\hat{\boldsymbol\mu}\). &#10003; So</p>
+    \[ \mathbf b_1=(0,1,0),\qquad \mathbf b_2=(1,0,0). \]
+    <p>Both are perpendicular to \((0,0,1)\). &#10003; Notice the order: the construction gives \(\mathbf b_1=\mathbf e_2\) and \(\mathbf b_2=\mathbf e_1\). It does not give them in the order you might have guessed. That is fine, and it is exactly the point of the next section: <em>the rule is arbitrary, and the arbitrariness does not matter.</em></p>
+    <p>(One edge case: if \(\hat{\boldsymbol\mu}=\mathbf e_1\) exactly, then \(\mathbf h=\mathbf 0\) and the formula divides by zero. Software handles this by reflecting onto \(-\mathbf e_1\) instead, or by using \(\mathbf h=\mathbf e_1+\hat{\boldsymbol\mu}\). It never happens with real data.)</p>
+
+    <h3>The distinction you must not blur</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th></th><th>\(\mathbf B(\hat{\boldsymbol\mu})\)</th><th>\(\mathbf K\) (the Kent frame)</th></tr></thead>
+        <tbody>
+          <tr><td class="t">what it is</td><td class="t">two arbitrary perpendicular directions in the tangent plane</td><td class="t">the two <em>principal</em> directions of the data: long axis and short axis</td></tr>
+          <tr><td class="t">what it depends on</td><td class="t">only \(\hat{\boldsymbol\mu}\), and on a convention (we chose \(\mathbf e_1\))</td><td class="t">the data &mdash; where they actually spread</td></tr>
+          <tr><td class="t">the analogy</td><td class="t">where you happened to lay the rulers</td><td class="t">the shape of the stain on the table</td></tr>
+          <tr><td class="t">unique?</td><td class="t">no &mdash; infinitely many valid choices</td><td class="t">yes (up to sign), as long as \(\lambda_2\neq\lambda_3\)</td></tr>
+          <tr><td class="t">a parameter?</td><td class="t">no &mdash; it is scaffolding</td><td class="t">yes &mdash; \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\) are parameters of the model</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>\(\mathbf B\) is a coordinate system. It knows nothing about the data.</strong> It is built from \(\hat{\boldsymbol\mu}\) alone, before we have looked at how the cloud is shaped. Two different people using two different conventions would get two different \(\mathbf B\)'s. That is allowed. The job of Parts 10&ndash;12 is to start from \(\mathbf B\), look at the data, and <em>turn the rulers</em> until they line up with the ellipse. Only then do we have \(\mathbf K\).</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 9</span><span class="plate-t">the Householder rulers, and the ellipse they do not know about</span></div>
+    <div class="plate-body"><div class="plot tall" id="fig9"></div><div class="hint">drag to rotate</div></div>
+    <figcaption>The <b class="c-b">violet dashed arrows</b> are \(\mathbf b_1\) and \(\mathbf b_2\), the Householder basis. They were computed from <b class="c-mu">\(\hat{\boldsymbol\mu}\)</b> alone. The data cloud is clearly stretched in some direction, and that direction is <em>not</em> \(\mathbf b_1\). Nothing is wrong: the rulers were never meant to line up with the data. Finding the angle between them is the estimation problem.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p10" data-title="Projecting the second moment onto the plane">
+  <div class="col">
+    <div class="eyebrow">Part 10</div>
+    <h2>Projecting the second moment onto the plane</h2>
+    <p class="lede">We now express the spread of the data in ruler coordinates. Three-by-three becomes two-by-two.</p>
+
+    <h3>The formula</h3>
+    \[ S_L=\mathbf B^{\!\top}\hat M\,\mathbf B . \]
+    <p>Check the sizes: \(\mathbf B^{\!\top}\) is \(2\times3\), \(\hat M\) is \(3\times3\), \(\mathbf B\) is \(3\times2\). The product is \(2\times2\). The subscript \(L\) stands for "local" &mdash; local to the tangent plane.</p>
+
+    <h3>What it actually computes</h3>
+    <p>Write \(\mathbf w_i=\mathbf B^{\!\top}\mathbf u_i\) for the two ruler readings of observation \(i\): \(w_{i1}=\mathbf b_1^{\!\top}\mathbf u_i\) and \(w_{i2}=\mathbf b_2^{\!\top}\mathbf u_i\). Then</p>
+    \[ S_L=\mathbf B^{\!\top}\Bigl(\frac1n\sum_i\mathbf u_i\mathbf u_i^{\!\top}\Bigr)\mathbf B =\frac1n\sum_i(\mathbf B^{\!\top}\mathbf u_i)(\mathbf B^{\!\top}\mathbf u_i)^{\!\top} =\frac1n\sum_i\mathbf w_i\mathbf w_i^{\!\top}. \]
+    <p>So \(S_L\) is exactly the second-moment matrix of the two-dimensional ruler readings. Nothing mysterious: we flattened each observation onto the table, read off two numbers, and computed their \(2\times2\) second-moment matrix.</p>
+    <div class="words">
+      <span class="tag">The three entries</span>
+      <dl>
+        <dt>\((S_L)_{11}\)</dt><dd>the average of \(w_{i1}^2\): how much the data spread along ruler 1.</dd>
+        <dt>\((S_L)_{22}\)</dt><dd>the average of \(w_{i2}^2\): how much they spread along ruler 2.</dd>
+        <dt>\((S_L)_{12}\)</dt><dd>the average of \(w_{i1}w_{i2}\): whether the two readings move together. This is a covariance in ruler coordinates.</dd>
+      </dl>
+    </div>
+
+    <h3>The example, continued</h3>
+    <p>From Part 9, with \(\hat{\boldsymbol\mu}=(0,0,1)\), the Householder basis is \(\mathbf b_1=(0,1,0)\), \(\mathbf b_2=(1,0,0)\). So \(\mathbf B^{\!\top}\hat M\mathbf B\) just picks out the \((2,2),(2,1),(1,2),(1,1)\) entries of \(\hat M\), in that order:</p>
+    \[ S_L=\begin{pmatrix}\hat M_{22}&\hat M_{21}\\ \hat M_{12}&\hat M_{11}\end{pmatrix} =\begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix}. \]
+    <p>Check the trace: \(0.03+0.03=0.06\), which matches \(1-\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}=1-0.94=0.06\) from Part 8. &#10003;</p>
+
+    <h3>Why is it not diagonal?</h3>
+    <p>This is the important question. The off-diagonal entry is \(0.02\), not \(0\). A non-zero off-diagonal entry means: <strong>the axes of the data ellipse are not lined up with the rulers.</strong></p>
+    <p>Think of it this way. If the cloud were stretched exactly along ruler 1, then whenever \(w_{i1}\) was large, \(w_{i2}\) would be near zero &mdash; the product \(w_{i1}w_{i2}\) would be small and would average to zero. A zero off-diagonal entry means "no tilt". Here the entry is positive and about two-thirds the size of the diagonal entries, so the tilt is large. Since \((S_L)_{11}=(S_L)_{22}\), the tilt is exactly 45&deg;.</p>
+    <p>And this is not a problem with the data. It is a statement about the <em>rulers</em>: we laid them down at 45&deg; to the ellipse. Turn the rulers by 45&deg; and the off-diagonal entry will vanish. Finding that turn is the job of Part 11.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 10</span><span class="plate-t">the rulers, the ellipse, and where the off-diagonal term comes from</span></div>
+    <div class="plate-body"><div class="svgbox" id="fig10"></div></div>
+    <figcaption>Looking down at the tangent plane. The <b class="c-b">violet dashed rulers</b> are \(\mathbf b_1,\mathbf b_2\); the ellipse is the data cloud. Left: the ellipse is tilted with respect to the rulers, so points in the shaded quadrants (where \(w_1\) and \(w_2\) have the same sign) outnumber points in the other two. The average of \(w_1w_2\) is therefore positive &mdash; that is the \(0.02\). Right: after turning the rulers by 45&deg; they line up with the ellipse, the four quadrants balance, and the off-diagonal entry becomes zero.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p11" data-title="Eigen-decomposition">
+  <div class="col">
+    <div class="eyebrow">Part 11</div>
+    <h2>Eigen-decomposition</h2>
+    <p class="lede">The machine that finds the right angle to turn the rulers.</p>
+
+    <h3>Eigenvectors, without the algebra</h3>
+    <p>A square matrix takes a vector in and gives a vector out. Usually the output points somewhere different from the input: the matrix both stretches and rotates.</p>
+    <p>An <strong>eigenvector</strong> is a special input direction that does <em>not</em> get rotated. It only gets stretched:</p>
+    \[ S\,\mathbf w=\lambda\,\mathbf w . \]
+    <p>The number \(\lambda\) is the <strong>eigenvalue</strong> &mdash; the amount of stretch. That is the whole definition: <em>the direction survives, only the length changes</em>.</p>
+    <p>For a symmetric matrix (and second-moment matrices are always symmetric) two nice things are guaranteed: the eigenvalues are real, and the eigenvectors are perpendicular to each other. In two dimensions that means: two perpendicular special directions, with one number each.</p>
+
+    <h4>What they mean for a second-moment matrix</h4>
+    <p>When \(S\) is a second-moment (or covariance) matrix, there is a very concrete reading. For any unit direction \(\mathbf a\), the quantity \(\mathbf a^{\!\top}S\,\mathbf a\) is the spread of the data <em>measured along \(\mathbf a\)</em>. Ask: which direction gives the biggest value? The answer is the top eigenvector, and the value it gives is the top eigenvalue. Which gives the smallest? The other eigenvector, and its eigenvalue.</p>
+    <p>So for us:</p>
+    <ul>
+      <li>the <strong>eigenvector</strong> with the largest eigenvalue is the direction of maximum spread &mdash; the <em>long axis of the ellipse</em>;</li>
+      <li>the <strong>eigenvalue</strong> is the variance along that direction &mdash; the square of the semi-axis length.</li>
+    </ul>
+    <p>Eigen-decomposition is therefore exactly the right tool: we are asking the data "which way are you longest?", and that is precisely the question eigenvectors answer.</p>
+
+    <h3>The decomposition</h3>
+    \[ S_L=W\Lambda W^{\!\top},\qquad W=[\,\mathbf w_2\;\;\mathbf w_3\,],\qquad \Lambda=\begin{pmatrix}\lambda_2&0\\0&\lambda_3\end{pmatrix},\quad\lambda_2\ge\lambda_3 . \]
+    <p>Here \(W\) is a \(2\times2\) orthogonal matrix &mdash; a rotation of the plane. Read the formula right to left as a recipe: \(W^{\!\top}\) turns the rulers so they line up with the ellipse; \(\Lambda\) stretches by the right amount along each; \(W\) turns back. The numbering starts at 2 to match \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\); slot 1 belongs to \(\boldsymbol\mu\).</p>
+
+    <h3>The example</h3>
+    <p>For \(S_L=\begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix}\) the characteristic equation is \((0.03-\lambda)^2-0.02^2=0\), giving \(0.03-\lambda=\pm0.02\), so</p>
+    \[ \lambda_2=0.05,\qquad \lambda_3=0.01 . \]
+    <p>Two sanity checks. The trace is preserved: \(0.05+0.01=0.06=0.03+0.03\). &#10003; And the determinant: \(0.05\times0.01=0.0005=0.03^2-0.02^2\). &#10003;</p>
+    <p>Now the eigenvectors. For \(\lambda_2=0.05\), solve \(S_L\mathbf w=0.05\,\mathbf w\). Try \(\mathbf w=\tfrac1{\sqrt2}(1,1)\):</p>
+    \[ \begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix} \tfrac1{\sqrt2}\begin{pmatrix}1\\1\end{pmatrix} =\tfrac1{\sqrt2}\begin{pmatrix}0.05\\0.05\end{pmatrix} =0.05\cdot\tfrac1{\sqrt2}\begin{pmatrix}1\\1\end{pmatrix}.\quad\text{It works.} \]
+    <p>For \(\lambda_3=0.01\), try \(\mathbf w=\tfrac1{\sqrt2}(1,-1)\):</p>
+    \[ \begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix} \tfrac1{\sqrt2}\begin{pmatrix}1\\-1\end{pmatrix} =\tfrac1{\sqrt2}\begin{pmatrix}0.01\\-0.01\end{pmatrix} =0.01\cdot\tfrac1{\sqrt2}\begin{pmatrix}1\\-1\end{pmatrix}.\quad\text{It works.} \]
+    <p>So</p>
+    \[ \mathbf w_2=\tfrac1{\sqrt2}(1,1),\qquad \mathbf w_3=\tfrac1{\sqrt2}(1,-1),\qquad W=\tfrac1{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}. \]
+    <p><strong>Why these directions?</strong> \(\mathbf w_2=\tfrac1{\sqrt2}(1,1)\) means "one unit along ruler 1 and one unit along ruler 2" &mdash; the 45&deg; diagonal. That is exactly the tilt we diagnosed from the positive off-diagonal entry in Part 10. The data spread most along that diagonal, with variance \(0.05\). Along the perpendicular diagonal \(\tfrac1{\sqrt2}(1,-1)\) the variance is only \(0.01\), five times smaller. Five times smaller variance means \(\sqrt5\approx2.24\) times shorter semi-axis.</p>
+
+    <h3>From \(\lambda\)'s to Kent parameters</h3>
+    <p>Use the boxed relations from Part 7 in reverse:</p>
+    \[ \hat\kappa=\frac12\Bigl(\frac1{\lambda_2}+\frac1{\lambda_3}\Bigr) =\frac12\Bigl(\frac1{0.05}+\frac1{0.01}\Bigr)=\frac12(20+100)=60, \]
+    \[ \hat\beta=\frac14\Bigl(\frac1{\lambda_3}-\frac1{\lambda_2}\Bigr) =\frac14(100-20)=20 . \]
+    <p>Check the constraint: \(2\hat\beta=40<60=\hat\kappa\). &#10003; The fit is a legal, unimodal Kent distribution, with an ellipse \(\sqrt{0.05/0.01}=\sqrt5\approx2.24\) times longer than it is wide.</p>
+
+    <div class="note">
+      <span class="tag">An honest note on estimation</span>
+      <p>The formulas above are the <em>large-concentration moment estimators</em>. They come from the normal approximation on the tangent plane, so they are good when the data are reasonably concentrated &mdash; which is the usual situation for compositions. Kent (1982) gives slightly refined moment estimators, and one can also maximise the exact likelihood numerically, which requires the Bessel series for \(c(\kappa,\beta)\). For understanding <em>what the parameters mean</em>, the version above is the right one, and it is what the eigen-decomposition delivers directly.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="part" id="p12" data-title="How B, W and K fit together">
+  <div class="col">
+    <div class="eyebrow">Part 12</div>
+    <h2>How \(\mathbf B\), \(W\) and \(\mathbf K\) fit together</h2>
+    <p class="lede">The single most important equation in the estimation procedure &mdash; and the demonstration that it does not depend on your arbitrary choices.</p>
+
+    <h3>The equation</h3>
+    <p>The eigenvectors \(\mathbf w_2,\mathbf w_3\) live in the two-dimensional ruler coordinate system. But \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\) must be real directions in three-dimensional space. To convert, multiply by \(\mathbf B\):</p>
+    \[ \boxed{\;\hat{\boldsymbol\gamma}_2=\mathbf B(\hat{\boldsymbol\mu})\,\mathbf w_2,\qquad \hat{\boldsymbol\gamma}_3=\mathbf B(\hat{\boldsymbol\mu})\,\mathbf w_3,\qquad\text{that is}\qquad [\,\hat{\boldsymbol\gamma}_2\;\;\hat{\boldsymbol\gamma}_3\,]=\mathbf B(\hat{\boldsymbol\mu})\,W\;} \]
+    <p>and the full Kent frame is</p>
+    \[ \hat{\mathbf K}=[\,\hat{\boldsymbol\mu}\;\;\hat{\boldsymbol\gamma}_2\;\;\hat{\boldsymbol\gamma}_3\,] =[\,\hat{\boldsymbol\mu}\;\;\mathbf B(\hat{\boldsymbol\mu})W\,] = H\begin{pmatrix}1&\mathbf 0^{\!\top}\\ \mathbf 0&W\end{pmatrix}, \]
+    <p>where \(H\) is the full \(3\times3\) Householder matrix. The two ways of writing it are the same thing; the second shows clearly that \(\hat{\mathbf K}\) is "the Householder frame, then a rotation inside the tangent plane".</p>
+    <p>In words: <strong>\(\mathbf B\) says where the plane is; \(W\) says how far to turn inside it; \(\mathbf K\) is the result.</strong></p>
+
+    <h4>Check it on the example</h4>
+    <p>\(\mathbf b_1=(0,1,0)\), \(\mathbf b_2=(1,0,0)\), \(\mathbf w_2=\tfrac1{\sqrt2}(1,1)\). So</p>
+    \[ \hat{\boldsymbol\gamma}_2=\mathbf B\mathbf w_2=\tfrac1{\sqrt2}\bigl(1\cdot\mathbf b_1+1\cdot\mathbf b_2\bigr) =\tfrac1{\sqrt2}\bigl((0,1,0)+(1,0,0)\bigr)=\tfrac1{\sqrt2}(1,1,0), \]
+    \[ \hat{\boldsymbol\gamma}_3=\mathbf B\mathbf w_3=\tfrac1{\sqrt2}\bigl((0,1,0)-(1,0,0)\bigr)=\tfrac1{\sqrt2}(-1,1,0). \]
+    <p>Both are unit vectors, both are perpendicular to \(\hat{\boldsymbol\mu}=(0,0,1)\), and they are perpendicular to each other. &#10003; And \(\hat{\boldsymbol\gamma}_2\propto(1,1,0)\) is the diagonal direction that the \(0.02\) off-diagonal entry pointed to all along.</p>
+
+    <h3>Why \(\mathbf B\) alone is not \(\mathbf K\)</h3>
+    <p>Back to the table. \(\mathbf B\) is where you put the rulers. \(\mathbf K\) is the shape of the stain. The rulers were placed before anyone looked at the stain, so of course they do not line up with it. \(W\) is the turn that fixes this &mdash; and \(W\) is the only part of the whole procedure that used the data.</p>
+    <p>If you skipped \(W\) and reported \(\mathbf B\) as your estimate of \((\boldsymbol\gamma_2,\boldsymbol\gamma_3)\), you would be reporting your own arbitrary convention as if it were a scientific finding. In the example you would claim the long axis is \((0,1,0)\) when it is really \(\tfrac1{\sqrt2}(1,1,0)\) &mdash; off by 45&deg;.</p>
+
+    <h3>The invariance, demonstrated</h3>
+    <p>Here is the proof that the choice of rulers does not matter. Suppose a second analyst uses rulers turned by an angle \(\theta\):</p>
+    \[ \tilde{\mathbf B}=\mathbf B\,R(\theta),\qquad R(\theta)=\begin{pmatrix}\cos\theta&-\sin\theta\\ \sin\theta&\cos\theta\end{pmatrix}. \]
+    <p>Their projected second moment is</p>
+    \[ \tilde S_L=\tilde{\mathbf B}^{\!\top}\hat M\tilde{\mathbf B} =R(\theta)^{\!\top}\mathbf B^{\!\top}\hat M\mathbf B\,R(\theta) =R(\theta)^{\!\top}S_L\,R(\theta), \]
+    <p>which is a <em>different matrix</em> with different entries. Its eigenvalues, however, are unchanged &mdash; rotating coordinates cannot change how spread out the data are. And its eigenvector matrix is \(\tilde W=R(\theta)^{\!\top}W\). Therefore</p>
+    \[ \tilde{\mathbf B}\tilde W=\mathbf B R(\theta)\,R(\theta)^{\!\top}W=\mathbf B\,W . \]
+    <p>The two analysts get <strong>exactly the same \(\hat{\boldsymbol\gamma}_2\) and \(\hat{\boldsymbol\gamma}_3\)</strong>. The arbitrary choice cancels out. This is why the procedure is trustworthy, and it is worth seeing happen.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 11</span><span class="plate-t">turn the rulers: \(\mathbf B\) changes, \(S_L\) changes, \(W\) changes, \(\mathbf B W\) does not</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="s12"><span class="ctl-l"><span>rotate the rulers by \(\theta\)</span><b id="v12">0&deg;</b></span>
+        <input type="range" id="s12" min="0" max="180" step="1" value="0"></label>
+    </div>
+    <div class="plate-body">
+      <div class="svgbox" id="fig11"></div>
+      <div class="mats" id="fig11mats"></div>
+    </div>
+    <figcaption>Move the slider. The <b class="c-b">violet dashed rulers</b> spin. The numbers in \(\tilde{\mathbf B}\), \(\tilde S_L\) and \(\tilde W\) all change &mdash; watch the off-diagonal entry of \(\tilde S_L\) pass through zero whenever a ruler happens to line up with an axis. But the <b class="c-g2">blue</b> and <b class="c-g3">green</b> arrows, which are \(\tilde{\mathbf B}\tilde W\), never move, and the eigenvalues \(\lambda_2=0.05,\lambda_3=0.01\) never change. The ellipse is a property of the data; the rulers are a property of the analyst.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p13" data-title="Signs and ties">
+  <div class="col">
+    <div class="eyebrow">Part 13</div>
+    <h2>Signs and ties</h2>
+    <p class="lede">Two small facts that prevent a lot of confusion when you compare results.</p>
+
+    <h3>An eigenvector has no preferred sign</h3>
+    <p>If \(S\mathbf w=\lambda\mathbf w\), then multiplying both sides by \(-1\) gives \(S(-\mathbf w)=\lambda(-\mathbf w)\). So \(-\mathbf w\) is an eigenvector with the same eigenvalue. The equation cannot tell them apart.</p>
+    <p>Geometrically this is obvious: the long axis of an ellipse is a <em>line</em>, not an arrow. Saying "the data spread along \(\boldsymbol\gamma_2\)" and "the data spread along \(-\boldsymbol\gamma_2\)" are the same statement, because the ellipse is symmetric about its centre.</p>
+    <p>The Kent density agrees. Its exponent contains \((\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\), and \((-\boldsymbol\gamma_2^{\!\top}\mathbf u)^2=(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\). Flipping the sign leaves the density <em>completely unchanged</em>. So \(\boldsymbol\gamma_2\) and \(-\boldsymbol\gamma_2\) are not two different models; they are one model with two names. The parameter is not identified beyond its sign, and that is harmless.</p>
+    <p><strong>Why it still matters in practice.</strong> Software will return whichever sign its algorithm happens to produce. If you fit the same model twice, or compare two groups, or average \(\hat{\boldsymbol\gamma}_2\) across bootstrap samples, random sign flips will ruin the comparison. So fix a convention and apply it every time. Common choices:</p>
+    <ul>
+      <li>make the first non-zero component positive;</li>
+      <li>make the largest-in-magnitude component positive;</li>
+      <li>choose the sign that makes \(\hat{\boldsymbol\gamma}_2\) point closest to some fixed reference direction.</li>
+    </ul>
+    <p>Any of these is fine. Being consistent is what counts. In Part 11 we reported \(\mathbf w_3=\tfrac1{\sqrt2}(1,-1)\); a routine might equally well have returned \(\tfrac1{\sqrt2}(-1,1)\). Same axis.</p>
+    <p>One more freedom: \(\boldsymbol\mu\) also has a sign in general directional statistics, but not for us. Compositions map into the positive part of the sphere, so \(\hat{\boldsymbol\mu}\) has non-negative entries and \(-\hat{\boldsymbol\mu}\) is not a possible mean direction. The sign of \(\boldsymbol\mu\) <em>is</em> identified here.</p>
+
+    <h3>When the two eigenvalues are equal</h3>
+    <p>Suppose \(\lambda_2=\lambda_3\). Then every direction in the tangent plane has the same spread. The cloud is round. The "long axis" does not exist, because no axis is longer than any other.</p>
+    <p>Mathematically: every vector in the plane is an eigenvector, and \(W\) can be <em>any</em> rotation. The eigen-decomposition is not unique, and a numerical routine will return an essentially arbitrary pair of directions.</p>
+    <p>Is this a disaster? No, and here is the reassuring part. \(\lambda_2=\lambda_3\) means</p>
+    \[ \hat\beta=\tfrac14\bigl(1/\lambda_3-1/\lambda_2\bigr)=0, \]
+    <p>so the fitted model is vMF, and the Kent density does not contain \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\) at all when \(\beta=0\). The directions became unidentifiable exactly at the moment they stopped mattering. The parameters that are meaningless are also invisible.</p>
+    <p><strong>The practical warning.</strong> Trouble comes from the case where \(\lambda_2\) and \(\lambda_3\) are close but not equal. Then the axes <em>are</em> formally identified, but they are estimated very badly: a tiny change in the data can swing \(\hat{\boldsymbol\gamma}_2\) by a large angle. So before you interpret an estimated axis direction, look at the ratio \(\lambda_2/\lambda_3\). If it is near 1, do not tell a story about the orientation &mdash; there is not enough signal to support one. Report \(\hat\beta\) with a confidence interval instead, and if it covers zero, say so.</p>
+
+    <div class="note warm">
+      <span class="tag">Rule of thumb</span>
+      <p>An estimated axis direction is worth interpreting when the ellipse is visibly an ellipse. A ratio \(\lambda_2/\lambda_3\) of 2 or more (semi-axis ratio \(\sqrt2\approx1.4\)) is usually enough to see; a ratio of 1.1 is not.</p>
+    </div>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 12</span><span class="plate-t">the same axis, two signs &mdash; and the case where there is no axis</span></div>
+    <div class="plate-body"><div class="svgbox" id="fig12"></div></div>
+    <figcaption>Left: \(\boldsymbol\gamma_2\) and \(-\boldsymbol\gamma_2\) describe the identical ellipse, because the density only ever uses the square of the coordinate. Right: when \(\lambda_2=\lambda_3\) the contour is a circle; the dashed pairs show three of the infinitely many equally valid eigenvector pairs. Here \(\beta=0\), the model is vMF, and the axes have dropped out of the density.</figcaption>
+  </figure>
+</section>
+
+<section class="part" id="p14" data-title="Kent versus von Mises–Fisher">
+  <div class="col">
+    <div class="eyebrow">Part 14</div>
+    <h2>Kent versus von Mises&ndash;Fisher</h2>
+    <p class="lede">Side by side. Neither is "better" &mdash; they answer different questions, and one contains the other.</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th></th><th>von Mises&ndash;Fisher</th><th>Kent</th></tr></thead>
+      <tbody>
+        <tr><td class="t">density \(\propto\)</td><td class="t">\(\exp(\kappa\boldsymbol\mu^{\!\top}\mathbf u)\)</td><td class="t">\(\exp\{\kappa\boldsymbol\mu^{\!\top}\mathbf u+\beta[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2]\}\)</td></tr>
+        <tr><td class="t">mean direction</td><td class="t">\(\boldsymbol\mu\), a unit vector</td><td class="t">\(\boldsymbol\mu\), a unit vector &mdash; identical role</td></tr>
+        <tr><td class="t">concentration</td><td class="t">one number \(\kappa\)</td><td class="t">\(\kappa\), plus \(\beta\) which redistributes it between two directions</td></tr>
+        <tr><td class="t">shape of the spread</td><td class="t">circular contours, always</td><td class="t">elliptical contours; circular only if \(\beta=0\)</td></tr>
+        <tr><td class="t">isotropic or not</td><td class="t">isotropic: same in every tangent direction</td><td class="t">anisotropic: different in different tangent directions</td></tr>
+        <tr><td class="t">tangent variance (large \(\kappa\))</td><td class="t">\(1/\kappa\) in every direction</td><td class="t">\(\lambda_2=\dfrac1{\kappa-2\beta}\), \(\lambda_3=\dfrac1{\kappa+2\beta}\)</td></tr>
+        <tr><td class="t">directional parameters</td><td class="t">1 direction (\(\boldsymbol\mu\))</td><td class="t">3 directions (\(\boldsymbol\mu,\boldsymbol\gamma_2,\boldsymbol\gamma_3\)), but they form one orthogonal frame</td></tr>
+        <tr><td class="t">free parameters, \(k=3\)</td><td class="t">3 &nbsp;(2 for \(\boldsymbol\mu\) + 1 for \(\kappa\))</td><td class="t">5 &nbsp;(2 + 1 rotation + \(\kappa\) + \(\beta\))</td></tr>
+        <tr><td class="t">matches a 2D normal?</td><td class="t">only one with \(\Sigma\propto I\)</td><td class="t">yes &mdash; any \(2\times2\) covariance, so 5 parameters match 5</td></tr>
+        <tr><td class="t">rotational symmetry about \(\boldsymbol\mu\)</td><td class="t">yes</td><td class="t">no (unless \(\beta=0\))</td></tr>
+        <tr><td class="t">normalising constant</td><td class="t">closed form, \(\kappa/(4\pi\sinh\kappa)\)</td><td class="t">Bessel series in \((\kappa,\beta)\) &mdash; needs a computer, but is cheap</td></tr>
+        <tr><td class="t">estimation</td><td class="t">one-line moment estimator from \(\bar R\)</td><td class="t">mean direction, then eigen-decomposition on the tangent plane</td></tr>
+        <tr><td class="t">implied covariance of \(\mathbf z=\mathbf u^2\)</td><td class="t">forced to \(\tfrac4\kappa\{\mathrm{diag}(\boldsymbol\pi)-\boldsymbol\pi\boldsymbol\pi^{\!\top}\}\) &mdash; the multinomial shape, fixed once the mean is known</td><td class="t">free orientation and free axis lengths; can produce positive correlations between parts</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <h3>When is the extra flexibility worth it?</h3>
+    <p><strong>Use Kent when:</strong></p>
+    <ul>
+      <li>Two components of the composition <em>trade off</em> against each other while a third is stable. That is an ellipse, and vMF cannot represent it.</li>
+      <li>You care about the <em>direction</em> of variation, not only its size. \(\hat{\boldsymbol\gamma}_2\) is then a scientific result: "the main way these soils differ is sand against clay".</li>
+      <li>You are computing likelihoods that will be compared &mdash; for example the leaf likelihood in a random forest, or a model-selection criterion. A misspecified spread contaminates every such comparison.</li>
+      <li>The correlation structure the data show is not the one the mean predicts. Under vMF, once \(\boldsymbol\pi=\boldsymbol\mu^2\) is fixed, every correlation between parts is fixed too, and all of them are negative.</li>
+    </ul>
+    <p><strong>Use vMF when:</strong></p>
+    <ul>
+      <li>The sample is small. Two extra parameters estimated from 15 observations may cost more in variance than they gain in bias, and \(\hat{\boldsymbol\gamma}_2\) will be unstable (Part 13).</li>
+      <li>The cloud genuinely looks round &mdash; test \(\beta=0\) and find you cannot reject it.</li>
+      <li>You need speed and a closed-form normalising constant in a tight loop.</li>
+    </ul>
+    <p>Because vMF is the \(\beta=0\) case of Kent, the choice is a nested model comparison. You can fit Kent and test \(H_0:\beta=0\) with a likelihood-ratio test. That is the honest way to decide, rather than arguing about which is "better".</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 13</span><span class="plate-t">the same thing seen as compositions, in a ternary diagram</span></div>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="plot" id="fig13a"></div><div class="panel-t">vMF fitted to the soil data</div></div>
+        <div><div class="plot" id="fig13b"></div><div class="panel-t">Kent fitted to the soil data</div></div>
+      </div>
+    </div>
+    <figcaption>A <b>ternary diagram</b> shows a three-part composition as one point inside a triangle: the nearer a point is to a corner, the more of that component it contains. Grey dots are 400 compositions simulated from each fitted model; the <b class="c-mu">orange cross</b> is the mean. vMF can only produce a round blob whose shape is dictated by the mean. Kent reproduces the sand&ndash;clay trade-off that the real data show &mdash; a long, narrow band. The real data are the twelve points of Part 15.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p15" data-title="A complete worked example">
+  <div class="col">
+    <div class="eyebrow">Part 15</div>
+    <h2>A complete worked example</h2>
+    <p class="lede">Twelve soil samples, from raw proportions to a fitted Kent distribution. Every number below is computed in your browser from the table &mdash; nothing is copied by hand.</p>
+
+    <h3>Step 1 &mdash; the compositions</h3>
+    <p>Each row is one soil sample: the fractions of sand, silt and clay. Each row sums to 1.</p>
+  </div>
+
+  <div class="scroll"><table id="t15z"></table></div>
+
+  <div class="col">
+    <p>Look at the pattern before doing any mathematics. Sand rises from about 0.40 to 0.62 as you go down the table. Clay falls from about 0.27 to 0.10. Silt stays near 0.30 throughout. <em>That is a trade-off between sand and clay, with silt roughly constant.</em> We expect the fitted ellipse to be long in the sand&ndash;clay direction and short in the silt direction.</p>
+
+    <h3>Step 2 &mdash; square roots put them on the sphere</h3>
+    <p>\(\mathbf u_i=\sqrt{\mathbf z_i}\). The last column checks that \(\|\mathbf u_i\|^2=1\).</p>
+  </div>
+
+  <div class="scroll"><table id="t15u"></table></div>
+
+  <div class="col">
+    <h3>Step 3 &mdash; the mean direction</h3>
+    <p>Average the unit vectors, then normalise:</p>
+    <div class="scroll"><table id="t15mu"></table></div>
+    <p>The length \(\bar R\) is very close to 1, which tells us immediately that these data are highly concentrated &mdash; the tangent-plane approximation of Part 7 will be excellent. Squaring \(\hat{\boldsymbol\mu}\) gives the estimated mean composition \(\hat{\boldsymbol\pi}=\hat{\boldsymbol\mu}^2\), shown in the last row, which we can read back as proportions of sand, silt and clay.</p>
+
+    <h3>Step 4 &mdash; the second-moment matrix</h3>
+    <p>\(\hat M=\frac1n\sum_i\mathbf u_i\mathbf u_i^{\!\top}\). Its trace must be 1.</p>
+  </div>
+
+  <div class="mats" id="m15M"></div>
+
+  <div class="col">
+    <h3>Step 5 &mdash; the Householder rulers</h3>
+    <p>\(\mathbf h=\mathbf e_1-\hat{\boldsymbol\mu}\), \(H=I-2\mathbf h\mathbf h^{\!\top}/(\mathbf h^{\!\top}\mathbf h)\), and \(\mathbf B\) is the last two columns of \(H\). Remember: this used \(\hat{\boldsymbol\mu}\) only. The data have not been consulted yet.</p>
+  </div>
+
+  <div class="mats" id="m15B"></div>
+
+  <div class="col">
+    <h3>Step 6 &mdash; project onto the plane</h3>
+    <p>\(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). Notice that its off-diagonal entry is not zero: the ellipse is tilted relative to the rulers.</p>
+  </div>
+
+  <div class="mats" id="m15S"></div>
+
+  <div class="col">
+    <h3>Step 7 &mdash; eigen-decomposition</h3>
+    <p>\(S_L=W\Lambda W^{\!\top}\). The larger eigenvalue and its eigenvector give the long axis.</p>
+  </div>
+
+  <div class="mats" id="m15W"></div>
+
+  <div class="col">
+    <h3>Step 8 &mdash; back to three dimensions</h3>
+    <p>\(\hat{\boldsymbol\gamma}_2=\mathbf B\mathbf w_2\) and \(\hat{\boldsymbol\gamma}_3=\mathbf B\mathbf w_3\), giving the full frame \(\hat{\mathbf K}=[\hat{\boldsymbol\mu}\;\hat{\boldsymbol\gamma}_2\;\hat{\boldsymbol\gamma}_3]\).</p>
+  </div>
+
+  <div class="mats" id="m15K"></div>
+
+  <div class="col">
+    <h3>Step 9 &mdash; the Kent parameters</h3>
+    <div class="scroll"><table id="t15par"></table></div>
+    <p id="p15read"></p>
+
+    <h3>Step 10 &mdash; read the answer in scientific language</h3>
+    <p id="p15sci"></p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 14</span><span class="plate-t">the twelve samples and the distribution fitted to them</span></div>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="plot" id="fig14a"></div><div class="panel-t">the raw compositions, ternary diagram</div></div>
+        <div><div class="plot" id="fig14b"></div><div class="panel-t">tangent view of the fit, with the data</div></div>
+      </div>
+      <div class="plot" id="fig14c" style="height:400px"></div>
+      <div class="hint">drag to rotate</div>
+    </div>
+    <figcaption>Top left: the twelve soil compositions in the ternary diagram, with the fitted mean as an <b class="c-mu">orange cross</b>. Top right: the same twelve points projected onto the tangent plane at \(\hat{\boldsymbol\mu}\), with the fitted Kent contours and the estimated axes <b class="c-g2">\(\hat{\boldsymbol\gamma}_2\)</b> and <b class="c-g3">\(\hat{\boldsymbol\gamma}_3\)</b>. Bottom: everything on the sphere &mdash; the positive octant, the twelve data points, the fitted mean direction, and the two estimated axes lying in the tangent plane.</figcaption>
+  </figure>
+</section>
+
+
+<section class="part" id="p16" data-title="Every parameter in one table">
+  <div class="col">
+    <div class="eyebrow">Part 16</div>
+    <h2>Every parameter in one table</h2>
+    <p class="lede">The reference page. Everything here has been derived earlier; nothing new is introduced.</p>
+  </div>
+
+  <div class="scroll">
+    <table>
+      <thead><tr><th>parameter</th><th>simple meaning</th><th>geometric meaning</th><th>what happens when it increases</th></tr></thead>
+      <tbody>
+        <tr><td>\(\boldsymbol\mu\)</td><td class="t">the central direction</td><td class="t">the point on the sphere the cloud sits on; the mode and the mean direction</td><td class="t">the whole cloud slides to a new place; its shape is unchanged</td></tr>
+        <tr><td>\(\kappa>0\)</td><td class="t">concentration</td><td class="t">the overall size of the ellipse; \(1/\kappa\) is the average tangent variance</td><td class="t">the cloud shrinks toward \(\boldsymbol\mu\); both semi-axes get shorter</td></tr>
+        <tr><td>\(0\le2\beta&lt;\kappa\)</td><td class="t">ovalness</td><td class="t">how unequal the two tangent variances are</td><td class="t">the ellipse stretches along \(\boldsymbol\gamma_2\) and narrows along \(\boldsymbol\gamma_3\); at \(2\beta\to\kappa\) it stops being a single bump</td></tr>
+        <tr><td>\(\boldsymbol\gamma_2\)</td><td class="t">first principal direction</td><td class="t">the long axis of the ellipse, perpendicular to \(\boldsymbol\mu\)</td><td class="t">not a magnitude &mdash; changing it rotates the ellipse about the \(\boldsymbol\mu\) axis</td></tr>
+        <tr><td>\(\boldsymbol\gamma_3\)</td><td class="t">second principal direction</td><td class="t">the short axis; perpendicular to both \(\boldsymbol\mu\) and \(\boldsymbol\gamma_2\)</td><td class="t">determined by the other two up to sign, for \(k=3\)</td></tr>
+        <tr><td>\(\lambda_2=\dfrac1{\kappa-2\beta}\)</td><td class="t">variance along the long axis</td><td class="t">\(\sqrt{\lambda_2}\) is the long semi-axis of the one-sigma ellipse</td><td class="t">the ellipse gets longer in the \(\boldsymbol\gamma_2\) direction</td></tr>
+        <tr><td>\(\lambda_3=\dfrac1{\kappa+2\beta}\)</td><td class="t">variance along the short axis</td><td class="t">\(\sqrt{\lambda_3}\) is the short semi-axis</td><td class="t">the ellipse gets wider in the \(\boldsymbol\gamma_3\) direction, i.e. rounder</td></tr>
+        <tr><td>\(\boldsymbol\Gamma=[\boldsymbol\mu\,\boldsymbol\gamma_2\,\boldsymbol\gamma_3]\)</td><td class="t">the frame</td><td class="t">an orthogonal matrix: the rotation from the standard axes to the data's own axes</td><td class="t">&mdash;</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <h4>And the objects used only during estimation</h4>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>object</th><th>size</th><th>what it is</th><th>does it depend on the data?</th></tr></thead>
+      <tbody>
+        <tr><td>\(\hat M\)</td><td>\(k\times k\)</td><td class="t">second-moment matrix of the unit vectors; \(\operatorname{tr}(\hat M)=1\)</td><td class="t">yes &mdash; entirely</td></tr>
+        <tr><td>\(\mathbf B(\hat{\boldsymbol\mu})\)</td><td>\(k\times(k-1)\)</td><td class="t">Householder basis: two arbitrary perpendicular rulers in the tangent plane</td><td class="t">only through \(\hat{\boldsymbol\mu}\); otherwise it is a convention</td></tr>
+        <tr><td>\(S_L\)</td><td>\((k-1)\times(k-1)\)</td><td class="t">\(\mathbf B^{\!\top}\hat M\mathbf B\): the spread written in ruler coordinates</td><td class="t">yes, but its <em>entries</em> also depend on the choice of \(\mathbf B\)</td></tr>
+        <tr><td>\(W\)</td><td>\((k-1)\times(k-1)\)</td><td class="t">eigenvectors of \(S_L\): the turn from rulers to principal axes</td><td class="t">yes; also depends on \(\mathbf B\), in the opposite way to \(S_L\)</td></tr>
+        <tr><td>\(\Lambda\)</td><td>\((k-1)\times(k-1)\)</td><td class="t">eigenvalues \(\lambda_2\ge\lambda_3\): the tangent variances</td><td class="t">yes; does <em>not</em> depend on \(\mathbf B\)</td></tr>
+        <tr><td>\(\hat{\mathbf K}\)</td><td>\(k\times k\)</td><td class="t">\([\hat{\boldsymbol\mu}\;\;\mathbf B W]\): the estimated Kent frame</td><td class="t">yes; does <em>not</em> depend on \(\mathbf B\)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col">
+    <div class="note warm">
+      <span class="tag">The pattern in the last column</span>
+      <p>\(\mathbf B\) and \(W\) each depend on an arbitrary convention, but their <em>product</em> does not. \(S_L\) depends on it, but its <em>eigenvalues</em> do not. Everything that ends up being reported is free of the convention. That is the design of the method.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="part" id="p17" data-title="The whole pipeline">
+  <div class="col">
+    <div class="eyebrow">Part 17</div>
+    <h2>The whole pipeline</h2>
+    <p class="lede">Seven arrows from raw proportions to a fitted distribution. Here is what each one does.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 15</span><span class="plate-t">composition &rarr; Kent, in seven steps</span></div>
+    <div class="plate-body"><div class="svgbox" id="fig15"></div></div>
+    <figcaption>Each box is an object; each arrow is an operation. The two shaded boxes are the ones that depend on an arbitrary convention &mdash; and the convention cancels before the end.</figcaption>
+  </figure>
+
+  <div class="col">
+    <h4>composition \(\longrightarrow\) square-root transformation</h4>
+    <p>Apply \(u_j=\sqrt{z_j}\) to every part. <em>Why:</em> it converts the constraint \(\sum_jz_j=1\) into \(\sum_ju_j^2=1\), which is exactly membership of the unit sphere. It is exact, reversible (\(z_j=u_j^2\)), and it tolerates zeros. After this step, compositional data <em>are</em> directional data.</p>
+
+    <h4>square root \(\longrightarrow\) sphere</h4>
+    <p>The transformed data now lie on the positive orthant of \(S^{k-1}\). <em>Why:</em> this is the step that lets us use the whole toolbox of directional statistics. The simplex and the positive orthant of the sphere hold the same information; the sphere version has a better-behaved geometry.</p>
+
+    <h4>sphere \(\longrightarrow\) mean direction</h4>
+    <p>Compute \(\bar{\mathbf u}=\frac1n\sum_i\mathbf u_i\) and set \(\hat{\boldsymbol\mu}=\bar{\mathbf u}/\|\bar{\mathbf u}\|\). <em>Why:</em> we need a centre before we can describe spread <em>around</em> the centre. Normalising is necessary because \(\bar{\mathbf u}\) itself is inside the sphere, not on it. The discarded length \(\bar R=\|\bar{\mathbf u}\|\) is kept as a concentration diagnostic.</p>
+
+    <h4>mean direction \(\longrightarrow\) tangent plane</h4>
+    <p>Build the Householder basis \(\mathbf B(\hat{\boldsymbol\mu})\), two perpendicular unit vectors spanning \(T_{\hat{\boldsymbol\mu}}\). <em>Why:</em> spread is a \((k-1)\)-dimensional thing living sideways from \(\hat{\boldsymbol\mu}\), and we need coordinates to measure it in. Without a basis we would be trying to describe a two-dimensional shape with three numbers, one of which is redundant.</p>
+
+    <h4>tangent plane \(\longrightarrow\) second moment</h4>
+    <p>Form \(\hat M=\frac1n\sum_i\mathbf u_i\mathbf u_i^{\!\top}\), then \(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). <em>Why:</em> \(\hat M\) records the spread in every direction at once; \(\mathbf B^{\!\top}(\cdot)\mathbf B\) throws away the part along \(\hat{\boldsymbol\mu}\) and keeps the sideways part, written in ruler coordinates. This is the "flatten the cloud onto the table" step.</p>
+
+    <h4>second moment \(\longrightarrow\) principal directions</h4>
+    <p>Eigen-decompose, \(S_L=W\Lambda W^{\!\top}\), and lift back with \([\hat{\boldsymbol\gamma}_2\;\hat{\boldsymbol\gamma}_3]=\mathbf BW\). <em>Why:</em> eigenvectors answer the question "in which direction is the spread greatest?", which is exactly the definition of \(\boldsymbol\gamma_2\). Multiplying by \(\mathbf B\) converts an answer given in ruler coordinates into a real direction in \(\mathbb R^k\). The arbitrary choice of rulers cancels here.</p>
+
+    <h4>principal directions \(\longrightarrow\) Kent distribution</h4>
+    <p>Convert the eigenvalues into \(\hat\kappa=\tfrac12(1/\lambda_2+1/\lambda_3)\) and \(\hat\beta=\tfrac14(1/\lambda_3-1/\lambda_2)\), and assemble</p>
+    \[ \hat f(\mathbf u)\propto\exp\Bigl\{\hat\kappa\,\hat{\boldsymbol\mu}^{\!\top}\mathbf u +\hat\beta\bigl[(\hat{\boldsymbol\gamma}_2^{\!\top}\mathbf u)^2-(\hat{\boldsymbol\gamma}_3^{\!\top}\mathbf u)^2\bigr]\Bigr\}. \]
+    <p><em>Why:</em> the tangent-plane normal approximation of Part 7 links variances to \((\kappa,\beta)\), so estimating the variances estimates the parameters. You now have a full probability model: you can compute likelihoods, simulate new compositions (draw \(\mathbf u\), then set \(\mathbf z=\mathbf u^2\)), compare groups, or use the likelihood inside a larger procedure such as a random forest leaf.</p>
+
+    <div class="note">
+      <span class="tag">Going back</span>
+      <p>Anything you compute on the sphere can be brought back to the simplex by squaring. A fitted mean direction \(\hat{\boldsymbol\mu}\) becomes a fitted mean composition \(\hat{\boldsymbol\pi}=\hat{\boldsymbol\mu}^2\). A simulated \(\mathbf u\) becomes a simulated composition \(\mathbf u^2\). A contour on the sphere becomes a region in the ternary diagram. The round trip loses nothing.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="part" id="p18" data-title="Kent distribution in 10 minutes">
+  <div class="col">
+    <div class="eyebrow">Summary</div>
+    <h2>Kent distribution in 10 minutes</h2>
+
+    <p>Some data are directions, not amounts. A direction is a point on a sphere. Ordinary statistics does not work well there, because the scale wraps around and the average of several points is not itself a direction.</p>
+
+    <p>Compositional data &mdash; proportions that add up to one &mdash; can be turned into directions. Take the square root of each part. Then the parts still describe the same thing, but now their <em>squares</em> add up to one, which is exactly the rule for being on a sphere. So every composition is a point on the positive corner of a sphere.</p>
+
+    <p>The simplest distribution on a sphere is von Mises&ndash;Fisher. It has a centre \(\boldsymbol\mu\) and a tightness \(\kappa\). Its weakness: the cloud of data it produces is always round. The spread is the same in every direction away from the centre. Real compositions often are not like that: two components trade off against each other while a third barely moves, which makes a long, narrow cloud.</p>
+
+    <p>The Kent distribution fixes this. It adds one term, \(\beta[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2]\), which adds probability in one sideways direction and removes it in the perpendicular one. The cloud becomes an ellipse. Setting \(\beta=0\) gives vMF back, so Kent is the bigger family.</p>
+
+    <p>Near its centre, a Kent distribution is just a two-dimensional normal distribution painted on the flat plane that touches the sphere at \(\boldsymbol\mu\) &mdash; the tangent plane. Its variances along the two axes are \(\lambda_2=1/(\kappa-2\beta)\) and \(\lambda_3=1/(\kappa+2\beta)\). That one fact explains everything: why \(\kappa\) controls size, why \(\beta\) controls ovalness, and why we need \(2\beta<\kappa\) (otherwise \(\lambda_2\) would not be a positive variance).</p>
+
+    <p>To fit it: normalise the average of the unit vectors to get \(\hat{\boldsymbol\mu}\). Compute \(\hat M=\frac1n\sum\mathbf u_i\mathbf u_i^{\!\top}\), whose trace is always 1. Build a basis \(\mathbf B\) for the tangent plane with a Householder reflection &mdash; two perpendicular "rulers" laid on the plane, chosen by convention, not by the data. Project: \(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). Its off-diagonal entry is usually not zero, which only means the rulers are not lined up with the cloud. Eigen-decompose \(S_L=W\Lambda W^{\!\top}\): the eigenvalues are the two tangent variances and \(W\) is the turn that lines the rulers up. Finally \([\hat{\boldsymbol\gamma}_2\;\hat{\boldsymbol\gamma}_3]=\mathbf BW\), and \(\hat\kappa,\hat\beta\) come from the eigenvalues.</p>
+
+    <p>The step people find confusing is the last one. \(\mathbf B\) is not \(\mathbf K\). \(\mathbf B\) is where you happened to put your rulers; \(\mathbf K\) is the shape the data actually have. If you change \(\mathbf B\), then \(S_L\) changes and \(W\) changes in the opposite way, and the product \(\mathbf BW\) stays exactly the same. The arbitrary choice cancels.</p>
+
+    <p>What you get at the end is a proper probability model for compositions: a centre, a size, an ovalness, and a direction of maximum variation that you can interpret scientifically &mdash; for example, "these soils differ mainly along a sand-versus-clay axis, and hardly at all in silt".</p>
+  </div>
+</section>
+
+
+<section class="part" id="p19" data-title="The five things to remember">
+  <div class="col">
+    <div class="eyebrow">Summary</div>
+    <h2>The five most important things to remember</h2>
+    <ol class="bigfive">
+      <li><div><b>The square root is exact, not an approximation.</b> \(\sum_jz_j=1\) becomes \(\sum_ju_j^2=1\). A composition is a point on the positive part of a sphere, and you can always go back by squaring.</div></li>
+      <li><div><b>vMF is round; Kent is oval.</b> vMF depends on \(\mathbf u\) only through the angle to \(\boldsymbol\mu\), so it must be the same in every sideways direction. Kent adds one squared term that breaks this, and vMF is the \(\beta=0\) case of Kent.</div></li>
+      <li><div><b>Near \(\boldsymbol\mu\), Kent is a 2D normal on the tangent plane,</b> with variances \(\lambda_2=1/(\kappa-2\beta)\) and \(\lambda_3=1/(\kappa+2\beta)\). Everything about \(\kappa\), \(\beta\) and the constraint \(2\beta<\kappa\) follows from this.</div></li>
+      <li><div><b>\(\mathbf B\) is the rulers; \(\mathbf K\) is the stain.</b> \(\mathbf B\) is a convention built from \(\hat{\boldsymbol\mu}\) alone and knows nothing about the data. \(W\), from the eigen-decomposition, is the only part that looks at the data. \(\hat{\mathbf K}=[\hat{\boldsymbol\mu}\;\;\mathbf BW]\).</div></li>
+      <li><div><b>Change the rulers and nothing you report changes.</b> \(\tilde{\mathbf B}=\mathbf BR\) gives \(\tilde S_L=R^{\!\top}S_LR\) and \(\tilde W=R^{\!\top}W\), so \(\tilde{\mathbf B}\tilde W=\mathbf BW\). The eigenvalues are untouched too. Invariance is the reason the method is trustworthy.</div></li>
+    </ol>
+  </div>
+</section>
+
+
+<section class="part" id="p20" data-title="Test yourself">
+  <div class="col">
+    <div class="eyebrow">Exercises</div>
+    <h2>Test yourself</h2>
+    <p class="lede">No answers here on purpose. Try each one on paper first. If you get stuck, the part in brackets is where to look.</p>
+
+    <ol class="q">
+      <li>The composition \(\mathbf z=(0.16,0.36,0.48)\) is measured. Compute \(\mathbf u=\sqrt{\mathbf z}\) and verify that \(\|\mathbf u\|=1\). Which corner of the sphere does it lie in? <span class="pill">Part 3</span></li>
+      <li>A colleague fits a vMF distribution and reports \(\hat\kappa=80\). Roughly what is the typical angular distance of an observation from \(\hat{\boldsymbol\mu}\), in degrees? What is the corresponding tangent variance? <span class="pill">Parts 4, 7</span></li>
+      <li>A Kent fit gives \(\kappa=50\) and \(\beta=20\). Compute \(\lambda_2\) and \(\lambda_3\). What is the ratio of the ellipse's semi-axes? Is the constraint satisfied? Now try \(\beta=25\) and explain in words what goes wrong. <span class="pill">Parts 6, 7</span></li>
+      <li>Explain, without writing a formula, why \(\operatorname{tr}(\hat M)=1\) no matter what the data are. Then say what would be wrong if you computed \(\hat M\) and got a trace of 0.97. <span class="pill">Part 8</span></li>
+      <li>Suppose \(\hat{\boldsymbol\mu}=(0,1,0)\). Carry out the Householder construction by hand: write down \(\mathbf h\), \(\mathbf h^{\!\top}\mathbf h\), \(H\), and read off \(\mathbf b_1\) and \(\mathbf b_2\). Verify that both are perpendicular to \(\hat{\boldsymbol\mu}\). <span class="pill">Part 9</span></li>
+      <li>You compute \(S_L=\begin{pmatrix}0.04&0\\0&0.04\end{pmatrix}\). What are \(\hat{\boldsymbol\gamma}_2\) and \(\hat{\boldsymbol\gamma}_3\)? What is \(\hat\beta\)? Why is the first question not really a fair one? <span class="pill">Parts 11, 13</span></li>
+      <li>You compute \(S_L=\begin{pmatrix}0.05&-0.03\\-0.03&0.05\end{pmatrix}\). Find the eigenvalues and eigenvectors by hand. Compare with the example in Part 11 and explain what the change of sign in the off-diagonal entry did to the long axis. <span class="pill">Parts 10, 11</span></li>
+      <li>Two students analyse the same data. Student A uses the Householder basis; student B uses a basis rotated by 25&deg;. Which of the following will differ between them, and which will be identical: \(\hat{\boldsymbol\mu}\), \(\hat M\), \(\mathbf B\), \(S_L\), \(\lambda_2\), \(W\), \(\hat{\boldsymbol\gamma}_2\), \(\hat\kappa\), \(\hat\beta\)? <span class="pill">Part 12</span></li>
+      <li>A referee writes: "the Kent model has five parameters for \(k=3\), so it is over-parameterised compared with vMF's three." Give a one-paragraph reply that mentions the two-dimensional normal distribution. <span class="pill">Part 14</span></li>
+      <li>In the soil example, \(\hat{\boldsymbol\gamma}_2\) came out with a large positive entry for sand and a large negative entry for clay. Translate that into a sentence about soils that a non-statistician would understand. Then say what \(\hat{\boldsymbol\gamma}_3\) is telling you. <span class="pill">Part 15</span></li>
+      <li>Under vMF with mean composition \(\boldsymbol\pi=(0.5,0.3,0.2)\), the correlation between the second and third parts is fixed at about \(-0.33\) whatever \(\kappa\) is. Where does that number come from, and why can Kent produce a different one? <span class="pill">Part 14</span></li>
+      <li>Your data have \(\lambda_2=0.021\) and \(\lambda_3=0.019\). Would you report an estimated direction of maximum variation? Justify your answer. <span class="pill">Part 13</span></li>
+    </ol>
+
+    <div class="note warm">
+      <span class="tag">If you want to go further</span>
+      <p>Kent, J.T. (1982), "The Fisher&ndash;Bingham distribution on the sphere", <em>JRSS-B</em> 44, 71&ndash;80 &mdash; the original paper, including the exact moment estimators. Mardia &amp; Jupp, <em>Directional Statistics</em> (2000) &mdash; the standard reference. Scealy &amp; Welsh (2011), "Regression for compositional data by using distributions defined on the hypersphere", <em>JRSS-B</em> 73, 351&ndash;375 &mdash; the square-root/sphere approach to compositional data, and the source of the Householder parameterisation used here.</p>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+</main>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================ 1. small linear algebra ============================ */
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const nrm=a=>Math.sqrt(dot(a,a));
+const unit=a=>{const n=nrm(a)||1;return[a[0]/n,a[1]/n,a[2]/n];};
+const comb=(s,a,t,b)=>[s*a[0]+t*b[0], s*a[1]+t*b[1], s*a[2]+t*b[2]];
+const comb3=(s,a,t,b,r,c)=>[s*a[0]+t*b[0]+r*c[0], s*a[1]+t*b[1]+r*c[1], s*a[2]+t*b[2]+r*c[2]];
+
+function householder(mu){
+  const h=[1-mu[0],-mu[1],-mu[2]];
+  const hh=h[0]*h[0]+h[1]*h[1]+h[2]*h[2];
+  if(hh<1e-12) return [[0,1,0],[0,0,1]];
+  const col=j=>{
+    const e=[0,0,0]; e[j]=1;
+    const c=2*h[j]/hh;
+    return [e[0]-c*h[0], e[1]-c*h[1], e[2]-c*h[2]];
+  };
+  return [col(1),col(2)];
+}
+
+/* second moment of a list of unit 3-vectors */
+function secondMoment(U){
+  const M=[[0,0,0],[0,0,0],[0,0,0]];
+  U.forEach(u=>{for(let j=0;j<3;j++)for(let l=0;l<3;l++)M[j][l]+=u[j]*u[l];});
+  for(let j=0;j<3;j++)for(let l=0;l<3;l++)M[j][l]/=U.length;
+  return M;
+}
+const quad=(M,a,b)=>{let s=0;for(let j=0;j<3;j++)for(let l=0;l<3;l++)s+=a[j]*M[j][l]*b[l];return s;};
+function projectM(M,B){
+  return [[quad(M,B[0],B[0]),quad(M,B[0],B[1])],
+          [quad(M,B[1],B[0]),quad(M,B[1],B[1])]];
+}
+
+/* eigen of a symmetric 2x2, eigenvalues descending */
+function eig2(S){
+  const a=S[0][0],b=S[0][1],c=S[1][1];
+  const tr=a+c, det=a*c-b*b;
+  const disc=Math.sqrt(Math.max(0,tr*tr/4-det));
+  const l1=tr/2+disc, l2=tr/2-disc;
+  let w1;
+  if(Math.abs(b)>1e-14){const v=[b,l1-a];const n=Math.hypot(v[0],v[1]);w1=[v[0]/n,v[1]/n];}
+  else w1 = (a>=c)?[1,0]:[0,1];
+  let w2=[-w1[1],w1[0]];
+  return {l:[l1,l2], W:[w1,w2]};
+}
+const rot2=t=>[[Math.cos(t),-Math.sin(t)],[Math.sin(t),Math.cos(t)]];
+const mm2=(A,Bm)=>[[A[0][0]*Bm[0][0]+A[0][1]*Bm[1][0], A[0][0]*Bm[0][1]+A[0][1]*Bm[1][1]],
+                   [A[1][0]*Bm[0][0]+A[1][1]*Bm[1][0], A[1][0]*Bm[0][1]+A[1][1]*Bm[1][1]]];
+const t2=A=>[[A[0][0],A[1][0]],[A[0][1],A[1][1]]];
+
+/* sign convention: largest-magnitude component positive */
+function fixSign(v){
+  let k=0; for(let j=1;j<3;j++) if(Math.abs(v[j])>Math.abs(v[k])) k=j;
+  return v[k]<0 ? [-v[0],-v[1],-v[2]] : v.slice();
+}
+
+/* ============================ 2. Kent density and sampling ============================ */
+/* standard frame: mu=e3, gamma2=e1, gamma3=e2 */
+const kentLogStd=(u,k,b)=>k*u[2]+b*(u[0]*u[0]-u[1]*u[1]);
+
+function rng32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+
+function sampleKentStd(n,k,b,seed){
+  const rnd=rng32(seed||1);
+  const sd=1/Math.sqrt(Math.max(1e-6,k-2*Math.abs(b)));
+  const cap=Math.min(Math.PI, 5*sd);
+  const cmin=Math.cos(cap);
+  const out=[]; let guard=0;
+  while(out.length<n && guard<600000){
+    guard++;
+    const ct=cmin+(1-cmin)*rnd();
+    const st=Math.sqrt(Math.max(0,1-ct*ct));
+    const ph=2*Math.PI*rnd();
+    const u=[st*Math.cos(ph), st*Math.sin(ph), ct];
+    if(Math.log(rnd()+1e-300) < kentLogStd(u,k,b)-k) out.push(u);
+  }
+  return out;
+}
+/* map standard-frame draws into the (mu,g2,g3) frame */
+const toFrame=(u,mu,g2,g3)=>comb3(u[2],mu,u[0],g2,u[1],g3);
+
+/* ============================ 3. theme + render registry ============================ */
+function T(){
+  const cs=getComputedStyle(document.documentElement);
+  const g=n=>cs.getPropertyValue(n).trim();
+  return {ink:g('--ink'),ink2:g('--ink-2'),muted:g('--muted'),rule:g('--rule'),rule2:g('--rule-2'),
+    surface:g('--surface'),surface2:g('--surface-2'),bg:g('--bg'),mu:g('--mu'),g2:g('--g2'),g3:g('--g3'),
+    basis:g('--basis'),sphere:g('--sphere'),grat:g('--grat'),dotc:g('--dot')};
+}
+const renders=[];
+function reg(fn){renders.push(fn);try{fn();}catch(e){console.warn(e);}}
+let rt=null;
+function redraw(){clearTimeout(rt);rt=setTimeout(()=>renders.forEach(f=>{try{f();}catch(e){}}),60);}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redraw);}catch(e){}
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+const HAS_PLOTLY = !!window.Plotly;
+if(!HAS_PLOTLY){
+  document.querySelectorAll('.plot').forEach(el=>{
+    el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+    el.style.color='var(--muted)';el.style.fontFamily='IBM Plex Mono, monospace';el.style.fontSize='12px';
+    el.textContent='This figure needs the plotting library, which did not load.';
+  });
+}
+const CFG={displayModeBar:false,responsive:true,scrollZoom:false};
+function draw(id,data,layout){
+  if(!HAS_PLOTLY) return;
+  const el=document.getElementById(id);
+  if(!el) return;
+  Plotly.react(el,data,layout,CFG);
+}
+function base(extra){
+  const t=T();
+  return Object.assign({
+    paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
+    margin:{l:0,r:0,t:0,b:0},showlegend:false,
+    font:{family:'IBM Plex Mono, monospace',size:11,color:t.ink2}
+  },extra||{});
+}
+function scene(eye){
+  return {xaxis:{visible:false},yaxis:{visible:false},zaxis:{visible:false},
+    aspectmode:'cube',bgcolor:'rgba(0,0,0,0)',dragmode:'orbit',
+    camera:{eye:eye||{x:1.5,y:1.4,z:1.0},up:{x:0,y:0,z:1}}};
+}
+
+/* ---- reusable 3D traces ---- */
+function sphereTrace(color,opacity,octant){
+  const nu=48,nv=26,X=[],Y=[],Z=[];
+  const thMax=octant?Math.PI/2:Math.PI, phMax=octant?Math.PI/2:2*Math.PI;
+  for(let j=0;j<=nv;j++){
+    const th=thMax*j/nv,xr=[],yr=[],zr=[];
+    for(let i=0;i<=nu;i++){
+      const ph=phMax*i/nu;
+      xr.push(Math.sin(th)*Math.cos(ph));yr.push(Math.sin(th)*Math.sin(ph));zr.push(Math.cos(th));
+    }
+    X.push(xr);Y.push(yr);Z.push(zr);
+  }
+  return {type:'surface',x:X,y:Y,z:Z,showscale:false,opacity:opacity,
+    colorscale:[[0,color],[1,color]],surfacecolor:Z.map(r=>r.map(()=>0)),
+    hoverinfo:'skip',lighting:{ambient:1,diffuse:0,specular:0,roughness:1,fresnel:0},
+    contours:{x:{highlight:false},y:{highlight:false},z:{highlight:false}}};
+}
+function graticule(color,octant){
+  const xs=[],ys=[],zs=[],r=1.004;
+  const push=p=>{xs.push(p[0]*r);ys.push(p[1]*r);zs.push(p[2]*r);};
+  const brk=()=>{xs.push(null);ys.push(null);zs.push(null);};
+  const nm=octant?4:8, thMax=octant?Math.PI/2:Math.PI, phMax=octant?Math.PI/2:2*Math.PI;
+  for(let k=0;k<=nm;k++){
+    const ph=phMax*k/nm;
+    if(!octant&&k===nm)break;
+    for(let j=0;j<=48;j++){const th=thMax*j/48;push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);}
+    brk();
+  }
+  for(let k=octant?0:1;k<=(octant?4:7);k++){
+    const th=thMax*k/(octant?4:8);
+    for(let i=0;i<=64;i++){const ph=phMax*i/64;push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);}
+    brk();
+  }
+  return {type:'scatter3d',mode:'lines',x:xs,y:ys,z:zs,line:{color:color,width:1},hoverinfo:'skip'};
+}
+function seg(a,b,color,width,dash){
+  return {type:'scatter3d',mode:'lines',x:[a[0],b[0]],y:[a[1],b[1]],z:[a[2],b[2]],
+    line:{color:color,width:width||5,dash:dash||'solid'},hoverinfo:'skip'};
+}
+function tip(p,color,label){
+  return {type:'scatter3d',mode:'markers+text',x:[p[0]],y:[p[1]],z:[p[2]],
+    marker:{size:4,color:color},text:[label],textposition:'middle right',
+    textfont:{color:color,size:13,family:'IBM Plex Mono, monospace'},hoverinfo:'skip'};
+}
+function cloud(U,color,size,name){
+  return {type:'scatter3d',mode:'markers',
+    x:U.map(u=>u[0]*1.004),y:U.map(u=>u[1]*1.004),z:U.map(u=>u[2]*1.004),
+    marker:{size:size||2.6,color:color,opacity:.85},
+    hovertemplate:(name||'observation')+'<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'};
+}
+function planePatch(mu,b1,b2,r,color,opacity){
+  const P=(s,t)=>comb3(1,mu,s,b1,t,b2);
+  const X=[[],[]],Y=[[],[]],Z=[[],[]];
+  [-r,r].forEach((s,i)=>{[-r,r].forEach(t=>{const p=P(s,t);X[i].push(p[0]);Y[i].push(p[1]);Z[i].push(p[2]);});});
+  return {type:'surface',x:X,y:Y,z:Z,showscale:false,opacity:opacity,
+    colorscale:[[0,color],[1,color]],surfacecolor:[[0,0],[0,0]],hoverinfo:'skip',
+    lighting:{ambient:1,diffuse:0,specular:0}};
+}
+
+/* ---- the flat "looking down mu" contour figure ---- */
+function tangentTraces(k,b,R,nSample,seed,t,showPts){
+  const N=101,xs=[],ys=[],z=[];
+  for(let i=0;i<N;i++) xs.push(-R+2*R*i/(N-1));
+  for(let j=0;j<N;j++) ys.push(-R+2*R*j/(N-1));
+  for(let j=0;j<N;j++){
+    const row=[];
+    for(let i=0;i<N;i++){
+      const p=xs[i],q=ys[j],s=1-p*p-q*q;
+      row.push(s<=1e-9?null:Math.exp(k*Math.sqrt(s)+b*(p*p-q*q)-k));
+    }
+    z.push(row);
+  }
+  const tr=[{type:'contour',x:xs,y:ys,z:z,
+    contours:{coloring:'lines',start:0.1,end:0.9,size:0.2,showlabels:false},
+    line:{color:t.ink2,width:1.3},showscale:false,
+    hovertemplate:'density / peak = %{z:.2f}<extra></extra>'}];
+  if(showPts!==false && nSample>0){
+    const S=sampleKentStd(nSample,k,b,seed||7);
+    tr.unshift({type:'scatter',mode:'markers',x:S.map(u=>u[0]),y:S.map(u=>u[1]),
+      marker:{size:4,color:t.dotc,opacity:.55},
+      hovertemplate:'(%{x:.3f}, %{y:.3f})<extra></extra>'});
+  }
+  return tr;
+}
+function tangentLayout(R,t,axes){
+  const L=base({
+    xaxis:{range:[-R,R],zeroline:false,showgrid:false,showticklabels:false,ticks:'',
+           showline:true,linecolor:t.rule2,mirror:true,constrain:'domain'},
+    yaxis:{range:[-R,R],zeroline:false,showgrid:false,showticklabels:false,ticks:'',
+           showline:true,linecolor:t.rule2,mirror:true,scaleanchor:'x',scaleratio:1},
+    margin:{l:6,r:6,t:6,b:6},
+    annotations:[]
+  });
+  if(axes){
+    const a=R*0.82;
+    L.annotations.push(
+      {x:a,y:0,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,
+       arrowhead:3,arrowsize:1,arrowwidth:2,arrowcolor:t.g2,standoff:0},
+      {x:0,y:a,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,
+       arrowhead:3,arrowsize:1,arrowwidth:2,arrowcolor:t.g3,standoff:0},
+      {x:a,y:0,text:'&gamma;<sub>2</sub>',showarrow:false,xanchor:'left',yanchor:'top',
+       font:{color:t.g2,size:13},xshift:3,yshift:-3},
+      {x:0,y:a,text:'&gamma;<sub>3</sub>',showarrow:false,xanchor:'left',yanchor:'bottom',
+       font:{color:t.g3,size:13},xshift:4},
+      {x:0,y:0,text:'&bull;',showarrow:false,font:{color:t.mu,size:22}},
+      {x:0,y:0,text:'&mu;',showarrow:false,font:{color:t.mu,size:13},xshift:-11,yshift:-11}
+    );
+  }
+  return L;
+}
+
+/* ============================ 4. inline-SVG helpers ============================ */
+function put(id,html){const el=document.getElementById(id);if(el)el.innerHTML=html;}
+const esc=s=>String(s);
+function arrow2(x1,y1,x2,y2,color,w,dash,head){
+  const a=Math.atan2(y2-y1,x2-x1), L=head||9;
+  const h=`<path d="M${x2},${y2} L${x2-L*Math.cos(a-0.4)},${y2-L*Math.sin(a-0.4)} L${x2-L*Math.cos(a+0.4)},${y2-L*Math.sin(a+0.4)} Z" fill="${color}"/>`;
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${w||2}" ${dash?`stroke-dasharray="${dash}"`:''} stroke-linecap="round"/>${h}`;
+}
+function biarrow(cx,cy,dx,dy,color,w,dash){
+  return arrow2(cx,cy,cx+dx,cy+dy,color,w,dash)+arrow2(cx,cy,cx-dx,cy-dy,color,w,dash);
+}
+function txt(x,y,s,color,size,anchor,weight){
+  return `<text x="${x}" y="${y}" fill="${color}" font-family="IBM Plex Mono, monospace" font-size="${size||12}" text-anchor="${anchor||'start'}" ${weight?`font-weight="${weight}"`:''}>${s}</text>`;
+}
+function gaussPts(n,sdx,sdy,ang,seed){
+  const r=rng32(seed),out=[];
+  for(let i=0;i<n;i++){
+    const u1=Math.max(1e-9,r()),u2=r();
+    const g1=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    const g2v=Math.sqrt(-2*Math.log(u1))*Math.sin(2*Math.PI*u2);
+    const x=g1*sdx,y=g2v*sdy;
+    out.push([x*Math.cos(ang)-y*Math.sin(ang), x*Math.sin(ang)+y*Math.cos(ang)]);
+  }
+  return out;
+}
+
+/* ============================ 5. Figure 1 — line vs circle ============================ */
+put('fig1',`<svg viewBox="0 0 760 270" role="img" aria-label="The angles 350 and 10 shown on a straight line and on a circle">
+  ${txt(30,26,'AS NUMBERS ON A LINE','var(--muted)',11)}
+  <line x1="40" y1="180" x2="330" y2="180" stroke="var(--rule-2)" stroke-width="1.5"/>
+  ${[0,90,180,270,360].map(d=>{const x=40+d/360*290;return `<line x1="${x}" y1="180" x2="${x}" y2="187" stroke="var(--rule-2)" stroke-width="1.5"/>`+txt(x,204,d,'var(--muted)',10,'middle');}).join('')}
+  <circle cx="${40+10/360*290}" cy="180" r="5.5" fill="var(--g2)"/>
+  <circle cx="${40+350/360*290}" cy="180" r="5.5" fill="var(--g2)"/>
+  ${txt(48,166,'10','var(--g2)',12,'middle')}
+  ${txt(322,166,'350','var(--g2)',12,'middle')}
+  <line x1="48" y1="140" x2="322" y2="140" stroke="var(--rule-2)" stroke-width="1" stroke-dasharray="3 3"/>
+  ${txt(185,132,'distance 340','var(--muted)',11,'middle')}
+  <line x1="185" y1="180" x2="185" y2="230" stroke="var(--mu)" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <path d="M179,174 L191,186 M191,174 L179,186" stroke="var(--mu)" stroke-width="2.4" stroke-linecap="round"/>
+  ${txt(185,246,'ordinary average = 180','var(--mu)',11,'middle')}
+
+  ${txt(430,26,'AS DIRECTIONS ON A CIRCLE','var(--muted)',11)}
+  <circle cx="575" cy="150" r="88" fill="none" stroke="var(--rule-2)" stroke-width="1.5"/>
+  ${txt(575,48,'N','var(--muted)',11,'middle')}
+  ${txt(678,154,'E','var(--muted)',11,'start')}
+  <line x1="575" y1="150" x2="575" y2="62" stroke="var(--rule)" stroke-width="1"/>
+  <circle cx="590.3" cy="63.3" r="5.5" fill="var(--g2)"/>
+  <circle cx="559.7" cy="63.3" r="5.5" fill="var(--g2)"/>
+  ${txt(614,60,'10','var(--g2)',12,'start')}
+  ${txt(536,60,'350','var(--g2)',12,'end')}
+  <path d="M 559.7,63.3 A 88,88 0 0,1 590.3,63.3" fill="none" stroke="var(--g2)" stroke-width="3"/>
+  ${txt(575,36,'only 20 apart','var(--g2)',11,'middle')}
+  ${arrow2(575,150,575,72,'var(--g3)',2.4)}
+  ${txt(575,110,'mean','var(--g3)',11,'middle')}
+  ${txt(575,124,'direction 0','var(--g3)',11,'middle')}
+  <path d="M569,232 L581,244 M581,232 L569,244" stroke="var(--mu)" stroke-width="2.4" stroke-linecap="round"/>
+  ${txt(575,262,'the line answer, 180, points the opposite way','var(--mu)',11,'middle')}
+</svg>`);
+
+/* ============================ 6. Figure 2 — the sphere with three points ============================ */
+const PT2=[{u:[0,0,1],n:'(0, 0, 1)'},{u:[1,0,0],n:'(1, 0, 0)'},{u:[0.5,0.5,Math.SQRT1_2],n:'(0.5, 0.5, 0.707)'}];
+reg(function(){
+  const t=T();
+  const d=[sphereTrace(t.sphere,.45),graticule(t.grat)];
+  PT2.forEach(p=>{
+    d.push(seg([0,0,0],p.u,t.mu,3,'dot'));
+    d.push({type:'scatter3d',mode:'markers+text',x:[p.u[0]*1.01],y:[p.u[1]*1.01],z:[p.u[2]*1.01],
+      marker:{size:6,color:t.mu},text:[p.n],textposition:'top center',
+      textfont:{color:t.ink2,size:11,family:'IBM Plex Mono, monospace'},
+      hovertemplate:p.n+'<extra>on the sphere</extra>'});
+  });
+  draw('fig2',d,base({scene:scene({x:1.35,y:1.35,z:0.85})}));
+});
+
+/* ============================ 7. Figure 3 — simplex to sphere ============================ */
+put('fig3a',`<svg viewBox="0 0 760 220" role="img" aria-label="A composition on the simplex maps to a point on the sphere by taking square roots">
+  ${txt(40,26,'THE SIMPLEX  &#916;&#178;','var(--muted)',11)}
+  <path d="M155,50 L60,180 L250,180 Z" fill="var(--wash)" stroke="var(--rule-2)" stroke-width="1.5" stroke-linejoin="round"/>
+  ${txt(155,42,'(0,0,1)','var(--muted)',10,'middle')}
+  ${txt(52,194,'(1,0,0)','var(--muted)',10,'middle')}
+  ${txt(258,194,'(0,1,0)','var(--muted)',10,'middle')}
+  <circle cx="146" cy="128" r="6" fill="var(--g2)"/>
+  ${txt(146,116,'z = (0.25, 0.25, 0.50)','var(--g2)',11,'middle')}
+  ${txt(155,214,'flat triangle, parts add to 1','var(--ink-2)',11,'middle')}
+
+  ${arrow2(300,86,450,86,'var(--ink-2)',2)}
+  ${txt(375,74,'u = &#8730;z','var(--ink)',14,'middle')}
+  ${arrow2(450,140,300,140,'var(--muted)',1.6,'4 3')}
+  ${txt(375,162,'z = u&#178;','var(--muted)',12,'middle')}
+
+  ${txt(500,26,'THE SPHERE  S&#178;','var(--muted)',11)}
+  <circle cx="620" cy="120" r="88" fill="none" stroke="var(--rule)" stroke-width="1"/>
+  <path d="M620,32 Q551,70 540,175 Q620,205 700,168 Q676,72 620,32 Z" fill="var(--g2)" fill-opacity="0.12" stroke="var(--g2)" stroke-width="1.6" stroke-linejoin="round"/>
+  <circle cx="612" cy="122" r="6" fill="var(--g2)"/>
+  ${txt(612,110,'u = (0.5, 0.5, 0.707)','var(--g2)',11,'middle')}
+  ${txt(620,214,'curved eighth of the sphere, squares add to 1','var(--ink-2)',11,'middle')}
+</svg>`);
+
+const SIMP=[[0.25,0.25,0.50],[0.60,0.25,0.15],[0.15,0.65,0.20],[0.34,0.33,0.33],[0.10,0.20,0.70],[0.45,0.10,0.45],[0.20,0.45,0.35],[0.70,0.15,0.15]];
+reg(function(){
+  const t=T();
+  const d=[
+    sphereTrace(t.sphere,.5,true),
+    graticule(t.grat,true),
+    {type:'mesh3d',x:[1,0,0],y:[0,1,0],z:[0,0,1],i:[0],j:[1],k:[2],
+      color:t.ink2,opacity:.16,hoverinfo:'skip',flatshading:true}
+  ];
+  ['x','y','z'].forEach((ax,i)=>{const e=[0,0,0];e[i]=1.25;d.push(seg([0,0,0],e,t.rule2,2));});
+  SIMP.forEach(z=>{
+    const u=z.map(Math.sqrt);
+    d.push(seg(z,u,t.muted,2,'dot'));
+    d.push({type:'scatter3d',mode:'markers',x:[z[0]],y:[z[1]],z:[z[2]],marker:{size:4,color:t.ink2},
+      hovertemplate:'composition ('+z.map(v=>v.toFixed(2)).join(', ')+')<extra>on the simplex</extra>'});
+    d.push({type:'scatter3d',mode:'markers',x:[u[0]],y:[u[1]],z:[u[2]],marker:{size:5,color:t.g2},
+      hovertemplate:'square root ('+u.map(v=>v.toFixed(3)).join(', ')+')<extra>on the sphere</extra>'});
+  });
+  draw('fig3b',d,base({scene:scene({x:1.5,y:1.45,z:1.15})}));
+});
+
+/* ============================ 8. Figure 4 — effect of kappa ============================ */
+function panelK(id,k,seed){
+  reg(function(){
+    const t=T();
+    const R=Math.min(1,4/Math.sqrt(Math.max(k,1.2)));
+    draw(id,tangentTraces(k,0,R,300,seed,t,true),tangentLayout(R,t,false));
+  });
+}
+panelK('fig4a',2,11); panelK('fig4b',20,12); panelK('fig4c',150,13);
+
+function globeFig(id,getPars,eye){
+  reg(function(){
+    const t=T();
+    const p=getPars();
+    const mu=p.mu||[0,0,1], g2=p.g2||[1,0,0], g3=p.g3||[0,1,0];
+    const S=sampleKentStd(p.n||350,p.k,p.b,p.seed||5).map(u=>toFrame(u,mu,g2,g3));
+    const d=[sphereTrace(t.sphere,.45),graticule(t.grat),cloud(S,t.dotc,2.8),
+             seg([0,0,0],mu,t.mu,4),tip(comb(1.14,mu,0,mu),t.mu,'&mu;')];
+    draw(id,d,base({scene:scene(eye)}));
+  });
+}
+globeFig('fig4live',()=>({k:+document.getElementById('s4k').value||1,b:0,n:350,seed:21}),{x:0.9,y:1.5,z:1.35});
+document.getElementById('s4k').addEventListener('input',function(){
+  document.getElementById('v4k').textContent=this.value;
+  const t=T(),k=Math.max(+this.value,0.001);
+  const S=sampleKentStd(350,k,0,21);
+  if(HAS_PLOTLY) Plotly.restyle('fig4live',{x:[S.map(u=>u[0]*1.004)],y:[S.map(u=>u[1]*1.004)],z:[S.map(u=>u[2]*1.004)]},[2]);
+});
+
+/* ============================ 9. Figure 5 — round vs elliptical ============================ */
+reg(function(){
+  const t=T(),R=0.85;
+  draw('fig5a',tangentTraces(60,0,R,320,31,t,true),tangentLayout(R,t,true));
+  draw('fig5b',tangentTraces(60,24,R,320,32,t,true),tangentLayout(R,t,true));
+});
+
+/* ============================ 10. Figure 6 — the two sliders ============================ */
+const s6k=document.getElementById('s6k'), s6b=document.getElementById('s6b');
+function pars6(){
+  const k=+s6k.value, frac=+s6b.value;
+  return {k:k, b:frac*k/2, frac:frac};
+}
+function update6(){
+  const p=pars6(), t=T();
+  const l2=1/(p.k-2*p.b), l3=1/(p.k+2*p.b);
+  document.getElementById('v6k').textContent=p.k;
+  document.getElementById('v6b').textContent=p.frac.toFixed(2);
+  document.getElementById('o6k').textContent=p.k;
+  document.getElementById('o6b').textContent=p.b.toFixed(1);
+  document.getElementById('o6ok').textContent=(2*p.b<p.k)?'yes':'no';
+  document.getElementById('o6l2').textContent=l2.toFixed(4);
+  document.getElementById('o6l3').textContent=l3.toFixed(5);
+  document.getElementById('o6r').textContent=Math.sqrt(l2/l3).toFixed(2);
+  const R=0.92;
+  draw('fig6a',tangentTraces(p.k,p.b,R,260,44,t,true),tangentLayout(R,t,true));
+}
+reg(update6);
+s6k.addEventListener('input',update6);
+s6b.addEventListener('input',update6);
+globeFig('fig6b',()=>{const p=pars6();return {k:p.k,b:p.b,n:320,seed:45};},{x:0.75,y:1.5,z:1.4});
+function update6b(){
+  const p=pars6();
+  const S=sampleKentStd(320,p.k,p.b,45);
+  if(HAS_PLOTLY) Plotly.restyle('fig6b',{x:[S.map(u=>u[0]*1.004)],y:[S.map(u=>u[1]*1.004)],z:[S.map(u=>u[2]*1.004)]},[2]);
+}
+s6k.addEventListener('input',update6b);
+s6b.addEventListener('input',update6b);
+
+/* ============================ 11. Figure 7 — the big picture ============================ */
+const MU7=unit([Math.sqrt(0.5),Math.sqrt(0.3),Math.sqrt(0.2)]);
+const B7=householder(MU7);
+const ANG7=35*Math.PI/180;
+const G2_7=unit(comb(Math.cos(ANG7),B7[0],Math.sin(ANG7),B7[1]));
+const G3_7=unit(comb(-Math.sin(ANG7),B7[0],Math.cos(ANG7),B7[1]));
+const K7=180, BET7=70;
+const CAM7={x:1.45,y:1.15,z:1.05};
+
+reg(function(){
+  const t=T();
+  const S=sampleKentStd(250,K7,BET7,101).map(u=>toFrame(u,MU7,G2_7,G3_7));
+  const a2=Math.sqrt(1/(K7-2*BET7))*2.2, a3=Math.sqrt(1/(K7+2*BET7))*2.2;
+  const d=[
+    sphereTrace(t.sphere,.4),
+    graticule(t.grat),
+    planePatch(MU7,B7[0],B7[1],0.42,t.ink2,.17),
+    cloud(S,t.dotc,3),
+    seg([0,0,0],comb(1.0,MU7,0,MU7),t.mu,5),
+    tip(comb(1.30,MU7,0,MU7),t.mu,'&mu;'),
+    seg(MU7,comb3(1,MU7,a2,G2_7,0,G2_7),t.g2,6),
+    tip(comb3(1,MU7,a2*1.12,G2_7,0,G2_7),t.g2,'&gamma;<sub>2</sub>'),
+    seg(MU7,comb3(1,MU7,a3,G3_7,0,G3_7),t.g3,6),
+    tip(comb3(1,MU7,a3*1.35,G3_7,0,G3_7),t.g3,'&gamma;<sub>3</sub>')
+  ];
+  draw('fig7',d,base({scene:scene(CAM7)}));
+});
+function tog(btnId,idx){
+  const b=document.getElementById(btnId);
+  b.addEventListener('click',function(){
+    const on=b.getAttribute('aria-pressed')!=='true';
+    b.setAttribute('aria-pressed',on?'true':'false');
+    if(HAS_PLOTLY) Plotly.restyle('fig7',{visible:on},idx);
+  });
+}
+tog('b7sphere',[0,1]); tog('b7plane',[2]); tog('b7data',[3]); tog('b7axes',[6,7,8,9]);
+document.getElementById('b7reset').addEventListener('click',function(){
+  if(HAS_PLOTLY) Plotly.relayout('fig7',{'scene.camera':{eye:CAM7,up:{x:0,y:0,z:1}}});
+});
+
+/* ============================ 12. Figure 8 — the labelled ellipse ============================ */
+(function(){
+  const cx=380,cy=182,a=132,b=47;
+  const pts=gaussPts(190,a,b,0,77).filter(p=>Math.abs(p[0])<300&&Math.abs(p[1])<150);
+  put('fig8',`<svg viewBox="0 0 760 360" role="img" aria-label="The tangent-plane ellipse with its long and short axes labelled">
+  <rect x="24" y="24" width="712" height="300" fill="var(--wash)" stroke="var(--rule)" stroke-width="1"/>
+  ${txt(38,44,'THE TANGENT PLANE AT &#956;, SEEN FACE ON','var(--muted)',11)}
+  <ellipse cx="${cx}" cy="${cy}" rx="${a*2}" ry="${b*2}" fill="none" stroke="var(--rule-2)" stroke-width="1.4" stroke-dasharray="5 4"/>
+  <ellipse cx="${cx}" cy="${cy}" rx="${a}" ry="${b}" fill="none" stroke="var(--ink-2)" stroke-width="1.8"/>
+  ${pts.map(p=>`<circle cx="${(cx+p[0]).toFixed(1)}" cy="${(cy+p[1]).toFixed(1)}" r="2.3" fill="var(--dot)" fill-opacity="0.55"/>`).join('')}
+  ${arrow2(cx,cy,cx+a,cy,'var(--g2)',2.6)}
+  ${arrow2(cx,cy,cx,cy-b,'var(--g3)',2.6)}
+  <circle cx="${cx}" cy="${cy}" r="6" fill="var(--mu)"/>
+  <circle cx="${cx}" cy="${cy}" r="11" fill="none" stroke="var(--mu)" stroke-width="1.2"/>
+  ${txt(cx-14,cy+22,'&#956;','var(--mu)',14,'end')}
+  ${txt(cx-14,cy+38,'pointing at you','var(--mu)',10,'end')}
+  ${txt(cx+a+12,cy+5,'&#947;&#8322;  long axis','var(--g2)',13,'start')}
+  ${txt(cx+a+12,cy+22,'semi-axis = &#8730;&#955;&#8322;','var(--g2)',11,'start')}
+  ${txt(cx+8,cy-b-10,'&#947;&#8323;  short axis','var(--g3)',13,'start')}
+  ${txt(cx+8,cy-b-26,'semi-axis = &#8730;&#955;&#8323;','var(--g3)',11,'start')}
+  <line x1="${cx}" y1="${cy+b+22}" x2="${cx+a}" y2="${cy+b+22}" stroke="var(--g2)" stroke-width="1.2"/>
+  <line x1="${cx}" y1="${cy+b+16}" x2="${cx}" y2="${cy+b+28}" stroke="var(--g2)" stroke-width="1.2"/>
+  <line x1="${cx+a}" y1="${cy+b+16}" x2="${cx+a}" y2="${cy+b+28}" stroke="var(--g2)" stroke-width="1.2"/>
+  ${txt(cx+a/2,cy+b+40,'&#8730;&#955;&#8322;','var(--g2)',12,'middle')}
+  ${txt(38,306,'solid = 1 standard deviation contour','var(--ink-2)',11)}
+  ${txt(38,322,'dashed = 2 standard deviations','var(--muted)',11)}
+  ${txt(722,306,'&#955;&#8322; &gt; &#955;&#8323;  &#8658;  more spread along &#947;&#8322;','var(--ink)',12,'end')}
+  ${txt(722,322,'here &#955;&#8322;/&#955;&#8323; = 8, so the semi-axes differ by &#8730;8 &#8776; 2.8','var(--muted)',11,'end')}
+</svg>`);
+})();
+
+/* ============================ 13. Figure 9 — the Householder rulers ============================ */
+reg(function(){
+  const t=T();
+  const S=sampleKentStd(250,K7,BET7,101).map(u=>toFrame(u,MU7,G2_7,G3_7));
+  const r=0.30;
+  const d=[
+    sphereTrace(t.sphere,.4),
+    graticule(t.grat),
+    planePatch(MU7,B7[0],B7[1],0.42,t.ink2,.15),
+    cloud(S,t.dotc,3),
+    seg([0,0,0],MU7,t.mu,5),
+    tip(comb(1.28,MU7,0,MU7),t.mu,'&mu;'),
+    seg(MU7,comb3(1,MU7,r,B7[0],0,B7[0]),t.basis,6,'dash'),
+    tip(comb3(1,MU7,r*1.18,B7[0],0,B7[0]),t.basis,'b<sub>1</sub>'),
+    seg(MU7,comb3(1,MU7,r,B7[1],0,B7[1]),t.basis,6,'dash'),
+    tip(comb3(1,MU7,r*1.18,B7[1],0,B7[1]),t.basis,'b<sub>2</sub>')
+  ];
+  draw('fig9',d,base({scene:scene(CAM7)}));
+});
+
+/* ============================ 14. Figure 10 — where the off-diagonal comes from ============================ */
+(function(){
+  const pts=gaussPts(150,104,44,-Math.PI/4,55);
+  function panel(cx,cy,rulerAng,shade,title){
+    let s=txt(cx,cy-138,title,'var(--muted)',11,'middle');
+    if(shade){
+      s+=`<path d="M${cx},${cy} L${cx+130},${cy} L${cx+130},${cy-130} L${cx},${cy-130} Z" fill="var(--g2)" fill-opacity="0.09"/>`;
+      s+=`<path d="M${cx},${cy} L${cx-130},${cy} L${cx-130},${cy+130} L${cx},${cy+130} Z" fill="var(--g2)" fill-opacity="0.09"/>`;
+      s+=txt(cx+66,cy-66,'w&#8321;w&#8322; &gt; 0','var(--g2)',11,'middle');
+      s+=txt(cx-66,cy+70,'w&#8321;w&#8322; &gt; 0','var(--g2)',11,'middle');
+    }
+    s+=`<ellipse cx="${cx}" cy="${cy}" rx="104" ry="44" fill="none" stroke="var(--ink-2)" stroke-width="1.8" transform="rotate(-45 ${cx} ${cy})"/>`;
+    s+=pts.map(p=>`<circle cx="${(cx+p[0]).toFixed(1)}" cy="${(cy+p[1]).toFixed(1)}" r="2.2" fill="var(--dot)" fill-opacity="0.5"/>`).join('');
+    const c=Math.cos(rulerAng), si=Math.sin(rulerAng), L=132;
+    s+=biarrow(cx,cy, L*c, -L*si,'var(--basis)',1.8,'5 4');
+    s+=biarrow(cx,cy, -L*si, -L*c,'var(--basis)',1.8,'5 4');
+    s+=txt(cx+(L+12)*c, cy-(L+12)*si+4,'b&#8321;','var(--basis)',12,'middle');
+    s+=txt(cx-(L+14)*si, cy-(L+14)*c+4,'b&#8322;','var(--basis)',12,'middle');
+    return s;
+  }
+  put('fig10',`<svg viewBox="0 0 760 330" role="img" aria-label="Rulers tilted relative to the ellipse give a non-zero off-diagonal term; aligned rulers give zero">
+   ${panel(195,165,0,true,'RULERS AT 45&#176; TO THE ELLIPSE')}
+   ${txt(195,312,'off-diagonal of S&#8323; = +0.02','var(--g2)',12,'middle')}
+   <line x1="380" y1="45" x2="380" y2="290" stroke="var(--rule)" stroke-width="1"/>
+   ${panel(565,165,Math.PI/4,false,'RULERS TURNED BY 45&#176;')}
+   ${txt(565,312,'off-diagonal = 0  &#8212;  now they are the axes','var(--g3)',12,'middle')}
+  </svg>`);
+})();
+
+/* ============================ 15. Figure 11 — B, W and K ============================ */
+const SL0=[[0.03,0.02],[0.02,0.03]];
+const BB0=[[0,1,0],[1,0,0]];   /* b1, b2 for mu = (0,0,1) */
+const s12=document.getElementById('s12');
+function update12(){
+  const th=(+s12.value)*Math.PI/180;
+  document.getElementById('v12').textContent=s12.value+'\u00B0';
+  const R=rot2(th);
+  /* rotated rulers, as 3-vectors */
+  const b1=comb(R[0][0],BB0[0],R[1][0],BB0[1]);
+  const b2=comb(R[0][1],BB0[0],R[1][1],BB0[1]);
+  const SLt=mm2(t2(R),mm2(SL0,R));
+  const E=eig2(SLt);
+  let g2=fixSign(comb(E.W[0][0],b1,E.W[0][1],b2));
+  let g3=fixSign(comb(E.W[1][0],b1,E.W[1][1],b2));
+
+  /* --- picture --- */
+  const cx=380,cy=170,SC=560;
+  const pts=gaussPts(150,Math.sqrt(0.05)*SC,Math.sqrt(0.01)*SC,-Math.PI/4,55);
+  const dir=(v)=>[v[1],-v[0]];              /* draw b=(x,y,z) using (y, x) -> screen */
+  const sv=v=>[v[1]*1, -v[0]*1];            /* screen x = component along e2, screen y = -component along e1 */
+  const L=140;
+  const d1=sv(b1), d2=sv(b2), a2=sv(g2), a3=sv(g3);
+  let s='';
+  s+=txt(cx,32,'LOOKING DOWN THE &#956; AXIS','var(--muted)',11,'middle');
+  s+=`<ellipse cx="${cx}" cy="${cy}" rx="${(Math.sqrt(0.05)*SC).toFixed(1)}" ry="${(Math.sqrt(0.01)*SC).toFixed(1)}" fill="none" stroke="var(--ink-2)" stroke-width="1.6" transform="rotate(-45 ${cx} ${cy})"/>`;
+  s+=pts.map(p=>`<circle cx="${(cx+p[0]).toFixed(1)}" cy="${(cy+p[1]).toFixed(1)}" r="2.2" fill="var(--dot)" fill-opacity="0.45"/>`).join('');
+  s+=biarrow(cx,cy,d1[0]*L,d1[1]*L,'var(--basis)',1.8,'5 4');
+  s+=biarrow(cx,cy,d2[0]*L,d2[1]*L,'var(--basis)',1.8,'5 4');
+  s+=txt(cx+d1[0]*(L+16),cy+d1[1]*(L+16)+4,'b&#8321;','var(--basis)',12,'middle');
+  s+=txt(cx+d2[0]*(L+16),cy+d2[1]*(L+16)+4,'b&#8322;','var(--basis)',12,'middle');
+  const r2=Math.sqrt(0.05)*SC, r3=Math.sqrt(0.01)*SC;
+  s+=biarrow(cx,cy,a2[0]*r2,a2[1]*r2,'var(--g2)',2.6);
+  s+=biarrow(cx,cy,a3[0]*r3,a3[1]*r3,'var(--g3)',2.6);
+  s+=txt(cx+a2[0]*(r2+22),cy+a2[1]*(r2+22)+4,'&#947;&#8322;','var(--g2)',13,'middle');
+  s+=txt(cx+a3[0]*(r3+24),cy+a3[1]*(r3+24)+4,'&#947;&#8323;','var(--g3)',13,'middle');
+  s+=`<circle cx="${cx}" cy="${cy}" r="4.5" fill="var(--mu)"/>`;
+  s+=txt(150,300,'violet dashed = your rulers (they move)','var(--basis)',11,'start');
+  s+=txt(610,300,'blue / green = the answer (it does not)','var(--ink-2)',11,'end');
+  put('fig11',`<svg viewBox="0 0 760 320" role="img" aria-label="Rotating the tangent-plane basis changes B, S and W but not their product">${s}</svg>`);
+
+  /* --- matrices --- */
+  const fm=(v,d)=>{const x=Math.abs(v)<5e-5?0:v;return x.toFixed(d===undefined?3:d);};
+  function mbox(lab,rows,dec){
+    const nc=rows[0].length;
+    return `<div class="mbox"><span class="mlab">${lab}</span><div class="mgrid" style="grid-template-columns:repeat(${nc},auto)">`+
+      rows.map(r=>r.map(v=>`<span>${fm(v,dec)}</span>`).join('')).join('')+`</div></div>`;
+  }
+  document.getElementById('fig11mats').innerHTML=
+    mbox('R(&theta;) =',R)+
+    mbox('B&#771; =',[[b1[0],b2[0]],[b1[1],b2[1]],[b1[2],b2[2]]])+
+    mbox('S&#771;<sub>L</sub> =',SLt,4)+
+    mbox('W&#771; =',t2(E.W))+
+    mbox('&lambda; =',[[E.l[0]],[E.l[1]]],4)+
+    mbox('B&#771;W&#771; =',[[g2[0],g3[0]],[g2[1],g3[1]],[g2[2],g3[2]]]);
+}
+update12();
+s12.addEventListener('input',update12);
+
+/* ============================ 16. Figure 12 — signs and ties ============================ */
+(function(){
+  const cx=195,cy=165, cx2=565;
+  let s=txt(cx,40,'ONE ELLIPSE, TWO NAMES FOR ITS AXIS','var(--muted)',11,'middle');
+  s+=`<ellipse cx="${cx}" cy="${cy}" rx="126" ry="52" fill="none" stroke="var(--ink-2)" stroke-width="1.8"/>`;
+  s+=arrow2(cx,cy,cx+126,cy,'var(--g2)',2.6);
+  s+=arrow2(cx,cy,cx-126,cy,'var(--g2)',2.6,'5 4');
+  s+=txt(cx+134,cy+5,'&#947;&#8322;','var(--g2)',13,'start');
+  s+=txt(cx-134,cy+5,'&#8722;&#947;&#8322;','var(--g2)',13,'end');
+  s+=`<circle cx="${cx}" cy="${cy}" r="4.5" fill="var(--mu)"/>`;
+  s+=txt(cx,250,'the density uses (&#947;&#8322;&#7488;u)&#178;, and (&#8722;&#947;&#8322;&#7488;u)&#178; is the same','var(--ink-2)',11,'middle');
+  s+=txt(cx,268,'number &#8212; so both describe exactly the same model','var(--ink-2)',11,'middle');
+  s+=`<line x1="380" y1="55" x2="380" y2="270" stroke="var(--rule)" stroke-width="1"/>`;
+  s+=txt(cx2,40,'WHEN &#955;&#8322; = &#955;&#8323;, THERE IS NO AXIS','var(--muted)',11,'middle');
+  s+=`<circle cx="${cx2}" cy="${cy}" r="86" fill="none" stroke="var(--ink-2)" stroke-width="1.8"/>`;
+  [0,32,64].forEach((deg,i)=>{
+    const a=deg*Math.PI/180, L=86;
+    s+=biarrow(cx2,cy,L*Math.cos(a),-L*Math.sin(a), i===0?'var(--g2)':'var(--rule-2)',i===0?2.2:1.6,'5 4');
+    s+=biarrow(cx2,cy,-L*Math.sin(a),-L*Math.cos(a), i===0?'var(--g3)':'var(--rule-2)',i===0?2.2:1.6,'5 4');
+  });
+  s+=`<circle cx="${cx2}" cy="${cy}" r="4.5" fill="var(--mu)"/>`;
+  s+=txt(cx2,250,'every direction has the same spread, so every pair','var(--ink-2)',11,'middle');
+  s+=txt(cx2,268,'of perpendicular directions is a valid answer. Here &#946; = 0.','var(--ink-2)',11,'middle');
+  put('fig12',`<svg viewBox="0 0 760 290" role="img" aria-label="Sign indeterminacy of an eigenvector, and the tied-eigenvalue case">${s}</svg>`);
+})();
+
+/* ============================ 17. Part 15 — the worked example ============================ */
+const NAMES=['sand','silt','clay'];
+const Z15=[
+ [0.40,0.33,0.27],[0.43,0.29,0.28],[0.45,0.30,0.25],[0.47,0.28,0.25],
+ [0.48,0.33,0.19],[0.50,0.29,0.21],[0.51,0.29,0.20],[0.53,0.28,0.19],
+ [0.55,0.32,0.13],[0.57,0.29,0.14],[0.59,0.29,0.12],[0.62,0.28,0.10]];
+const U15=Z15.map(z=>z.map(Math.sqrt));
+const UBAR=[0,1,2].map(j=>U15.reduce((s,u)=>s+u[j],0)/U15.length);
+const RBAR=nrm(UBAR);
+const MU15=unit(UBAR);
+const M15=secondMoment(U15);
+const B15=householder(MU15);
+const SL15=projectM(M15,B15);
+const E15=eig2(SL15);
+const LAM2=E15.l[0], LAM3=E15.l[1];
+const G2_15=fixSign(comb(E15.W[0][0],B15[0],E15.W[0][1],B15[1]));
+const G3_15=fixSign(comb(E15.W[1][0],B15[0],E15.W[1][1],B15[1]));
+const KAP15=0.5*(1/LAM2+1/LAM3);
+const BET15=0.25*(1/LAM3-1/LAM2);
+const KAP_VMF=2/(LAM2+LAM3);
+
+const f=(x,d)=>{const v=Math.abs(x)<5e-7?0:x;return v.toFixed(d===undefined?4:d);};
+function mboxHTML(lab,rows,dec){
+  const nc=rows[0].length;
+  return `<div class="mbox"><span class="mlab">${lab}</span><div class="mgrid" style="grid-template-columns:repeat(${nc},auto)">`+
+    rows.map(r=>r.map(v=>`<span>${f(v,dec)}</span>`).join('')).join('')+`</div></div>`;
+}
+
+/* step 1 + 2 tables */
+put('t15z','<thead><tr><th>#</th><th>sand \\(z_1\\)</th><th>silt \\(z_2\\)</th><th>clay \\(z_3\\)</th><th>sum</th></tr></thead><tbody>'+
+  Z15.map((z,i)=>`<tr><td>${i+1}</td><td>${z[0].toFixed(2)}</td><td>${z[1].toFixed(2)}</td><td>${z[2].toFixed(2)}</td><td>${(z[0]+z[1]+z[2]).toFixed(2)}</td></tr>`).join('')+
+  '</tbody>');
+put('t15u','<thead><tr><th>#</th><th>\\(u_1\\)</th><th>\\(u_2\\)</th><th>\\(u_3\\)</th><th>\\(\\|\\mathbf u\\|^2\\)</th></tr></thead><tbody>'+
+  U15.map((u,i)=>`<tr><td>${i+1}</td><td>${f(u[0])}</td><td>${f(u[1])}</td><td>${f(u[2])}</td><td>${f(dot(u,u),4)}</td></tr>`).join('')+
+  '</tbody>');
+put('t15mu','<tbody>'+
+  `<tr><td class="t">\\(\\bar{\\mathbf u}=\\frac1n\\sum_i\\mathbf u_i\\)</td><td>${f(UBAR[0])}</td><td>${f(UBAR[1])}</td><td>${f(UBAR[2])}</td></tr>`+
+  `<tr><td class="t">\\(\\bar R=\\|\\bar{\\mathbf u}\\|\\)</td><td colspan="3">${f(RBAR,5)}</td></tr>`+
+  `<tr><td class="t">\\(\\hat{\\boldsymbol\\mu}=\\bar{\\mathbf u}/\\bar R\\)</td><td>${f(MU15[0])}</td><td>${f(MU15[1])}</td><td>${f(MU15[2])}</td></tr>`+
+  `<tr><td class="t">\\(\\hat{\\boldsymbol\\pi}=\\hat{\\boldsymbol\\mu}^2\\) (mean composition)</td><td>${f(MU15[0]*MU15[0],4)} sand</td><td>${f(MU15[1]*MU15[1],4)} silt</td><td>${f(MU15[2]*MU15[2],4)} clay</td></tr>`+
+  '</tbody>');
+put('m15M', mboxHTML('M&#770; =',M15,5)+
+  `<div class="mbox"><span class="mlab">tr(M&#770;) = ${f(M15[0][0]+M15[1][1]+M15[2][2],6)}</span></div>`+
+  `<div class="mbox"><span class="mlab">&mu;&#770;&#7488;M&#770;&mu;&#770; = ${f(quad(M15,MU15,MU15),6)}</span></div>`);
+put('m15B', mboxHTML('h = e&#8321; &minus; &mu;&#770; =',[[1-MU15[0]],[-MU15[1]],[-MU15[2]]])+
+  mboxHTML('B =',[[B15[0][0],B15[1][0]],[B15[0][1],B15[1][1]],[B15[0][2],B15[1][2]]])+
+  `<div class="mbox"><span class="mlab">B&#7488;&mu;&#770; = (${f(dot(B15[0],MU15),6)}, ${f(dot(B15[1],MU15),6)})</span></div>`);
+put('m15S', mboxHTML('S<sub>L</sub> = B&#7488;M&#770;B =',SL15,5)+
+  `<div class="mbox"><span class="mlab">tr(S<sub>L</sub>) = ${f(SL15[0][0]+SL15[1][1],6)} = 1 &minus; &mu;&#770;&#7488;M&#770;&mu;&#770;</span></div>`);
+put('m15W', mboxHTML('&Lambda; =',[[LAM2,0],[0,LAM3]],5)+
+  mboxHTML('W =',t2(E15.W))+
+  `<div class="mbox"><span class="mlab">&lambda;&#8322;/&lambda;&#8323; = ${f(LAM2/LAM3,2)}</span></div>`);
+put('m15K', mboxHTML('K&#770; = [&mu;&#770; &gamma;&#770;&#8322; &gamma;&#770;&#8323;] =',
+  [[MU15[0],G2_15[0],G3_15[0]],[MU15[1],G2_15[1],G3_15[1]],[MU15[2],G2_15[2],G3_15[2]]])+
+  `<div class="mbox"><span class="mlab">&gamma;&#770;&#8322;&#7488;&mu;&#770; = ${f(dot(G2_15,MU15),6)} &nbsp;&nbsp; &gamma;&#770;&#8322;&#7488;&gamma;&#770;&#8323; = ${f(dot(G2_15,G3_15),6)}</span></div>`);
+put('t15par','<thead><tr><th>quantity</th><th>value</th><th>how it was obtained</th></tr></thead><tbody>'+
+  `<tr><td>\\(\\lambda_2\\)</td><td>${f(LAM2,5)}</td><td class="t">larger eigenvalue of \\(S_L\\) &mdash; variance along \\(\\hat{\\boldsymbol\\gamma}_2\\)</td></tr>`+
+  `<tr><td>\\(\\lambda_3\\)</td><td>${f(LAM3,5)}</td><td class="t">smaller eigenvalue &mdash; variance along \\(\\hat{\\boldsymbol\\gamma}_3\\)</td></tr>`+
+  `<tr><td>\\(\\sqrt{\\lambda_2/\\lambda_3}\\)</td><td>${f(Math.sqrt(LAM2/LAM3),2)}</td><td class="t">how many times longer the ellipse is than it is wide</td></tr>`+
+  `<tr><td>\\(\\hat\\kappa\\)</td><td>${f(KAP15,1)}</td><td class="t">\\(\\tfrac12(1/\\lambda_2+1/\\lambda_3)\\)</td></tr>`+
+  `<tr><td>\\(\\hat\\beta\\)</td><td>${f(BET15,1)}</td><td class="t">\\(\\tfrac14(1/\\lambda_3-1/\\lambda_2)\\)</td></tr>`+
+  `<tr><td>\\(2\\hat\\beta<\\hat\\kappa\\)?</td><td>${2*BET15<KAP15?'yes':'no'}</td><td class="t">\\(2\\hat\\beta=${f(2*BET15,1)}\\) against \\(\\hat\\kappa=${f(KAP15,1)}\\) &mdash; a legal, unimodal fit</td></tr>`+
+  `<tr><td>\\(\\hat\\kappa_{\\text{vMF}}\\)</td><td>${f(KAP_VMF,1)}</td><td class="t">what vMF would report: \\(2/(\\lambda_2+\\lambda_3)\\), one number for both directions</td></tr>`+
+  '</tbody>');
+
+(function(){
+  const order=[0,1,2].slice().sort((a,b)=>Math.abs(G2_15[b])-Math.abs(G2_15[a]));
+  const hi=order[0], lo=order[1];
+  const sgn=v=>v>0?'up':'down';
+  document.getElementById('p15read').innerHTML=
+    `The estimated long axis is \\(\\hat{\\boldsymbol\\gamma}_2=(${f(G2_15[0],3)},\\,${f(G2_15[1],3)},\\,${f(G2_15[2],3)})\\). `+
+    `Its largest entry belongs to <strong>${NAMES[hi]}</strong> and its next largest to <strong>${NAMES[lo]}</strong>, `+
+    `and they have <strong>opposite signs</strong>. Moving along this axis therefore means ${NAMES[hi]} goes ${sgn(G2_15[hi])} while ${NAMES[lo]} goes ${sgn(G2_15[lo])}. `+
+    `The remaining component, <strong>${NAMES[order[2]]}</strong>, has coefficient ${f(G2_15[order[2]],3)} &mdash; close to zero, so it hardly changes along this axis. `+
+    `The short axis is \\(\\hat{\\boldsymbol\\gamma}_3=(${f(G3_15[0],3)},\\,${f(G3_15[1],3)},\\,${f(G3_15[2],3)})\\), with ${f(LAM2/LAM3,1)} times less variance.`;
+  document.getElementById('p15sci').innerHTML=
+    `&ldquo;The twelve soils have mean composition about (${(MU15[0]*MU15[0]*100).toFixed(0)}% ${NAMES[0]}, ${(MU15[1]*MU15[1]*100).toFixed(0)}% ${NAMES[1]}, ${(MU15[2]*MU15[2]*100).toFixed(0)}% ${NAMES[2]}). `+
+    `They are tightly clustered (\\(\\bar R=${f(RBAR,4)}\\), \\(\\hat\\kappa=${f(KAP15,0)}\\)) but clearly not clustered in a round way: the fitted ellipse is `+
+    `${f(Math.sqrt(LAM2/LAM3),1)} times longer than it is wide (\\(\\hat\\beta=${f(BET15,0)}\\)). `+
+    `Almost all of the variation between samples is a trade-off between ${NAMES[hi]} and ${NAMES[lo]}; ${NAMES[order[2]]} is nearly constant.&rdquo; `+
+    `A von Mises&ndash;Fisher model could not have said any of that: it would have reported the single number \\(\\hat\\kappa_{\\text{vMF}}=${f(KAP_VMF,0)}\\) `+
+    `and implied the same spread in every direction &mdash; too much variation in ${NAMES[order[2]]} and too little along the ${NAMES[hi]}&ndash;${NAMES[lo]} axis.`;
+})();
+
+/* ---- ternary figures ---- */
+function ternLayout(t){
+  return base({
+    margin:{l:40,r:40,t:24,b:32},
+    ternary:{
+      sum:1,bgcolor:'rgba(0,0,0,0)',
+      aaxis:{title:{text:'sand',font:{size:11,color:t.ink2}},min:0.30,linecolor:t.rule2,gridcolor:t.rule,tickfont:{size:9,color:t.muted},ticks:'outside',ticklen:3},
+      baxis:{title:{text:'silt',font:{size:11,color:t.ink2}},min:0.15,linecolor:t.rule2,gridcolor:t.rule,tickfont:{size:9,color:t.muted},ticks:'outside',ticklen:3},
+      caxis:{title:{text:'clay',font:{size:11,color:t.ink2}},min:0.02,linecolor:t.rule2,gridcolor:t.rule,tickfont:{size:9,color:t.muted},ticks:'outside',ticklen:3}
+    }
+  });
+}
+function ternPts(Zs,color,size,opacity,name){
+  return {type:'scatterternary',mode:'markers',
+    a:Zs.map(z=>z[0]),b:Zs.map(z=>z[1]),c:Zs.map(z=>z[2]),
+    marker:{size:size,color:color,opacity:opacity},
+    hovertemplate:'sand %{a:.3f}<br>silt %{b:.3f}<br>clay %{c:.3f}<extra>'+(name||'')+'</extra>'};
+}
+function simComp(n,k,b,seed){
+  return sampleKentStd(n,k,b,seed).map(u=>{
+    const w=toFrame(u,MU15,G2_15,G3_15);
+    return [w[0]*w[0],w[1]*w[1],w[2]*w[2]];
+  });
+}
+reg(function(){
+  const t=T();
+  const meanPt={type:'scatterternary',mode:'markers',a:[MU15[0]**2],b:[MU15[1]**2],c:[MU15[2]**2],
+    marker:{size:12,color:t.mu,symbol:'x-thin',line:{color:t.mu,width:2.5}},
+    hovertemplate:'fitted mean<extra></extra>'};
+  draw('fig13a',[ternPts(simComp(400,KAP_VMF,0,201),t.dotc,4,.5,'vMF draw'),meanPt],ternLayout(t));
+  draw('fig13b',[ternPts(simComp(400,KAP15,BET15,202),t.dotc,4,.5,'Kent draw'),meanPt],ternLayout(t));
+  draw('fig14a',[ternPts(Z15,t.g2,9,.9,'soil sample'),meanPt],ternLayout(t));
+});
+
+/* tangent view of the fit, with the real data */
+reg(function(){
+  const t=T();
+  const R=3.4*Math.sqrt(LAM2);
+  const tr=tangentTraces(KAP15,BET15,R,0,1,t,false);
+  const P=U15.map(u=>[dot(G2_15,u),dot(G3_15,u)]);
+  tr.unshift({type:'scatter',mode:'markers',x:P.map(p=>p[0]),y:P.map(p=>p[1]),
+    marker:{size:8,color:t.g2,opacity:.9},
+    hovertemplate:'&gamma;&#8322; coord %{x:.4f}<br>&gamma;&#8323; coord %{y:.4f}<extra>soil sample</extra>'});
+  draw('fig14b',tr,tangentLayout(R,t,true));
+});
+
+/* the fit on the sphere */
+reg(function(){
+  const t=T();
+  const a2=Math.sqrt(LAM2)*3, a3=Math.sqrt(LAM3)*3;
+  const d=[
+    sphereTrace(t.sphere,.45,true),
+    graticule(t.grat,true),
+    planePatch(MU15,B15[0],B15[1],0.30,t.ink2,.18),
+    cloud(U15,t.g2,5,'soil sample'),
+    seg([0,0,0],MU15,t.mu,4),
+    tip(comb(1.18,MU15,0,MU15),t.mu,'&mu;&#770;'),
+    seg(comb3(1,MU15,-a2,G2_15,0,G2_15),comb3(1,MU15,a2,G2_15,0,G2_15),t.g2,6),
+    tip(comb3(1,MU15,a2*1.25,G2_15,0,G2_15),t.g2,'&gamma;&#770;&#8322;'),
+    seg(comb3(1,MU15,-a3,G3_15,0,G3_15),comb3(1,MU15,a3,G3_15,0,G3_15),t.g3,6),
+    tip(comb3(1,MU15,a3*2.4,G3_15,0,G3_15),t.g3,'&gamma;&#770;&#8323;')
+  ];
+  ['x','y','z'].forEach((ax,i)=>{const e=[0,0,0];e[i]=1.2;d.push(seg([0,0,0],e,t.rule2,2));});
+  draw('fig14c',d,base({scene:scene({x:1.25,y:1.05,z:0.95})}));
+});
+
+/* ============================ 18. Figure 15 — the pipeline ============================ */
+(function(){
+  const steps=[
+    ['composition','z = (z&#8321;, &hellip;, z&#8342;),  &Sigma;z&#11388; = 1',0],
+    ['square root','u&#11388; = &#8730;z&#11388;',0],
+    ['sphere','&#8214;u&#8214; = 1,  positive orthant',0],
+    ['mean direction','&#956;&#770; = u&#772; / &#8214;u&#772;&#8214;',0],
+    ['tangent plane','B(&#956;&#770;) by Householder',1],
+    ['second moment','M&#770; = &#8721;u&#7522;u&#7522;&#7488;/n,  S<sub>L</sub> = B&#7488;M&#770;B',1],
+    ['principal directions','S<sub>L</sub> = W&Lambda;W&#7488;,  [&#947;&#770;&#8322; &#947;&#770;&#8323;] = BW',0],
+    ['Kent distribution','&#954;&#770;, &#946;&#770; from &#955;&#8322;, &#955;&#8323;',0]
+  ];
+  const W=760, bw=640, bh=46, gap=20, x0=(W-bw)/2;
+  let y=18, s='';
+  steps.forEach((st,i)=>{
+    const shaded=st[2]===1;
+    s+=`<rect x="${x0}" y="${y}" width="${bw}" height="${bh}" rx="3" fill="${shaded?'var(--wash)':'var(--surface-2)'}" stroke="${shaded?'var(--basis)':'var(--rule-2)'}" stroke-width="1.3" ${shaded?'stroke-dasharray="5 4"':''}/>`;
+    s+=txt(x0+16,y+20,st[0].toUpperCase(),shaded?'var(--basis)':'var(--mu)',10.5);
+    s+=txt(x0+16,y+36,st[1],'var(--ink)',12);
+    if(i<steps.length-1){
+      s+=arrow2(W/2,y+bh+2,W/2,y+bh+gap-3,'var(--ink-2)',1.8,null,7);
+    }
+    y+=bh+gap;
+  });
+  s+=txt(x0+bw-16,18+4*(bh+gap)+20,'depends on a convention','var(--basis)',10.5,'end');
+  s+=txt(x0+bw-16,18+5*(bh+gap)+20,'depends on a convention','var(--basis)',10.5,'end');
+  s+=txt(x0+bw-16,18+6*(bh+gap)+20,'the convention cancels here','var(--g3)',10.5,'end');
+  put('fig15',`<svg viewBox="0 0 ${W} ${y}" role="img" aria-label="Pipeline from a composition to a fitted Kent distribution">${s}</svg>`);
+})();
+
+/* ============================ 19. contents and scroll position ============================ */
+(function(){
+  const parts=[].slice.call(document.querySelectorAll('.part[data-title]'));
+  const list=document.getElementById('toclist');
+  const labels={p18:'S1',p19:'S2',p20:'S3'};
+  list.innerHTML=parts.map((p,i)=>{
+    const n=labels[p.id]||String(i+1).padStart(2,'0');
+    return `<li><a href="#${p.id}"><span class="n">${n}</span><span>${p.dataset.title}</span></a></li>`;
+  }).join('');
+  const toc=document.getElementById('toc'), btn=document.getElementById('tocbtn');
+  function setToc(open){
+    toc.hidden=!open; toc.classList.toggle('open',open);
+    btn.setAttribute('aria-expanded',open?'true':'false');
+    btn.textContent=open?'Close':'Contents';
+  }
+  btn.addEventListener('click',()=>setToc(toc.hidden));
+  toc.addEventListener('click',e=>{if(e.target.closest('a'))setToc(false);});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')setToc(false);});
+
+  const here=document.getElementById('here');
+  const nums={};
+  parts.forEach((p,i)=>{nums[p.id]=labels[p.id]?'':'Part '+(i+1)+' · ';});
+  let ticking=false;
+  function spy(){
+    ticking=false;
+    let cur=parts[0];
+    for(const p of parts){ if(p.getBoundingClientRect().top<140) cur=p; }
+    here.textContent=(nums[cur.id]||'')+cur.dataset.title;
+  }
+  addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(spy);}},{passive:true});
+  spy();
+})();
+
+/* re-typeset the maths that was written into the page by script */
+function typeset(){ if(window.MathJax&&window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }
+if(window.MathJax&&window.MathJax.startup&&window.MathJax.startup.promise){
+  window.MathJax.startup.promise.then(typeset);
+} else {
+  addEventListener('load',()=>setTimeout(typeset,400));
+}
+})();
+</script>
+
+
+</body>
+</html>
