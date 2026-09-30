@@ -330,7 +330,7 @@ mjx-container[display="true"]{margin:1.1em 0 !important}
 <script>
 if(!window.Plotly){document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"><\/scr'+'ipt>');}
 window.MathJax={
-  tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],packages:{'[+]':['boldsymbol']}},
+  tex:{inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},
   options:{skipHtmlTags:['script','noscript','style','textarea','pre','code'],enableMenu:false},
   chtml:{scale:1.0,matchFontHeight:false}
 };
@@ -362,9 +362,9 @@ window.MathJax={
     <h1>The Kent distribution, from zero</h1>
     <p class="sub">A distribution for data that live on a sphere &mdash; and why square roots turn proportions into exactly that kind of data.</p>
     <ul class="key">
-      <li><i style="background:var(--mu)"></i>\(\boldsymbol\mu\) &mdash; mean direction</li>
-      <li><i style="background:var(--g2)"></i>\(\boldsymbol\gamma_2\) &mdash; long axis</li>
-      <li><i style="background:var(--g3)"></i>\(\boldsymbol\gamma_3\) &mdash; short axis</li>
+      <li><i style="background:var(--mu)"></i>\(\mu\) &mdash; mean direction</li>
+      <li><i style="background:var(--g2)"></i>\(\gamma_2\) &mdash; long axis</li>
+      <li><i style="background:var(--g3)"></i>\(\gamma_3\) &mdash; short axis</li>
       <li><i style="background:var(--basis)"></i>\(\mathbf B\) &mdash; the rulers</li>
     </ul>
     <div class="note" style="margin-top:26px">
@@ -539,33 +539,33 @@ window.MathJax={
 
     <h3>The density</h3>
     <p>The von Mises&ndash;Fisher distribution, written vMF, has density</p>
-    \[ f(\mathbf u)=c_k(\kappa)\,\exp\bigl(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u\bigr),\qquad \mathbf u\in S^{k-1}. \]
+    \[ f(\mathbf u)=c_k(\kappa)\,\exp\bigl(\kappa\,\mu^{\!\top}\mathbf u\bigr),\qquad \mathbf u\in S^{k-1}. \]
     <p>It has only two parameters.</p>
     <div class="words">
       <span class="tag">The two parameters</span>
       <dl>
-        <dt>\(\boldsymbol\mu\)</dt><dd>the <strong>mean direction</strong>. A unit vector, \(\|\boldsymbol\mu\|=1\). This is where the distribution is centred &mdash; the peak, the most likely direction.</dd>
-        <dt>\(\kappa\ge0\)</dt><dd>the <strong>concentration</strong>. A single positive number saying how tightly the data cluster around \(\boldsymbol\mu\). It is like the reciprocal of a variance: large \(\kappa\) means small spread.</dd>
+        <dt>\(\mu\)</dt><dd>the <strong>mean direction</strong>. A unit vector, \(\|\mu\|=1\). This is where the distribution is centred &mdash; the peak, the most likely direction.</dd>
+        <dt>\(\kappa\ge0\)</dt><dd>the <strong>concentration</strong>. A single positive number saying how tightly the data cluster around \(\mu\). It is like the reciprocal of a variance: large \(\kappa\) means small spread.</dd>
         <dt>\(c_k(\kappa)\)</dt><dd>the normalising constant. It only makes the density integrate to one; it carries no shape information. For \(k=3\) it equals \(\kappa/(4\pi\sinh\kappa)\).</dd>
       </dl>
     </div>
 
     <h4>Reading the exponent</h4>
-    <p>The only place \(\mathbf u\) appears is in \(\boldsymbol\mu^{\!\top}\mathbf u\). This is the dot product of two unit vectors, so</p>
-    \[ \boldsymbol\mu^{\!\top}\mathbf u=\cos\vartheta , \]
-    <p>where \(\vartheta\) is the angle between \(\mathbf u\) and \(\boldsymbol\mu\). So the density is</p>
+    <p>The only place \(\mathbf u\) appears is in \(\mu^{\!\top}\mathbf u\). This is the dot product of two unit vectors, so</p>
+    \[ \mu^{\!\top}\mathbf u=\cos\vartheta , \]
+    <p>where \(\vartheta\) is the angle between \(\mathbf u\) and \(\mu\). So the density is</p>
     \[ f(\mathbf u)\propto e^{\kappa\cos\vartheta}. \]
     <p>Everything now follows from this one formula:</p>
     <ul>
-      <li>\(\vartheta=0\) (you are at \(\boldsymbol\mu\)): \(\cos\vartheta=1\), the density is at its largest. So \(\boldsymbol\mu\) is the mode.</li>
+      <li>\(\vartheta=0\) (you are at \(\mu\)): \(\cos\vartheta=1\), the density is at its largest. So \(\mu\) is the mode.</li>
       <li>\(\vartheta=90^\circ\): \(\cos\vartheta=0\), the density equals the uniform level.</li>
       <li>\(\vartheta=180^\circ\) (the opposite point): \(\cos\vartheta=-1\), the density is at its smallest.</li>
       <li>\(\kappa=0\): the exponent is 0 everywhere, so the density is flat. vMF with \(\kappa=0\) is the <strong>uniform</strong> distribution on the sphere.</li>
-      <li>\(\kappa\) large: \(e^{\kappa\cos\vartheta}\) falls away very fast as \(\vartheta\) grows, so the data hug \(\boldsymbol\mu\).</li>
+      <li>\(\kappa\) large: \(e^{\kappa\cos\vartheta}\) falls away very fast as \(\vartheta\) grows, so the data hug \(\mu\).</li>
     </ul>
 
     <h4>How much spread, in numbers</h4>
-    <p>When \(\kappa\) is large, a useful rule of thumb is that the typical angular distance from \(\boldsymbol\mu\) is about \(1/\sqrt\kappa\) radians. So \(\kappa=100\) gives a cloud of radius roughly \(0.1\) radians \(\approx 6^\circ\). We will make this precise in Part 7.</p>
+    <p>When \(\kappa\) is large, a useful rule of thumb is that the typical angular distance from \(\mu\) is about \(1/\sqrt\kappa\) radians. So \(\kappa=100\) gives a cloud of radius roughly \(0.1\) radians \(\approx 6^\circ\). We will make this precise in Part 7.</p>
   </div>
 
   <figure class="plate">
@@ -583,19 +583,19 @@ window.MathJax={
       <div class="plot" id="fig4live" style="height:380px"></div>
       <div class="hint">drag to rotate the globe</div>
     </div>
-    <figcaption>Top row: 300 simulated points for three values of \(\kappa\), seen looking straight down the <b class="c-mu">\(\boldsymbol\mu\)</b> axis, with the black curves showing where the density takes 90%, 70%, 50%, 30% and 10% of its peak value. As \(\kappa\) grows the cloud shrinks. Note that the axis scale is different in each panel, otherwise the third panel would be a single dot. Bottom: the same sample drawn on the globe, with \(\kappa\) set by the slider.</figcaption>
+    <figcaption>Top row: 300 simulated points for three values of \(\kappa\), seen looking straight down the <b class="c-mu">\(\mu\)</b> axis, with the black curves showing where the density takes 90%, 70%, 50%, 30% and 10% of its peak value. As \(\kappa\) grows the cloud shrinks. Note that the axis scale is different in each panel, otherwise the third panel would be a single dot. Bottom: the same sample drawn on the globe, with \(\kappa\) set by the slider.</figcaption>
   </figure>
 
   <div class="col">
     <h3>The limitation: vMF can only make round clouds</h3>
     <p>Look again at the contours in Figure 4. They are <strong>circles</strong>. Always. This is not an accident of the picture; it is forced by the formula.</p>
-    <p>Here is the argument in three lines. The density depends on \(\mathbf u\) only through the angle \(\vartheta\). Two points at the same angle from \(\boldsymbol\mu\) therefore get exactly the same density, no matter which side of \(\boldsymbol\mu\) they are on. The set of points at a fixed angle from \(\boldsymbol\mu\) is a circle around \(\boldsymbol\mu\). So the contours are circles.</p>
-    <p>The technical name for this property is <strong>rotational symmetry</strong> about \(\boldsymbol\mu\): if you spin the sphere around the \(\boldsymbol\mu\) axis, the density does not change at all.</p>
+    <p>Here is the argument in three lines. The density depends on \(\mathbf u\) only through the angle \(\vartheta\). Two points at the same angle from \(\mu\) therefore get exactly the same density, no matter which side of \(\mu\) they are on. The set of points at a fixed angle from \(\mu\) is a circle around \(\mu\). So the contours are circles.</p>
+    <p>The technical name for this property is <strong>rotational symmetry</strong> about \(\mu\): if you spin the sphere around the \(\mu\) axis, the density does not change at all.</p>
 
     <h4>A numerical demonstration</h4>
-    <p>Let \(\boldsymbol\mu=(0,0,1)\) and \(\kappa=10\). Take two points that are the same distance from \(\boldsymbol\mu\) but in different tangent directions:</p>
+    <p>Let \(\mu=(0,0,1)\) and \(\kappa=10\). Take two points that are the same distance from \(\mu\) but in different tangent directions:</p>
     \[ \mathbf u_a=(0.3,\;0,\;0.9539),\qquad \mathbf u_b=(0,\;0.3,\;0.9539). \]
-    <p>Both have \(\boldsymbol\mu^{\!\top}\mathbf u=0.9539\), so both have exponent \(10\times0.9539=9.539\). The vMF density is <em>identical</em> at the two points. vMF has no way to say "the data spread further in the first direction than in the second".</p>
+    <p>Both have \(\mu^{\!\top}\mathbf u=0.9539\), so both have exponent \(10\times0.9539=9.539\). The vMF density is <em>identical</em> at the two points. vMF has no way to say "the data spread further in the first direction than in the second".</p>
 
     <div class="note warm">
       <span class="tag">Why this matters for compositions</span>
@@ -613,7 +613,7 @@ window.MathJax={
         <div><div class="plot" id="fig5b"></div><div class="panel-t">Kent &nbsp;(&kappa; = 60, &beta; = 24)</div></div>
       </div>
     </div>
-    <figcaption>Both panels look straight down the <b class="c-mu">\(\boldsymbol\mu\)</b> axis and use the same scale. Left: vMF contours are perfect circles; the spread is the same in every direction. Right: Kent contours are ellipses; the cloud reaches further along <b class="c-g2">\(\boldsymbol\gamma_2\)</b> than along <b class="c-g3">\(\boldsymbol\gamma_3\)</b>. Everything else in this tutorial is about how to describe, estimate and interpret that ellipse.</figcaption>
+    <figcaption>Both panels look straight down the <b class="c-mu">\(\mu\)</b> axis and use the same scale. Left: vMF contours are perfect circles; the spread is the same in every direction. Right: Kent contours are ellipses; the cloud reaches further along <b class="c-g2">\(\gamma_2\)</b> than along <b class="c-g3">\(\gamma_3\)</b>. Everything else in this tutorial is about how to describe, estimate and interpret that ellipse.</figcaption>
   </figure>
 </section>
 
@@ -625,52 +625,52 @@ window.MathJax={
 
     <h3>The density</h3>
     <p>For \(\mathbf u\in S^{2}\) (the ordinary sphere, \(k=3\)) the Kent density is</p>
-    \[ f(\mathbf u)=\frac{1}{c(\kappa,\beta)}\, \exp\Bigl\{\underbrace{\kappa\,\boldsymbol\mu^{\!\top}\mathbf u}_{\text{the vMF part}} \;+\;\underbrace{\beta\bigl[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\bigr]}_{\text{the new part}}\Bigr\}. \]
+    \[ f(\mathbf u)=\frac{1}{c(\kappa,\beta)}\, \exp\Bigl\{\underbrace{\kappa\,\mu^{\!\top}\mathbf u}_{\text{the vMF part}} \;+\;\underbrace{\beta\bigl[(\gamma_2^{\!\top}\mathbf u)^2-(\gamma_3^{\!\top}\mathbf u)^2\bigr]}_{\text{the new part}}\Bigr\}. \]
     <p>Set \(\beta=0\) and the new part disappears: you are back to vMF exactly. So Kent <em>contains</em> vMF as a special case. It can never fit worse.</p>
 
     <h3>Every term, one at a time</h3>
 
-    <h4>\(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u\) &nbsp;&mdash;&nbsp; the pull toward the centre</h4>
-    <p><em>What it is:</em> a number times the cosine of the angle to \(\boldsymbol\mu\).<br>
-    <em>Its job:</em> it makes the density large near \(\boldsymbol\mu\) and small far away.<br>
+    <h4>\(\kappa\,\mu^{\!\top}\mathbf u\) &nbsp;&mdash;&nbsp; the pull toward the centre</h4>
+    <p><em>What it is:</em> a number times the cosine of the angle to \(\mu\).<br>
+    <em>Its job:</em> it makes the density large near \(\mu\) and small far away.<br>
     <em>Statistically:</em> it fixes the location and the overall tightness.<br>
-    <em>Geometrically:</em> on its own it would produce circular contours around \(\boldsymbol\mu\).<br>
-    <em>If \(\kappa\) grows:</em> the cloud shrinks toward \(\boldsymbol\mu\) in all directions at once.</p>
+    <em>Geometrically:</em> on its own it would produce circular contours around \(\mu\).<br>
+    <em>If \(\kappa\) grows:</em> the cloud shrinks toward \(\mu\) in all directions at once.</p>
 
-    <h4>\((\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\) &nbsp;&mdash;&nbsp; how far along the first axis</h4>
-    <p>\(\boldsymbol\gamma_2\) is a unit vector perpendicular to \(\boldsymbol\mu\). The dot product \(\boldsymbol\gamma_2^{\!\top}\mathbf u\) measures how far \(\mathbf u\) has moved away from \(\boldsymbol\mu\) <em>in the \(\boldsymbol\gamma_2\) direction</em>. It is a coordinate. Squaring it removes the sign, so moving left and moving right count the same. This is why the ellipse is symmetric.</p>
+    <h4>\((\gamma_2^{\!\top}\mathbf u)^2\) &nbsp;&mdash;&nbsp; how far along the first axis</h4>
+    <p>\(\gamma_2\) is a unit vector perpendicular to \(\mu\). The dot product \(\gamma_2^{\!\top}\mathbf u\) measures how far \(\mathbf u\) has moved away from \(\mu\) <em>in the \(\gamma_2\) direction</em>. It is a coordinate. Squaring it removes the sign, so moving left and moving right count the same. This is why the ellipse is symmetric.</p>
 
-    <h4>\((\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\) &nbsp;&mdash;&nbsp; how far along the second axis</h4>
-    <p>The same thing, for the other direction. \(\boldsymbol\gamma_3\) is perpendicular to both \(\boldsymbol\mu\) and \(\boldsymbol\gamma_2\).</p>
+    <h4>\((\gamma_3^{\!\top}\mathbf u)^2\) &nbsp;&mdash;&nbsp; how far along the second axis</h4>
+    <p>The same thing, for the other direction. \(\gamma_3\) is perpendicular to both \(\mu\) and \(\gamma_2\).</p>
 
-    <h4>\(\beta\bigl[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\bigr]\) &nbsp;&mdash;&nbsp; the difference</h4>
-    <p>This is the heart of Kent. Notice the minus sign. The term <em>adds</em> density when \(\mathbf u\) leans toward \(\boldsymbol\gamma_2\) and <em>subtracts</em> density when \(\mathbf u\) leans toward \(\boldsymbol\gamma_3\). So the distribution becomes generous in one direction and stingy in the other. That stretches the cloud into an ellipse.</p>
-    <p>Why a difference and not two separate numbers? Because on the sphere \((\boldsymbol\mu^{\!\top}\mathbf u)^2+(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2+(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2=1\) always. Adding the same constant to all three squared terms changes nothing except the normalising constant. So only the <em>difference</em> between the two tangent directions is identifiable. Writing the coefficients as \(\beta_2=\beta\) and \(\beta_3=-\beta\), which sum to zero, is exactly the standard way of removing that redundancy.</p>
+    <h4>\(\beta\bigl[(\gamma_2^{\!\top}\mathbf u)^2-(\gamma_3^{\!\top}\mathbf u)^2\bigr]\) &nbsp;&mdash;&nbsp; the difference</h4>
+    <p>This is the heart of Kent. Notice the minus sign. The term <em>adds</em> density when \(\mathbf u\) leans toward \(\gamma_2\) and <em>subtracts</em> density when \(\mathbf u\) leans toward \(\gamma_3\). So the distribution becomes generous in one direction and stingy in the other. That stretches the cloud into an ellipse.</p>
+    <p>Why a difference and not two separate numbers? Because on the sphere \((\mu^{\!\top}\mathbf u)^2+(\gamma_2^{\!\top}\mathbf u)^2+(\gamma_3^{\!\top}\mathbf u)^2=1\) always. Adding the same constant to all three squared terms changes nothing except the normalising constant. So only the <em>difference</em> between the two tangent directions is identifiable. Writing the coefficients as \(\beta_2=\beta\) and \(\beta_3=-\beta\), which sum to zero, is exactly the standard way of removing that redundancy.</p>
 
     <h4>\(c(\kappa,\beta)\) &nbsp;&mdash;&nbsp; the normalising constant</h4>
-    <p>The number that makes the density integrate to 1 over the sphere. It does not depend on \(\boldsymbol\mu,\boldsymbol\gamma_2,\boldsymbol\gamma_3\) at all, because rotating the sphere cannot change a total. For \(k=3\) it is an infinite series of Bessel functions,</p>
+    <p>The number that makes the density integrate to 1 over the sphere. It does not depend on \(\mu,\gamma_2,\gamma_3\) at all, because rotating the sphere cannot change a total. For \(k=3\) it is an infinite series of Bessel functions,</p>
     \[ c(\kappa,\beta)=2\pi\sum_{j\ge0}\frac{\Gamma(j+\tfrac12)}{\Gamma(j+1)}\,\beta^{2j}\Bigl(\frac{2}{\kappa}\Bigr)^{2j+\frac12} I_{2j+\frac12}(\kappa), \]
     <p>which a computer evaluates in a few terms. You do not need it to understand the shape, and you do not need it for contours or simulation, because those only use <em>ratios</em> of densities and the constant cancels.</p>
 
     <h3>A numerical example</h3>
-    <p>Take \(\boldsymbol\mu=(0,0,1)\), \(\boldsymbol\gamma_2=(1,0,0)\), \(\boldsymbol\gamma_3=(0,1,0)\), \(\kappa=10\), \(\beta=3\). Use the same two points as in Part 4:</p>
+    <p>Take \(\mu=(0,0,1)\), \(\gamma_2=(1,0,0)\), \(\gamma_3=(0,1,0)\), \(\kappa=10\), \(\beta=3\). Use the same two points as in Part 4:</p>
     <div class="scroll">
       <table>
         <thead><tr><th></th><th>\(\mathbf u_a=(0.3,0,0.9539)\)</th><th>\(\mathbf u_b=(0,0.3,0.9539)\)</th></tr></thead>
         <tbody>
-          <tr><td>\(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u\)</td><td>\(10\times0.9539=9.539\)</td><td>\(10\times0.9539=9.539\)</td></tr>
-          <tr><td>\((\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\)</td><td>\(0.3^2=0.09\)</td><td>\(0^2=0\)</td></tr>
-          <tr><td>\((\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\)</td><td>\(0^2=0\)</td><td>\(0.3^2=0.09\)</td></tr>
+          <tr><td>\(\kappa\,\mu^{\!\top}\mathbf u\)</td><td>\(10\times0.9539=9.539\)</td><td>\(10\times0.9539=9.539\)</td></tr>
+          <tr><td>\((\gamma_2^{\!\top}\mathbf u)^2\)</td><td>\(0.3^2=0.09\)</td><td>\(0^2=0\)</td></tr>
+          <tr><td>\((\gamma_3^{\!\top}\mathbf u)^2\)</td><td>\(0^2=0\)</td><td>\(0.3^2=0.09\)</td></tr>
           <tr><td>\(\beta[\,\cdot-\cdot\,]\)</td><td>\(3(0.09-0)=+0.27\)</td><td>\(3(0-0.09)=-0.27\)</td></tr>
           <tr><td><strong>total exponent</strong></td><td><strong>9.809</strong></td><td><strong>9.269</strong></td></tr>
         </tbody>
       </table>
     </div>
-    <p>The ratio of the two densities is \(e^{9.809-9.269}=e^{0.54}\approx1.72\). The point lying in the \(\boldsymbol\gamma_2\) direction is 1.72 times more likely than the point lying the same distance away in the \(\boldsymbol\gamma_3\) direction. Under vMF that ratio would have been exactly 1. That single number is the whole difference between the two models.</p>
+    <p>The ratio of the two densities is \(e^{9.809-9.269}=e^{0.54}\approx1.72\). The point lying in the \(\gamma_2\) direction is 1.72 times more likely than the point lying the same distance away in the \(\gamma_3\) direction. Under vMF that ratio would have been exactly 1. That single number is the whole difference between the two models.</p>
 
     <div class="note">
       <span class="tag">Where Kent sits in the bigger family</span>
-      <p>Both vMF and Kent belong to the <em>Fisher&ndash;Bingham</em> family, \(f(\mathbf u)\propto\exp(\boldsymbol\theta^{\!\top}\mathbf u+\mathbf u^{\!\top}A\mathbf u)\). You get Kent by choosing \(\boldsymbol\theta=\kappa\boldsymbol\mu\) and \(A=\boldsymbol\Gamma\,\mathrm{diag}(0,\beta,-\beta)\,\boldsymbol\Gamma^{\!\top}\), where \(\boldsymbol\Gamma=[\boldsymbol\mu,\boldsymbol\gamma_2,\boldsymbol\gamma_3]\). The essential restriction is that \(\boldsymbol\mu\) is an eigenvector of \(A\): the linear pull and the axes of the quadratic part point in compatible directions. That is what keeps the density unimodal, symmetric about \(\boldsymbol\mu\), and elliptical.</p>
+      <p>Both vMF and Kent belong to the <em>Fisher&ndash;Bingham</em> family, \(f(\mathbf u)\propto\exp(\theta^{\!\top}\mathbf u+\mathbf u^{\!\top}A\mathbf u)\). You get Kent by choosing \(\theta=\kappa\mu\) and \(A=\Gamma\,\mathrm{diag}(0,\beta,-\beta)\,\Gamma^{\!\top}\), where \(\Gamma=[\mu,\gamma_2,\gamma_3]\). The essential restriction is that \(\mu\) is an eigenvector of \(A\): the linear pull and the axes of the quadratic part point in compatible directions. That is what keeps the density unimodal, symmetric about \(\mu\), and elliptical.</p>
     </div>
   </div>
 </section>
@@ -680,28 +680,28 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 6</div>
     <h2>Every parameter, one by one</h2>
-    <p class="lede">Five objects: \(\boldsymbol\mu\), \(\boldsymbol\gamma_2\), \(\boldsymbol\gamma_3\), \(\kappa\), \(\beta\). Two of them are numbers; three are directions.</p>
+    <p class="lede">Five objects: \(\mu\), \(\gamma_2\), \(\gamma_3\), \(\kappa\), \(\beta\). Two of them are numbers; three are directions.</p>
 
-    <h3>\(\boldsymbol\mu\) &mdash; the mean direction</h3>
-    <p>A unit vector. It says <em>where</em> the cloud of data sits on the sphere. It is the mode (the highest point of the density) and also the mean direction (the average of the data, normalised). Change \(\boldsymbol\mu\) and the whole cloud slides to a different place on the globe; its shape does not change.</p>
+    <h3>\(\mu\) &mdash; the mean direction</h3>
+    <p>A unit vector. It says <em>where</em> the cloud of data sits on the sphere. It is the mode (the highest point of the density) and also the mean direction (the average of the data, normalised). Change \(\mu\) and the whole cloud slides to a different place on the globe; its shape does not change.</p>
 
-    <h3>\(\boldsymbol\gamma_2\) &mdash; the long axis</h3>
-    <p>A unit vector perpendicular to \(\boldsymbol\mu\). It points along the direction in which the data spread the <em>most</em>. Changing \(\boldsymbol\gamma_2\) rotates the ellipse around the \(\boldsymbol\mu\) axis, like turning a steering wheel. The cloud stays in the same place and keeps the same shape; only its orientation changes.</p>
+    <h3>\(\gamma_2\) &mdash; the long axis</h3>
+    <p>A unit vector perpendicular to \(\mu\). It points along the direction in which the data spread the <em>most</em>. Changing \(\gamma_2\) rotates the ellipse around the \(\mu\) axis, like turning a steering wheel. The cloud stays in the same place and keeps the same shape; only its orientation changes.</p>
 
-    <h3>\(\boldsymbol\gamma_3\) &mdash; the short axis</h3>
-    <p>A unit vector perpendicular to \(\boldsymbol\mu\) <em>and</em> to \(\boldsymbol\gamma_2\). The direction of <em>least</em> spread. In three dimensions \(\boldsymbol\gamma_3\) is not really a free choice: once you know \(\boldsymbol\mu\) and \(\boldsymbol\gamma_2\), the only remaining perpendicular direction is \(\pm\boldsymbol\gamma_3\).</p>
+    <h3>\(\gamma_3\) &mdash; the short axis</h3>
+    <p>A unit vector perpendicular to \(\mu\) <em>and</em> to \(\gamma_2\). The direction of <em>least</em> spread. In three dimensions \(\gamma_3\) is not really a free choice: once you know \(\mu\) and \(\gamma_2\), the only remaining perpendicular direction is \(\pm\gamma_3\).</p>
 
     <h3>The orthogonality constraints</h3>
-    \[ \boldsymbol\mu^{\!\top}\boldsymbol\gamma_2=0,\qquad \boldsymbol\mu^{\!\top}\boldsymbol\gamma_3=0,\qquad \boldsymbol\gamma_2^{\!\top}\boldsymbol\gamma_3=0 . \]
+    \[ \mu^{\!\top}\gamma_2=0,\qquad \mu^{\!\top}\gamma_3=0,\qquad \gamma_2^{\!\top}\gamma_3=0 . \]
     <p>A dot product of two unit vectors is zero exactly when they are at 90&deg;. So these three equations say: all three vectors are mutually perpendicular. They form a right-angled frame, like the corner of a room.</p>
     <p>Why must this be true?</p>
     <ul>
-      <li><strong>\(\boldsymbol\mu^{\!\top}\boldsymbol\gamma_2=0\) and \(\boldsymbol\mu^{\!\top}\boldsymbol\gamma_3=0\).</strong> \(\boldsymbol\gamma_2\) and \(\boldsymbol\gamma_3\) describe how the data spread <em>around</em> \(\boldsymbol\mu\). "Around" means sideways, not along. A direction with a component along \(\boldsymbol\mu\) would be partly describing "closer to or further from the centre", which is already the job of \(\kappa\). Perpendicular means the jobs do not overlap.</li>
-      <li><strong>\(\boldsymbol\gamma_2^{\!\top}\boldsymbol\gamma_3=0\).</strong> The two axes of an ellipse are always at right angles. If \(\boldsymbol\gamma_2\) and \(\boldsymbol\gamma_3\) were at, say, 60&deg;, they would partly measure the same thing and the two numbers \(\lambda_2,\lambda_3\) would not separate cleanly into "most spread" and "least spread".</li>
+      <li><strong>\(\mu^{\!\top}\gamma_2=0\) and \(\mu^{\!\top}\gamma_3=0\).</strong> \(\gamma_2\) and \(\gamma_3\) describe how the data spread <em>around</em> \(\mu\). "Around" means sideways, not along. A direction with a component along \(\mu\) would be partly describing "closer to or further from the centre", which is already the job of \(\kappa\). Perpendicular means the jobs do not overlap.</li>
+      <li><strong>\(\gamma_2^{\!\top}\gamma_3=0\).</strong> The two axes of an ellipse are always at right angles. If \(\gamma_2\) and \(\gamma_3\) were at, say, 60&deg;, they would partly measure the same thing and the two numbers \(\lambda_2,\lambda_3\) would not separate cleanly into "most spread" and "least spread".</li>
     </ul>
     <p>Put the three vectors side by side as columns of a matrix:</p>
-    \[ \boldsymbol\Gamma=[\,\boldsymbol\mu\;\;\boldsymbol\gamma_2\;\;\boldsymbol\gamma_3\,],\qquad \boldsymbol\Gamma^{\!\top}\boldsymbol\Gamma=I_3 . \]
-    <p>A matrix with this property is called <strong>orthogonal</strong>. It represents a rotation of the coordinate axes. So the three constraints together are just saying: \(\boldsymbol\Gamma\) is a rotation that takes the standard axes to the natural axes of the data.</p>
+    \[ \Gamma=[\,\mu\;\;\gamma_2\;\;\gamma_3\,],\qquad \Gamma^{\!\top}\Gamma=I_3 . \]
+    <p>A matrix with this property is called <strong>orthogonal</strong>. It represents a rotation of the coordinate axes. So the three constraints together are just saying: \(\Gamma\) is a rotation that takes the standard axes to the natural axes of the data.</p>
 
     <h3>\(\kappa\) &mdash; concentration</h3>
     <p>How tightly the data cluster. Large \(\kappa\) means a small, tight cloud. Small \(\kappa\) means a big, loose cloud. \(\kappa\) alone does not change the <em>shape</em> of the ellipse, only its size.</p>
@@ -711,17 +711,17 @@ window.MathJax={
 
     <h3>The constraint \(0\le 2\beta<\kappa\)</h3>
     <p>This one looks technical but has a clear geometric reason. In Part 7 we will show that the variance of the data along each axis is</p>
-    \[ \lambda_2=\frac{1}{\kappa-2\beta}\quad(\text{along }\boldsymbol\gamma_2), \qquad \lambda_3=\frac{1}{\kappa+2\beta}\quad(\text{along }\boldsymbol\gamma_3). \]
+    \[ \lambda_2=\frac{1}{\kappa-2\beta}\quad(\text{along }\gamma_2), \qquad \lambda_3=\frac{1}{\kappa+2\beta}\quad(\text{along }\gamma_3). \]
     <p>Now read the condition off these formulas:</p>
     <ul>
       <li>If \(2\beta<\kappa\), then \(\kappa-2\beta>0\) and \(\lambda_2\) is a positive, finite variance. Good.</li>
-      <li>If \(2\beta=\kappa\), then \(\lambda_2=\infty\). The cloud is infinitely long in the \(\boldsymbol\gamma_2\) direction &mdash; it stops being a bump around \(\boldsymbol\mu\).</li>
-      <li>If \(2\beta>\kappa\), then \(\lambda_2\) is negative, which is impossible for a variance. What actually happens is that \(\boldsymbol\mu\) stops being the peak: the density develops two peaks on either side of \(\boldsymbol\mu\) along \(\boldsymbol\gamma_2\), like a saddle. The model is still a valid density, but it is no longer the "one elliptical bump" that we wanted.</li>
-      <li>\(\beta\ge0\) is a labelling convention, not a real restriction. If \(\beta\) were negative, the roles of \(\boldsymbol\gamma_2\) and \(\boldsymbol\gamma_3\) would simply swap. We fix \(\beta\ge0\) so that \(\boldsymbol\gamma_2\) always means "long axis".</li>
+      <li>If \(2\beta=\kappa\), then \(\lambda_2=\infty\). The cloud is infinitely long in the \(\gamma_2\) direction &mdash; it stops being a bump around \(\mu\).</li>
+      <li>If \(2\beta>\kappa\), then \(\lambda_2\) is negative, which is impossible for a variance. What actually happens is that \(\mu\) stops being the peak: the density develops two peaks on either side of \(\mu\) along \(\gamma_2\), like a saddle. The model is still a valid density, but it is no longer the "one elliptical bump" that we wanted.</li>
+      <li>\(\beta\ge0\) is a labelling convention, not a real restriction. If \(\beta\) were negative, the roles of \(\gamma_2\) and \(\gamma_3\) would simply swap. We fix \(\beta\ge0\) so that \(\gamma_2\) always means "long axis".</li>
     </ul>
     <p>Two useful consequences:</p>
     \[ \kappa=\frac12\Bigl(\frac1{\lambda_2}+\frac1{\lambda_3}\Bigr),\qquad \beta=\frac14\Bigl(\frac1{\lambda_3}-\frac1{\lambda_2}\Bigr). \]
-    <p>These are how we will turn estimated variances into estimated parameters in Part 15. Check the direction of the logic: \(\lambda_2>\lambda_3\) (more spread along \(\boldsymbol\gamma_2\)) gives \(1/\lambda_3>1/\lambda_2\), hence \(\beta>0\). Consistent.</p>
+    <p>These are how we will turn estimated variances into estimated parameters in Part 15. Check the direction of the logic: \(\lambda_2>\lambda_3\) (more spread along \(\gamma_2\)) gives \(1/\lambda_3>1/\lambda_2\), hence \(\beta>0\). Consistent.</p>
     <p>The ellipse's semi-axes are proportional to \(\sqrt{\lambda_2}\) and \(\sqrt{\lambda_3}\), so the shape of the ellipse &mdash; how oval it is &mdash; is measured by</p>
     \[ \frac{\text{long semi-axis}}{\text{short semi-axis}}=\sqrt{\frac{\lambda_2}{\lambda_3}}=\sqrt{\frac{\kappa+2\beta}{\kappa-2\beta}} . \]
     <p>With \(\kappa=60,\beta=24\): the ratio is \(\sqrt{108/12}=\sqrt9=3\). The ellipse is three times longer than it is wide.</p>
@@ -747,7 +747,7 @@ window.MathJax={
         </tbody></table>
       </div>
     </div>
-    <figcaption>The second slider is shown as a fraction of its maximum, because the legal range of \(\beta\) depends on \(\kappa\): the condition is \(\beta&lt;\kappa/2\). Slide \(\beta\) to 0 and the ellipse becomes a circle &mdash; that is vMF. Slide \(\beta\) to the right and the ellipse stretches along <b class="c-g2">\(\boldsymbol\gamma_2\)</b>. Slide \(\kappa\) and the whole shape shrinks or grows without changing how oval it is, as long as you leave the \(\beta\) slider alone. The left panel keeps a fixed scale so you can see the size change; the right panel shows the same distribution on the globe.</figcaption>
+    <figcaption>The second slider is shown as a fraction of its maximum, because the legal range of \(\beta\) depends on \(\kappa\): the condition is \(\beta&lt;\kappa/2\). Slide \(\beta\) to 0 and the ellipse becomes a circle &mdash; that is vMF. Slide \(\beta\) to the right and the ellipse stretches along <b class="c-g2">\(\gamma_2\)</b>. Slide \(\kappa\) and the whole shape shrinks or grows without changing how oval it is, as long as you leave the \(\beta\) slider alone. The left panel keeps a fixed scale so you can see the size change; the right panel shows the same distribution on the globe.</figcaption>
   </figure>
 </section>
 
@@ -759,24 +759,24 @@ window.MathJax={
     <p class="lede">The sphere, the mean direction, the flat plane that touches it, and the ellipse drawn on that plane.</p>
 
     <h3>What is the tangent plane?</h3>
-    <p>Put a sphere on a table. The table touches the sphere at exactly one point. That table is the <strong>tangent plane</strong> at that point. Formally, the tangent plane (or tangent space) at \(\boldsymbol\mu\) is</p>
-    \[ T_{\boldsymbol\mu}=\{\mathbf v\in\mathbb R^{k}:\boldsymbol\mu^{\!\top}\mathbf v=0\}, \]
-    <p>the set of all directions perpendicular to \(\boldsymbol\mu\). For \(k=3\) it is an ordinary flat plane, and it is two-dimensional. In general it has \(k-1\) dimensions &mdash; one less than the space, because the direction "straight up along \(\boldsymbol\mu\)" has been removed.</p>
-    <p>Why do we care? Because near \(\boldsymbol\mu\), the curved sphere and the flat plane are almost the same. If the data are concentrated (large \(\kappa\)), the cloud occupies only a small patch, and on a small patch the Earth looks flat. This lets us borrow everything we know about the multivariate normal distribution.</p>
+    <p>Put a sphere on a table. The table touches the sphere at exactly one point. That table is the <strong>tangent plane</strong> at that point. Formally, the tangent plane (or tangent space) at \(\mu\) is</p>
+    \[ T_{\mu}=\{\mathbf v\in\mathbb R^{k}:\mu^{\!\top}\mathbf v=0\}, \]
+    <p>the set of all directions perpendicular to \(\mu\). For \(k=3\) it is an ordinary flat plane, and it is two-dimensional. In general it has \(k-1\) dimensions &mdash; one less than the space, because the direction "straight up along \(\mu\)" has been removed.</p>
+    <p>Why do we care? Because near \(\mu\), the curved sphere and the flat plane are almost the same. If the data are concentrated (large \(\kappa\)), the cloud occupies only a small patch, and on a small patch the Earth looks flat. This lets us borrow everything we know about the multivariate normal distribution.</p>
 
     <h3>Tangent coordinates</h3>
     <p>For an observation \(\mathbf u\), define its <strong>tangent part</strong></p>
-    \[ \mathbf v=(I-\boldsymbol\mu\boldsymbol\mu^{\!\top})\mathbf u . \]
-    <p>In words: take \(\mathbf u\) and throw away the piece that points along \(\boldsymbol\mu\). What is left is the sideways displacement. It lies in the tangent plane. Then the two numbers</p>
-    \[ v_2=\boldsymbol\gamma_2^{\!\top}\mathbf u,\qquad v_3=\boldsymbol\gamma_3^{\!\top}\mathbf u \]
-    <p>are the coordinates of that displacement along the two axes. Notice \(\boldsymbol\gamma_m^{\!\top}\mathbf v=\boldsymbol\gamma_m^{\!\top}\mathbf u\) because \(\boldsymbol\gamma_m\) is perpendicular to \(\boldsymbol\mu\) &mdash; so you can use \(\mathbf u\) directly. These are exactly the quantities that appear in the Kent density.</p>
+    \[ \mathbf v=(I-\mu\mu^{\!\top})\mathbf u . \]
+    <p>In words: take \(\mathbf u\) and throw away the piece that points along \(\mu\). What is left is the sideways displacement. It lies in the tangent plane. Then the two numbers</p>
+    \[ v_2=\gamma_2^{\!\top}\mathbf u,\qquad v_3=\gamma_3^{\!\top}\mathbf u \]
+    <p>are the coordinates of that displacement along the two axes. Notice \(\gamma_m^{\!\top}\mathbf v=\gamma_m^{\!\top}\mathbf u\) because \(\gamma_m\) is perpendicular to \(\mu\) &mdash; so you can use \(\mathbf u\) directly. These are exactly the quantities that appear in the Kent density.</p>
 
     <h3>The key approximation</h3>
-    <p>When \(\kappa\) is large, write \(\vartheta\) for the angle from \(\boldsymbol\mu\). A second-order Taylor expansion gives \(\cos\vartheta\approx1-\tfrac12(v_2^2+v_3^2)\), so the Kent exponent becomes</p>
+    <p>When \(\kappa\) is large, write \(\vartheta\) for the angle from \(\mu\). A second-order Taylor expansion gives \(\cos\vartheta\approx1-\tfrac12(v_2^2+v_3^2)\), so the Kent exponent becomes</p>
     \[ \kappa\cos\vartheta+\beta(v_2^2-v_3^2) \;\approx\; \kappa-\tfrac12\bigl[(\kappa-2\beta)v_2^2+(\kappa+2\beta)v_3^2\bigr]. \]
     <p>Compare this with the exponent of a two-dimensional normal density with independent components, \(-\tfrac12\bigl(v_2^2/\lambda_2+v_3^2/\lambda_3\bigr)\). They match exactly when</p>
     \[ \boxed{\;\lambda_2=\frac1{\kappa-2\beta},\qquad \lambda_3=\frac1{\kappa+2\beta}\;} \]
-    <p>So: <strong>near its centre, a Kent distribution is a two-dimensional normal distribution drawn on the tangent plane</strong>, with variance \(\lambda_2\) along \(\boldsymbol\gamma_2\) and variance \(\lambda_3\) along \(\boldsymbol\gamma_3\). This is the single most useful fact in the whole subject. It is where the \(\lambda\)'s come from, it explains the constraint on \(\beta\), and it is what makes estimation easy.</p>
+    <p>So: <strong>near its centre, a Kent distribution is a two-dimensional normal distribution drawn on the tangent plane</strong>, with variance \(\lambda_2\) along \(\gamma_2\) and variance \(\lambda_3\) along \(\gamma_3\). This is the single most useful fact in the whole subject. It is where the \(\lambda\)'s come from, it explains the constraint on \(\beta\), and it is what makes estimation easy.</p>
     <p>For vMF, set \(\beta=0\): both variances are \(1/\kappa\). Same in every direction. Round. Exactly as we saw in Figure 4.</p>
   </div>
 
@@ -792,19 +792,19 @@ window.MathJax={
       </div>
     </div>
     <div class="plate-body"><div class="plot tall" id="fig7"></div><div class="hint">drag to rotate &middot; try looking straight down the orange arrow</div></div>
-    <figcaption>The <b class="c-mu">orange arrow</b> is \(\boldsymbol\mu\), here the square root of the composition \((0.50,0.30,0.20)\). It pierces the sphere at the centre of the data. The pale square is the tangent plane \(T_{\boldsymbol\mu}\); it touches the sphere at exactly that point. The grey dots are 250 draws from a Kent distribution. Inside the plane sit the two axes: <b class="c-g2">\(\boldsymbol\gamma_2\)</b>, along which the cloud is long, and <b class="c-g3">\(\boldsymbol\gamma_3\)</b>, along which it is short. Rotate until you are looking down the orange arrow and the cloud becomes the flat ellipse of the next figure.</figcaption>
+    <figcaption>The <b class="c-mu">orange arrow</b> is \(\mu\), here the square root of the composition \((0.50,0.30,0.20)\). It pierces the sphere at the centre of the data. The pale square is the tangent plane \(T_{\mu}\); it touches the sphere at exactly that point. The grey dots are 250 draws from a Kent distribution. Inside the plane sit the two axes: <b class="c-g2">\(\gamma_2\)</b>, along which the cloud is long, and <b class="c-g3">\(\gamma_3\)</b>, along which it is short. Rotate until you are looking down the orange arrow and the cloud becomes the flat ellipse of the next figure.</figcaption>
   </figure>
 
   <figure class="plate">
-    <div class="plate-head"><span class="plate-n">Figure 8</span><span class="plate-t">looking straight down \(\boldsymbol\mu\) &mdash; the ellipse, fully labelled</span></div>
+    <div class="plate-head"><span class="plate-n">Figure 8</span><span class="plate-t">looking straight down \(\mu\) &mdash; the ellipse, fully labelled</span></div>
     <div class="plate-body"><div class="svgbox" id="fig8"></div></div>
-    <figcaption>Now we are standing on the tangent plane, looking at it face on. \(\boldsymbol\mu\) points directly at you, out of the screen, so it appears as a single point at the centre. The ellipse is one contour of the density &mdash; the "one standard deviation" contour. Its semi-axis along <b class="c-g2">\(\boldsymbol\gamma_2\)</b> has length \(\sqrt{\lambda_2}\); its semi-axis along <b class="c-g3">\(\boldsymbol\gamma_3\)</b> has length \(\sqrt{\lambda_3}\). Because \(\lambda_2&gt;\lambda_3\), the first is longer: there is more spread along \(\boldsymbol\gamma_2\).</figcaption>
+    <figcaption>Now we are standing on the tangent plane, looking at it face on. \(\mu\) points directly at you, out of the screen, so it appears as a single point at the centre. The ellipse is one contour of the density &mdash; the "one standard deviation" contour. Its semi-axis along <b class="c-g2">\(\gamma_2\)</b> has length \(\sqrt{\lambda_2}\); its semi-axis along <b class="c-g3">\(\gamma_3\)</b> has length \(\sqrt{\lambda_3}\). Because \(\lambda_2&gt;\lambda_3\), the first is longer: there is more spread along \(\gamma_2\).</figcaption>
   </figure>
 
   <div class="col">
     <div class="note warm">
       <span class="tag">Say this out loud until it is automatic</span>
-      <p>\(\lambda_2>\lambda_3\) means <em>more spread along \(\boldsymbol\gamma_2\) than along \(\boldsymbol\gamma_3\)</em>. The \(\lambda\)'s are variances on the tangent plane. Their square roots are the lengths of the ellipse's semi-axes. And \(\lambda_2>\lambda_3\) is the same statement as \(\beta>0\).</p>
+      <p>\(\lambda_2>\lambda_3\) means <em>more spread along \(\gamma_2\) than along \(\gamma_3\)</em>. The \(\lambda\)'s are variances on the tangent plane. Their square roots are the lengths of the ellipse's semi-axes. And \(\lambda_2>\lambda_3\) is the same statement as \(\beta>0\).</p>
     </div>
   </div>
 </section>
@@ -849,14 +849,14 @@ window.MathJax={
     </ul>
 
     <h3>A useful identity</h3>
-    <p>Split the trace into the part along \(\hat{\boldsymbol\mu}\) and the part in the tangent plane. Because \([\hat{\boldsymbol\mu},\mathbf b_1,\mathbf b_2]\) is an orthogonal frame,</p>
-    \[ \underbrace{\operatorname{tr}(\hat M)}_{=1} =\underbrace{\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}}_{\text{along }\hat{\boldsymbol\mu}} +\underbrace{\operatorname{tr}(S_L)}_{\text{in the tangent plane}} \qquad\Longrightarrow\qquad \operatorname{tr}(S_L)=1-\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}. \]
-    <p>In the example, \(\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}=0.94\), so the total tangent spread must be \(1-0.94=0.06\). Remember that number; we are about to compute \(S_L\) and its diagonal will sum to exactly 0.06.</p>
+    <p>Split the trace into the part along \(\hat{\mu}\) and the part in the tangent plane. Because \([\hat{\mu},\mathbf b_1,\mathbf b_2]\) is an orthogonal frame,</p>
+    \[ \underbrace{\operatorname{tr}(\hat M)}_{=1} =\underbrace{\hat{\mu}^{\!\top}\hat M\hat{\mu}}_{\text{along }\hat{\mu}} +\underbrace{\operatorname{tr}(S_L)}_{\text{in the tangent plane}} \qquad\Longrightarrow\qquad \operatorname{tr}(S_L)=1-\hat{\mu}^{\!\top}\hat M\hat{\mu}. \]
+    <p>In the example, \(\hat{\mu}^{\!\top}\hat M\hat{\mu}=0.94\), so the total tangent spread must be \(1-0.94=0.06\). Remember that number; we are about to compute \(S_L\) and its diagonal will sum to exactly 0.06.</p>
 
-    <h3>How do we get \(\hat{\boldsymbol\mu}\)?</h3>
+    <h3>How do we get \(\hat{\mu}\)?</h3>
     <p>Two equivalent-in-practice recipes:</p>
     <ol>
-      <li><strong>Normalised sample mean.</strong> Compute \(\bar{\mathbf u}=\frac1n\sum_i\mathbf u_i\) (this vector is <em>inside</em> the sphere, not on it), then set \(\hat{\boldsymbol\mu}=\bar{\mathbf u}/\|\bar{\mathbf u}\|\). The length \(\bar R=\|\bar{\mathbf u}\|\) is between 0 and 1 and is itself informative: \(\bar R\) near 1 means very concentrated data, \(\bar R\) near 0 means scattered data. This is the standard choice for Kent.</li>
+      <li><strong>Normalised sample mean.</strong> Compute \(\bar{\mathbf u}=\frac1n\sum_i\mathbf u_i\) (this vector is <em>inside</em> the sphere, not on it), then set \(\hat{\mu}=\bar{\mathbf u}/\|\bar{\mathbf u}\|\). The length \(\bar R=\|\bar{\mathbf u}\|\) is between 0 and 1 and is itself informative: \(\bar R\) near 1 means very concentrated data, \(\bar R\) near 0 means scattered data. This is the standard choice for Kent.</li>
       <li><strong>Leading eigenvector of \(\hat M\).</strong> The direction that captures the most of \(\operatorname{tr}(\hat M)\). This ignores the sign of the data and is the right choice for axial data.</li>
     </ol>
     <p>For concentrated compositional data the two give almost the same answer. We use the first.</p>
@@ -871,7 +871,7 @@ window.MathJax={
     <p class="lede">The Householder construction. This is where most confusion lives, so we go slowly.</p>
 
     <h3>The problem</h3>
-    <p>We have the tangent plane at \(\hat{\boldsymbol\mu}\): a flat, two-dimensional plane floating in three-dimensional space. We want to describe points on it using <em>two</em> numbers, not three. To do that we need two reference directions inside the plane. That pair of directions is called a <strong>basis</strong>.</p>
+    <p>We have the tangent plane at \(\hat{\mu}\): a flat, two-dimensional plane floating in three-dimensional space. We want to describe points on it using <em>two</em> numbers, not three. To do that we need two reference directions inside the plane. That pair of directions is called a <strong>basis</strong>.</p>
 
     <div class="note warm">
       <span class="tag">The rulers on a table</span>
@@ -880,46 +880,46 @@ window.MathJax={
     </div>
 
     <h3>The Householder construction</h3>
-    <p>We need a rule that, given any \(\hat{\boldsymbol\mu}\), produces two perpendicular unit vectors inside the tangent plane. It must be automatic and it must never break down. The Householder reflection does this.</p>
+    <p>We need a rule that, given any \(\hat{\mu}\), produces two perpendicular unit vectors inside the tangent plane. It must be automatic and it must never break down. The Householder reflection does this.</p>
     <p>A <strong>reflection</strong> is a mirror. Pick a mirror plane; the reflection sends every point to its mirror image. If \(\mathbf h\) is the direction perpendicular to the mirror, the reflection matrix is</p>
     \[ H=I-\frac{2\,\mathbf h\mathbf h^{\!\top}}{\mathbf h^{\!\top}\mathbf h}. \]
-    <p>Now the trick. We want a mirror that sends the first coordinate axis \(\mathbf e_1=(1,0,0)^{\!\top}\) onto \(\hat{\boldsymbol\mu}\). The mirror that does this is the one perpendicular to their difference. So set</p>
-    \[ \mathbf h=\mathbf e_1-\hat{\boldsymbol\mu}. \]
-    <p>Then, as a short calculation confirms, \(H\mathbf e_1=\hat{\boldsymbol\mu}\).</p>
+    <p>Now the trick. We want a mirror that sends the first coordinate axis \(\mathbf e_1=(1,0,0)^{\!\top}\) onto \(\hat{\mu}\). The mirror that does this is the one perpendicular to their difference. So set</p>
+    \[ \mathbf h=\mathbf e_1-\hat{\mu}. \]
+    <p>Then, as a short calculation confirms, \(H\mathbf e_1=\hat{\mu}\).</p>
 
     <h4>Why does that help?</h4>
-    <p>\(H\) is orthogonal, so its three columns are mutually perpendicular unit vectors. Its first column is \(H\mathbf e_1=\hat{\boldsymbol\mu}\). Therefore <strong>the other two columns are automatically perpendicular to \(\hat{\boldsymbol\mu}\)</strong> &mdash; which means they lie in the tangent plane. Collect them:</p>
-    \[ H=[\,\hat{\boldsymbol\mu}\;\;\mathbf b_1\;\;\mathbf b_2\,],\qquad \mathbf B(\hat{\boldsymbol\mu})=[\,\mathbf b_1\;\;\mathbf b_2\,]\ \ (3\times2). \]
-    <p>Done. \(\mathbf B(\hat{\boldsymbol\mu})\) is our pair of rulers. It satisfies \(\mathbf B^{\!\top}\mathbf B=I_2\) (the rulers are unit length and perpendicular) and \(\mathbf B^{\!\top}\hat{\boldsymbol\mu}=\mathbf 0\) (they lie in the plane).</p>
+    <p>\(H\) is orthogonal, so its three columns are mutually perpendicular unit vectors. Its first column is \(H\mathbf e_1=\hat{\mu}\). Therefore <strong>the other two columns are automatically perpendicular to \(\hat{\mu}\)</strong> &mdash; which means they lie in the tangent plane. Collect them:</p>
+    \[ H=[\,\hat{\mu}\;\;\mathbf b_1\;\;\mathbf b_2\,],\qquad \mathbf B(\hat{\mu})=[\,\mathbf b_1\;\;\mathbf b_2\,]\ \ (3\times2). \]
+    <p>Done. \(\mathbf B(\hat{\mu})\) is our pair of rulers. It satisfies \(\mathbf B^{\!\top}\mathbf B=I_2\) (the rulers are unit length and perpendicular) and \(\mathbf B^{\!\top}\hat{\mu}=\mathbf 0\) (they lie in the plane).</p>
 
-    <h4>Worked numerically for \(\hat{\boldsymbol\mu}=(0,0,1)\)</h4>
-    <p>\(\mathbf h=\mathbf e_1-\hat{\boldsymbol\mu}=(1,0,-1)\), and \(\mathbf h^{\!\top}\mathbf h=2\). So</p>
+    <h4>Worked numerically for \(\hat{\mu}=(0,0,1)\)</h4>
+    <p>\(\mathbf h=\mathbf e_1-\hat{\mu}=(1,0,-1)\), and \(\mathbf h^{\!\top}\mathbf h=2\). So</p>
     \[ H=I-\mathbf h\mathbf h^{\!\top} =\begin{pmatrix}1&0&0\\0&1&0\\0&0&1\end{pmatrix} -\begin{pmatrix}1&0&-1\\0&0&0\\-1&0&1\end{pmatrix} =\begin{pmatrix}0&0&1\\0&1&0\\1&0&0\end{pmatrix}. \]
-    <p>Column 1 is \((0,0,1)=\hat{\boldsymbol\mu}\). &#10003; So</p>
+    <p>Column 1 is \((0,0,1)=\hat{\mu}\). &#10003; So</p>
     \[ \mathbf b_1=(0,1,0),\qquad \mathbf b_2=(1,0,0). \]
     <p>Both are perpendicular to \((0,0,1)\). &#10003; Notice the order: the construction gives \(\mathbf b_1=\mathbf e_2\) and \(\mathbf b_2=\mathbf e_1\). It does not give them in the order you might have guessed. That is fine, and it is exactly the point of the next section: <em>the rule is arbitrary, and the arbitrariness does not matter.</em></p>
-    <p>(One edge case: if \(\hat{\boldsymbol\mu}=\mathbf e_1\) exactly, then \(\mathbf h=\mathbf 0\) and the formula divides by zero. Software handles this by reflecting onto \(-\mathbf e_1\) instead, or by using \(\mathbf h=\mathbf e_1+\hat{\boldsymbol\mu}\). It never happens with real data.)</p>
+    <p>(One edge case: if \(\hat{\mu}=\mathbf e_1\) exactly, then \(\mathbf h=\mathbf 0\) and the formula divides by zero. Software handles this by reflecting onto \(-\mathbf e_1\) instead, or by using \(\mathbf h=\mathbf e_1+\hat{\mu}\). It never happens with real data.)</p>
 
     <h3>The distinction you must not blur</h3>
     <div class="scroll">
       <table>
-        <thead><tr><th></th><th>\(\mathbf B(\hat{\boldsymbol\mu})\)</th><th>\(\mathbf K\) (the Kent frame)</th></tr></thead>
+        <thead><tr><th></th><th>\(\mathbf B(\hat{\mu})\)</th><th>\(\mathbf K\) (the Kent frame)</th></tr></thead>
         <tbody>
           <tr><td class="t">what it is</td><td class="t">two arbitrary perpendicular directions in the tangent plane</td><td class="t">the two <em>principal</em> directions of the data: long axis and short axis</td></tr>
-          <tr><td class="t">what it depends on</td><td class="t">only \(\hat{\boldsymbol\mu}\), and on a convention (we chose \(\mathbf e_1\))</td><td class="t">the data &mdash; where they actually spread</td></tr>
+          <tr><td class="t">what it depends on</td><td class="t">only \(\hat{\mu}\), and on a convention (we chose \(\mathbf e_1\))</td><td class="t">the data &mdash; where they actually spread</td></tr>
           <tr><td class="t">the analogy</td><td class="t">where you happened to lay the rulers</td><td class="t">the shape of the stain on the table</td></tr>
           <tr><td class="t">unique?</td><td class="t">no &mdash; infinitely many valid choices</td><td class="t">yes (up to sign), as long as \(\lambda_2\neq\lambda_3\)</td></tr>
-          <tr><td class="t">a parameter?</td><td class="t">no &mdash; it is scaffolding</td><td class="t">yes &mdash; \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\) are parameters of the model</td></tr>
+          <tr><td class="t">a parameter?</td><td class="t">no &mdash; it is scaffolding</td><td class="t">yes &mdash; \(\gamma_2,\gamma_3\) are parameters of the model</td></tr>
         </tbody>
       </table>
     </div>
-    <p><strong>\(\mathbf B\) is a coordinate system. It knows nothing about the data.</strong> It is built from \(\hat{\boldsymbol\mu}\) alone, before we have looked at how the cloud is shaped. Two different people using two different conventions would get two different \(\mathbf B\)'s. That is allowed. The job of Parts 10&ndash;12 is to start from \(\mathbf B\), look at the data, and <em>turn the rulers</em> until they line up with the ellipse. Only then do we have \(\mathbf K\).</p>
+    <p><strong>\(\mathbf B\) is a coordinate system. It knows nothing about the data.</strong> It is built from \(\hat{\mu}\) alone, before we have looked at how the cloud is shaped. Two different people using two different conventions would get two different \(\mathbf B\)'s. That is allowed. The job of Parts 10&ndash;12 is to start from \(\mathbf B\), look at the data, and <em>turn the rulers</em> until they line up with the ellipse. Only then do we have \(\mathbf K\).</p>
   </div>
 
   <figure class="plate">
     <div class="plate-head"><span class="plate-n">Figure 9</span><span class="plate-t">the Householder rulers, and the ellipse they do not know about</span></div>
     <div class="plate-body"><div class="plot tall" id="fig9"></div><div class="hint">drag to rotate</div></div>
-    <figcaption>The <b class="c-b">violet dashed arrows</b> are \(\mathbf b_1\) and \(\mathbf b_2\), the Householder basis. They were computed from <b class="c-mu">\(\hat{\boldsymbol\mu}\)</b> alone. The data cloud is clearly stretched in some direction, and that direction is <em>not</em> \(\mathbf b_1\). Nothing is wrong: the rulers were never meant to line up with the data. Finding the angle between them is the estimation problem.</figcaption>
+    <figcaption>The <b class="c-b">violet dashed arrows</b> are \(\mathbf b_1\) and \(\mathbf b_2\), the Householder basis. They were computed from <b class="c-mu">\(\hat{\mu}\)</b> alone. The data cloud is clearly stretched in some direction, and that direction is <em>not</em> \(\mathbf b_1\). Nothing is wrong: the rulers were never meant to line up with the data. Finding the angle between them is the estimation problem.</figcaption>
   </figure>
 </section>
 
@@ -948,9 +948,9 @@ window.MathJax={
     </div>
 
     <h3>The example, continued</h3>
-    <p>From Part 9, with \(\hat{\boldsymbol\mu}=(0,0,1)\), the Householder basis is \(\mathbf b_1=(0,1,0)\), \(\mathbf b_2=(1,0,0)\). So \(\mathbf B^{\!\top}\hat M\mathbf B\) just picks out the \((2,2),(2,1),(1,2),(1,1)\) entries of \(\hat M\), in that order:</p>
+    <p>From Part 9, with \(\hat{\mu}=(0,0,1)\), the Householder basis is \(\mathbf b_1=(0,1,0)\), \(\mathbf b_2=(1,0,0)\). So \(\mathbf B^{\!\top}\hat M\mathbf B\) just picks out the \((2,2),(2,1),(1,2),(1,1)\) entries of \(\hat M\), in that order:</p>
     \[ S_L=\begin{pmatrix}\hat M_{22}&\hat M_{21}\\ \hat M_{12}&\hat M_{11}\end{pmatrix} =\begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix}. \]
-    <p>Check the trace: \(0.03+0.03=0.06\), which matches \(1-\hat{\boldsymbol\mu}^{\!\top}\hat M\hat{\boldsymbol\mu}=1-0.94=0.06\) from Part 8. &#10003;</p>
+    <p>Check the trace: \(0.03+0.03=0.06\), which matches \(1-\hat{\mu}^{\!\top}\hat M\hat{\mu}=1-0.94=0.06\) from Part 8. &#10003;</p>
 
     <h3>Why is it not diagonal?</h3>
     <p>This is the important question. The off-diagonal entry is \(0.02\), not \(0\). A non-zero off-diagonal entry means: <strong>the axes of the data ellipse are not lined up with the rulers.</strong></p>
@@ -990,7 +990,7 @@ window.MathJax={
 
     <h3>The decomposition</h3>
     \[ S_L=W\Lambda W^{\!\top},\qquad W=[\,\mathbf w_2\;\;\mathbf w_3\,],\qquad \Lambda=\begin{pmatrix}\lambda_2&0\\0&\lambda_3\end{pmatrix},\quad\lambda_2\ge\lambda_3 . \]
-    <p>Here \(W\) is a \(2\times2\) orthogonal matrix &mdash; a rotation of the plane. Read the formula right to left as a recipe: \(W^{\!\top}\) turns the rulers so they line up with the ellipse; \(\Lambda\) stretches by the right amount along each; \(W\) turns back. The numbering starts at 2 to match \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\); slot 1 belongs to \(\boldsymbol\mu\).</p>
+    <p>Here \(W\) is a \(2\times2\) orthogonal matrix &mdash; a rotation of the plane. Read the formula right to left as a recipe: \(W^{\!\top}\) turns the rulers so they line up with the ellipse; \(\Lambda\) stretches by the right amount along each; \(W\) turns back. The numbering starts at 2 to match \(\gamma_2,\gamma_3\); slot 1 belongs to \(\mu\).</p>
 
     <h3>The example</h3>
     <p>For \(S_L=\begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix}\) the characteristic equation is \((0.03-\lambda)^2-0.02^2=0\), giving \(0.03-\lambda=\pm0.02\), so</p>
@@ -1025,22 +1025,22 @@ window.MathJax={
     <p class="lede">The single most important equation in the estimation procedure &mdash; and the demonstration that it does not depend on your arbitrary choices.</p>
 
     <h3>The equation</h3>
-    <p>The eigenvectors \(\mathbf w_2,\mathbf w_3\) live in the two-dimensional ruler coordinate system. But \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\) must be real directions in three-dimensional space. To convert, multiply by \(\mathbf B\):</p>
-    \[ \boxed{\;\hat{\boldsymbol\gamma}_2=\mathbf B(\hat{\boldsymbol\mu})\,\mathbf w_2,\qquad \hat{\boldsymbol\gamma}_3=\mathbf B(\hat{\boldsymbol\mu})\,\mathbf w_3,\qquad\text{that is}\qquad [\,\hat{\boldsymbol\gamma}_2\;\;\hat{\boldsymbol\gamma}_3\,]=\mathbf B(\hat{\boldsymbol\mu})\,W\;} \]
+    <p>The eigenvectors \(\mathbf w_2,\mathbf w_3\) live in the two-dimensional ruler coordinate system. But \(\gamma_2,\gamma_3\) must be real directions in three-dimensional space. To convert, multiply by \(\mathbf B\):</p>
+    \[ \boxed{\;\hat{\gamma}_2=\mathbf B(\hat{\mu})\,\mathbf w_2,\qquad \hat{\gamma}_3=\mathbf B(\hat{\mu})\,\mathbf w_3,\qquad\text{that is}\qquad [\,\hat{\gamma}_2\;\;\hat{\gamma}_3\,]=\mathbf B(\hat{\mu})\,W\;} \]
     <p>and the full Kent frame is</p>
-    \[ \hat{\mathbf K}=[\,\hat{\boldsymbol\mu}\;\;\hat{\boldsymbol\gamma}_2\;\;\hat{\boldsymbol\gamma}_3\,] =[\,\hat{\boldsymbol\mu}\;\;\mathbf B(\hat{\boldsymbol\mu})W\,] = H\begin{pmatrix}1&\mathbf 0^{\!\top}\\ \mathbf 0&W\end{pmatrix}, \]
+    \[ \hat{\mathbf K}=[\,\hat{\mu}\;\;\hat{\gamma}_2\;\;\hat{\gamma}_3\,] =[\,\hat{\mu}\;\;\mathbf B(\hat{\mu})W\,] = H\begin{pmatrix}1&\mathbf 0^{\!\top}\\ \mathbf 0&W\end{pmatrix}, \]
     <p>where \(H\) is the full \(3\times3\) Householder matrix. The two ways of writing it are the same thing; the second shows clearly that \(\hat{\mathbf K}\) is "the Householder frame, then a rotation inside the tangent plane".</p>
     <p>In words: <strong>\(\mathbf B\) says where the plane is; \(W\) says how far to turn inside it; \(\mathbf K\) is the result.</strong></p>
 
     <h4>Check it on the example</h4>
     <p>\(\mathbf b_1=(0,1,0)\), \(\mathbf b_2=(1,0,0)\), \(\mathbf w_2=\tfrac1{\sqrt2}(1,1)\). So</p>
-    \[ \hat{\boldsymbol\gamma}_2=\mathbf B\mathbf w_2=\tfrac1{\sqrt2}\bigl(1\cdot\mathbf b_1+1\cdot\mathbf b_2\bigr) =\tfrac1{\sqrt2}\bigl((0,1,0)+(1,0,0)\bigr)=\tfrac1{\sqrt2}(1,1,0), \]
-    \[ \hat{\boldsymbol\gamma}_3=\mathbf B\mathbf w_3=\tfrac1{\sqrt2}\bigl((0,1,0)-(1,0,0)\bigr)=\tfrac1{\sqrt2}(-1,1,0). \]
-    <p>Both are unit vectors, both are perpendicular to \(\hat{\boldsymbol\mu}=(0,0,1)\), and they are perpendicular to each other. &#10003; And \(\hat{\boldsymbol\gamma}_2\propto(1,1,0)\) is the diagonal direction that the \(0.02\) off-diagonal entry pointed to all along.</p>
+    \[ \hat{\gamma}_2=\mathbf B\mathbf w_2=\tfrac1{\sqrt2}\bigl(1\cdot\mathbf b_1+1\cdot\mathbf b_2\bigr) =\tfrac1{\sqrt2}\bigl((0,1,0)+(1,0,0)\bigr)=\tfrac1{\sqrt2}(1,1,0), \]
+    \[ \hat{\gamma}_3=\mathbf B\mathbf w_3=\tfrac1{\sqrt2}\bigl((0,1,0)-(1,0,0)\bigr)=\tfrac1{\sqrt2}(-1,1,0). \]
+    <p>Both are unit vectors, both are perpendicular to \(\hat{\mu}=(0,0,1)\), and they are perpendicular to each other. &#10003; And \(\hat{\gamma}_2\propto(1,1,0)\) is the diagonal direction that the \(0.02\) off-diagonal entry pointed to all along.</p>
 
     <h3>Why \(\mathbf B\) alone is not \(\mathbf K\)</h3>
     <p>Back to the table. \(\mathbf B\) is where you put the rulers. \(\mathbf K\) is the shape of the stain. The rulers were placed before anyone looked at the stain, so of course they do not line up with it. \(W\) is the turn that fixes this &mdash; and \(W\) is the only part of the whole procedure that used the data.</p>
-    <p>If you skipped \(W\) and reported \(\mathbf B\) as your estimate of \((\boldsymbol\gamma_2,\boldsymbol\gamma_3)\), you would be reporting your own arbitrary convention as if it were a scientific finding. In the example you would claim the long axis is \((0,1,0)\) when it is really \(\tfrac1{\sqrt2}(1,1,0)\) &mdash; off by 45&deg;.</p>
+    <p>If you skipped \(W\) and reported \(\mathbf B\) as your estimate of \((\gamma_2,\gamma_3)\), you would be reporting your own arbitrary convention as if it were a scientific finding. In the example you would claim the long axis is \((0,1,0)\) when it is really \(\tfrac1{\sqrt2}(1,1,0)\) &mdash; off by 45&deg;.</p>
 
     <h3>The invariance, demonstrated</h3>
     <p>Here is the proof that the choice of rulers does not matter. Suppose a second analyst uses rulers turned by an angle \(\theta\):</p>
@@ -1049,7 +1049,7 @@ window.MathJax={
     \[ \tilde S_L=\tilde{\mathbf B}^{\!\top}\hat M\tilde{\mathbf B} =R(\theta)^{\!\top}\mathbf B^{\!\top}\hat M\mathbf B\,R(\theta) =R(\theta)^{\!\top}S_L\,R(\theta), \]
     <p>which is a <em>different matrix</em> with different entries. Its eigenvalues, however, are unchanged &mdash; rotating coordinates cannot change how spread out the data are. And its eigenvector matrix is \(\tilde W=R(\theta)^{\!\top}W\). Therefore</p>
     \[ \tilde{\mathbf B}\tilde W=\mathbf B R(\theta)\,R(\theta)^{\!\top}W=\mathbf B\,W . \]
-    <p>The two analysts get <strong>exactly the same \(\hat{\boldsymbol\gamma}_2\) and \(\hat{\boldsymbol\gamma}_3\)</strong>. The arbitrary choice cancels out. This is why the procedure is trustworthy, and it is worth seeing happen.</p>
+    <p>The two analysts get <strong>exactly the same \(\hat{\gamma}_2\) and \(\hat{\gamma}_3\)</strong>. The arbitrary choice cancels out. This is why the procedure is trustworthy, and it is worth seeing happen.</p>
   </div>
 
   <figure class="plate">
@@ -1075,24 +1075,24 @@ window.MathJax={
 
     <h3>An eigenvector has no preferred sign</h3>
     <p>If \(S\mathbf w=\lambda\mathbf w\), then multiplying both sides by \(-1\) gives \(S(-\mathbf w)=\lambda(-\mathbf w)\). So \(-\mathbf w\) is an eigenvector with the same eigenvalue. The equation cannot tell them apart.</p>
-    <p>Geometrically this is obvious: the long axis of an ellipse is a <em>line</em>, not an arrow. Saying "the data spread along \(\boldsymbol\gamma_2\)" and "the data spread along \(-\boldsymbol\gamma_2\)" are the same statement, because the ellipse is symmetric about its centre.</p>
-    <p>The Kent density agrees. Its exponent contains \((\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\), and \((-\boldsymbol\gamma_2^{\!\top}\mathbf u)^2=(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2\). Flipping the sign leaves the density <em>completely unchanged</em>. So \(\boldsymbol\gamma_2\) and \(-\boldsymbol\gamma_2\) are not two different models; they are one model with two names. The parameter is not identified beyond its sign, and that is harmless.</p>
-    <p><strong>Why it still matters in practice.</strong> Software will return whichever sign its algorithm happens to produce. If you fit the same model twice, or compare two groups, or average \(\hat{\boldsymbol\gamma}_2\) across bootstrap samples, random sign flips will ruin the comparison. So fix a convention and apply it every time. Common choices:</p>
+    <p>Geometrically this is obvious: the long axis of an ellipse is a <em>line</em>, not an arrow. Saying "the data spread along \(\gamma_2\)" and "the data spread along \(-\gamma_2\)" are the same statement, because the ellipse is symmetric about its centre.</p>
+    <p>The Kent density agrees. Its exponent contains \((\gamma_2^{\!\top}\mathbf u)^2\), and \((-\gamma_2^{\!\top}\mathbf u)^2=(\gamma_2^{\!\top}\mathbf u)^2\). Flipping the sign leaves the density <em>completely unchanged</em>. So \(\gamma_2\) and \(-\gamma_2\) are not two different models; they are one model with two names. The parameter is not identified beyond its sign, and that is harmless.</p>
+    <p><strong>Why it still matters in practice.</strong> Software will return whichever sign its algorithm happens to produce. If you fit the same model twice, or compare two groups, or average \(\hat{\gamma}_2\) across bootstrap samples, random sign flips will ruin the comparison. So fix a convention and apply it every time. Common choices:</p>
     <ul>
       <li>make the first non-zero component positive;</li>
       <li>make the largest-in-magnitude component positive;</li>
-      <li>choose the sign that makes \(\hat{\boldsymbol\gamma}_2\) point closest to some fixed reference direction.</li>
+      <li>choose the sign that makes \(\hat{\gamma}_2\) point closest to some fixed reference direction.</li>
     </ul>
     <p>Any of these is fine. Being consistent is what counts. In Part 11 we reported \(\mathbf w_3=\tfrac1{\sqrt2}(1,-1)\); a routine might equally well have returned \(\tfrac1{\sqrt2}(-1,1)\). Same axis.</p>
-    <p>One more freedom: \(\boldsymbol\mu\) also has a sign in general directional statistics, but not for us. Compositions map into the positive part of the sphere, so \(\hat{\boldsymbol\mu}\) has non-negative entries and \(-\hat{\boldsymbol\mu}\) is not a possible mean direction. The sign of \(\boldsymbol\mu\) <em>is</em> identified here.</p>
+    <p>One more freedom: \(\mu\) also has a sign in general directional statistics, but not for us. Compositions map into the positive part of the sphere, so \(\hat{\mu}\) has non-negative entries and \(-\hat{\mu}\) is not a possible mean direction. The sign of \(\mu\) <em>is</em> identified here.</p>
 
     <h3>When the two eigenvalues are equal</h3>
     <p>Suppose \(\lambda_2=\lambda_3\). Then every direction in the tangent plane has the same spread. The cloud is round. The "long axis" does not exist, because no axis is longer than any other.</p>
     <p>Mathematically: every vector in the plane is an eigenvector, and \(W\) can be <em>any</em> rotation. The eigen-decomposition is not unique, and a numerical routine will return an essentially arbitrary pair of directions.</p>
     <p>Is this a disaster? No, and here is the reassuring part. \(\lambda_2=\lambda_3\) means</p>
     \[ \hat\beta=\tfrac14\bigl(1/\lambda_3-1/\lambda_2\bigr)=0, \]
-    <p>so the fitted model is vMF, and the Kent density does not contain \(\boldsymbol\gamma_2,\boldsymbol\gamma_3\) at all when \(\beta=0\). The directions became unidentifiable exactly at the moment they stopped mattering. The parameters that are meaningless are also invisible.</p>
-    <p><strong>The practical warning.</strong> Trouble comes from the case where \(\lambda_2\) and \(\lambda_3\) are close but not equal. Then the axes <em>are</em> formally identified, but they are estimated very badly: a tiny change in the data can swing \(\hat{\boldsymbol\gamma}_2\) by a large angle. So before you interpret an estimated axis direction, look at the ratio \(\lambda_2/\lambda_3\). If it is near 1, do not tell a story about the orientation &mdash; there is not enough signal to support one. Report \(\hat\beta\) with a confidence interval instead, and if it covers zero, say so.</p>
+    <p>so the fitted model is vMF, and the Kent density does not contain \(\gamma_2,\gamma_3\) at all when \(\beta=0\). The directions became unidentifiable exactly at the moment they stopped mattering. The parameters that are meaningless are also invisible.</p>
+    <p><strong>The practical warning.</strong> Trouble comes from the case where \(\lambda_2\) and \(\lambda_3\) are close but not equal. Then the axes <em>are</em> formally identified, but they are estimated very badly: a tiny change in the data can swing \(\hat{\gamma}_2\) by a large angle. So before you interpret an estimated axis direction, look at the ratio \(\lambda_2/\lambda_3\). If it is near 1, do not tell a story about the orientation &mdash; there is not enough signal to support one. Report \(\hat\beta\) with a confidence interval instead, and if it covers zero, say so.</p>
 
     <div class="note warm">
       <span class="tag">Rule of thumb</span>
@@ -1103,7 +1103,7 @@ window.MathJax={
   <figure class="plate">
     <div class="plate-head"><span class="plate-n">Figure 12</span><span class="plate-t">the same axis, two signs &mdash; and the case where there is no axis</span></div>
     <div class="plate-body"><div class="svgbox" id="fig12"></div></div>
-    <figcaption>Left: \(\boldsymbol\gamma_2\) and \(-\boldsymbol\gamma_2\) describe the identical ellipse, because the density only ever uses the square of the coordinate. Right: when \(\lambda_2=\lambda_3\) the contour is a circle; the dashed pairs show three of the infinitely many equally valid eigenvector pairs. Here \(\beta=0\), the model is vMF, and the axes have dropped out of the density.</figcaption>
+    <figcaption>Left: \(\gamma_2\) and \(-\gamma_2\) describe the identical ellipse, because the density only ever uses the square of the coordinate. Right: when \(\lambda_2=\lambda_3\) the contour is a circle; the dashed pairs show three of the infinitely many equally valid eigenvector pairs. Here \(\beta=0\), the model is vMF, and the axes have dropped out of the density.</figcaption>
   </figure>
 </section>
 
@@ -1118,19 +1118,19 @@ window.MathJax={
     <table>
       <thead><tr><th></th><th>von Mises&ndash;Fisher</th><th>Kent</th></tr></thead>
       <tbody>
-        <tr><td class="t">density \(\propto\)</td><td class="t">\(\exp(\kappa\boldsymbol\mu^{\!\top}\mathbf u)\)</td><td class="t">\(\exp\{\kappa\boldsymbol\mu^{\!\top}\mathbf u+\beta[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2]\}\)</td></tr>
-        <tr><td class="t">mean direction</td><td class="t">\(\boldsymbol\mu\), a unit vector</td><td class="t">\(\boldsymbol\mu\), a unit vector &mdash; identical role</td></tr>
+        <tr><td class="t">density \(\propto\)</td><td class="t">\(\exp(\kappa\mu^{\!\top}\mathbf u)\)</td><td class="t">\(\exp\{\kappa\mu^{\!\top}\mathbf u+\beta[(\gamma_2^{\!\top}\mathbf u)^2-(\gamma_3^{\!\top}\mathbf u)^2]\}\)</td></tr>
+        <tr><td class="t">mean direction</td><td class="t">\(\mu\), a unit vector</td><td class="t">\(\mu\), a unit vector &mdash; identical role</td></tr>
         <tr><td class="t">concentration</td><td class="t">one number \(\kappa\)</td><td class="t">\(\kappa\), plus \(\beta\) which redistributes it between two directions</td></tr>
         <tr><td class="t">shape of the spread</td><td class="t">circular contours, always</td><td class="t">elliptical contours; circular only if \(\beta=0\)</td></tr>
         <tr><td class="t">isotropic or not</td><td class="t">isotropic: same in every tangent direction</td><td class="t">anisotropic: different in different tangent directions</td></tr>
         <tr><td class="t">tangent variance (large \(\kappa\))</td><td class="t">\(1/\kappa\) in every direction</td><td class="t">\(\lambda_2=\dfrac1{\kappa-2\beta}\), \(\lambda_3=\dfrac1{\kappa+2\beta}\)</td></tr>
-        <tr><td class="t">directional parameters</td><td class="t">1 direction (\(\boldsymbol\mu\))</td><td class="t">3 directions (\(\boldsymbol\mu,\boldsymbol\gamma_2,\boldsymbol\gamma_3\)), but they form one orthogonal frame</td></tr>
-        <tr><td class="t">free parameters, \(k=3\)</td><td class="t">3 &nbsp;(2 for \(\boldsymbol\mu\) + 1 for \(\kappa\))</td><td class="t">5 &nbsp;(2 + 1 rotation + \(\kappa\) + \(\beta\))</td></tr>
+        <tr><td class="t">directional parameters</td><td class="t">1 direction (\(\mu\))</td><td class="t">3 directions (\(\mu,\gamma_2,\gamma_3\)), but they form one orthogonal frame</td></tr>
+        <tr><td class="t">free parameters, \(k=3\)</td><td class="t">3 &nbsp;(2 for \(\mu\) + 1 for \(\kappa\))</td><td class="t">5 &nbsp;(2 + 1 rotation + \(\kappa\) + \(\beta\))</td></tr>
         <tr><td class="t">matches a 2D normal?</td><td class="t">only one with \(\Sigma\propto I\)</td><td class="t">yes &mdash; any \(2\times2\) covariance, so 5 parameters match 5</td></tr>
-        <tr><td class="t">rotational symmetry about \(\boldsymbol\mu\)</td><td class="t">yes</td><td class="t">no (unless \(\beta=0\))</td></tr>
+        <tr><td class="t">rotational symmetry about \(\mu\)</td><td class="t">yes</td><td class="t">no (unless \(\beta=0\))</td></tr>
         <tr><td class="t">normalising constant</td><td class="t">closed form, \(\kappa/(4\pi\sinh\kappa)\)</td><td class="t">Bessel series in \((\kappa,\beta)\) &mdash; needs a computer, but is cheap</td></tr>
         <tr><td class="t">estimation</td><td class="t">one-line moment estimator from \(\bar R\)</td><td class="t">mean direction, then eigen-decomposition on the tangent plane</td></tr>
-        <tr><td class="t">implied covariance of \(\mathbf z=\mathbf u^2\)</td><td class="t">forced to \(\tfrac4\kappa\{\mathrm{diag}(\boldsymbol\pi)-\boldsymbol\pi\boldsymbol\pi^{\!\top}\}\) &mdash; the multinomial shape, fixed once the mean is known</td><td class="t">free orientation and free axis lengths; can produce positive correlations between parts</td></tr>
+        <tr><td class="t">implied covariance of \(\mathbf z=\mathbf u^2\)</td><td class="t">forced to \(\tfrac4\kappa\{\mathrm{diag}(\pi)-\pi\pi^{\!\top}\}\) &mdash; the multinomial shape, fixed once the mean is known</td><td class="t">free orientation and free axis lengths; can produce positive correlations between parts</td></tr>
       </tbody>
     </table>
   </div>
@@ -1140,13 +1140,13 @@ window.MathJax={
     <p><strong>Use Kent when:</strong></p>
     <ul>
       <li>Two components of the composition <em>trade off</em> against each other while a third is stable. That is an ellipse, and vMF cannot represent it.</li>
-      <li>You care about the <em>direction</em> of variation, not only its size. \(\hat{\boldsymbol\gamma}_2\) is then a scientific result: "the main way these soils differ is sand against clay".</li>
+      <li>You care about the <em>direction</em> of variation, not only its size. \(\hat{\gamma}_2\) is then a scientific result: "the main way these soils differ is sand against clay".</li>
       <li>You are computing likelihoods that will be compared &mdash; for example the leaf likelihood in a random forest, or a model-selection criterion. A misspecified spread contaminates every such comparison.</li>
-      <li>The correlation structure the data show is not the one the mean predicts. Under vMF, once \(\boldsymbol\pi=\boldsymbol\mu^2\) is fixed, every correlation between parts is fixed too, and all of them are negative.</li>
+      <li>The correlation structure the data show is not the one the mean predicts. Under vMF, once \(\pi=\mu^2\) is fixed, every correlation between parts is fixed too, and all of them are negative.</li>
     </ul>
     <p><strong>Use vMF when:</strong></p>
     <ul>
-      <li>The sample is small. Two extra parameters estimated from 15 observations may cost more in variance than they gain in bias, and \(\hat{\boldsymbol\gamma}_2\) will be unstable (Part 13).</li>
+      <li>The sample is small. Two extra parameters estimated from 15 observations may cost more in variance than they gain in bias, and \(\hat{\gamma}_2\) will be unstable (Part 13).</li>
       <li>The cloud genuinely looks round &mdash; test \(\beta=0\) and find you cannot reject it.</li>
       <li>You need speed and a closed-form normalising constant in a tight loop.</li>
     </ul>
@@ -1191,7 +1191,7 @@ window.MathJax={
     <h3>Step 3 &mdash; the mean direction</h3>
     <p>Average the unit vectors, then normalise:</p>
     <div class="scroll"><table id="t15mu"></table></div>
-    <p>The length \(\bar R\) is very close to 1, which tells us immediately that these data are highly concentrated &mdash; the tangent-plane approximation of Part 7 will be excellent. Squaring \(\hat{\boldsymbol\mu}\) gives the estimated mean composition \(\hat{\boldsymbol\pi}=\hat{\boldsymbol\mu}^2\), shown in the last row, which we can read back as proportions of sand, silt and clay.</p>
+    <p>The length \(\bar R\) is very close to 1, which tells us immediately that these data are highly concentrated &mdash; the tangent-plane approximation of Part 7 will be excellent. Squaring \(\hat{\mu}\) gives the estimated mean composition \(\hat{\pi}=\hat{\mu}^2\), shown in the last row, which we can read back as proportions of sand, silt and clay.</p>
 
     <h3>Step 4 &mdash; the second-moment matrix</h3>
     <p>\(\hat M=\frac1n\sum_i\mathbf u_i\mathbf u_i^{\!\top}\). Its trace must be 1.</p>
@@ -1201,7 +1201,7 @@ window.MathJax={
 
   <div class="col">
     <h3>Step 5 &mdash; the Householder rulers</h3>
-    <p>\(\mathbf h=\mathbf e_1-\hat{\boldsymbol\mu}\), \(H=I-2\mathbf h\mathbf h^{\!\top}/(\mathbf h^{\!\top}\mathbf h)\), and \(\mathbf B\) is the last two columns of \(H\). Remember: this used \(\hat{\boldsymbol\mu}\) only. The data have not been consulted yet.</p>
+    <p>\(\mathbf h=\mathbf e_1-\hat{\mu}\), \(H=I-2\mathbf h\mathbf h^{\!\top}/(\mathbf h^{\!\top}\mathbf h)\), and \(\mathbf B\) is the last two columns of \(H\). Remember: this used \(\hat{\mu}\) only. The data have not been consulted yet.</p>
   </div>
 
   <div class="mats" id="m15B"></div>
@@ -1222,7 +1222,7 @@ window.MathJax={
 
   <div class="col">
     <h3>Step 8 &mdash; back to three dimensions</h3>
-    <p>\(\hat{\boldsymbol\gamma}_2=\mathbf B\mathbf w_2\) and \(\hat{\boldsymbol\gamma}_3=\mathbf B\mathbf w_3\), giving the full frame \(\hat{\mathbf K}=[\hat{\boldsymbol\mu}\;\hat{\boldsymbol\gamma}_2\;\hat{\boldsymbol\gamma}_3]\).</p>
+    <p>\(\hat{\gamma}_2=\mathbf B\mathbf w_2\) and \(\hat{\gamma}_3=\mathbf B\mathbf w_3\), giving the full frame \(\hat{\mathbf K}=[\hat{\mu}\;\hat{\gamma}_2\;\hat{\gamma}_3]\).</p>
   </div>
 
   <div class="mats" id="m15K"></div>
@@ -1246,7 +1246,7 @@ window.MathJax={
       <div class="plot" id="fig14c" style="height:400px"></div>
       <div class="hint">drag to rotate</div>
     </div>
-    <figcaption>Top left: the twelve soil compositions in the ternary diagram, with the fitted mean as an <b class="c-mu">orange cross</b>. Top right: the same twelve points projected onto the tangent plane at \(\hat{\boldsymbol\mu}\), with the fitted Kent contours and the estimated axes <b class="c-g2">\(\hat{\boldsymbol\gamma}_2\)</b> and <b class="c-g3">\(\hat{\boldsymbol\gamma}_3\)</b>. Bottom: everything on the sphere &mdash; the positive octant, the twelve data points, the fitted mean direction, and the two estimated axes lying in the tangent plane.</figcaption>
+    <figcaption>Top left: the twelve soil compositions in the ternary diagram, with the fitted mean as an <b class="c-mu">orange cross</b>. Top right: the same twelve points projected onto the tangent plane at \(\hat{\mu}\), with the fitted Kent contours and the estimated axes <b class="c-g2">\(\hat{\gamma}_2\)</b> and <b class="c-g3">\(\hat{\gamma}_3\)</b>. Bottom: everything on the sphere &mdash; the positive octant, the twelve data points, the fitted mean direction, and the two estimated axes lying in the tangent plane.</figcaption>
   </figure>
 </section>
 
@@ -1262,14 +1262,14 @@ window.MathJax={
     <table>
       <thead><tr><th>parameter</th><th>simple meaning</th><th>geometric meaning</th><th>what happens when it increases</th></tr></thead>
       <tbody>
-        <tr><td>\(\boldsymbol\mu\)</td><td class="t">the central direction</td><td class="t">the point on the sphere the cloud sits on; the mode and the mean direction</td><td class="t">the whole cloud slides to a new place; its shape is unchanged</td></tr>
-        <tr><td>\(\kappa>0\)</td><td class="t">concentration</td><td class="t">the overall size of the ellipse; \(1/\kappa\) is the average tangent variance</td><td class="t">the cloud shrinks toward \(\boldsymbol\mu\); both semi-axes get shorter</td></tr>
-        <tr><td>\(0\le2\beta&lt;\kappa\)</td><td class="t">ovalness</td><td class="t">how unequal the two tangent variances are</td><td class="t">the ellipse stretches along \(\boldsymbol\gamma_2\) and narrows along \(\boldsymbol\gamma_3\); at \(2\beta\to\kappa\) it stops being a single bump</td></tr>
-        <tr><td>\(\boldsymbol\gamma_2\)</td><td class="t">first principal direction</td><td class="t">the long axis of the ellipse, perpendicular to \(\boldsymbol\mu\)</td><td class="t">not a magnitude &mdash; changing it rotates the ellipse about the \(\boldsymbol\mu\) axis</td></tr>
-        <tr><td>\(\boldsymbol\gamma_3\)</td><td class="t">second principal direction</td><td class="t">the short axis; perpendicular to both \(\boldsymbol\mu\) and \(\boldsymbol\gamma_2\)</td><td class="t">determined by the other two up to sign, for \(k=3\)</td></tr>
-        <tr><td>\(\lambda_2=\dfrac1{\kappa-2\beta}\)</td><td class="t">variance along the long axis</td><td class="t">\(\sqrt{\lambda_2}\) is the long semi-axis of the one-sigma ellipse</td><td class="t">the ellipse gets longer in the \(\boldsymbol\gamma_2\) direction</td></tr>
-        <tr><td>\(\lambda_3=\dfrac1{\kappa+2\beta}\)</td><td class="t">variance along the short axis</td><td class="t">\(\sqrt{\lambda_3}\) is the short semi-axis</td><td class="t">the ellipse gets wider in the \(\boldsymbol\gamma_3\) direction, i.e. rounder</td></tr>
-        <tr><td>\(\boldsymbol\Gamma=[\boldsymbol\mu\,\boldsymbol\gamma_2\,\boldsymbol\gamma_3]\)</td><td class="t">the frame</td><td class="t">an orthogonal matrix: the rotation from the standard axes to the data's own axes</td><td class="t">&mdash;</td></tr>
+        <tr><td>\(\mu\)</td><td class="t">the central direction</td><td class="t">the point on the sphere the cloud sits on; the mode and the mean direction</td><td class="t">the whole cloud slides to a new place; its shape is unchanged</td></tr>
+        <tr><td>\(\kappa>0\)</td><td class="t">concentration</td><td class="t">the overall size of the ellipse; \(1/\kappa\) is the average tangent variance</td><td class="t">the cloud shrinks toward \(\mu\); both semi-axes get shorter</td></tr>
+        <tr><td>\(0\le2\beta&lt;\kappa\)</td><td class="t">ovalness</td><td class="t">how unequal the two tangent variances are</td><td class="t">the ellipse stretches along \(\gamma_2\) and narrows along \(\gamma_3\); at \(2\beta\to\kappa\) it stops being a single bump</td></tr>
+        <tr><td>\(\gamma_2\)</td><td class="t">first principal direction</td><td class="t">the long axis of the ellipse, perpendicular to \(\mu\)</td><td class="t">not a magnitude &mdash; changing it rotates the ellipse about the \(\mu\) axis</td></tr>
+        <tr><td>\(\gamma_3\)</td><td class="t">second principal direction</td><td class="t">the short axis; perpendicular to both \(\mu\) and \(\gamma_2\)</td><td class="t">determined by the other two up to sign, for \(k=3\)</td></tr>
+        <tr><td>\(\lambda_2=\dfrac1{\kappa-2\beta}\)</td><td class="t">variance along the long axis</td><td class="t">\(\sqrt{\lambda_2}\) is the long semi-axis of the one-sigma ellipse</td><td class="t">the ellipse gets longer in the \(\gamma_2\) direction</td></tr>
+        <tr><td>\(\lambda_3=\dfrac1{\kappa+2\beta}\)</td><td class="t">variance along the short axis</td><td class="t">\(\sqrt{\lambda_3}\) is the short semi-axis</td><td class="t">the ellipse gets wider in the \(\gamma_3\) direction, i.e. rounder</td></tr>
+        <tr><td>\(\Gamma=[\mu\,\gamma_2\,\gamma_3]\)</td><td class="t">the frame</td><td class="t">an orthogonal matrix: the rotation from the standard axes to the data's own axes</td><td class="t">&mdash;</td></tr>
       </tbody>
     </table>
   </div>
@@ -1282,11 +1282,11 @@ window.MathJax={
       <thead><tr><th>object</th><th>size</th><th>what it is</th><th>does it depend on the data?</th></tr></thead>
       <tbody>
         <tr><td>\(\hat M\)</td><td>\(k\times k\)</td><td class="t">second-moment matrix of the unit vectors; \(\operatorname{tr}(\hat M)=1\)</td><td class="t">yes &mdash; entirely</td></tr>
-        <tr><td>\(\mathbf B(\hat{\boldsymbol\mu})\)</td><td>\(k\times(k-1)\)</td><td class="t">Householder basis: two arbitrary perpendicular rulers in the tangent plane</td><td class="t">only through \(\hat{\boldsymbol\mu}\); otherwise it is a convention</td></tr>
+        <tr><td>\(\mathbf B(\hat{\mu})\)</td><td>\(k\times(k-1)\)</td><td class="t">Householder basis: two arbitrary perpendicular rulers in the tangent plane</td><td class="t">only through \(\hat{\mu}\); otherwise it is a convention</td></tr>
         <tr><td>\(S_L\)</td><td>\((k-1)\times(k-1)\)</td><td class="t">\(\mathbf B^{\!\top}\hat M\mathbf B\): the spread written in ruler coordinates</td><td class="t">yes, but its <em>entries</em> also depend on the choice of \(\mathbf B\)</td></tr>
         <tr><td>\(W\)</td><td>\((k-1)\times(k-1)\)</td><td class="t">eigenvectors of \(S_L\): the turn from rulers to principal axes</td><td class="t">yes; also depends on \(\mathbf B\), in the opposite way to \(S_L\)</td></tr>
         <tr><td>\(\Lambda\)</td><td>\((k-1)\times(k-1)\)</td><td class="t">eigenvalues \(\lambda_2\ge\lambda_3\): the tangent variances</td><td class="t">yes; does <em>not</em> depend on \(\mathbf B\)</td></tr>
-        <tr><td>\(\hat{\mathbf K}\)</td><td>\(k\times k\)</td><td class="t">\([\hat{\boldsymbol\mu}\;\;\mathbf B W]\): the estimated Kent frame</td><td class="t">yes; does <em>not</em> depend on \(\mathbf B\)</td></tr>
+        <tr><td>\(\hat{\mathbf K}\)</td><td>\(k\times k\)</td><td class="t">\([\hat{\mu}\;\;\mathbf B W]\): the estimated Kent frame</td><td class="t">yes; does <em>not</em> depend on \(\mathbf B\)</td></tr>
       </tbody>
     </table>
   </div>
@@ -1321,25 +1321,25 @@ window.MathJax={
     <p>The transformed data now lie on the positive orthant of \(S^{k-1}\). <em>Why:</em> this is the step that lets us use the whole toolbox of directional statistics. The simplex and the positive orthant of the sphere hold the same information; the sphere version has a better-behaved geometry.</p>
 
     <h4>sphere \(\longrightarrow\) mean direction</h4>
-    <p>Compute \(\bar{\mathbf u}=\frac1n\sum_i\mathbf u_i\) and set \(\hat{\boldsymbol\mu}=\bar{\mathbf u}/\|\bar{\mathbf u}\|\). <em>Why:</em> we need a centre before we can describe spread <em>around</em> the centre. Normalising is necessary because \(\bar{\mathbf u}\) itself is inside the sphere, not on it. The discarded length \(\bar R=\|\bar{\mathbf u}\|\) is kept as a concentration diagnostic.</p>
+    <p>Compute \(\bar{\mathbf u}=\frac1n\sum_i\mathbf u_i\) and set \(\hat{\mu}=\bar{\mathbf u}/\|\bar{\mathbf u}\|\). <em>Why:</em> we need a centre before we can describe spread <em>around</em> the centre. Normalising is necessary because \(\bar{\mathbf u}\) itself is inside the sphere, not on it. The discarded length \(\bar R=\|\bar{\mathbf u}\|\) is kept as a concentration diagnostic.</p>
 
     <h4>mean direction \(\longrightarrow\) tangent plane</h4>
-    <p>Build the Householder basis \(\mathbf B(\hat{\boldsymbol\mu})\), two perpendicular unit vectors spanning \(T_{\hat{\boldsymbol\mu}}\). <em>Why:</em> spread is a \((k-1)\)-dimensional thing living sideways from \(\hat{\boldsymbol\mu}\), and we need coordinates to measure it in. Without a basis we would be trying to describe a two-dimensional shape with three numbers, one of which is redundant.</p>
+    <p>Build the Householder basis \(\mathbf B(\hat{\mu})\), two perpendicular unit vectors spanning \(T_{\hat{\mu}}\). <em>Why:</em> spread is a \((k-1)\)-dimensional thing living sideways from \(\hat{\mu}\), and we need coordinates to measure it in. Without a basis we would be trying to describe a two-dimensional shape with three numbers, one of which is redundant.</p>
 
     <h4>tangent plane \(\longrightarrow\) second moment</h4>
-    <p>Form \(\hat M=\frac1n\sum_i\mathbf u_i\mathbf u_i^{\!\top}\), then \(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). <em>Why:</em> \(\hat M\) records the spread in every direction at once; \(\mathbf B^{\!\top}(\cdot)\mathbf B\) throws away the part along \(\hat{\boldsymbol\mu}\) and keeps the sideways part, written in ruler coordinates. This is the "flatten the cloud onto the table" step.</p>
+    <p>Form \(\hat M=\frac1n\sum_i\mathbf u_i\mathbf u_i^{\!\top}\), then \(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). <em>Why:</em> \(\hat M\) records the spread in every direction at once; \(\mathbf B^{\!\top}(\cdot)\mathbf B\) throws away the part along \(\hat{\mu}\) and keeps the sideways part, written in ruler coordinates. This is the "flatten the cloud onto the table" step.</p>
 
     <h4>second moment \(\longrightarrow\) principal directions</h4>
-    <p>Eigen-decompose, \(S_L=W\Lambda W^{\!\top}\), and lift back with \([\hat{\boldsymbol\gamma}_2\;\hat{\boldsymbol\gamma}_3]=\mathbf BW\). <em>Why:</em> eigenvectors answer the question "in which direction is the spread greatest?", which is exactly the definition of \(\boldsymbol\gamma_2\). Multiplying by \(\mathbf B\) converts an answer given in ruler coordinates into a real direction in \(\mathbb R^k\). The arbitrary choice of rulers cancels here.</p>
+    <p>Eigen-decompose, \(S_L=W\Lambda W^{\!\top}\), and lift back with \([\hat{\gamma}_2\;\hat{\gamma}_3]=\mathbf BW\). <em>Why:</em> eigenvectors answer the question "in which direction is the spread greatest?", which is exactly the definition of \(\gamma_2\). Multiplying by \(\mathbf B\) converts an answer given in ruler coordinates into a real direction in \(\mathbb R^k\). The arbitrary choice of rulers cancels here.</p>
 
     <h4>principal directions \(\longrightarrow\) Kent distribution</h4>
     <p>Convert the eigenvalues into \(\hat\kappa=\tfrac12(1/\lambda_2+1/\lambda_3)\) and \(\hat\beta=\tfrac14(1/\lambda_3-1/\lambda_2)\), and assemble</p>
-    \[ \hat f(\mathbf u)\propto\exp\Bigl\{\hat\kappa\,\hat{\boldsymbol\mu}^{\!\top}\mathbf u +\hat\beta\bigl[(\hat{\boldsymbol\gamma}_2^{\!\top}\mathbf u)^2-(\hat{\boldsymbol\gamma}_3^{\!\top}\mathbf u)^2\bigr]\Bigr\}. \]
+    \[ \hat f(\mathbf u)\propto\exp\Bigl\{\hat\kappa\,\hat{\mu}^{\!\top}\mathbf u +\hat\beta\bigl[(\hat{\gamma}_2^{\!\top}\mathbf u)^2-(\hat{\gamma}_3^{\!\top}\mathbf u)^2\bigr]\Bigr\}. \]
     <p><em>Why:</em> the tangent-plane normal approximation of Part 7 links variances to \((\kappa,\beta)\), so estimating the variances estimates the parameters. You now have a full probability model: you can compute likelihoods, simulate new compositions (draw \(\mathbf u\), then set \(\mathbf z=\mathbf u^2\)), compare groups, or use the likelihood inside a larger procedure such as a random forest leaf.</p>
 
     <div class="note">
       <span class="tag">Going back</span>
-      <p>Anything you compute on the sphere can be brought back to the simplex by squaring. A fitted mean direction \(\hat{\boldsymbol\mu}\) becomes a fitted mean composition \(\hat{\boldsymbol\pi}=\hat{\boldsymbol\mu}^2\). A simulated \(\mathbf u\) becomes a simulated composition \(\mathbf u^2\). A contour on the sphere becomes a region in the ternary diagram. The round trip loses nothing.</p>
+      <p>Anything you compute on the sphere can be brought back to the simplex by squaring. A fitted mean direction \(\hat{\mu}\) becomes a fitted mean composition \(\hat{\pi}=\hat{\mu}^2\). A simulated \(\mathbf u\) becomes a simulated composition \(\mathbf u^2\). A contour on the sphere becomes a region in the ternary diagram. The round trip loses nothing.</p>
     </div>
   </div>
 </section>
@@ -1354,13 +1354,13 @@ window.MathJax={
 
     <p>Compositional data &mdash; proportions that add up to one &mdash; can be turned into directions. Take the square root of each part. Then the parts still describe the same thing, but now their <em>squares</em> add up to one, which is exactly the rule for being on a sphere. So every composition is a point on the positive corner of a sphere.</p>
 
-    <p>The simplest distribution on a sphere is von Mises&ndash;Fisher. It has a centre \(\boldsymbol\mu\) and a tightness \(\kappa\). Its weakness: the cloud of data it produces is always round. The spread is the same in every direction away from the centre. Real compositions often are not like that: two components trade off against each other while a third barely moves, which makes a long, narrow cloud.</p>
+    <p>The simplest distribution on a sphere is von Mises&ndash;Fisher. It has a centre \(\mu\) and a tightness \(\kappa\). Its weakness: the cloud of data it produces is always round. The spread is the same in every direction away from the centre. Real compositions often are not like that: two components trade off against each other while a third barely moves, which makes a long, narrow cloud.</p>
 
-    <p>The Kent distribution fixes this. It adds one term, \(\beta[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2]\), which adds probability in one sideways direction and removes it in the perpendicular one. The cloud becomes an ellipse. Setting \(\beta=0\) gives vMF back, so Kent is the bigger family.</p>
+    <p>The Kent distribution fixes this. It adds one term, \(\beta[(\gamma_2^{\!\top}\mathbf u)^2-(\gamma_3^{\!\top}\mathbf u)^2]\), which adds probability in one sideways direction and removes it in the perpendicular one. The cloud becomes an ellipse. Setting \(\beta=0\) gives vMF back, so Kent is the bigger family.</p>
 
-    <p>Near its centre, a Kent distribution is just a two-dimensional normal distribution painted on the flat plane that touches the sphere at \(\boldsymbol\mu\) &mdash; the tangent plane. Its variances along the two axes are \(\lambda_2=1/(\kappa-2\beta)\) and \(\lambda_3=1/(\kappa+2\beta)\). That one fact explains everything: why \(\kappa\) controls size, why \(\beta\) controls ovalness, and why we need \(2\beta<\kappa\) (otherwise \(\lambda_2\) would not be a positive variance).</p>
+    <p>Near its centre, a Kent distribution is just a two-dimensional normal distribution painted on the flat plane that touches the sphere at \(\mu\) &mdash; the tangent plane. Its variances along the two axes are \(\lambda_2=1/(\kappa-2\beta)\) and \(\lambda_3=1/(\kappa+2\beta)\). That one fact explains everything: why \(\kappa\) controls size, why \(\beta\) controls ovalness, and why we need \(2\beta<\kappa\) (otherwise \(\lambda_2\) would not be a positive variance).</p>
 
-    <p>To fit it: normalise the average of the unit vectors to get \(\hat{\boldsymbol\mu}\). Compute \(\hat M=\frac1n\sum\mathbf u_i\mathbf u_i^{\!\top}\), whose trace is always 1. Build a basis \(\mathbf B\) for the tangent plane with a Householder reflection &mdash; two perpendicular "rulers" laid on the plane, chosen by convention, not by the data. Project: \(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). Its off-diagonal entry is usually not zero, which only means the rulers are not lined up with the cloud. Eigen-decompose \(S_L=W\Lambda W^{\!\top}\): the eigenvalues are the two tangent variances and \(W\) is the turn that lines the rulers up. Finally \([\hat{\boldsymbol\gamma}_2\;\hat{\boldsymbol\gamma}_3]=\mathbf BW\), and \(\hat\kappa,\hat\beta\) come from the eigenvalues.</p>
+    <p>To fit it: normalise the average of the unit vectors to get \(\hat{\mu}\). Compute \(\hat M=\frac1n\sum\mathbf u_i\mathbf u_i^{\!\top}\), whose trace is always 1. Build a basis \(\mathbf B\) for the tangent plane with a Householder reflection &mdash; two perpendicular "rulers" laid on the plane, chosen by convention, not by the data. Project: \(S_L=\mathbf B^{\!\top}\hat M\mathbf B\). Its off-diagonal entry is usually not zero, which only means the rulers are not lined up with the cloud. Eigen-decompose \(S_L=W\Lambda W^{\!\top}\): the eigenvalues are the two tangent variances and \(W\) is the turn that lines the rulers up. Finally \([\hat{\gamma}_2\;\hat{\gamma}_3]=\mathbf BW\), and \(\hat\kappa,\hat\beta\) come from the eigenvalues.</p>
 
     <p>The step people find confusing is the last one. \(\mathbf B\) is not \(\mathbf K\). \(\mathbf B\) is where you happened to put your rulers; \(\mathbf K\) is the shape the data actually have. If you change \(\mathbf B\), then \(S_L\) changes and \(W\) changes in the opposite way, and the product \(\mathbf BW\) stays exactly the same. The arbitrary choice cancels.</p>
 
@@ -1375,9 +1375,9 @@ window.MathJax={
     <h2>The five most important things to remember</h2>
     <ol class="bigfive">
       <li><div><b>The square root is exact, not an approximation.</b> \(\sum_jz_j=1\) becomes \(\sum_ju_j^2=1\). A composition is a point on the positive part of a sphere, and you can always go back by squaring.</div></li>
-      <li><div><b>vMF is round; Kent is oval.</b> vMF depends on \(\mathbf u\) only through the angle to \(\boldsymbol\mu\), so it must be the same in every sideways direction. Kent adds one squared term that breaks this, and vMF is the \(\beta=0\) case of Kent.</div></li>
-      <li><div><b>Near \(\boldsymbol\mu\), Kent is a 2D normal on the tangent plane,</b> with variances \(\lambda_2=1/(\kappa-2\beta)\) and \(\lambda_3=1/(\kappa+2\beta)\). Everything about \(\kappa\), \(\beta\) and the constraint \(2\beta<\kappa\) follows from this.</div></li>
-      <li><div><b>\(\mathbf B\) is the rulers; \(\mathbf K\) is the stain.</b> \(\mathbf B\) is a convention built from \(\hat{\boldsymbol\mu}\) alone and knows nothing about the data. \(W\), from the eigen-decomposition, is the only part that looks at the data. \(\hat{\mathbf K}=[\hat{\boldsymbol\mu}\;\;\mathbf BW]\).</div></li>
+      <li><div><b>vMF is round; Kent is oval.</b> vMF depends on \(\mathbf u\) only through the angle to \(\mu\), so it must be the same in every sideways direction. Kent adds one squared term that breaks this, and vMF is the \(\beta=0\) case of Kent.</div></li>
+      <li><div><b>Near \(\mu\), Kent is a 2D normal on the tangent plane,</b> with variances \(\lambda_2=1/(\kappa-2\beta)\) and \(\lambda_3=1/(\kappa+2\beta)\). Everything about \(\kappa\), \(\beta\) and the constraint \(2\beta<\kappa\) follows from this.</div></li>
+      <li><div><b>\(\mathbf B\) is the rulers; \(\mathbf K\) is the stain.</b> \(\mathbf B\) is a convention built from \(\hat{\mu}\) alone and knows nothing about the data. \(W\), from the eigen-decomposition, is the only part that looks at the data. \(\hat{\mathbf K}=[\hat{\mu}\;\;\mathbf BW]\).</div></li>
       <li><div><b>Change the rulers and nothing you report changes.</b> \(\tilde{\mathbf B}=\mathbf BR\) gives \(\tilde S_L=R^{\!\top}S_LR\) and \(\tilde W=R^{\!\top}W\), so \(\tilde{\mathbf B}\tilde W=\mathbf BW\). The eigenvalues are untouched too. Invariance is the reason the method is trustworthy.</div></li>
     </ol>
   </div>
@@ -1392,16 +1392,16 @@ window.MathJax={
 
     <ol class="q">
       <li>The composition \(\mathbf z=(0.16,0.36,0.48)\) is measured. Compute \(\mathbf u=\sqrt{\mathbf z}\) and verify that \(\|\mathbf u\|=1\). Which corner of the sphere does it lie in? <span class="pill">Part 3</span></li>
-      <li>A colleague fits a vMF distribution and reports \(\hat\kappa=80\). Roughly what is the typical angular distance of an observation from \(\hat{\boldsymbol\mu}\), in degrees? What is the corresponding tangent variance? <span class="pill">Parts 4, 7</span></li>
+      <li>A colleague fits a vMF distribution and reports \(\hat\kappa=80\). Roughly what is the typical angular distance of an observation from \(\hat{\mu}\), in degrees? What is the corresponding tangent variance? <span class="pill">Parts 4, 7</span></li>
       <li>A Kent fit gives \(\kappa=50\) and \(\beta=20\). Compute \(\lambda_2\) and \(\lambda_3\). What is the ratio of the ellipse's semi-axes? Is the constraint satisfied? Now try \(\beta=25\) and explain in words what goes wrong. <span class="pill">Parts 6, 7</span></li>
       <li>Explain, without writing a formula, why \(\operatorname{tr}(\hat M)=1\) no matter what the data are. Then say what would be wrong if you computed \(\hat M\) and got a trace of 0.97. <span class="pill">Part 8</span></li>
-      <li>Suppose \(\hat{\boldsymbol\mu}=(0,1,0)\). Carry out the Householder construction by hand: write down \(\mathbf h\), \(\mathbf h^{\!\top}\mathbf h\), \(H\), and read off \(\mathbf b_1\) and \(\mathbf b_2\). Verify that both are perpendicular to \(\hat{\boldsymbol\mu}\). <span class="pill">Part 9</span></li>
-      <li>You compute \(S_L=\begin{pmatrix}0.04&0\\0&0.04\end{pmatrix}\). What are \(\hat{\boldsymbol\gamma}_2\) and \(\hat{\boldsymbol\gamma}_3\)? What is \(\hat\beta\)? Why is the first question not really a fair one? <span class="pill">Parts 11, 13</span></li>
+      <li>Suppose \(\hat{\mu}=(0,1,0)\). Carry out the Householder construction by hand: write down \(\mathbf h\), \(\mathbf h^{\!\top}\mathbf h\), \(H\), and read off \(\mathbf b_1\) and \(\mathbf b_2\). Verify that both are perpendicular to \(\hat{\mu}\). <span class="pill">Part 9</span></li>
+      <li>You compute \(S_L=\begin{pmatrix}0.04&0\\0&0.04\end{pmatrix}\). What are \(\hat{\gamma}_2\) and \(\hat{\gamma}_3\)? What is \(\hat\beta\)? Why is the first question not really a fair one? <span class="pill">Parts 11, 13</span></li>
       <li>You compute \(S_L=\begin{pmatrix}0.05&-0.03\\-0.03&0.05\end{pmatrix}\). Find the eigenvalues and eigenvectors by hand. Compare with the example in Part 11 and explain what the change of sign in the off-diagonal entry did to the long axis. <span class="pill">Parts 10, 11</span></li>
-      <li>Two students analyse the same data. Student A uses the Householder basis; student B uses a basis rotated by 25&deg;. Which of the following will differ between them, and which will be identical: \(\hat{\boldsymbol\mu}\), \(\hat M\), \(\mathbf B\), \(S_L\), \(\lambda_2\), \(W\), \(\hat{\boldsymbol\gamma}_2\), \(\hat\kappa\), \(\hat\beta\)? <span class="pill">Part 12</span></li>
+      <li>Two students analyse the same data. Student A uses the Householder basis; student B uses a basis rotated by 25&deg;. Which of the following will differ between them, and which will be identical: \(\hat{\mu}\), \(\hat M\), \(\mathbf B\), \(S_L\), \(\lambda_2\), \(W\), \(\hat{\gamma}_2\), \(\hat\kappa\), \(\hat\beta\)? <span class="pill">Part 12</span></li>
       <li>A referee writes: "the Kent model has five parameters for \(k=3\), so it is over-parameterised compared with vMF's three." Give a one-paragraph reply that mentions the two-dimensional normal distribution. <span class="pill">Part 14</span></li>
-      <li>In the soil example, \(\hat{\boldsymbol\gamma}_2\) came out with a large positive entry for sand and a large negative entry for clay. Translate that into a sentence about soils that a non-statistician would understand. Then say what \(\hat{\boldsymbol\gamma}_3\) is telling you. <span class="pill">Part 15</span></li>
-      <li>Under vMF with mean composition \(\boldsymbol\pi=(0.5,0.3,0.2)\), the correlation between the second and third parts is fixed at about \(-0.33\) whatever \(\kappa\) is. Where does that number come from, and why can Kent produce a different one? <span class="pill">Part 14</span></li>
+      <li>In the soil example, \(\hat{\gamma}_2\) came out with a large positive entry for sand and a large negative entry for clay. Translate that into a sentence about soils that a non-statistician would understand. Then say what \(\hat{\gamma}_3\) is telling you. <span class="pill">Part 15</span></li>
+      <li>Under vMF with mean composition \(\pi=(0.5,0.3,0.2)\), the correlation between the second and third parts is fixed at about \(-0.33\) whatever \(\kappa\) is. Where does that number come from, and why can Kent produce a different one? <span class="pill">Part 14</span></li>
       <li>Your data have \(\lambda_2=0.021\) and \(\lambda_3=0.019\). Would you report an estimated direction of maximum variation? Justify your answer. <span class="pill">Part 13</span></li>
     </ol>
 
@@ -2088,8 +2088,8 @@ put('t15u','<thead><tr><th>#</th><th>\\(u_1\\)</th><th>\\(u_2\\)</th><th>\\(u_3\
 put('t15mu','<tbody>'+
   `<tr><td class="t">\\(\\bar{\\mathbf u}=\\frac1n\\sum_i\\mathbf u_i\\)</td><td>${f(UBAR[0])}</td><td>${f(UBAR[1])}</td><td>${f(UBAR[2])}</td></tr>`+
   `<tr><td class="t">\\(\\bar R=\\|\\bar{\\mathbf u}\\|\\)</td><td colspan="3">${f(RBAR,5)}</td></tr>`+
-  `<tr><td class="t">\\(\\hat{\\boldsymbol\\mu}=\\bar{\\mathbf u}/\\bar R\\)</td><td>${f(MU15[0])}</td><td>${f(MU15[1])}</td><td>${f(MU15[2])}</td></tr>`+
-  `<tr><td class="t">\\(\\hat{\\boldsymbol\\pi}=\\hat{\\boldsymbol\\mu}^2\\) (mean composition)</td><td>${f(MU15[0]*MU15[0],4)} sand</td><td>${f(MU15[1]*MU15[1],4)} silt</td><td>${f(MU15[2]*MU15[2],4)} clay</td></tr>`+
+  `<tr><td class="t">\\(\\hat{\\mu}=\\bar{\\mathbf u}/\\bar R\\)</td><td>${f(MU15[0])}</td><td>${f(MU15[1])}</td><td>${f(MU15[2])}</td></tr>`+
+  `<tr><td class="t">\\(\\hat{\\pi}=\\hat{\\mu}^2\\) (mean composition)</td><td>${f(MU15[0]*MU15[0],4)} sand</td><td>${f(MU15[1]*MU15[1],4)} silt</td><td>${f(MU15[2]*MU15[2],4)} clay</td></tr>`+
   '</tbody>');
 put('m15M', mboxHTML('M&#770; =',M15,5)+
   `<div class="mbox"><span class="mlab">tr(M&#770;) = ${f(M15[0][0]+M15[1][1]+M15[2][2],6)}</span></div>`+
@@ -2106,8 +2106,8 @@ put('m15K', mboxHTML('K&#770; = [&mu;&#770; &gamma;&#770;&#8322; &gamma;&#770;&#
   [[MU15[0],G2_15[0],G3_15[0]],[MU15[1],G2_15[1],G3_15[1]],[MU15[2],G2_15[2],G3_15[2]]])+
   `<div class="mbox"><span class="mlab">&gamma;&#770;&#8322;&#7488;&mu;&#770; = ${f(dot(G2_15,MU15),6)} &nbsp;&nbsp; &gamma;&#770;&#8322;&#7488;&gamma;&#770;&#8323; = ${f(dot(G2_15,G3_15),6)}</span></div>`);
 put('t15par','<thead><tr><th>quantity</th><th>value</th><th>how it was obtained</th></tr></thead><tbody>'+
-  `<tr><td>\\(\\lambda_2\\)</td><td>${f(LAM2,5)}</td><td class="t">larger eigenvalue of \\(S_L\\) &mdash; variance along \\(\\hat{\\boldsymbol\\gamma}_2\\)</td></tr>`+
-  `<tr><td>\\(\\lambda_3\\)</td><td>${f(LAM3,5)}</td><td class="t">smaller eigenvalue &mdash; variance along \\(\\hat{\\boldsymbol\\gamma}_3\\)</td></tr>`+
+  `<tr><td>\\(\\lambda_2\\)</td><td>${f(LAM2,5)}</td><td class="t">larger eigenvalue of \\(S_L\\) &mdash; variance along \\(\\hat{\\gamma}_2\\)</td></tr>`+
+  `<tr><td>\\(\\lambda_3\\)</td><td>${f(LAM3,5)}</td><td class="t">smaller eigenvalue &mdash; variance along \\(\\hat{\\gamma}_3\\)</td></tr>`+
   `<tr><td>\\(\\sqrt{\\lambda_2/\\lambda_3}\\)</td><td>${f(Math.sqrt(LAM2/LAM3),2)}</td><td class="t">how many times longer the ellipse is than it is wide</td></tr>`+
   `<tr><td>\\(\\hat\\kappa\\)</td><td>${f(KAP15,1)}</td><td class="t">\\(\\tfrac12(1/\\lambda_2+1/\\lambda_3)\\)</td></tr>`+
   `<tr><td>\\(\\hat\\beta\\)</td><td>${f(BET15,1)}</td><td class="t">\\(\\tfrac14(1/\\lambda_3-1/\\lambda_2)\\)</td></tr>`+
@@ -2120,11 +2120,11 @@ put('t15par','<thead><tr><th>quantity</th><th>value</th><th>how it was obtained<
   const hi=order[0], lo=order[1];
   const sgn=v=>v>0?'up':'down';
   document.getElementById('p15read').innerHTML=
-    `The estimated long axis is \\(\\hat{\\boldsymbol\\gamma}_2=(${f(G2_15[0],3)},\\,${f(G2_15[1],3)},\\,${f(G2_15[2],3)})\\). `+
+    `The estimated long axis is \\(\\hat{\\gamma}_2=(${f(G2_15[0],3)},\\,${f(G2_15[1],3)},\\,${f(G2_15[2],3)})\\). `+
     `Its largest entry belongs to <strong>${NAMES[hi]}</strong> and its next largest to <strong>${NAMES[lo]}</strong>, `+
     `and they have <strong>opposite signs</strong>. Moving along this axis therefore means ${NAMES[hi]} goes ${sgn(G2_15[hi])} while ${NAMES[lo]} goes ${sgn(G2_15[lo])}. `+
     `The remaining component, <strong>${NAMES[order[2]]}</strong>, has coefficient ${f(G2_15[order[2]],3)} &mdash; close to zero, so it hardly changes along this axis. `+
-    `The short axis is \\(\\hat{\\boldsymbol\\gamma}_3=(${f(G3_15[0],3)},\\,${f(G3_15[1],3)},\\,${f(G3_15[2],3)})\\), with ${f(LAM2/LAM3,1)} times less variance.`;
+    `The short axis is \\(\\hat{\\gamma}_3=(${f(G3_15[0],3)},\\,${f(G3_15[1],3)},\\,${f(G3_15[2],3)})\\), with ${f(LAM2/LAM3,1)} times less variance.`;
   document.getElementById('p15sci').innerHTML=
     `&ldquo;The twelve soils have mean composition about (${(MU15[0]*MU15[0]*100).toFixed(0)}% ${NAMES[0]}, ${(MU15[1]*MU15[1]*100).toFixed(0)}% ${NAMES[1]}, ${(MU15[2]*MU15[2]*100).toFixed(0)}% ${NAMES[2]}). `+
     `They are tightly clustered (\\(\\bar R=${f(RBAR,4)}\\), \\(\\hat\\kappa=${f(KAP15,0)}\\)) but clearly not clustered in a round way: the fitted ellipse is `+
