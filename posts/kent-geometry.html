@@ -66,172 +66,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="kent-geometry_files/libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="kent-geometry_files/libs/quarto-html/quarto-html-734cb40618f438257b19a1e532635a32.min.css" rel="stylesheet" append-hash="true" data-mode="light">
 <link href="kent-geometry_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<!-- Website build: wears xaleed.github.io's own stylesheet, loads Plotly from a CDN
-     (Plotly from a CDN, for the one interactive level-set panel). -->
-<link rel="stylesheet" href="../css/style.css">
-<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<!-- Website build: the page carries its own design (geo-chrome.css),
+     the same one used by Kent on the Sphere. Plotly from a CDN. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Serif&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+<link rel="stylesheet" href="geo-chrome.css"><script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
 <script src="kent-geometry-3d.js"></script>
-
-<style>
-/* ══════════════════════════════════════════════════════════════════
-   Bridge: dress Quarto's output in the site's design language.
-   Everything here is scoped to the document body Quarto emits, so it
-   cannot leak into the site's nav or footer.
-   ══════════════════════════════════════════════════════════════════ */
-
-#quarto-content { padding: 0; }
-main#quarto-document-content { font-family: var(--font-serif); }
-
-/* ── title block ── */
-#title-block-header { padding: 3.5rem 0 2.2rem; border-bottom: 1px solid var(--border);
-  margin-bottom: 2.4rem; }
-#title-block-header .title {
-  font-family: var(--font-serif); font-size: clamp(1.7rem, 4vw, 2.4rem);
-  font-weight: 500; line-height: 1.18; letter-spacing: -0.015em; margin-bottom: 0.9rem;
-}
-#title-block-header .subtitle {
-  font-size: 1.05rem; color: var(--muted); line-height: 1.6;
-  font-style: italic; max-width: 620px; margin-bottom: 1rem;
-}
-#title-block-header .quarto-title-meta { display: none; }
-/* the category eyebrow the site's other posts carry */
-#title-block-header::before {
-  content: "Tutorial · Compositional geometry";
-  display: block; font-family: var(--font-mono); font-size: 0.62rem;
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
-  margin-bottom: 0.9rem;
-}
-
-/* ── headings ── */
-#quarto-document-content h1 {
-  font-family: var(--font-serif); font-size: 1.75rem; font-weight: 500;
-  margin: 3rem 0 1rem; letter-spacing: -0.01em;
-  padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
-}
-#quarto-document-content h2 {
-  font-family: var(--font-serif); font-size: 1.3rem; font-weight: 500; margin: 2.2rem 0 0.7rem;
-}
-#quarto-document-content h3 {
-  font-family: var(--font-serif); font-size: 1.08rem; font-weight: 500; margin: 1.7rem 0 0.5rem;
-}
-#quarto-document-content .header-section-number { color: var(--muted); font-weight: 400; margin-right: 0.4rem; }
-#quarto-document-content p { margin-bottom: 1.25rem; line-height: 1.8; }
-#quarto-document-content li { margin-bottom: 0.35rem; line-height: 1.75; }
-#quarto-document-content ul, #quarto-document-content ol { margin: 0 0 1.25rem 1.3rem; }
-#quarto-document-content strong { font-weight: 600; color: var(--text); }
-#quarto-document-content a { color: var(--accent); text-decoration: underline; text-underline-offset: 3px; }
-#quarto-document-content a.anchorjs-link { text-decoration: none; }
-
-/* ── table of contents, placed in the body ── */
-#quarto-document-content nav#TOC {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1.2rem 1.5rem; margin-bottom: 2.5rem;
-}
-nav#TOC > h2, nav#TOC > .toc-title {
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em;
-  text-transform: uppercase; color: var(--accent); margin: 0 0 0.7rem; border: none; padding: 0;
-}
-nav#TOC ul { list-style: none; margin: 0; padding-left: 0; }
-nav#TOC ul ul { padding-left: 1rem; }
-nav#TOC li { margin-bottom: 0.15rem; }
-nav#TOC a { font-size: 0.86rem; color: var(--text); text-decoration: none; line-height: 1.5; }
-nav#TOC a:hover { color: var(--accent); }
-
-/* ── figures ── */
-#quarto-document-content figure { margin: 2rem 0; }
-#quarto-document-content figure img, #quarto-document-content p > img {
-  max-width: 100%; height: auto; display: block; margin: 0 auto;
-  background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
-}
-#quarto-document-content figcaption, #quarto-document-content .figure-caption {
-  font-size: 0.82rem; color: var(--muted); line-height: 1.6;
-  margin-top: 0.7rem; text-align: left;
-}
-#quarto-document-content figcaption strong { color: var(--text); }
-
-/* ── tables ── */
-#quarto-document-content table {
-  width: 100%; border-collapse: collapse; font-size: 0.86rem; margin: 1.2rem 0 1.8rem;
-}
-#quarto-document-content thead th {
-  text-align: left; padding: 0.6rem 0.9rem; font-family: var(--font-mono);
-  font-size: 0.63rem; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--muted); border-bottom: 1px solid var(--border); font-weight: 400;
-}
-#quarto-document-content tbody td {
-  padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border);
-  vertical-align: top; line-height: 1.6;
-}
-#quarto-document-content caption { caption-side: bottom; font-size: 0.8rem;
-  color: var(--muted); text-align: left; padding-top: 0.6rem; }
-.table-responsive, .cell-output-display > table { overflow-x: auto; }
-
-/* ── code ── */
-#quarto-document-content code { font-family: var(--font-mono); font-size: 0.8rem; }
-#quarto-document-content p code, #quarto-document-content li code, #quarto-document-content td code {
-  background: var(--surface); border: 1px solid var(--border);
-  padding: 0.1rem 0.35rem; border-radius: 3px;
-}
-#quarto-document-content pre {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 1rem 1.2rem; overflow-x: auto; margin-bottom: 1.3rem;
-}
-#quarto-document-content pre code { background: none; border: none; padding: 0;
-  font-size: 0.78rem; line-height: 1.65; }
-
-/* folded code blocks ("show the R code that drew this") */
-#quarto-document-content details.code-fold { margin-bottom: 1.3rem; }
-#quarto-document-content details.code-fold > summary {
-  font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--accent); cursor: pointer;
-  padding: 0.35rem 0; list-style: none;
-}
-#quarto-document-content details.code-fold > summary::-webkit-details-marker { display: none; }
-#quarto-document-content details.code-fold > summary::before { content: "▸ "; }
-#quarto-document-content details.code-fold[open] > summary::before { content: "▾ "; }
-
-/* ── callouts ── */
-#quarto-document-content .callout {
-  border: 1px solid var(--border); border-left: 3px solid var(--accent);
-  border-radius: var(--radius); background: var(--surface);
-  padding: 1rem 1.3rem; margin: 1.6rem 0;
-}
-#quarto-document-content .callout .callout-title,
-#quarto-document-content .callout .callout-header {
-  font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--accent); margin-bottom: 0.55rem;
-  background: none; padding: 0; border: none; display: block;
-}
-#quarto-document-content .callout .callout-title p,
-#quarto-document-content .callout .callout-title-container { margin: 0; font-size: inherit; }
-#quarto-document-content .callout .callout-icon,
-#quarto-document-content .callout .callout-icon-container,
-#quarto-document-content .callout .callout-btn-toggle { display: none; }
-#quarto-document-content .callout .callout-body p:last-child { margin-bottom: 0; }
-#quarto-document-content .callout-important { border-left-color: #c2551f; }
-#quarto-document-content .callout-important .callout-title { color: #c2551f; }
-#quarto-document-content .callout-warning { border-left-color: #b8860b; }
-#quarto-document-content .callout-warning .callout-title { color: #b8860b; }
-
-/* ── equations ── */
-#quarto-document-content mjx-container[display="true"] { margin: 1.3rem 0 !important; }
-#quarto-document-content mjx-container { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
-
-/* ── back to the blog ── */
-.kent-backlink {
-  display: inline-flex; align-items: center; gap: 0.5rem;
-  font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em;
-  text-transform: uppercase; border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 0.5rem 1rem; color: var(--text);
-  text-decoration: none !important; background: var(--surface); margin: 2.5rem 0 1rem;
-}
-.kent-backlink:hover { border-color: var(--accent); color: var(--accent); }
-
-@media (max-width: 620px) {
-  #title-block-header { padding-top: 2.5rem; }
-  #quarto-document-content pre { padding: 0.8rem 0.9rem; }
-}
-</style>
+<script src="geo-chrome.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -267,19 +109,6 @@ window.Quarto = {
 
 <body>
 
-<nav>
-  <a class="nav-logo" href="../index.html">Khaled Masoumifard</a>
-  <button class="nav-toggle" aria-label="Toggle menu" onclick="document.querySelector('.nav-links').classList.toggle('open')">
-    <span></span><span></span><span></span>
-  </button>
-  <ul class="nav-links">
-    <li><a href="../index.html">About</a></li>
-    <li><a href="../cv.html">CV</a></li>
-    <li><a href="../projects.html">Projects</a></li>
-    <li><a href="../blog.html" class="active">Blog</a></li>
-    <li><a href="../contact.html">Contact</a></li>
-  </ul>
-</nav>
 
 <header id="title-block-header">
 <h1 class="title">From a triangle to an ellipse</h1>
@@ -287,21 +116,7 @@ window.Quarto = {
 
 </header>
 
-<nav id="TOC" role="doc-toc">
-    <h2 id="toc-title">The five stages</h2>
-   
-  <ul>
-  <li><a href="#sec-simplex" id="toc-sec-simplex">Step 1 — Compositional data live in a triangle</a></li>
-  <li><a href="#sec-sqrt" id="toc-sec-sqrt">Step 2 — The square root lifts the triangle onto a sphere</a></li>
-  <li><a href="#sec-sphere" id="toc-sec-sphere">Step 3 — The data on the sphere</a></li>
-  <li><a href="#sec-tangent" id="toc-sec-tangent">Step 4 — The mean direction, and the plane that touches the sphere</a></li>
-  <li><a href="#sec-project" id="toc-sec-project">Step 5 — Projecting onto the plane: tangent coordinates</a></li>
-  <li><a href="#sec-vmf" id="toc-sec-vmf">Step 6 — von Mises–Fisher on the plane: circles</a></li>
-  <li><a href="#sec-kent" id="toc-sec-kent">Step 7 — Kent on the plane: ellipses</a></li>
-  <li><a href="#sec-levelset" id="toc-sec-levelset">Step 8 — Where the contour actually comes from</a></li>
-  <li><a href="#sec-together" id="toc-sec-together">Step 9 — Putting it together</a></li>
-  </ul>
-</nav>
+
 <div class="cell" data-layout-align="center">
 <script>window.GEO={U:[[0.5901238111,0.5475640883,0.5932347399],[0.7715077301,0.5391528322,0.3377721804],[0.682371269,0.5722062155,0.4549170234],[0.6799181715,0.5408231658,0.4951985292],[0.6758151351,0.5578715368,0.4817190588],[0.6513214314,0.5176823535,0.5547840786],[0.7411343823,0.5223559319,0.4217393836],[0.666468085,0.5294620016,0.5248716801],[0.7027193834,0.533319247,0.4709098098],[0.7697259065,0.5326421929,0.351872595],[0.7437283407,0.5181580115,0.4223510748],[0.6528835189,0.5684564469,0.5006000187],[0.7062174273,0.5774622144,0.4096270698],[0.7767811305,0.4890222062,0.3968228285],[0.7202341367,0.5490951456,0.4239779585],[0.7262478909,0.5777440441,0.3725262681],[0.6797942041,0.6038319585,0.4162532955],[0.8043404066,0.509239002,0.3061244014],[0.7675765998,0.5418137919,0.3424382839],[0.7050074764,0.5015549152,0.5014051509],[0.752569577,0.5427901398,0.3728510373],[0.6862901188,0.5341699566,0.4936277244],[0.6991341213,0.5603165714,0.4441360381],[0.7484797478,0.5369664351,0.3891594977],[0.6305945187,0.5793177032,0.5164702815],[0.757699359,0.5030367859,0.4157471268],[0.6445274136,0.5944376819,0.4808619921],[0.742482523,0.567802236,0.3554157058],[0.6553399173,0.5735184366,0.4915345315],[0.7257884349,0.5699853064,0.3851595751],[0.7545721011,0.5236749161,0.3954560992],[0.7343126205,0.5689579042,0.3702321956],[0.6922331018,0.5516737126,0.4652627726],[0.7113644385,0.4976993055,0.4962419138],[0.7314836408,0.5642050776,0.3828894273],[0.776111539,0.530023354,0.3416520499],[0.6228158132,0.5579766745,0.5484181739],[0.7685636887,0.5201540666,0.3724910783],[0.6398107434,0.5313580199,0.5552484735],[0.7667992434,0.4903344637,0.4142354814],[0.762560586,0.5253048306,0.3775661368],[0.6810955979,0.5127746495,0.5226575794],[0.688624731,0.5849654263,0.4284990431],[0.7239244648,0.5477413104,0.4194196301],[0.72476903,0.5097459981,0.4635395026],[0.7225755837,0.5411890084,0.4301150812],[0.7276938576,0.5301390782,0.4352174254],[0.6223229117,0.5624827155,0.5443596131],[0.7093721882,0.5322149554,0.4621020881],[0.7451680549,0.5372962708,0.3950155533],[0.7214934491,0.5430811824,0.4295463097],[0.5952251098,0.5524323871,0.5835456507],[0.5686035172,0.5763869507,0.586914068],[0.6975760908,0.5883571577,0.4089296425],[0.6609025998,0.5426448694,0.5184055356],[0.7736392718,0.5371911468,0.3360177807],[0.6428873147,0.542603993,0.5406263103],[0.6666364374,0.5299801653,0.5241344147],[0.6949923213,0.5168174355,0.4998853986],[0.7428032524,0.5329149012,0.4052715587]],Z:[[0.3482461125,0.2998264308,0.3519274567],[0.5952241777,0.2906857765,0.1140900458],[0.4656305488,0.327419953,0.2069494982],[0.46228872,0.2924896967,0.2452215833],[0.4567260968,0.3112206516,0.2320532516],[0.424219607,0.2679950191,0.3077853738],[0.5492801727,0.2728557196,0.1778641077],[0.4441797083,0.2803300111,0.2754902805],[0.4938145319,0.2844294192,0.221756049],[0.5924779712,0.2837077057,0.1238143231],[0.5531318447,0.2684877249,0.1783804304],[0.4262568893,0.323142732,0.2506003787],[0.4987430546,0.3334626091,0.1677943363],[0.6033889246,0.2391427181,0.1574683573],[0.5187372117,0.3015054789,0.1797573093],[0.5274359991,0.3337881805,0.1387758205],[0.4621201599,0.3646130341,0.173266806],[0.6469634897,0.2593243612,0.09371214913],[0.5891738365,0.2935621851,0.1172639783],[0.4970355417,0.251557333,0.2514071253],[0.5663609682,0.2946211358,0.139017896],[0.4709941272,0.2853375425,0.2436683303],[0.4887885195,0.3139546601,0.1972568203],[0.5602219329,0.2883329524,0.1514451146],[0.397649447,0.3356090013,0.2667415517],[0.5741083186,0.253046008,0.1728456734],[0.4154155869,0.3533561576,0.2312282555],[0.5512802969,0.3223993792,0.1263203239],[0.4294704072,0.3289233972,0.2416061956],[0.5267688523,0.3248832495,0.1483478983],[0.5693790558,0.2742354178,0.1563855264],[0.5392150246,0.3237130967,0.1370718787],[0.4791866673,0.3043438852,0.2164694476],[0.5060393644,0.2477045986,0.246256037],[0.5350683168,0.3183273696,0.1466043135],[0.602349121,0.2809247558,0.1167261232],[0.3878995372,0.3113379693,0.3007624935],[0.5906901436,0.270560253,0.1387496034],[0.4093577873,0.2823413453,0.3083008674],[0.5879810796,0.2404278863,0.1715910341],[0.5814986473,0.2759451651,0.1425561876],[0.4638912135,0.2629378412,0.2731709453],[0.4742040201,0.34218455,0.1836114299],[0.5240666307,0.3000205431,0.1759128262],[0.5252901469,0.2598409826,0.2148688705],[0.5221154741,0.2928855428,0.1849989831],[0.5295383504,0.2810474423,0.1894142074],[0.3872858064,0.3163868053,0.2963273884],[0.5032089014,0.2832527587,0.2135383398],[0.5552754301,0.2886872826,0.1560372874],[0.5205527972,0.2949371707,0.1845100322],[0.3542929313,0.3051815423,0.3405255264],[0.3233099598,0.332221917,0.3444681233],[0.4866124024,0.346164145,0.1672234525],[0.4367922464,0.2944634542,0.2687442993],[0.5985177228,0.2885743282,0.112907949],[0.4133040994,0.2944190932,0.2922768074],[0.4444041397,0.2808789756,0.2747168846],[0.4830143267,0.2671002616,0.2498854117],[0.5517566718,0.283998292,0.1642450363]],mu:[0.7084429672,0.5451956125,0.4481855713],g2:[-0.5720414827,0.07162606983,0.8170913341],g3:[-0.4133728393,0.8352433479,-0.362617492],b1:[0.5451956125,-0.01948580366,-0.8380823632],b2:[0.4481855713,-0.8380823632,0.3110428364],lam2:0.007454535655,lam3:0.0009234984669,kappa:608.4926742,beta:237.1730782,kappaVMF:238.7194861,Rbar:0.9957930614,pi0:[0.5,0.3,0.2]};</script>
 </div>
@@ -1118,9 +933,6 @@ Figure&nbsp;13: The same 60 samples at every stage, once more. Read left to righ
 </blockquote>
 </div>
 
-<a class="kent-backlink" href="../blog.html">← Back to the blog</a>
-
-<footer>© 2026 Khaled Masoumifard · Hosted on <a href="https://pages.github.com">GitHub Pages</a></footer>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
