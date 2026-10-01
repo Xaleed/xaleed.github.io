@@ -67,8 +67,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="kent-geometry_files/libs/quarto-html/quarto-html-734cb40618f438257b19a1e532635a32.min.css" rel="stylesheet" append-hash="true" data-mode="light">
 <link href="kent-geometry_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <!-- Website build: wears xaleed.github.io's own stylesheet, loads Plotly from a CDN
-     (static figures only - no JavaScript needed). -->
+     (Plotly from a CDN, for the one interactive level-set panel). -->
 <link rel="stylesheet" href="../css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="kent-levelset.js"></script>
 
 <style>
 /* ══════════════════════════════════════════════════════════════════
@@ -296,7 +298,8 @@ window.Quarto = {
   <li><a href="#sec-project" id="toc-sec-project">Step 5 — Projecting onto the plane: tangent coordinates</a></li>
   <li><a href="#sec-vmf" id="toc-sec-vmf">Step 6 — von Mises–Fisher on the plane: circles</a></li>
   <li><a href="#sec-kent" id="toc-sec-kent">Step 7 — Kent on the plane: ellipses</a></li>
-  <li><a href="#sec-together" id="toc-sec-together">Step 8 — Putting it together</a></li>
+  <li><a href="#sec-levelset" id="toc-sec-levelset">Step 8 — Where the contour actually comes from</a></li>
+  <li><a href="#sec-together" id="toc-sec-together">Step 9 — Putting it together</a></li>
   </ul>
 </nav>
 <div>
@@ -995,30 +998,367 @@ Table&nbsp;4: The fitted geometry, recovered from the data by the five steps abo
 </figure>
 </div>
 </div>
-<h1 id="sec-together">Step 8 — Putting it together</h1>
+<h1 id="sec-levelset">Step 8 — Where the contour actually comes from</h1>
+<p>Up to now the contours have simply appeared, drawn for you. This step shows the machinery that produces them. It is the one piece of the subject that is worth seeing in three dimensions rather than taking on trust.</p>
+<h2 id="the-set-up">The set-up</h2>
+<p>Put the mean direction at the North Pole, <span class="math inline">\(\boldsymbol\mu=(0,0,1)\)</span>, and let <span class="math inline">\(\boldsymbol\gamma_2\)</span> be the <span class="math inline">\(x\)</span> axis and <span class="math inline">\(\boldsymbol\gamma_3\)</span> the <span class="math inline">\(y\)</span> axis. Then <span class="math inline">\(\boldsymbol\mu^{\!\top}\mathbf u=z\)</span>, <span class="math inline">\(\boldsymbol\gamma_2^{\!\top}\mathbf u=x\)</span> and <span class="math inline">\(\boldsymbol\gamma_3^{\!\top}\mathbf u=y\)</span>, so the Kent density is just</p>
+<p><span class="math display">\[f(\mathbf u)\;\propto\;\exp\{\kappa z+\beta(x^2-y^2)\}.\]</span></p>
+<p>A <strong>contour</strong> is a set of points where the density takes one fixed value. Because the exponential is increasing, fixing the density is the same as fixing the exponent. Call that fixed value <span class="math inline">\(C\)</span>:</p>
+<p><span id="eq-levelset"><span class="math display">\[\kappa z+\beta(x^2-y^2)=C
+\qquad\Longleftrightarrow\qquad
+z=\frac{C-\beta(x^2-y^2)}{\kappa}.
+\tag{1}\]</span></span></p>
+<div>
+<blockquote>
+<p><strong>Three different objects — do not mix them up</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">the <strong>sphere</strong> <span class="math inline">\(x^2+y^2+z^2=1\)</span></td>
+<td style="text-align: left;">where the observations live. Every data point is on it.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">the <strong>level-set surface</strong> <a href="#eq-levelset" class="quarto-xref">Equation&nbsp;1</a></td>
+<td style="text-align: left;">an <em>auxiliary</em> surface. It is <strong>not</strong> a probability, not a density, and no data lie on it. It is scaffolding: a bookkeeping device for “all the places in space where the exponent equals <span class="math inline">\(C\)</span>”.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">their <strong>intersection</strong></td>
+<td style="text-align: left;">the Kent density contour. These are the points that are both <em>possible observations</em> and <em>equally likely</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>In the figures the auxiliary surface is drawn in <strong>violet</strong>, the same colour this site uses elsewhere for scaffolding that is chosen rather than measured.</p>
+</blockquote>
+</div>
+<p><span class="math display">\[\boxed{\ \text{level-set surface}\ }\ \ \cap\ \ \boxed{\ \text{unit sphere}\ }\ \ =\ \ \boxed{\ \text{Kent contour}\ }\]</span></p>
+<h2 id="the-three-objects-one-at-a-time">The three objects, one at a time</h2>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>show the R code that drew this</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>))</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tern_full</span>(<span class="fu">list</span>(Z), <span class="at">cols =</span> pal<span class="sc">$</span>g2, <span class="at">cexs =</span> <span class="fl">0.55</span>, <span class="at">pchs =</span> <span class="dv">16</span>, <span class="at">main =</span> <span class="st">"1. triangle"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.05</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>))</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"2. sphere"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) { e <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>); e[i] <span class="ot">&lt;-</span> <span class="fl">1.12</span>; <span class="fu">seg3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), e, V, pal<span class="sc">$</span>rule, <span class="at">lwd =</span> <span class="fl">1.1</span>) }</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>); <span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.55</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">oct_view</span>(<span class="dv">46</span>)</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"3. tangent plane"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>); <span class="fu">tangent_patch</span>(MUH, BH, <span class="fl">0.30</span>, V)</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), MUH<span class="sc">*</span><span class="fl">1.14</span>, V, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAP_VMF, <span class="dv">0</span>, R6, <span class="at">n_pts =</span> <span class="dv">0</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"4. vMF: circle"</span>)</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(V2, V3, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> pal<span class="sc">$</span>g2)</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAPH, BETH, R6, <span class="at">n_pts =</span> <span class="dv">0</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"5. Kent: ellipse"</span>)</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(V2, V3, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> pal<span class="sc">$</span>g2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>KA <span class="ot">&lt;-</span> <span class="dv">50</span>; BE <span class="ot">&lt;-</span> <span class="dv">18</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>CC <span class="ot">&lt;-</span> <span class="fu">level_from_frac</span>(KA, <span class="fl">0.10</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>VV <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.25</span>, <span class="fl">0.85</span>, <span class="fl">0.72</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>CURVE <span class="ot">&lt;-</span> <span class="fu">kent_contour3d</span>(KA, BE, CC)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="do">## (a) the sphere alone</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="fl">1.22</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">1.9</span>, <span class="fl">0.3</span>))</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"the sphere: where data live"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(VV)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.18</span>), VV, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.4</span>)</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.22</span>), VV, <span class="fu">expression</span>(mu), pal<span class="sc">$</span>mu, <span class="at">pos =</span> <span class="dv">3</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a><span class="do">## (b) the level-set surface alone</span></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="fl">1.22</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">1.9</span>, <span class="fl">0.3</span>))</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"the level-set surface: scaffolding"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>bs)</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (ax <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  e <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>); e[ax] <span class="ot">&lt;-</span> <span class="fl">0.95</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seg3</span>(<span class="sc">-</span>e <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,CC<span class="sc">/</span>KA), e <span class="sc">+</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,CC<span class="sc">/</span>KA), VV, pal<span class="sc">$</span>rule, <span class="at">lwd =</span> <span class="fl">1.2</span>)</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_levelset</span>(KA, BE, CC, VV, <span class="at">rng =</span> <span class="fl">0.78</span>, <span class="at">col =</span> pal<span class="sc">$</span>bs, <span class="at">alpha =</span> <span class="fl">0.22</span>)</span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a><span class="fu">lab3</span>(<span class="fu">c</span>(<span class="fl">0.86</span>, <span class="dv">0</span>, <span class="fu">levelset_z</span>(<span class="fl">0.86</span>, <span class="dv">0</span>, KA, BE, CC)), VV, <span class="st">"x"</span>, pal<span class="sc">$</span>g2, <span class="at">pos =</span> <span class="dv">1</span>)</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a><span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.86</span>, <span class="fu">levelset_z</span>(<span class="dv">0</span>, <span class="fl">0.86</span>, KA, BE, CC)), VV, <span class="st">"y"</span>, pal<span class="sc">$</span>g3, <span class="at">pos =</span> <span class="dv">4</span>)</span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a><span class="do">## (c) both, with the intersection highlighted</span></span>
+<span id="cb14-27"><a href="#cb14-27" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="fl">1.22</span>, <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">1.9</span>, <span class="fl">0.3</span>))</span>
+<span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"their intersection: the contour"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink)</span>
+<span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(VV)</span>
+<span id="cb14-30"><a href="#cb14-30" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_levelset</span>(KA, BE, CC, VV, <span class="at">rng =</span> <span class="fl">0.72</span>, <span class="at">col =</span> pal<span class="sc">$</span>bs, <span class="at">alpha =</span> <span class="fl">0.18</span>)</span>
+<span id="cb14-31"><a href="#cb14-31" aria-hidden="true" tabindex="-1"></a><span class="fu">depth_line</span>(<span class="fu">prj</span>(CURVE <span class="sc">*</span> <span class="fl">1.004</span>, VV), pal<span class="sc">$</span>ink, <span class="fu">tp</span>(pal<span class="sc">$</span>ink, <span class="fl">0.25</span>), <span class="at">lwd =</span> <span class="fl">3.4</span>)</span>
+<span id="cb14-32"><a href="#cb14-32" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.18</span>), VV, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb14-33"><a href="#cb14-33" aria-hidden="true" tabindex="-1"></a><span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.22</span>), VV, <span class="fu">expression</span>(mu), pal<span class="sc">$</span>mu, <span class="at">pos =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-mechanism" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-mechanism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="kent-geometry_files/figure-html/fig-mechanism-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1410">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mechanism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: The mechanism in three panels, with <span class="math inline">\(\kappa=50\)</span>, <span class="math inline">\(\beta=18\)</span> and <span class="math inline">\(C\)</span> set so the contour sits where the density is 10% of its peak. <strong>Left:</strong> the unit sphere, with the mean direction <span class="math inline">\(\boldsymbol\mu\)</span> at the North Pole. This is where the data live. <strong>Middle:</strong> the level-set surface on its own, <span class="math inline">\(z=(C-\beta(x^2-y^2))/\kappa\)</span>. Notice it is a <strong>saddle</strong> — it dips as you move along <span class="math inline">\(x\)</span> and rises as you move along <span class="math inline">\(y\)</span>. Nothing lives on it; it is pure scaffolding. <strong>Right:</strong> both together. The dark curve where they cut each other is the Kent density contour. Every point on that curve has exactly the same density.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<h2 id="setting-beta0-gives-von-misesfisher-and-a-circle">Setting <span class="math inline">\(\beta=0\)</span> gives von Mises–Fisher, and a circle</h2>
+<p>If <span class="math inline">\(\beta=0\)</span> the <span class="math inline">\(x^2-y^2\)</span> term vanishes and <a href="#eq-levelset" class="quarto-xref">Equation&nbsp;1</a> collapses to</p>
+<p><span class="math display">\[z=\frac{C}{\kappa},\]</span></p>
+<p>which has no <span class="math inline">\(x\)</span> or <span class="math inline">\(y\)</span> in it at all: a <strong>flat horizontal plane</strong>. A horizontal plane cuts a sphere in a circle. That is the whole reason vMF contours are circular — there is nothing in its level-set surface that can tell one sideways direction from another.</p>
+<p>Turn <span class="math inline">\(\beta\)</span> up and the flat plane buckles into a saddle. The intersection stops being a circle.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>VC <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.15</span>, <span class="fl">0.80</span>, <span class="fl">0.62</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>CIRC <span class="ot">&lt;-</span> <span class="fu">kent_contour3d</span>(KA, <span class="dv">0</span>, CC)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (b <span class="cf">in</span> <span class="fu">c</span>(<span class="dv">0</span>, BE)) {</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.85</span>, <span class="fl">0.85</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.20</span>, <span class="fl">1.22</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">1.9</span>, <span class="fl">0.3</span>))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">title</span>(<span class="at">main =</span> <span class="cf">if</span> (b <span class="sc">==</span> <span class="dv">0</span>) <span class="st">"beta = 0   (von Mises-Fisher): a plane"</span> <span class="cf">else</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                           <span class="st">"beta = 18   (Kent): a saddle"</span>,</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">cex.main =</span> <span class="fl">0.98</span>, <span class="at">font.main =</span> <span class="dv">1</span>,</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">col.main =</span> <span class="cf">if</span> (b <span class="sc">==</span> <span class="dv">0</span>) pal<span class="sc">$</span>ink2 <span class="cf">else</span> pal<span class="sc">$</span>ink)</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_sphere</span>(VC)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">draw_levelset</span>(KA, b, CC, VC, <span class="at">rng =</span> <span class="fl">0.70</span>, <span class="at">col =</span> pal<span class="sc">$</span>bs, <span class="at">alpha =</span> <span class="fl">0.20</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (b <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="fu">depth_line</span>(<span class="fu">prj</span>(CIRC <span class="sc">*</span> <span class="fl">1.004</span>, VC), <span class="fu">tp</span>(pal<span class="sc">$</span>mut, <span class="fl">0.9</span>), <span class="fu">tp</span>(pal<span class="sc">$</span>mut, <span class="fl">0.2</span>), <span class="at">lwd =</span> <span class="fl">1.4</span>)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  CU <span class="ot">&lt;-</span> <span class="fu">kent_contour3d</span>(KA, b, CC)</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">depth_line</span>(<span class="fu">prj</span>(CU <span class="sc">*</span> <span class="fl">1.004</span>, VC), pal<span class="sc">$</span>ink, <span class="fu">tp</span>(pal<span class="sc">$</span>ink, <span class="fl">0.25</span>), <span class="at">lwd =</span> <span class="fl">3.4</span>)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.16</span>), VC, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.19</span>), VC, <span class="fu">expression</span>(mu), pal<span class="sc">$</span>mu, <span class="at">pos =</span> <span class="dv">3</span>)</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lab3</span>(<span class="fu">c</span>(<span class="fl">0.80</span>, <span class="dv">0</span>, <span class="fu">levelset_z</span>(<span class="fl">0.80</span>, <span class="dv">0</span>, KA, b, CC)), VC, <span class="st">"x"</span>, pal<span class="sc">$</span>g2, <span class="at">pos =</span> <span class="dv">1</span>)</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.80</span>, <span class="fu">levelset_z</span>(<span class="dv">0</span>, <span class="fl">0.80</span>, KA, b, CC)), VC, <span class="st">"y"</span>, pal<span class="sc">$</span>g3, <span class="at">pos =</span> <span class="dv">4</span>)</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-beta-switch" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-beta-switch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="kent-geometry_files/figure-html/fig-beta-switch-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1320">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beta-switch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: The same <span class="math inline">\(\kappa\)</span> and the same <span class="math inline">\(C\)</span>; only <span class="math inline">\(\beta\)</span> changes. <strong>Left:</strong> <span class="math inline">\(\beta=0\)</span>. The level-set surface is a flat horizontal plane at height <span class="math inline">\(z=C/\kappa\)</span>, and it slices the sphere in a perfect circle. <strong>Right:</strong> <span class="math inline">\(\beta=18\)</span>. The plane has buckled into a saddle, which dips along <span class="math inline">\(x\)</span> and rises along <span class="math inline">\(y\)</span>, so the curve it cuts reaches further out along <span class="math inline">\(x\)</span> and pulls in along <span class="math inline">\(y\)</span>. The faint circle from the left-hand panel is repeated on the right so you can see the change.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<h2 id="why-it-stretches-one-way-and-squeezes-the-other">Why it stretches one way and squeezes the other</h2>
+<p>This is the heart of it, and it is easiest to see in two flat slices.</p>
+<p>Set <span class="math inline">\(y=0\)</span> and look in the <span class="math inline">\(x\)</span>–<span class="math inline">\(z\)</span> plane. The level-set surface becomes</p>
+<p><span class="math display">\[z=\frac{C}{\kappa}-\frac{\beta}{\kappa}x^{2},\]</span></p>
+<p>a <strong>downward</strong> parabola. As you move away from the pole along <span class="math inline">\(x\)</span> it sinks <em>below</em> the vMF height <span class="math inline">\(C/\kappa\)</span>, so it meets the sphere <strong>further from the pole</strong>. The contour is pushed <strong>out</strong>.</p>
+<p>Now set <span class="math inline">\(x=0\)</span> and look in the <span class="math inline">\(y\)</span>–<span class="math inline">\(z\)</span> plane:</p>
+<p><span class="math display">\[z=\frac{C}{\kappa}+\frac{\beta}{\kappa}y^{2},\]</span></p>
+<p>an <strong>upward</strong> parabola. It climbs <em>above</em> <span class="math inline">\(C/\kappa\)</span>, so it meets the sphere <strong>closer to the pole</strong>. The contour is pulled <strong>in</strong>.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>z0 <span class="ot">&lt;-</span> CC <span class="sc">/</span> KA</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>xr_vmf <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> z0<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">family =</span> <span class="st">"sans"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>slice <span class="ot">&lt;-</span> <span class="cf">function</span>(sign, lab, axcol, hit) {</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  tt <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.78</span>, <span class="fl">0.78</span>, <span class="at">length.out =</span> <span class="dv">400</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  zz <span class="ot">&lt;-</span> z0 <span class="sc">+</span> sign <span class="sc">*</span> (BE<span class="sc">/</span>KA) <span class="sc">*</span> tt<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">3.4</span>, <span class="fl">3.6</span>, <span class="fl">2.0</span>, <span class="fl">0.8</span>))</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="cn">NA</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.85</span>, <span class="fl">0.85</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.72</span>, <span class="fl">1.06</span>), <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>)</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">title</span>(<span class="at">main =</span> lab, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  arc <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span>pi<span class="sc">/</span><span class="dv">2</span>, pi<span class="sc">/</span><span class="dv">2</span>, <span class="at">length.out =</span> <span class="dv">400</span>)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="fu">sin</span>(arc), <span class="fu">cos</span>(arc), <span class="at">col =</span> pal<span class="sc">$</span>sph, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h =</span> z0, <span class="at">col =</span> pal<span class="sc">$</span>mut, <span class="at">lwd =</span> <span class="fl">1.6</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(tt, zz, <span class="at">col =</span> pal<span class="sc">$</span>bs, <span class="at">lwd =</span> <span class="fl">2.6</span>)</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>  <span class="do">## the crossing point, taken from the exact intersection curve rather than</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>  <span class="do">## from a grid search, so the figure and the table cannot disagree</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>  hz  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">max</span>(<span class="dv">0</span>, <span class="dv">1</span> <span class="sc">-</span> hit<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="fu">c</span>(hit, <span class="sc">-</span>hit), <span class="fu">c</span>(hz, hz), <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">1.4</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="fu">c</span>(xr_vmf, <span class="sc">-</span>xr_vmf), <span class="fu">c</span>(z0, z0), <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">col =</span> pal<span class="sc">$</span>mut, <span class="at">lwd =</span> <span class="fl">1.6</span>)</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">col =</span> pal<span class="sc">$</span>mu)</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">expression</span>(mu), <span class="at">col =</span> pal<span class="sc">$</span>mu, <span class="at">pos =</span> <span class="dv">3</span>, <span class="at">cex =</span> <span class="fl">0.9</span>, <span class="at">font =</span> <span class="dv">2</span>, <span class="at">offset =</span> <span class="fl">0.3</span>)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">col.axis =</span> pal<span class="sc">$</span>mut, <span class="at">cex.axis =</span> <span class="fl">0.72</span>)</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">col.axis =</span> pal<span class="sc">$</span>mut, <span class="at">cex.axis =</span> <span class="fl">0.72</span>, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(axcol<span class="sc">$</span>lab, <span class="at">side =</span> <span class="dv">1</span>, <span class="at">line =</span> <span class="fl">2.1</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> axcol<span class="sc">$</span>col)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(<span class="st">"z"</span>, <span class="at">side =</span> <span class="dv">2</span>, <span class="at">line =</span> <span class="fl">2.4</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink2, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(hit, hz, <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">abs</span>(hit)), <span class="at">pos =</span> <span class="cf">if</span> (sign <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="dv">4</span> <span class="cf">else</span> <span class="dv">2</span>,</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.78</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink, <span class="at">font =</span> <span class="dv">2</span>)</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">box</span>(<span class="at">col =</span> pal<span class="sc">$</span>rule)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abs</span>(hit)</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> <span class="fu">slice</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="st">"slice y = 0:  the surface bends DOWN"</span>,</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">lab =</span> <span class="fu">expression</span>(x <span class="sc">~</span> <span class="st">"  (along "</span> <span class="sc">*</span> gamma[<span class="dv">2</span>] <span class="sc">*</span> <span class="st">")"</span>), <span class="at">col =</span> pal<span class="sc">$</span>g2),</span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a>            <span class="at">hit =</span> <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[, <span class="dv">1</span>])))</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">slice</span>(<span class="sc">+</span><span class="dv">1</span>, <span class="st">"slice x = 0:  the surface bends UP"</span>,</span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">lab =</span> <span class="fu">expression</span>(y <span class="sc">~</span> <span class="st">"  (along "</span> <span class="sc">*</span> gamma[<span class="dv">3</span>] <span class="sc">*</span> <span class="st">")"</span>), <span class="at">col =</span> pal<span class="sc">$</span>g3),</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>            <span class="at">hit =</span> <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[, <span class="dv">2</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-slices" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-slices-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="kent-geometry_files/figure-html/fig-slices-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1320">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slices-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: The two slices that explain everything. In each panel the grey arc is the sphere, the dashed grey line is the flat vMF level set at <span class="math inline">\(z=C/\kappa\)</span>, and the violet curve is the Kent level set. <strong>Left (<span class="math inline">\(y=0\)</span>):</strong> the violet parabola bends downward, so it crosses the sphere further round, at <span class="math inline">\(x=0.509\)</span> instead of <span class="math inline">\(0.300\)</span>. <strong>Right (<span class="math inline">\(x=0\)</span>):</strong> it bends upward and crosses sooner, at <span class="math inline">\(y=0.231\)</span>. Same surface, same <span class="math inline">\(C\)</span> — opposite effects, purely because of the minus sign in <span class="math inline">\(x^2-y^2\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="fu">c</span>(<span class="st">"along gamma2 (the x axis)"</span>, <span class="st">"along gamma3 (the y axis)"</span>, <span class="st">"ratio"</span>),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">vMF, beta = 0</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, xr_vmf), <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, xr_vmf), <span class="st">"1.00"</span>),</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Kent, beta = 18</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">1</span>]))),</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">2</span>]))),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">1</span>]))<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">2</span>])))),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-reach" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl">
+<div aria-describedby="tbl-reach-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell">
+<thead>
+<tr class="header">
+<th style="text-align: left;">direction</th>
+<th style="text-align: left;">vMF, beta = 0</th>
+<th style="text-align: left;">Kent, beta = 18</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">along gamma2 (the x axis)</td>
+<td style="text-align: left;">0.300</td>
+<td style="text-align: left;">0.509</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">along gamma3 (the y axis)</td>
+<td style="text-align: left;">0.300</td>
+<td style="text-align: left;">0.230</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ratio</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: left;">2.21</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-reach-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: How far the contour reaches in each direction, read off the exact intersection curve. The vMF circle is the same distance in both; Kent is further out along <span class="math inline">\(\gamma_2\)</span> and closer in along <span class="math inline">\(\gamma_3\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+<h2 id="the-exact-curve-and-its-elliptical-shadow">The exact curve, and its elliptical shadow</h2>
+<p>The intersection is a genuine curve <strong>on the sphere</strong> — it is not an ellipse, because the sphere is curved. But look at it from directly above <span class="math inline">\(\boldsymbol\mu\)</span>, in the tangent plane of Step 4, and it is very nearly one. That near-ellipse is what Step 7 was drawing.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">layout</span>(<span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>), <span class="at">widths =</span> <span class="fu">c</span>(<span class="fl">1.05</span>, <span class="dv">1</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>VT <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.72</span>, <span class="fl">0.95</span>))</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.78</span>, <span class="fl">0.78</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.05</span>, <span class="fl">1.32</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">0.3</span>, <span class="fl">0.3</span>, <span class="fl">1.9</span>, <span class="fl">0.3</span>))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"the curve on the sphere"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(VT)</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_patch</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>)), <span class="fl">0.62</span>, VT)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">depth_line</span>(<span class="fu">prj</span>(CURVE <span class="sc">*</span> <span class="fl">1.004</span>, VT), pal<span class="sc">$</span>ink, <span class="fu">tp</span>(pal<span class="sc">$</span>ink, <span class="fl">0.25</span>), <span class="at">lwd =</span> <span class="fl">3.2</span>)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.22</span>), VT, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">1.26</span>), VT, <span class="fu">expression</span>(mu), pal<span class="sc">$</span>mu, <span class="at">pos =</span> <span class="dv">3</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="fu">seg3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">c</span>(<span class="fl">0.62</span>,<span class="dv">0</span>,<span class="dv">1</span>), VT, pal<span class="sc">$</span>g2, <span class="at">lwd =</span> <span class="fl">2.2</span>); <span class="fu">lab3</span>(<span class="fu">c</span>(<span class="fl">0.66</span>,<span class="dv">0</span>,<span class="dv">1</span>), VT, <span class="fu">expression</span>(gamma[<span class="dv">2</span>]), pal<span class="sc">$</span>g2, <span class="at">pos =</span> <span class="dv">1</span>)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="fu">seg3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>), <span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.62</span>,<span class="dv">1</span>), VT, pal<span class="sc">$</span>g3, <span class="at">lwd =</span> <span class="fl">2.2</span>); <span class="fu">lab3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="fl">0.66</span>,<span class="dv">1</span>), VT, <span class="fu">expression</span>(gamma[<span class="dv">3</span>]), pal<span class="sc">$</span>g3, <span class="at">pos =</span> <span class="dv">4</span>)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="do">## how far the exact curve departs from the ellipse through its own axes</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>ell_gap <span class="ot">&lt;-</span> <span class="cf">function</span>(P) {</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  a <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(P[, <span class="dv">1</span>])); b <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(P[, <span class="dv">2</span>]))</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  ph <span class="ot">&lt;-</span> <span class="fu">atan2</span>(P[, <span class="dv">2</span>], P[, <span class="dv">1</span>])</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  r_exact <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(P[, <span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> P[, <span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  r_ell   <span class="ot">&lt;-</span> a<span class="sc">*</span>b <span class="sc">/</span> <span class="fu">sqrt</span>((b<span class="sc">*</span><span class="fu">cos</span>(ph))<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (a<span class="sc">*</span><span class="fu">sin</span>(ph))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  <span class="dv">100</span> <span class="sc">*</span> <span class="fu">max</span>(<span class="fu">abs</span>(r_exact <span class="sc">-</span> r_ell) <span class="sc">/</span> r_ell)</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>CURVE_W <span class="ot">&lt;-</span> <span class="fu">kent_contour3d</span>(KA, BE, <span class="fu">level_from_frac</span>(KA, <span class="fl">0.01</span>))   <span class="co"># a much wider contour</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>gap_tight <span class="ot">&lt;-</span> <span class="fu">ell_gap</span>(CURVE); gap_wide <span class="ot">&lt;-</span> <span class="fu">ell_gap</span>(CURVE_W)</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>RR <span class="ot">&lt;-</span> <span class="fl">0.76</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">3.2</span>, <span class="fl">3.2</span>, <span class="fl">1.9</span>, <span class="fl">0.8</span>), <span class="at">family =</span> <span class="st">"sans"</span>)</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="cn">NA</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span>RR, RR), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="sc">-</span>RR, RR), <span class="at">asp =</span> <span class="dv">1</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>)</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"looking straight down mu"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>th <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span><span class="sc">*</span>pi, <span class="at">length.out =</span> <span class="dv">400</span>)</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (k <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>) {</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>  P  <span class="ot">&lt;-</span> <span class="cf">if</span> (k <span class="sc">==</span> <span class="dv">1</span>) CURVE <span class="cf">else</span> CURVE_W</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>  a  <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(P[, <span class="dv">1</span>])); b <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">abs</span>(P[, <span class="dv">2</span>]))</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(P[, <span class="dv">1</span>], P[, <span class="dv">2</span>], <span class="at">col =</span> <span class="cf">if</span> (k <span class="sc">==</span> <span class="dv">1</span>) pal<span class="sc">$</span>ink <span class="cf">else</span> <span class="fu">tp</span>(pal<span class="sc">$</span>ink, <span class="fl">0.55</span>),</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">lwd =</span> <span class="cf">if</span> (k <span class="sc">==</span> <span class="dv">1</span>) <span class="dv">3</span> <span class="cf">else</span> <span class="fl">2.2</span>)</span>
+<span id="cb18-35"><a href="#cb18-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(a<span class="sc">*</span><span class="fu">cos</span>(th), b<span class="sc">*</span><span class="fu">sin</span>(th), <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb18-36"><a href="#cb18-36" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-37"><a href="#cb18-37" aria-hidden="true" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">h =</span> <span class="dv">0</span>, <span class="at">v =</span> <span class="dv">0</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">lwd =</span> <span class="dv">1</span>)</span>
+<span id="cb18-38"><a href="#cb18-38" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">1.2</span>, <span class="at">col =</span> pal<span class="sc">$</span>mu)</span>
+<span id="cb18-39"><a href="#cb18-39" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">col.axis =</span> pal<span class="sc">$</span>mut, <span class="at">cex.axis =</span> <span class="fl">0.72</span>)</span>
+<span id="cb18-40"><a href="#cb18-40" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">col.axis =</span> pal<span class="sc">$</span>mut, <span class="at">cex.axis =</span> <span class="fl">0.72</span>, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb18-41"><a href="#cb18-41" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">0</span>, <span class="sc">-</span><span class="fu">max</span>(<span class="fu">abs</span>(CURVE[, <span class="dv">2</span>])) <span class="sc">-</span> <span class="fl">0.055</span>, <span class="fu">sprintf</span>(<span class="st">"10%% of peak: off by %.1f%%"</span>, gap_tight),</span>
+<span id="cb18-42"><a href="#cb18-42" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">0.68</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb18-43"><a href="#cb18-43" aria-hidden="true" tabindex="-1"></a><span class="fu">text</span>(<span class="dv">0</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE_W[, <span class="dv">2</span>])) <span class="sc">+</span> <span class="fl">0.035</span>, <span class="fu">sprintf</span>(<span class="st">"1%% of peak: off by %.1f%%"</span>, gap_wide),</span>
+<span id="cb18-44"><a href="#cb18-44" aria-hidden="true" tabindex="-1"></a>     <span class="at">cex =</span> <span class="fl">0.68</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb18-45"><a href="#cb18-45" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"bottomright"</span>, <span class="at">bty =</span> <span class="st">"n"</span>, <span class="at">cex =</span> <span class="fl">0.70</span>, <span class="at">lwd =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">2</span>), <span class="at">lty =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb18-46"><a href="#cb18-46" aria-hidden="true" tabindex="-1"></a>       <span class="at">col =</span> <span class="fu">c</span>(pal<span class="sc">$</span>ink, pal<span class="sc">$</span>g2),</span>
+<span id="cb18-47"><a href="#cb18-47" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend =</span> <span class="fu">c</span>(<span class="st">"exact intersection"</span>, <span class="st">"ellipse through the same axes"</span>))</span>
+<span id="cb18-48"><a href="#cb18-48" aria-hidden="true" tabindex="-1"></a><span class="fu">box</span>(<span class="at">col =</span> pal<span class="sc">$</span>rule)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-exact-vs-ellipse" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-exact-vs-ellipse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="kent-geometry_files/figure-html/fig-exact-vs-ellipse-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1320">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-exact-vs-ellipse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: <strong>Left:</strong> the exact intersection curve resting on the sphere, with the tangent plane at <span class="math inline">\(\boldsymbol\mu\)</span> shown for reference. <strong>Right:</strong> two contours seen from straight down the <span class="math inline">\(\boldsymbol\mu\)</span> axis, each with the ellipse through its own two axes drawn over it (dashed blue). The inner curve, at 10% of the peak density, is so close to an ellipse that you cannot separate them by eye. The outer curve, at 1% of the peak, is much wider and starts to pull away. That is the honest version of ‘a Kent contour is an ellipse’: it is an excellent approximation close to <span class="math inline">\(\boldsymbol\mu\)</span> and degrades as the contour wraps further around the sphere.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<h2 id="try-it-yourself">Try it yourself</h2>
+<div class="kplay">
+  <div class="kplay-head">Try it yourself <span>move the sphere, bend the surface, watch the contour</span></div>
+  <div class="kctl">
+    <label for="ls-k">κ &nbsp;<b id="ls-vk">50</b>
+      <input type="range" id="ls-k" min="10" max="150" step="1" value="50"></label>
+    <label for="ls-b">β &nbsp;<b id="ls-vb">18</b>
+      <input type="range" id="ls-b" min="0" max="70" step="1" value="18"></label>
+    <label for="ls-c">contour level, as a fraction of the peak density &nbsp;<b id="ls-vc">0.10</b>
+      <input type="range" id="ls-c" min="0.02" max="0.90" step="0.01" value="0.10"></label>
+  </div>
+  <div class="kplay-body"><div class="kplot" id="ls-plot" style="height:460px"></div>
+    <div class="khint">drag to rotate · scroll to zoom</div></div>
+  <div class="kout" id="ls-out"></div>
+</div>
+<script>
+window.kentReady(function () {
+  KentLevelSet({ kap:"ls-k", bet:"ls-b", lev:"ls-c",
+                 vk:"ls-vk", vb:"ls-vb", vc:"ls-vc", plot:"ls-plot", out:"ls-out" });
+});
+</script>
+<p>Three things are worth doing with the sliders.</p>
+<p>Set <span class="math inline">\(\beta\)</span> to <strong>0</strong> and the violet surface flattens into a horizontal plane, and the contour snaps to a circle: that is von Mises–Fisher. Push <span class="math inline">\(\beta\)</span> up and watch the saddle deepen and the contour stretch. Push it past <span class="math inline">\(\kappa/2\)</span> — the readout will warn you — and the surface bends so hard that it no longer cuts a single closed loop around the pole: the model has stopped being a single bump, which is exactly what the constraint <span class="math inline">\(2\beta&lt;\kappa\)</span> forbids.</p>
+<p>Finally, move the <strong>contour level</strong> slider on its own. The surface slides up and down without changing shape, and the contour grows and shrinks. That is one density, sliced at different heights — the spherical equivalent of the rings on a contour map.</p>
+<h1 id="sec-together">Step 9 — Putting it together</h1>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tern_full</span>(<span class="fu">list</span>(Z), <span class="at">cols =</span> pal<span class="sc">$</span>g2, <span class="at">cexs =</span> <span class="fl">0.55</span>, <span class="at">pchs =</span> <span class="dv">16</span>, <span class="at">main =</span> <span class="st">"1. triangle"</span>)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.05</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"2. sphere"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) { e <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>); e[i] <span class="ot">&lt;-</span> <span class="fl">1.12</span>; <span class="fu">seg3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), e, V, pal<span class="sc">$</span>rule, <span class="at">lwd =</span> <span class="fl">1.1</span>) }</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>); <span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.55</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">oct_view</span>(<span class="dv">46</span>)</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"3. tangent plane"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>); <span class="fu">tangent_patch</span>(MUH, BH, <span class="fl">0.30</span>, V)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), MUH<span class="sc">*</span><span class="fl">1.14</span>, V, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAP_VMF, <span class="dv">0</span>, R6, <span class="at">n_pts =</span> <span class="dv">0</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"4. vMF: circle"</span>)</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(V2, V3, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> pal<span class="sc">$</span>g2)</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAPH, BETH, R6, <span class="at">n_pts =</span> <span class="dv">0</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"5. Kent: ellipse"</span>)</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(V2, V3, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> pal<span class="sc">$</span>g2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output-display">
 <div id="fig-summary" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
@@ -1027,7 +1367,7 @@ Table&nbsp;4: The fitted geometry, recovered from the data by the five steps abo
 <img src="kent-geometry_files/figure-html/fig-summary-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1440">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9: The same 60 samples at every stage, once more. Read left to right: a cloud in a triangle; the cloud lifted onto a sphere; a flat plane resting on the sphere at the mean direction; the cloud flattened onto that plane; and the two models competing to describe it — vMF forced to be round, Kent free to be oval.
+Figure&nbsp;13: The same 60 samples at every stage, once more. Read left to right: a cloud in a triangle; the cloud lifted onto a sphere; a flat plane resting on the sphere at the mean direction; the cloud flattened onto that plane; and the two models competing to describe it — vMF forced to be round, Kent free to be oval.
 </figcaption>
 </figure>
 </div>
