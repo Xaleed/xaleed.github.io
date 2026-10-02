@@ -1,0 +1,1798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the Kent leaf parameters are estimated</title>
+<meta name="description" content="An interactive explainer: from compositions in a node to the Kent parameters mu, kappa, beta and K, and to the split gain.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  color-scheme: light;
+  --bg:#f7f7f4; --surface:#ffffff; --surface2:#f0efea;
+  --ink:#1a1a17; --ink2:#4c4b46; --muted:#7d7c76;
+  --rule:#e0dfd8; --rule2:#c9c8c0;
+  /* the fixed colour code, used in every figure and in the text */
+  --mu:#D85A30;      /* mean direction  mu-hat        */
+  --rul:#534AB7;     /* Householder rulers b2, b3 (B) */
+  --axis:#1D9E75;    /* ellipse axes gamma-hat (K-hat)*/
+  --mir:#BA7517;     /* the mirror                    */
+  --dot:#888780;     /* data points                   */
+  --sph:#5F5E5A;     /* sphere outline                */
+  --std:#cbcac4;     /* standard axes e1,e2,e3        */
+  --fs:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#15150f; --surface:#1d1d19; --surface2:#262621;
+    --ink:#f2f1ea; --ink2:#c7c6bd; --muted:#908f87;
+    --rule:#33332c; --rule2:#45453d;
+    --mu:#F0794F; --rul:#8C84E8; --axis:#35C295; --mir:#D99A33;
+    --dot:#9a9992; --sph:#8d8c85; --std:#4a4a43;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font:var(--fs)/1.68 Georgia,"Times New Roman",serif;
+  -webkit-text-size-adjust:100%;
+}
+code,kbd,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+
+/* ───────────────────────── layout ───────────────────────── */
+.wrap{display:grid; grid-template-columns:250px minmax(0,1fr); gap:34px;
+      max-width:1220px; margin:0 auto; padding:0 22px}
+.toc{position:sticky; top:0; align-self:start; max-height:100vh; overflow-y:auto;
+     padding:26px 0 40px}
+.toc h2{font-size:.68rem; letter-spacing:.13em; text-transform:uppercase;
+        color:var(--mu); margin:0 0 .7em; font-family:ui-monospace,monospace}
+.toc ol{list-style:none; margin:0; padding:0}
+.toc li{margin:0}
+.toc a{display:flex; gap:9px; text-decoration:none; color:var(--ink2);
+       font-size:.82rem; line-height:1.3; padding:4.5px 8px; border-radius:3px}
+.toc a:hover{background:var(--surface2); color:var(--ink)}
+.toc a.on{background:var(--surface2); color:var(--ink); font-weight:700}
+.toc .sn{font-family:ui-monospace,monospace; font-size:.68rem; color:var(--muted);
+         min-width:2.1em; padding-top:.15em}
+.toc .backlink{display:inline-block;margin-top:14px;font-size:.72rem;
+  font-family:ui-monospace,monospace;color:var(--muted);text-decoration:none}
+.toc .backlink:hover{color:var(--mu)}
+main{padding:26px 0 120px; min-width:0; max-width:900px}
+.menubtn{display:none}
+
+@media (max-width:900px){
+  .wrap{grid-template-columns:minmax(0,1fr); gap:0}
+  .toc{position:static; max-height:none; padding:0;
+       border-bottom:1px solid var(--rule); margin-bottom:8px}
+  .toc ol{display:none; padding-bottom:14px}
+  .toc.open ol{display:block}
+  .toc h2{display:none}
+  .menubtn{display:block; width:100%; text-align:left; background:none;
+    border:0; border-bottom:1px solid var(--rule); padding:12px 2px;
+    font:700 .72rem/1 ui-monospace,monospace; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--mu); cursor:pointer}
+  main{padding-top:14px}
+}
+
+/* ───────────────────────── typography ───────────────────── */
+h1{font-size:clamp(1.7rem,4.6vw,2.5rem); line-height:1.15; margin:.4em 0 .25em;
+   letter-spacing:-.01em}
+.sub{color:var(--ink2); font-size:1.06rem; margin:0 0 1.4em; max-width:62ch}
+section{scroll-margin-top:16px; padding-top:30px; margin-top:26px;
+        border-top:1px solid var(--rule)}
+section:first-of-type{border-top:0}
+h2.sh{font-size:1.32rem; margin:0 0 .7em; line-height:1.3; display:flex;
+      gap:11px; align-items:baseline}
+h2.sh .snum{font:700 .68rem/1.6 ui-monospace,monospace; letter-spacing:.1em;
+   color:var(--mu); background:var(--surface2); border:1px solid var(--rule);
+   padding:1px 7px; border-radius:3px; flex:none}
+h3{font-size:1.02rem; margin:1.5em 0 .35em}
+p{margin:0 0 1em; max-width:70ch}
+ul,ol.body{margin:0 0 1em; padding-left:1.25em; max-width:70ch}
+li{margin-bottom:.32em}
+a{color:var(--mu)}
+
+/* ───────────────────────── boxes ───────────────────────── */
+.box{border:1px solid var(--rule); border-radius:5px; background:var(--surface);
+     padding:13px 16px; margin:1.1em 0; max-width:70ch}
+.box>b:first-child{display:block; font:700 .64rem/1.6 ui-monospace,monospace;
+     letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35em}
+.box p:last-child{margin-bottom:0}
+.idea{border-left:3px solid var(--mu); background:var(--surface2)}
+.idea>b:first-child{color:var(--mu)}
+.example{border-left:3px solid var(--axis)}
+.example>b:first-child{color:var(--axis)}
+.why{border-left:3px solid var(--rul)}
+.why>b:first-child{color:var(--rul)}
+.remark{border-left:3px solid var(--mir)}
+.remark>b:first-child{color:var(--mir)}
+details.check{border:1px solid var(--rule); border-radius:5px; margin:1.2em 0;
+   max-width:70ch; background:var(--surface)}
+details.check summary{cursor:pointer; padding:10px 15px; list-style:none;
+   font:700 .64rem/1.6 ui-monospace,monospace; letter-spacing:.12em;
+   text-transform:uppercase; color:var(--muted)}
+details.check summary::-webkit-details-marker{display:none}
+details.check summary::before{content:"▸ "}
+details.check[open] summary::before{content:"▾ "}
+details.check summary:hover{color:var(--mu)}
+details.check .qa{padding:0 15px 13px; border-top:1px solid var(--rule)}
+details.check .qa p:first-child{margin-top:.8em}
+details.check .ans{color:var(--ink2)}
+details.check .ans::before{content:"Answer. "; font-weight:700; color:var(--axis)}
+
+/* ───────────────────────── figures ───────────────────────── */
+figure{margin:1.5em 0; border:1px solid var(--rule); border-radius:5px;
+       background:var(--surface); overflow:hidden}
+figure .fhead{padding:7px 14px; border-bottom:1px solid var(--rule);
+  background:var(--surface2); font:700 .62rem/1.6 ui-monospace,monospace;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--mu)}
+figure .fbody{padding:10px}
+figure svg,figure canvas{display:block; width:100%; height:auto; max-width:100%}
+figcaption{padding:9px 14px 12px; border-top:1px solid var(--rule);
+  font-size:.81rem; line-height:1.55; color:var(--ink2)}
+.ctrl{display:flex; flex-wrap:wrap; gap:9px 18px; padding:10px 14px;
+  border-bottom:1px solid var(--rule); background:var(--surface2);
+  align-items:center}
+.ctrl label{display:flex; align-items:center; gap:7px;
+  font:.72rem/1.4 ui-monospace,monospace; color:var(--ink2)}
+.ctrl input[type=range]{accent-color:var(--mu); width:130px; vertical-align:middle}
+.ctrl button{font:.7rem/1 ui-monospace,monospace; padding:6px 11px;
+  border:1px solid var(--rule2); background:var(--surface); color:var(--ink2);
+  border-radius:3px; cursor:pointer}
+.ctrl button:hover{border-color:var(--mu); color:var(--mu)}
+.ctrl button[aria-pressed=true]{background:var(--ink); color:var(--bg);
+  border-color:var(--ink)}
+.readout{font:.72rem/1.65 ui-monospace,monospace; color:var(--ink2);
+  padding:8px 14px; border-top:1px solid var(--rule); white-space:pre-wrap}
+.key{display:flex; flex-wrap:wrap; gap:5px 16px; list-style:none; padding:0;
+     margin:1.1em 0 1.4em; max-width:70ch}
+.key li{display:flex; align-items:center; gap:7px; margin:0;
+        font:.74rem/1.5 ui-monospace,monospace; color:var(--ink2)}
+.key i{width:22px; height:0; border-top-width:3px; display:block; flex:none}
+
+/* ───────────────────────── tables ───────────────────────── */
+.tw{overflow-x:auto; margin:1.1em 0}
+table{border-collapse:collapse; width:100%; font-size:.85rem;
+      background:var(--surface); border:1px solid var(--rule); border-radius:5px}
+th{text-align:left; font:700 .62rem/1.6 ui-monospace,monospace;
+   letter-spacing:.09em; text-transform:uppercase; color:var(--muted);
+   background:var(--surface2); padding:8px 11px; border-bottom:1px solid var(--rule)}
+td{padding:7px 11px; border-bottom:1px solid var(--rule); vertical-align:top;
+   line-height:1.55}
+tr:last-child td{border-bottom:0}
+.katex{font-size:1.02em}
+.katex-display{overflow-x:auto; overflow-y:hidden; padding:2px 0}
+.blockgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:3px;
+  max-width:330px; margin:4px auto; font:.8rem/1 ui-monospace,monospace}
+.blockgrid div{padding:15px 4px; text-align:center; border-radius:3px;
+  border:1px solid var(--rule); cursor:help}
+.bA{background:color-mix(in srgb,var(--mu) 16%,transparent)}
+.bC{background:var(--surface2)}
+.bS{background:color-mix(in srgb,var(--rul) 16%,transparent)}
+.fnote{font-size:.8rem; color:var(--muted); max-width:70ch}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<aside class="toc" id="toc">
+  <button class="menubtn" id="menubtn" aria-expanded="false">Contents ▾</button>
+  <h2>Contents</h2>
+  <ol id="toclist"></ol>
+  <a class="backlink" href="../blog.html">← back to the blog</a>
+</aside>
+
+<main>
+
+<h1>How the Kent leaf parameters are estimated</h1>
+<p class="sub">From <span class="mono">n</span> compositions in a node to
+\(\hat\mu,\hat\kappa,\hat\beta,\hat K\) — and to the split gain. Every step is
+a closed-form formula. There is no optimisation anywhere.</p>
+
+<ul class="key">
+  <li><i style="border-top:3px solid var(--mu)"></i>\(\hat\mu\) mean direction</li>
+  <li><i style="border-top:3px dashed var(--rul)"></i>\(b_2,b_3\) the rulers (B)</li>
+  <li><i style="border-top:3px solid var(--axis)"></i>\(\hat\gamma_2,\hat\gamma_3\) ellipse axes (\(\hat K\))</li>
+  <li><i style="border-top:3px dashed var(--mir)"></i>the mirror</li>
+  <li><i style="border-top:3px solid var(--dot)"></i>data</li>
+</ul>
+
+<div class="box remark">
+  <b>A note on names</b>
+  <p>The current paper draft calls the Householder completion \(\hat K\). On this
+  page we rename it \(\mathbf B\), and we keep \(\hat K\) for the estimate of
+  \(K\), the ellipse axes. So \(\hat K = \mathbf{B}W\): the rulers, then the
+  rotation.</p>
+</div>
+
+<section id="s0" data-t="The big picture">
+<h2 class="sh"><span class="snum">S0</span>The big picture</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>A node holds \(n\) compositions; we turn them into two moments, and from those
+two moments we read off every Kent parameter in closed form.</p></div>
+
+<p>Each observation is a composition: a list of parts that add up to one. We
+first put it on a sphere. Then we collect only two summaries of the node: the
+sum of the vectors, and the sum of their outer products. Everything else is
+algebra on those two summaries.</p>
+
+<p>The work splits into two zones. While the tree is searching for a split we
+need one number per candidate, and we get it cheaply. Only when a node becomes
+a leaf do we build the full parameter set.</p>
+
+<figure id="f1">
+  <div class="fhead">Figure F1 · the pipeline</div>
+  <div class="fbody"><div id="f1svg"></div></div>
+  <figcaption>Hover a box to highlight the section that explains it. The left
+  dashed zone runs at every candidate split and uses only a Cholesky
+  factorisation. The right dashed zone runs once per leaf.</figcaption>
+</figure>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>A decision tree evaluates thousands of candidate splits. If each one needed
+an eigendecomposition the forest would be far too slow. Separating the two
+zones is what makes the method practical.</p></div>
+</section>
+
+
+<section id="s1" data-t="From compositions to the sphere">
+<h2 class="sh"><span class="snum">S1</span>From compositions to the sphere</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Take the square root of each part, and the composition becomes a point on the
+unit sphere.</p></div>
+
+<p>Let \(z=(z_1,\dots,z_k)\) be a composition, so \(z_j\ge 0\) and
+\(\sum_j z_j = 1\). Put</p>
+$$u_j=\sqrt{z_j},\qquad j=1,\dots,k,$$
+<p>and then renormalise to \(\|u\|=1\). Because \(\sum_j z_j=1\) we already have
+\(\sum_j u_j^2=1\), so \(u\) lies on the unit sphere \(S^{k-1}\), in the
+positive orthant (the corner where every coordinate is positive).</p>
+
+<div class="box example"><b>Our example</b>
+<p>\(z=(0.36,\,0.2304,\,0.4096)\) gives \(u=(0.60,\,0.48,\,0.64)\), and
+\(0.36+0.2304+0.4096=1\).</p></div>
+
+<figure id="f2">
+  <div class="fhead">Figure F2 · the sphere, the tangent plane and the data</div>
+  <div class="ctrl" id="f2ctrl">
+    <button id="f2-plane" aria-pressed="true">tangent plane</button>
+    <button id="f2-rulers" aria-pressed="false">rulers b₂, b₃</button>
+    <button id="f2-axes" aria-pressed="true">axes γ̂₂, γ̂₃</button>
+    <button id="f2-proj" aria-pressed="false">projected points</button>
+  </div>
+  <div class="fbody"><canvas id="f2cv" width="860" height="520"></canvas></div>
+  <figcaption>Drag to rotate. The shaded corner is the positive orthant, the only
+  part of the sphere a composition can reach. These 150 points are simulated for
+  illustration; they are not the exact data behind \(\hat M\).</figcaption>
+</figure>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>On the simplex the parts are tied together by \(\sum_j z_j=1\), which is awkward
+to model. On the sphere the same constraint becomes \(\|u\|=1\), and a whole
+family of distributions is already built for that.</p></div>
+</section>
+
+
+<section id="s2" data-t="The Kent distribution and its parameters">
+<h2 class="sh"><span class="snum">S2</span>The Kent distribution and its parameters</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Kent describes an elliptical cloud on the sphere: a centre, an overall size, a
+shape, and the directions the ellipse points in.</p></div>
+
+<p>The density on the sphere is</p>
+$$f(u)=c(\kappa,\beta)^{-1}\exp\!\Big[\kappa\,\mu^{\mathsf T}u+\sum_{m=2}^{k-1}\beta_m(\gamma_m^{\mathsf T}u)^2-\Big(\sum_{m=2}^{k-1}\beta_m\Big)(\gamma_k^{\mathsf T}u)^2\Big].$$
+
+<p>In simple words:</p>
+<ul>
+<li>\(\mu\): the centre of the cloud, the mean direction.</li>
+<li>\(\kappa\): the overall size. Large \(\kappa\) means a small, tight cloud.</li>
+<li>\(\beta\): the shape. \(\beta=0\) gives a round cloud, which is the von
+Mises–Fisher distribution.</li>
+<li>\(K=(\gamma_2,\dots,\gamma_k)\): where the ellipse axes point.</li>
+</ul>
+
+<p>Write \(\beta_k:=-\sum_{m=2}^{k-1}\beta_m\), so the \(\beta\)'s sum to zero.
+The constraint is</p>
+$$\tfrac{\kappa}{2}>\beta_2\ge\dots\ge\beta_{k-1}\ge-(\beta_2+\dots+\beta_{k-1}).$$
+
+<div class="box remark"><b>The key message</b>
+<p>\(\beta\) means nothing without \(K\). It says <em>stretch</em> — but stretch in
+which direction? Only \(K\) answers that. Compare a normal distribution:
+\(\Sigma=V\operatorname{diag}(\lambda)V^{\mathsf T}\). The eigenvalues correspond
+to the \(\lambda_m\), and the eigenvectors correspond to \(K\).</p></div>
+
+<figure id="f3">
+  <div class="fhead">Figure F3 · round, stretched, stretched the other way</div>
+  <div class="fbody"><div id="f3svg"></div></div>
+  <figcaption>All three clouds sit on the tangent plane and share the same centre.
+  <b>A</b> is round, so no direction is needed. <b>B</b> and <b>C</b> have the same
+  \(\kappa\) and the same \(\beta\); only \(K\) differs.</figcaption>
+</figure>
+
+<figure id="f11">
+  <div class="fhead">Figure F11 · Kent shape explorer</div>
+  <div class="ctrl">
+    <label>κ <input type="range" id="f11k" min="5" max="200" step="1" value="60"><b id="f11kv" class="mono">60</b></label>
+    <label>β₂ <input type="range" id="f11b" min="0" max="100" step="1" value="20"><b id="f11bv" class="mono">20</b></label>
+  </div>
+  <div class="fbody"><div id="f11svg"></div></div>
+  <div class="readout" id="f11out"></div>
+  <figcaption>Semi-axes are proportional to \(\sqrt{\lambda_2}\) and
+  \(\sqrt{\lambda_3}\), with \(\lambda_2=1/(\kappa-2\beta_2)\) and
+  \(\lambda_3=1/(\kappa+2\beta_2)\). Set \(\beta_2=0\) to get a circle, which is
+  von Mises–Fisher. The slider stops just below \(\kappa/2\); past that the
+  constraint is violated and the density is no longer unimodal.</figcaption>
+</figure>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>Without \(\beta\) and \(K\) the model can only describe round clouds. Real
+compositional data in a node are usually stretched along one trade-off between
+components.</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>After estimating \(\hat\mu\), which parameters are still unknown, and what does
+each describe?</p>
+<p class="ans">The directions \(\gamma_2,\gamma_3\) (where the axes point) and the
+variances \(\lambda_2,\lambda_3\) (how long they are). The variances give
+\(\kappa\) (size) and \(\beta_2\) (shape).</p>
+</div></details>
+</section>
+
+
+<section id="s3" data-t="The key population fact">
+<h2 class="sh"><span class="snum">S3</span>The key population fact: \(\Gamma\) diagonalises \(M\)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>In the Kent frame the second-moment matrix is diagonal, so \(\mu\) and the
+columns of \(K\) are exactly the eigenvectors of \(M\).</p></div>
+
+<p>Let \(M=\mathbb E(uu^{\mathsf T})\). In the Kent frame \(u^{*}=\Gamma^{\mathsf T}u\)
+the exponent of the density is</p>
+$$\kappa u^{*}_1+\sum_{m=2}^{k}\beta_m (u^{*}_m)^2 .$$
+<p>Changing the sign of one tangent coordinate does not change this, because every
+tangent coordinate appears squared. So \(\mathbb E(u^{*}_i u^{*}_j)=0\) for
+\(i\neq j\), and therefore</p>
+$$\Gamma^{\mathsf T}M\,\Gamma=\operatorname{diag}\big(\mathbb E(u^{*2}_1),\mathbb E(v_2^2),\dots,\mathbb E(v_k^2)\big)\approx\operatorname{diag}\Big(1-\textstyle\sum_m\lambda_m,\ \lambda_2,\dots,\lambda_k\Big).$$
+
+<p>Three consequences follow:</p>
+<ul>
+<li>\(\mu\) is an eigenvector of \(M\);</li>
+<li>the columns of \(K\) are the other eigenvectors;</li>
+<li>their eigenvalues are approximately the tangent variances \(\lambda_m\).</li>
+</ul>
+
+<p>In short: <strong>\(M\) contains all the information about direction and
+spread.</strong> The estimator in the rest of this page is simply the sample
+version of this one fact.</p>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>It tells us what to aim for. If the population answer is an eigendecomposition
+of \(M\), then the sample answer is an eigendecomposition of \(\hat M\). No
+optimisation is needed.</p></div>
+</section>
+
+
+<section id="s4" data-t="Sufficient statistics">
+<h2 class="sh"><span class="snum">S4</span>Sufficient statistics</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>A node needs only three accumulators, and they add up, so a child costs almost
+nothing to evaluate.</p></div>
+
+<p>A <em>sufficient statistic</em> is a summary that carries all the information
+the model needs; the individual observations can then be forgotten. For a set
+\(A\) of observations:</p>
+$$n_A=|A|,\qquad s_1(A)=\sum_{t\in A}u^{(t)},\qquad S_2(A)=\sum_{t\in A}u^{(t)}u^{(t)\mathsf T}.$$
+
+<p>These are additive over disjoint sets. So the right child is the parent minus
+the left child, and moving one observation from one side to the other costs
+\(O(k^2)\).</p>
+
+<div class="box example"><b>Our example</b>
+<p>\(\operatorname{tr}S_2(A)=n_A\) always, because every \(u\) has length one. That
+is a free check that the accumulation is correct.</p></div>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>A split search sweeps a cut point through the sorted values of a covariate. With
+additive statistics the whole sweep is linear in \(n\), instead of re-reading the
+data at every cut.</p></div>
+</section>
+
+
+<section id="s5" data-t="Moment equation 1 → μ̂">
+<h2 class="sh"><span class="snum">S5</span>Moment equation 1 (first moment) → \(\hat\mu\)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>The average of the unit vectors points in the right direction but is too short;
+normalising it gives \(\hat\mu\).</p></div>
+
+<p>In the population, \(\mathbb E(u)=\rho(\kappa,\beta)\,\mu\) with
+\(\rho=\mathbb E(u^{*}_1)\in(0,1)\). The mean of points on a sphere lies
+<em>inside</em> the sphere, which is why \(\rho<1\). The moment equation is</p>
+$$\rho\,\mu=\bar u,$$
+<p>and its solution is</p>
+$$\hat\mu=\frac{\bar u}{\|\bar u\|}=\frac{s_1}{\|s_1\|},\qquad \hat\rho=\|\bar u\|.$$
+
+<div class="box example"><b>Our example</b>
+<p>\(s_1=(64.6,\,32.3,\,64.6)\), so \(\|s_1\|=32.3\sqrt{9}=96.9\).<br>
+With \(n=100\): \(\bar u=(0.646,\,0.323,\,0.646)\), \(\hat\rho=0.969\), and</p>
+$$\hat\mu=\left(\tfrac23,\ \tfrac13,\ \tfrac23\right).$$
+</div>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>Everything later is measured relative to \(\hat\mu\). Note that \(\hat\rho\) is
+<em>not</em> used further: \(\rho(\kappa,\beta)\) has no closed form, so it cannot
+be inverted to give \(\kappa\) and \(\beta\).</p></div>
+</section>
+
+
+<section id="s6" data-t="Why the second moment?">
+<h2 class="sh"><span class="snum">S6</span>Why the second moment?</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>The mean sees only the centre; the products \(u_iu_j\) are what reveal shape and
+orientation.</p></div>
+
+<p>Two clouds can have the same centre but be stretched in different directions.
+They then have exactly the same \(\bar u\). Only the second moment
+\(\hat M=S_2/n\) can tell them apart, because it contains the products
+\(u_iu_j\).</p>
+
+<div class="box example"><b>Our example</b>
+<p>$$\hat M=\tfrac19\begin{pmatrix}3.99&1.86&3.54\\1.86&1.02&1.86\\3.54&1.86&3.99\end{pmatrix}=\begin{pmatrix}0.4433&0.2067&0.3933\\0.2067&0.1133&0.2067\\0.3933&0.2067&0.4433\end{pmatrix}$$
+<p>Trace \(=(3.99+1.02+3.99)/9=1\).</p></div>
+
+<p>Panels <b>B</b> and <b>C</b> of Figure F3 above are exactly this situation: same
+centre, same \(\bar u\), different shape and orientation.</p>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>Without \(\hat M\) there is no way to estimate \(K\), \(\kappa\) or \(\beta\) at
+all — only \(\mu\).</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Which sample moment can tell us the spread and the directions, \(\bar u\) or
+\(\hat M\), and why?</p>
+<p class="ans">\(\hat M\). The mean \(\bar u\) is identical for clouds that share a
+centre, however differently they are stretched.</p>
+</div></details>
+</section>
+
+
+<section id="s7" data-t="Remove the μ̂ direction">
+<h2 class="sh"><span class="snum">S7</span>Remove the \(\hat\mu\) direction: the projection \(\hat P\)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Split every observation into a part along \(\hat\mu\) and a part on the tangent
+plane, and keep only the second.</p></div>
+
+<p>The <em>tangent plane</em> at \(\hat\mu\) is the flat plane that touches the
+sphere there; think of it as a table resting on the ball. The part of \(u\) along
+\(\hat\mu\) is \((\hat\mu^{\mathsf T}u)\hat\mu=\hat\mu\hat\mu^{\mathsf T}u\). The
+part on the table is</p>
+$$\hat P u=(I-\hat\mu\hat\mu^{\mathsf T})u .$$
+
+<p>\(\hat P\) is the <em>orthogonal projection</em> onto the tangent plane: it drops
+each point straight down onto the table. Its properties are</p>
+$$\hat P\hat\mu=0,\qquad \hat Px=x \text{ for } x \text{ on the table},\qquad \hat P^{\mathsf T}=\hat P,\qquad \hat P^2=\hat P.$$
+
+<div class="box example"><b>Our example</b>
+<p>For \(u=(0.60,0.48,0.64)\): \(\hat\mu^{\mathsf T}u=0.9867\),<br>
+along \(\hat\mu\): \((0.6578,\,0.3289,\,0.6578)\),<br>
+\(\hat Pu=(-0.0578,\,0.1511,\,-0.0178)\), with \(\hat\mu^{\mathsf T}\hat Pu\approx0\)
+and \(\|\hat Pu\|\approx0.163\) — small, because \(u\) is near \(\hat\mu\).</p>
+<p>The second moment of the projected data is
+\(\frac1n\sum(\hat Pu)(\hat Pu)^{\mathsf T}=\hat P\hat M\hat P\), and here</p>
+$$\hat P\hat M\hat P=\tfrac19\begin{pmatrix}0.23&-0.02&-0.22\\-0.02&0.08&-0.02\\-0.22&-0.02&0.23\end{pmatrix}.$$
+</div>
+
+<figure id="f4">
+  <div class="fhead">Figure F4 · one vector, split in two</div>
+  <div class="fbody"><div id="f4svg"></div></div>
+  <figcaption>The observation \(u\) is the sum of its part along \(\hat\mu\) and its
+  part on the table. The two parts meet at a right angle.</figcaption>
+</figure>
+
+<figure id="f5">
+  <div class="fhead">Figure F5 · side view of the projection</div>
+  <div class="ctrl">
+    <label>θ <input type="range" id="f5t" min="0" max="70" step="1" value="20"><b id="f5tv" class="mono">20°</b></label>
+  </div>
+  <div class="fbody"><div id="f5svg"></div></div>
+  <div class="readout" id="f5out"></div>
+  <figcaption>A point at angle \(\theta\) from \(\hat\mu\) has tangent coordinate
+  \(v=\sin\theta\) and falls a height \(1-\cos\theta\) below the table. The
+  approximation used later replaces that drop by \(\tfrac12 v^2\). For small
+  \(\theta\) — that is, for large \(\kappa\) — the error is tiny. For large
+  \(\theta\) it is poor.</figcaption>
+</figure>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>Two reasons. First, the spread along \(\hat\mu\) is large (0.94) and would hide
+the small spread on the table (0.06). Second, it carries no new information:
+because the trace is one, the spread along \(\hat\mu\) equals
+\(1-(\text{spread on the table})\).</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Should we keep the spread along \(\hat\mu\)?</p>
+<p class="ans">No. It is large and hides the signal, and it carries no new
+information because the trace is one.</p>
+<p>Write the part of \(u\) on the table.</p>
+<p class="ans">\((I-\hat\mu\hat\mu^{\mathsf T})u\).</p>
+</div></details>
+</section>
+
+
+<section id="s8" data-t="The problem: P̂M̂P̂ is singular">
+<h2 class="sh"><span class="snum">S8</span>The problem: \(\hat P\hat M\hat P\) is singular</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Projecting leaves a \(3\times3\) matrix describing a 2-dimensional table, so one
+eigenvalue is exactly zero and the determinant dies.</p></div>
+
+<p>Since \(\hat P\hat\mu=0\) we have \(\hat P\hat M\hat P\,\hat\mu=0\). So
+\(\hat\mu\) is an eigenvector with eigenvalue \(0\).</p>
+
+<div class="box example"><b>Our example</b>
+<p>The eigenvalues of \(\hat P\hat M\hat P\) are \(0,\ 0.05,\ 0.01\).</p></div>
+
+<p>Then \(\det(\hat P\hat M\hat P)=0\), so \(\ln\det=-\infty\). But the
+log-likelihood needs \(\ln(\lambda_2\lambda_3)\). Worse, for large \(\kappa\) the
+real \(\lambda_m\) can be genuinely tiny — say \(10^{-4}\) — and become hard to
+tell apart from the fake zero.</p>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>The cause is simple: three numbers are being used to describe a two-dimensional
+table. The fix is to describe the table with two numbers, which is what the
+next sections build.</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>What is \(\hat P\hat M\hat P\,\hat\mu\), and why is that a problem?</p>
+<p class="ans">It is \(0\). So one eigenvalue is zero, the determinant is zero, and
+\(\ln\det=-\infty\).</p>
+</div></details>
+</section>
+
+
+<section id="s9" data-t="What we need: rulers on the table">
+<h2 class="sh"><span class="snum">S9</span>What we need: rulers on the table</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Lay two perpendicular unit rulers on the table and measure every point with
+them; the \(3\times3\) problem becomes a clean \(2\times2\) one.</p></div>
+
+<p>The rulers \(b_2,b_3\) must satisfy</p>
+$$b_2^{\mathsf T}\hat\mu=b_3^{\mathsf T}\hat\mu=0,\qquad b_2^{\mathsf T}b_3=0,\qquad \|b_2\|=\|b_3\|=1 .$$
+<p>In matrix form, with \(\mathbf B=(b_2,\dots,b_k)\):</p>
+$$\mathbf B^{\mathsf T}\hat\mu=0,\qquad \mathbf B^{\mathsf T}\mathbf B=I_{k-1}.$$
+
+<p>Why unit length? A ruler of length 2 would multiply every variance by 4, and the
+estimated \(\lambda_m\) would be wrong by that factor.</p>
+
+<p>With such rulers,</p>
+$$S_L=\mathbf B^{\mathsf T}\hat M\mathbf B$$
+<p>is \((k-1)\times(k-1)\), has full rank, satisfies
+\(\det S_L=\prod_m\hat\lambda_m\), and reproduces the projection exactly:
+\(\hat P\hat M\hat P=\mathbf B\,S_L\,\mathbf B^{\mathsf T}\).</p>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>It removes the fake zero of S8 without losing anything. The table really is
+two-dimensional, so two coordinates are enough.</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Which conditions must the rulers satisfy?</p>
+<p class="ans">They must lie on the table, have unit length, and be perpendicular
+to each other.</p>
+</div></details>
+</section>
+
+<section id="s10" data-t="Perfect rulers at the north pole">
+<h2 class="sh"><span class="snum">S10</span>The idea: perfect rulers at the north pole</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>At the north pole the rulers are obvious; move the whole rigid frame there with
+one orthogonal map and the rulers come along for free.</p></div>
+
+<p>At \(e_1=(1,0,0)\) the choice is free and obvious: take \(e_2=(0,1,0)\) and
+\(e_3=(0,0,1)\). Now move the rigid frame \((e_1,e_2,e_3)\) with a single map
+\(H\) so that \(He_1=\hat\mu\).</p>
+
+<p>\(H\) must be <em>orthogonal</em>: a matrix with \(H^{\mathsf T}H=I\), which is the
+same as \((Hx)^{\mathsf T}(Hy)=x^{\mathsf T}y\). So it keeps all lengths and all
+angles. Every ruler condition then holds automatically:</p>
+
+<div class="tw"><table>
+<thead><tr><th>at the north pole</th><th>after applying \(H\)</th></tr></thead>
+<tbody>
+<tr><td>\(e_2^{\mathsf T}e_1=0\)</td><td>\(b_2^{\mathsf T}\hat\mu=0\)</td></tr>
+<tr><td>\(e_3^{\mathsf T}e_1=0\)</td><td>\(b_3^{\mathsf T}\hat\mu=0\)</td></tr>
+<tr><td>\(e_2^{\mathsf T}e_3=0\)</td><td>\(b_2^{\mathsf T}b_3=0\)</td></tr>
+<tr><td>\(\|e_j\|=1\)</td><td>\(\|b_j\|=1\)</td></tr>
+</tbody></table></div>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>A rotation would work too. But many different rotations send \(e_1\) to
+\(\hat\mu\), and they are awkward to build in \(k\) dimensions. A mirror is
+simpler: there is one obvious choice, and it is explicit.</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Which rulers are free at \(e_1\)? What property must \(H\) have?</p>
+<p class="ans">\(e_2\) and \(e_3\). And \(H^{\mathsf T}H=I\).</p>
+</div></details>
+</section>
+
+
+<section id="s11" data-t="The Householder reflector">
+<h2 class="sh"><span class="snum">S11</span>The Householder reflector (the mirror)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Stand a mirror halfway between \(e_1\) and \(\hat\mu\); reflecting the frame in
+it sends \(e_1\) to \(\hat\mu\) and hands you the rulers.</p></div>
+
+<p>A <em>Householder reflector</em> is the matrix of a mirror through the origin.
+Where should the mirror stand? In the middle of the segment from \(e_1\) to
+\(\hat\mu\), and perpendicular to it. Its normal direction is</p>
+$$v=e_1-\hat\mu .$$
+<p>Because \(\|e_1\|=\|\hat\mu\|=1\) the triangle is isosceles, so that mirror
+passes through the centre of the sphere. That is what makes \(H\) linear.</p>
+
+<p>With \(n=v/\|v\|\), a mirror keeps the part lying in the mirror and flips the
+part along \(n\):</p>
+$$Hx=x-2(n^{\mathsf T}x)n,\qquad H=I-2nn^{\mathsf T}=I-\frac{2vv^{\mathsf T}}{v^{\mathsf T}v}.$$
+
+<p>Why the factor 2? Subtracting once lands you <em>on</em> the mirror, which is a
+projection. Subtracting twice carries you through to the other side, which is a
+reflection.</p>
+
+<p>Check that it works: \(v^{\mathsf T}e_1=1-\hat\mu_1\) and
+\(v^{\mathsf T}v=2(1-\hat\mu_1)\), so \(He_1=e_1-v=\hat\mu\). The properties are
+\(H^{\mathsf T}=H\), \(H^{\mathsf T}H=I\) and \(H^2=I\). Hence</p>
+$$H=(\hat\mu,\,b_2,\dots,b_k)=(\hat\mu,\,\mathbf B),$$
+<p>and the columns have the closed form</p>
+$$b_j=e_j+\hat\mu_j\,\frac{e_1-\hat\mu}{1-\hat\mu_1},\qquad j\ge2 .$$
+
+<div class="box example"><b>Our example</b>
+<p>\(v=\left(\tfrac13,-\tfrac13,-\tfrac23\right)\), \(v^{\mathsf T}v=\tfrac23\), so
+\(H=I-3vv^{\mathsf T}\):</p>
+$$H=\begin{pmatrix}2/3&1/3&2/3\\1/3&2/3&-2/3\\2/3&-2/3&-1/3\end{pmatrix},\quad
+\hat\mu=\left(\tfrac23,\tfrac13,\tfrac23\right),\quad
+b_2=\left(\tfrac13,\tfrac23,-\tfrac23\right),\quad
+b_3=\left(\tfrac23,-\tfrac23,-\tfrac13\right).$$
+<p>Checks: \(b_2^{\mathsf T}\hat\mu=\tfrac29+\tfrac29-\tfrac49=0\);
+\(b_3^{\mathsf T}\hat\mu=\tfrac49-\tfrac29-\tfrac29=0\);
+\(b_2^{\mathsf T}b_3=\tfrac29-\tfrac49+\tfrac29=0\).</p></div>
+
+<div class="box remark"><b>Two ways to read the same map</b>
+<p><b>1.</b> Move the rulers to the data: \(\mathbf B\) is columns \(2\dots k\) of
+\(H\). <b>2.</b> Move the data to the north pole: \(\tilde u=Hu\). Then the
+tangent coordinates are simply components \(2\dots k\) of \(\tilde u\), and
+\(S_L\) is the lower-right block of \(H\hat MH\).</p>
+<p>This is Kent's (1982) idea: first move the mean to the north pole, then rotate
+around the pole. Householder does step 1; \(W\) does step 2.</p></div>
+
+<h3>Why Householder and not something else</h3>
+<div class="tw"><table>
+<thead><tr><th>method</th><th>problem</th></tr></thead>
+<tbody>
+<tr><td>Gram–Schmidt</td><td>which \(e_j\) do you drop? and it loses orthogonality numerically</td></tr>
+<tr><td>eigenvectors of \(\hat P\hat M\hat P\)</td><td>exactly the problems of S8</td></tr>
+<tr><td>angle rotations</td><td>hard to write down for general \(k\)</td></tr>
+<tr><td><b>Householder</b></td><td>explicit, \(O(k^2)\), numerically stable, deterministic — and it is what QR uses inside</td></tr>
+</tbody></table></div>
+
+<figure id="f12">
+  <div class="fhead">Figure F12 · where the mirror stands</div>
+  <div class="fbody"><div id="f12svg"></div></div>
+  <figcaption>A slice through the sphere. The mirror passes through the midpoint of
+  the segment \(e_1\to\hat\mu\) and through the centre, at a right angle to
+  \(v=e_1-\hat\mu\). The two tick marks are equal.</figcaption>
+</figure>
+
+<figure id="f6">
+  <div class="fhead">Figure F6 · the mirror in two dimensions</div>
+  <div class="ctrl">
+    <label>θ <input type="range" id="f6t" min="10" max="80" step="1" value="35"><b id="f6tv" class="mono">35°</b></label>
+  </div>
+  <div class="fbody"><div id="f6svg"></div></div>
+  <div class="readout" id="f6out"></div>
+  <figcaption>The mirror is the line through the origin at angle \(\theta/2\). It
+  sends \(e_1\) to \(\hat\mu\) and \(e_2\) to \(b_2=(\sin\theta,-\cos\theta)\). The
+  dotted segments are both perpendicular to the mirror.</figcaption>
+</figure>
+
+<figure id="f7">
+  <div class="fhead">Figure F7 · the mirror in three dimensions</div>
+  <div class="ctrl">
+    <button id="f7go">Reflect</button>
+    <button id="f7back">Reflect back</button>
+    <button id="f7data" aria-pressed="false">move the data instead</button>
+  </div>
+  <div class="fbody"><canvas id="f7cv" width="860" height="520"></canvas></div>
+  <figcaption>Drag to rotate. The amber disc is the mirror, with normal
+  \(n=v/\|v\|\) and \(v=(1/3,-1/3,-2/3)\). Press <b>Reflect</b> and each frame
+  vector travels along \(x(t)=x-2t(n^{\mathsf T}x)n\); halfway, at \(t=0.5\), it
+  lies exactly in the mirror. At \(t=1\) the grey frame has become
+  \((\hat\mu,b_2,b_3)\). Reflecting again returns it, because \(H^2=I\).</figcaption>
+</figure>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Where is the mirror? Write \(H\).</p>
+<p class="ans">In the middle of the segment \(e_1\to\hat\mu\), perpendicular to
+\(v=e_1-\hat\mu\). And \(H=I-2vv^{\mathsf T}/(v^{\mathsf T}v)\).</p>
+</div></details>
+</section>
+
+
+<section id="s12" data-t="The tangent block S_L">
+<h2 class="sh"><span class="snum">S12</span>The tangent block \(S_L\) and the block form of \(\hat M\)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>In the Householder frame \(\hat M\) breaks into a corner, a cross term and the
+\(2\times2\) block we actually want.</p></div>
+
+$$H\hat MH=\begin{pmatrix}a&c^{\mathsf T}\\ c&S_L\end{pmatrix},\qquad
+a=\hat\mu^{\mathsf T}\hat M\hat\mu,\qquad c=\mathbf B^{\mathsf T}\hat M\hat\mu,\qquad
+S_L=\mathbf B^{\mathsf T}\hat M\mathbf B .$$
+
+<p>What each block means: \(a\) is the spread along \(\hat\mu\); \(S_L\) is the
+spread on the table, seen through the rulers; \(c\) is the cross term. In the
+population \(c=0\), and in a sample it is usually small but not exactly zero —
+which is why \(\hat\mu\) is in general not an exact eigenvector of \(\hat M\).
+Also \(a+\operatorname{tr}S_L=1\).</p>
+
+<div class="box example"><b>Our example</b>
+<p>\(a=0.94\), \(c=(0,0)\) (chosen to keep the numbers clean), and</p>
+$$S_L=\begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix},\qquad \det S_L=0.0005 .$$
+<p>The ruler coordinates of \(u=(0.60,0.48,0.64)\) are
+\(\mathbf B^{\mathsf T}u=(0.0933,\,-0.1333)\).</p></div>
+
+<p>\(S_L\) is a genuine <em>covariance</em> matrix — a table of the variances and
+the covariance of the ruler coordinates. The coordinates have mean zero, because
+\(\mathbf B^{\mathsf T}\bar u=\mathbf B^{\mathsf T}s_1/n=0\) (as \(s_1\) is
+parallel to \(\hat\mu\)).</p>
+
+<p>The off-diagonal entry 0.02 gives a correlation of \(0.02/0.03=0.67\). So the
+cloud is tilted relative to the rulers, and \(b_2,b_3\) are <strong>not</strong>
+the ellipse axes. That is no surprise: the mirror never looked at the cloud. Along
+the true axes the covariance would be zero.</p>
+
+<figure id="f13">
+  <div class="fhead">Figure F13 · the block structure of \(H\hat MH\)</div>
+  <div class="fbody"><div class="blockgrid" id="f13grid"></div></div>
+  <figcaption>Hover a cell. Coral is \(a\), the spread along \(\hat\mu\). Purple is
+  \(S_L\), the spread on the table. Grey is the cross term \(c\).</figcaption>
+</figure>
+
+<figure id="f8">
+  <div class="fhead">Figure F8 · the rulers are not the axes</div>
+  <div class="ctrl">
+    <label>φ <input type="range" id="f8p" min="0" max="180" step="1" value="0"><b id="f8pv" class="mono">0°</b></label>
+  </div>
+  <div class="fbody"><div id="f8svg"></div></div>
+  <div class="readout" id="f8out"></div>
+  <figcaption>Top view of the tangent plane, in ruler coordinates. Turn the rulers
+  with \(\varphi\) and watch \(S_L(\varphi)\) change. The green axes never move, and
+  the eigenvalues never change.</figcaption>
+</figure>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Is \(S_L\) diagonal? Are \(b_2,b_3\) the ellipse axes?</p>
+<p class="ans">No — the correlation is 0.67. The mirror never looked at the cloud,
+so its rulers have no reason to line up with the ellipse.</p>
+</div></details>
+</section>
+
+
+<section id="s13" data-t="Eigendecomposition: λ̂, W, K̂ = BW">
+<h2 class="sh"><span class="snum">S13</span>Eigendecomposition: \(\hat\lambda\), \(W\) and \(\hat K=\mathbf BW\)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Turn the rulers until the covariance vanishes; the turn is \(W\), and the turned
+rulers are the ellipse axes.</p></div>
+
+<p>An <em>eigendecomposition</em> writes a symmetric matrix as a rotation, a
+stretch, and the rotation back:</p>
+$$S_L=W\operatorname{diag}(\hat\lambda_2,\hat\lambda_3)W^{\mathsf T}.$$
+
+<div class="box example"><b>Our example</b>
+<p>\(S_L(1,1)^{\mathsf T}=0.05\,(1,1)^{\mathsf T}\) and
+\(S_L(1,-1)^{\mathsf T}=0.01\,(1,-1)^{\mathsf T}\), so</p>
+$$\hat\lambda_2=0.05,\ w_2=\tfrac{1}{\sqrt2}(1,1);\qquad
+\hat\lambda_3=0.01,\ w_3=\tfrac{1}{\sqrt2}(1,-1).$$
+<p>So \(W\) turns the rulers by 45°. Back in \(\mathbb R^3\),
+\(\hat\gamma_m=\mathbf Bw_m\) and \(\hat K=\mathbf BW\):</p>
+$$\hat\gamma_2=\frac{b_2+b_3}{\sqrt2}=\frac{(1,0,-1)}{\sqrt2},\qquad
+\hat\gamma_3=\frac{b_2-b_3}{\sqrt2}=\frac{(-1,4,-1)}{3\sqrt2}.$$
+<p>Both have unit length, both are orthogonal to \(\hat\mu\), and they are
+orthogonal to each other. The full estimated frame is</p>
+$$\hat\Gamma=\begin{pmatrix}2/3&1/\sqrt2&-1/(3\sqrt2)\\ 1/3&0&4/(3\sqrt2)\\ 2/3&-1/\sqrt2&-1/(3\sqrt2)\end{pmatrix}.$$
+<p>The axis coordinates of \(u=(0.60,0.48,0.64)\) are
+\(\hat K^{\mathsf T}u=(-0.0283,\,0.1603)\). Their squared length, 0.0265, is the
+same as for the ruler coordinates — a rotation keeps length.</p></div>
+
+<p><b>What the axes mean here.</b> Moving along \(\hat\gamma_2\) sends \(u_1\) up,
+leaves \(u_2\) fixed and sends \(u_3\) down. Since \(z=u^2\), the main variation in
+this node is an exchange between component 1 and component 3. The short axis
+\(\hat\gamma_3\propto(-1,4,-1)\) is "component 2 against 1 and 3 together", which
+is the rarest change.</p>
+
+<div class="box remark"><b>The choice of rulers does not matter</b>
+<p>Use different rulers \(\mathbf BQ\) with \(Q\) orthogonal. Then
+\(S_L\to Q^{\mathsf T}S_LQ\) and \(W\to Q^{\mathsf T}W\), so
+\((\mathbf BQ)(Q^{\mathsf T}W)=\mathbf BW\). The answer is unchanged, and so are the
+eigenvalues.</p></div>
+
+<figure id="f9">
+  <div class="fhead">Figure F9 · applying the rotation \(W\)</div>
+  <div class="ctrl"><button id="f9go">Apply W</button><button id="f9rst">reset</button></div>
+  <div class="fbody"><div id="f9svg"></div></div>
+  <div class="readout" id="f9out"></div>
+  <figcaption>The rulers turn by 45° until they sit on the green axes. Watch
+  \(S_L\) become diagonal, ending at \(\operatorname{diag}(0.05,0.01)\).</figcaption>
+</figure>
+
+<figure id="f10">
+  <div class="fhead">Figure F10 · transform back: to the sphere, and to the simplex</div>
+  <div class="fbody">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="f10wrap">
+      <canvas id="f10cv" width="520" height="470"></canvas>
+      <div id="f10tern"></div>
+    </div>
+  </div>
+  <figcaption>Left: the sphere, with \(\hat\gamma_2,\hat\gamma_3\) drawn at
+  \(\hat\mu\). Right: the same data as compositions \(z=u^2\) in a ternary plot,
+  with the two axis curves \(z(t)=(\cos t\,\hat\mu+\sin t\,\hat\gamma_m)^2\) mapped
+  back. Each curve stays on the sphere, so \(\sum_j z_j=1\) exactly. The
+  \(\hat\gamma_2\) curve moves mass between \(z_1\) and \(z_3\) while \(z_2\) stays
+  nearly constant.</figcaption>
+</figure>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>What are the eigenvalues and eigenvectors of
+\(\begin{pmatrix}0.03&0.02\\0.02&0.03\end{pmatrix}\)?</p>
+<p class="ans">0.05 with \((1,1)/\sqrt2\), and 0.01 with \((1,-1)/\sqrt2\).</p>
+<p>What is \(\hat\gamma_2\) in \(\mathbb R^3\)?</p>
+<p class="ans">\(\mathbf Bw_2=(1,0,-1)/\sqrt2\).</p>
+</div></details>
+</section>
+
+
+<section id="s14" data-t="Moment equation 2 → K, κ, β">
+<h2 class="sh"><span class="snum">S14</span>Moment equation 2 (second moment) → \(K,\kappa,\beta\)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Match the projected second moment to its population form; the spectral theorem
+solves it uniquely, and the eigenvalues convert straight into \(\kappa\) and
+\(\beta\).</p></div>
+
+<p>In the population,
+\(PMP=K\operatorname{diag}(\mathbb E v_2^2,\dots,\mathbb E v_k^2)K^{\mathsf T}\approx K\operatorname{diag}(\lambda_2,\dots,\lambda_k)K^{\mathsf T}\).
+The moment equation is</p>
+$$K\operatorname{diag}(\lambda)K^{\mathsf T}=\hat P\hat M\hat P .$$
+<p>By the spectral theorem this has a unique solution, up to the signs of the
+columns: that gives \(\hat K\) and \(\hat\lambda\). Then \(1/\lambda_m=\kappa-2\beta_m\);
+summing over \(m\) and using \(\sum_m\beta_m=0\),</p>
+$$\hat\kappa=\frac{1}{k-1}\sum_m\frac{1}{\hat\lambda_m},\qquad
+\hat\beta_m=\tfrac12\Big(\hat\kappa-\frac{1}{\hat\lambda_m}\Big).$$
+
+<div class="box example"><b>Our example</b>
+<p>\(1/\hat\lambda_2=20\) and \(1/\hat\lambda_3=100\), so
+\(\hat\kappa=60\), \(\hat\beta_2=20\), \(\hat\beta_3=-20\).</p>
+<p>Check: \(\hat\lambda_2=1/(60-40)=0.05\) and \(\hat\lambda_3=1/(60+40)=0.01\).
+The constraint \(30>20\ge-20\ge-20\) holds automatically: ordered
+\(\hat\lambda\) gives ordered \(\hat\beta\), and \(\hat\lambda_2>0\) forces
+\(\hat\beta_2<\hat\kappa/2\).</p></div>
+
+<h3>The counting works out exactly</h3>
+<p>First moment: \(k-1\) equations (direction) for \(\mu\), which has \(k-1\)
+unknowns. Tangent block: \(k(k-1)/2\) equations, for \(K\) given \(\mu\)
+(\((k-1)(k-2)/2\) unknowns) plus \(\kappa\) and \(\beta\) (\(k-1\) unknowns). And</p>
+$$\frac{(k-1)(k-2)}{2}+(k-1)=\frac{k(k-1)}{2}.$$
+<p>So the model is exactly identified. Closed form, no optimisation.</p>
+
+<p><b>The moment information we do not use.</b> \(a\) carries nothing new, because
+\(a=1-\operatorname{tr}S_L\). And \(c\) gives \(k-1\) further equations; in the
+population \(c=0\), so \(\mu\) is over-identified — the first moment says
+\(\mu\propto\bar u\), while the second says \(\mu\) is an eigenvector of \(M\). The
+estimator uses the first moment, which is the definition of a mean direction and
+also fixes the sign.</p>
+
+<div class="box remark"><b>Exact and approximate parts</b>
+<p>\(\mathbb E(u)=\rho\mu\) and "\(\Gamma^{\mathsf T}M\Gamma\) is diagonal" are both
+<em>exact</em>, by symmetry. So the equations for \(\mu\) and \(K\) are exact. The
+link to \((\kappa,\beta)\) is the approximate part: exactly,
+\(\mathbb E(u^{*}_1)=\partial\ln c/\partial\kappa\) and
+\(\mathbb E(v_m^2-v_k^2)=\partial\ln c/\partial\beta_m\), but \(c(\kappa,\beta)\)
+has no closed form. Theorem 1 replaces \(\mathbb E(v_m^2)\) by
+\(\lambda_m=1/(\kappa-2\beta_m)\), with error \(O(1/\kappa)\).</p>
+<p>For fixed \(\Gamma\) the Kent family is an exponential family, so the ML
+equations are moment equations too. That is why this moment estimator is close to
+ML when \(\kappa\) is large.</p></div>
+
+<div class="box example"><b>Small-sample (REML) adjustment</b>
+<p>\(\hat\lambda_m\leftarrow\hat\lambda_m\cdot n/(n-1)\). With \(n=100\):
+\(\hat\lambda=(0.050505,\,0.010101)\), giving \(\hat\kappa=59.4\),
+\(\hat\beta_2=19.8\), \(\hat\beta_3=-19.8\). This changes the reported leaf only,
+never the split criterion.</p></div>
+
+<details class="check"><summary>Check yourself</summary><div class="qa">
+<p>Solve \(1/(\kappa-2\beta_2)=0.05\) and \(1/(\kappa+2\beta_2)=0.01\).</p>
+<p class="ans">\(\kappa=60\) and \(\beta_2=20\).</p>
+</div></details>
+</section>
+
+
+<section id="s15" data-t="Why this estimator is a good one">
+<h2 class="sh"><span class="snum">S15</span>Why this estimator is a good one</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>It is the sample version of an exact population fact, its variances are proper
+variances, and given \(\hat\mu\) no other frame fits better.</p></div>
+
+<ol class="body">
+<li>It is the sample version of S3. The population says \(\Gamma\) diagonalises
+\(M\); the estimator diagonalises \(\hat M\).</li>
+<li>The fitted tangent coordinates have mean zero:
+\(\sum_t\hat\gamma_m^{\mathsf T}u^{(t)}=\hat\gamma_m^{\mathsf T}s_1=0\). So
+\(\hat\lambda_m\) really is a variance.</li>
+<li>Given \(\hat\mu\) it maximises the Gaussian surrogate. For any frame \(G\) the
+best variances are \(\operatorname{diag}(G^{\mathsf T}\hat MG)\), and the
+log-likelihood is \(\text{const}-\frac n2\sum_m\ln\lambda_m\). By
+<em>Hadamard's inequality</em>,
+\(\prod_m (G^{\mathsf T}\hat MG)_{mm}\ge\det(G^{\mathsf T}\hat MG)=\det S_L\), with
+equality only when \(G^{\mathsf T}\hat MG\) is diagonal — that is, when
+\(G=\hat K\).</li>
+</ol>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>It tells us the closed-form answer is not a shortcut that sacrifices quality. It
+is the best frame under the surrogate we are actually using.</p></div>
+</section>
+
+
+<section id="s16" data-t="Log-likelihood and split gain">
+<h2 class="sh"><span class="snum">S16</span>Log-likelihood and split gain (no \(\mathbf B\), no \(W\) needed)</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>The split criterion needs only \(\ln|S_L|\), and a Schur identity gives that from
+one Cholesky factorisation of \(\hat M\).</p></div>
+
+$$\hat\ell(A)=-\frac{n_A(k-1)}{2}\big(1+\ln 2\pi\big)-\frac{n_A}{2}\ln|S_L(A)| .$$
+<p>The split gain is</p>
+$$\Delta\ell=-\tfrac12\Big[n_L\ln|S_L(L)|+n_R\ln|S_L(R)|-n\ln|S_L(\Omega)|\Big],$$
+<p>which rewards children with smaller ellipses.</p>
+
+<p>The <em>Schur complement</em> identity — the determinant of a block of a matrix,
+written through the whole matrix — gives</p>
+$$|S_L|=|\hat M|\cdot\hat\mu^{\mathsf T}\hat M^{-1}\hat\mu .$$
+<p>This is exact even when \(c\neq0\), and it does not depend on which completion
+\(\mathbf B\) we chose. One <em>Cholesky factorisation</em> \(\hat M=LL^{\mathsf T}\)
+delivers both pieces:</p>
+$$\ln|\hat M|=2\sum_j\ln L_{jj},\qquad \hat\mu^{\mathsf T}\hat M^{-1}\hat\mu=\|L^{-1}\hat\mu\|^2 .$$
+<p>So the Householder reflector and the eigendecomposition are used
+<strong>only at terminal nodes</strong>.</p>
+
+<div class="box example"><b>Our example</b>
+<p>\(\ln|S_L|=\ln 0.0005=-7.6009\), so</p>
+$$\hat\ell=-100\,(1+1.8379)-50\,(-7.6009)=-283.79+380.05=96.26 .$$
+<p>Schur check: \(|\hat M|=0.00047\) and
+\(\hat\mu^{\mathsf T}\hat M^{-1}\hat\mu=1/0.94=1.0638\); their product is
+\(0.0005\).</p></div>
+
+<div class="box remark"><b>A naming clash worth fixing</b>
+<p>In the paper the matrix is called \(S_L(A)\), and in the split gain \(L\) is also
+the left child — so \(S_L(L)\) and \(S_L(R)\) read badly. A different name such as
+\(S_T(A)\) (for <em>tangent</em>) would avoid it.</p></div>
+
+<p>Figure F1 at the top shows these two zones side by side.</p>
+</section>
+
+
+<section id="s17" data-t="Model-implied mean">
+<h2 class="sh"><span class="snum">S17</span>Model-implied mean</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>Squaring the frame and weighting by the variances returns the mean composition —
+and it lands on the empirical mean.</p></div>
+
+$$\mathbb E(z)=\Gamma^{2}\,\mathbb E(u^{*2}),\qquad
+\mathbb E(u^{*2})\approx\Big(1-\textstyle\sum_m\lambda_m,\ \lambda_2,\dots,\lambda_k\Big),$$
+<p>where \(\Gamma^2\) means the entrywise square.</p>
+
+<div class="box example"><b>Our example</b>
+<p>\(\mathbb E(u^{*2})\approx(0.94,\,0.05,\,0.01)\), and the squared columns of
+\(\hat\Gamma\) are \((4/9,1/9,4/9)\), \((1/2,0,1/2)\) and
+\((1/18,16/18,1/18)\). Hence</p>
+$$\mathbb E(z)\approx(0.4433,\,0.1133,\,0.4433).$$</div>
+
+<p>Notice that this is exactly \(\operatorname{diag}(\hat M)\). In general the
+empirical mean of \(z\) <em>is</em> \(\operatorname{diag}(\hat M)\), because
+\(z_j=u_j^2\); and with the ML divisor, \(1-\sum_m\hat\lambda_m=a\) exactly. So
+before the REML adjustment and before flooring, the model-implied mean differs
+from the empirical mean only through the cross term \(c\).</p>
+</section>
+
+
+<section id="s18" data-t="Numerical caveat">
+<h2 class="sh"><span class="snum">S18</span>Numerical caveat for Householder</h2>
+<div class="box idea"><b>Idea in one sentence</b>
+<p>If \(\hat\mu\) is already near \(e_1\) the normal \(v\) is nearly zero; flip the
+sign and the problem disappears.</p></div>
+
+<p>If \(\hat\mu\approx e_1\) then \(v^{\mathsf T}v=2(1-\hat\mu_1)\approx0\), and
+dividing by it causes cancellation. The fix is to use</p>
+$$v=e_1+\hat\mu,$$
+<p>which sends \(e_1\) to \(-\hat\mu\). Columns \(2\dots k\) are still perfectly
+valid rulers, which is all we need. For compositions \(\hat\mu_1>0\), so then
+\(v^{\mathsf T}v=2(1+\hat\mu_1)\ge2\) is never small.</p>
+
+<div class="box why"><b>Why is this step necessary?</b>
+<p>It is the difference between a stable implementation and one that silently loses
+precision in exactly the nodes where the data are most concentrated.</p></div>
+
+<div class="box remark"><b>To do</b>
+<p>Check which version <code>kent_forest.cpp</code> uses.</p></div>
+</section>
+
+
+<section id="s19" data-t="Summary and glossary">
+<h2 class="sh"><span class="snum">S19</span>Summary table and glossary</h2>
+
+<div class="tw"><table>
+<thead><tr><th>Object</th><th>What it is</th><th>Why we need it</th></tr></thead>
+<tbody>
+<tr><td>\(M\)</td><td>population second moment \(\mathbb E(uu^{\mathsf T})\)</td><td>\(\Gamma\) diagonalises it — the fact the whole estimator rests on</td></tr>
+<tr><td>\(\hat M\)</td><td>\(S_2/n\), the sample version</td><td>carries direction and spread; trace is 1</td></tr>
+<tr><td>\(\hat\mu\)</td><td>\(s_1/\|s_1\|\)</td><td>the centre; everything else is measured relative to it</td></tr>
+<tr><td>\(H\)</td><td>Householder reflector, \(I-2vv^{\mathsf T}/(v^{\mathsf T}v)\)</td><td>moves the north-pole frame onto \(\hat\mu\) in one step</td></tr>
+<tr><td>\(\mathbf B\)</td><td>columns \(2\dots k\) of \(H\)</td><td>the rulers: an orthonormal basis of the tangent plane</td></tr>
+<tr><td>\(S_L\)</td><td>\(\mathbf B^{\mathsf T}\hat M\mathbf B\)</td><td>the \((k-1)\times(k-1)\) covariance on the table; full rank</td></tr>
+<tr><td>\(\hat\lambda_m\)</td><td>eigenvalues of \(S_L\)</td><td>the tangent variances; give \(\hat\kappa\) and \(\hat\beta\)</td></tr>
+<tr><td>\(W\)</td><td>eigenvectors of \(S_L\)</td><td>the rotation from rulers to axes</td></tr>
+<tr><td>\(K\)</td><td>\((\gamma_2,\dots,\gamma_k)\)</td><td>where the ellipse axes point</td></tr>
+<tr><td>\(\hat K=\mathbf BW\)</td><td>the estimate of \(K\)</td><td>the answer, free of the arbitrary choice of rulers</td></tr>
+<tr><td>\(\hat\kappa,\hat\beta\)</td><td>from \(1/\hat\lambda_m=\kappa-2\beta_m\)</td><td>size and shape of the cloud</td></tr>
+<tr><td>Schur + Cholesky</td><td>\(|S_L|=|\hat M|\,\hat\mu^{\mathsf T}\hat M^{-1}\hat\mu\)</td><td>the split gain without ever forming \(\mathbf B\) or \(W\)</td></tr>
+</tbody></table></div>
+
+<h3>Glossary</h3>
+<div class="tw"><table>
+<tbody>
+<tr><td><b>sphere</b></td><td>the set of all vectors of length one.</td></tr>
+<tr><td><b>tangent plane</b></td><td>the flat plane that touches the sphere at one point.</td></tr>
+<tr><td><b>orthogonal projection</b></td><td>dropping a point straight down onto a plane, at a right angle.</td></tr>
+<tr><td><b>orthogonal matrix</b></td><td>a matrix that keeps all lengths and angles; \(H^{\mathsf T}H=I\).</td></tr>
+<tr><td><b>Householder reflector</b></td><td>the matrix of a mirror through the origin.</td></tr>
+<tr><td><b>eigendecomposition</b></td><td>writing a symmetric matrix as a rotation, a stretch along the axes, and the rotation back.</td></tr>
+<tr><td><b>covariance</b></td><td>a number saying whether two coordinates move up and down together.</td></tr>
+<tr><td><b>sufficient statistic</b></td><td>a summary of the data that holds everything the model needs.</td></tr>
+<tr><td><b>method of moments</b></td><td>set the theoretical moments equal to the sample moments and solve.</td></tr>
+<tr><td><b>Schur complement</b></td><td>what is left of a block matrix after one block has been eliminated.</td></tr>
+<tr><td><b>Cholesky factorisation</b></td><td>writing a positive definite matrix as \(LL^{\mathsf T}\) with \(L\) lower triangular.</td></tr>
+<tr><td><b>Hadamard's inequality</b></td><td>the product of the diagonal entries of a positive definite matrix is at least its determinant.</td></tr>
+</tbody></table></div>
+
+<h3>References</h3>
+<ul>
+<li>Kent, J. T. (1982). The Fisher–Bingham distribution on the sphere. <i>JRSS B</i>.</li>
+<li>Scealy, J. L. &amp; Welsh, A. H. (2011). Regression for compositional data by
+using distributions defined on the hypersphere. <i>JRSS B</i>.</li>
+</ul>
+</section>
+
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ─────────────────────────── colours from the stylesheet ─────────────── */
+function C(){
+  const s=getComputedStyle(document.documentElement), g=n=>s.getPropertyValue(n).trim();
+  return {mu:g('--mu'),rul:g('--rul'),axis:g('--axis'),mir:g('--mir'),dot:g('--dot'),
+          sph:g('--sph'),std:g('--std'),ink:g('--ink'),ink2:g('--ink2'),
+          muted:g('--muted'),rule:g('--rule'),surf:g('--surface'),surf2:g('--surface2')};
+}
+const redraws=[];
+function reg(f){redraws.push(f); try{f();}catch(e){console.warn(e);} }
+function redrawAll(){redraws.forEach(f=>{try{f();}catch(e){}});}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawAll);}catch(e){}
+
+/* ─────────────────────────── vectors ─────────────────────────── */
+const dot=(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]];
+const sub=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
+const mul=(a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const nrm=a=>Math.sqrt(dot(a,a));
+const unit=a=>mul(a,1/(nrm(a)||1));
+
+/* the frame of Section S13 */
+const MU=[2/3,1/3,2/3];
+const R2=Math.SQRT2;
+const G2=[1/R2,0,-1/R2];
+const G3=[-1/(3*R2),4/(3*R2),-1/(3*R2)];
+const B2=[1/3,2/3,-2/3], B3=[2/3,-2/3,-1/3];
+const E1=[1,0,0],E2=[0,1,0],E3=[0,0,1];
+const VMIR=[1/3,-1/3,-2/3];               /* v = e1 - mu-hat */
+const NMIR=unit(VMIR);
+
+/* ─────────────────────────── the simulated cloud ─────────────────────── */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
+  t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function makeCloud(N){
+  const r=mulberry32(7), P=[], TC=[];
+  for(let i=0;i<N;i++){
+    const u1=Math.max(1e-12,r()), u2=r(), rad=Math.sqrt(-2*Math.log(u1));
+    const g1=rad*Math.cos(2*Math.PI*u2), g2=rad*Math.sin(2*Math.PI*u2);
+    const v2=g1*Math.sqrt(0.05), v3=g2*Math.sqrt(0.01);
+    P.push(unit(add(MU,add(mul(G2,v2),mul(G3,v3)))));
+    TC.push([v2,v3]);
+  }
+  return {P:P,TC:TC};
+}
+const CLOUD=makeCloud(150);
+
+/* ─────────────────────────── svg helper ─────────────────────────── */
+function svg(id,w,h,body){
+  const e=document.getElementById(id);
+  if(e) e.innerHTML='<svg viewBox="0 0 '+w+' '+h+'" role="img">'+body+'</svg>';
+}
+function ln(x1,y1,x2,y2,c,w,d){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+
+  '" stroke="'+c+'" stroke-width="'+(w||1.5)+'"'+(d?' stroke-dasharray="'+d+'"':'')+
+  ' stroke-linecap="round"/>';}
+function arw(x1,y1,x2,y2,c,w,d){
+  const a=Math.atan2(y2-y1,x2-x1),L=9;
+  return ln(x1,y1,x2,y2,c,w,d)+'<path d="M'+x2+','+y2+' L'+(x2-L*Math.cos(a-0.4))+','+
+    (y2-L*Math.sin(a-0.4))+' L'+(x2-L*Math.cos(a+0.4))+','+(y2-L*Math.sin(a+0.4))+
+    ' Z" fill="'+c+'"/>';
+}
+function tx(x,y,s,c,sz,an,w){return '<text x="'+x+'" y="'+y+'" fill="'+c+
+  '" font-family="ui-monospace,monospace" font-size="'+(sz||12)+'" text-anchor="'+
+  (an||'start')+'"'+(w?' font-weight="'+w+'"':'')+'>'+s+'</text>';}
+
+/* ─────────────────────────── canvas 3-d ─────────────────────────── */
+function mk3d(cvId,opt){
+  const cv=document.getElementById(cvId); if(!cv) return null;
+  const st={az:opt.az!==undefined?opt.az:-0.75, el:opt.el!==undefined?opt.el:0.45,
+            s:opt.s||190, draw:null};
+  function size(){
+    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const w=cv.clientWidth||cv.width, h=Math.round(w*(opt.ratio||0.6));
+    cv.width=Math.round(w*dpr); cv.height=Math.round(h*dpr);
+    cv.style.height=h+'px';
+    const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0);
+    st.w=w; st.h=h; st.cx=w/2; st.cy=h/2;
+  }
+  function rot(p){
+    const ca=Math.cos(st.az),sa=Math.sin(st.az);
+    const x=ca*p[0]-sa*p[1], y=sa*p[0]+ca*p[1];
+    const ce=Math.cos(st.el),se=Math.sin(st.el);
+    return [x, ce*y-se*p[2], se*y+ce*p[2]];
+  }
+  st.pr=function(p){const q=rot(p);
+    return {x:st.cx+q[0]*st.s, y:st.cy-q[2]*st.s, d:-q[1]};};
+  st.g=()=>cv.getContext('2d');
+  st.clear=function(){const g=st.g(); g.clearRect(0,0,st.w,st.h);};
+  st.line=function(a,b,col,w,dash){
+    const g=st.g(),A=st.pr(a),Bp=st.pr(b);
+    g.save(); g.strokeStyle=col; g.lineWidth=w||1.4;
+    if(dash) g.setLineDash(dash); g.beginPath(); g.moveTo(A.x,A.y); g.lineTo(Bp.x,Bp.y);
+    g.stroke(); g.restore();
+  };
+  st.poly=function(pts,col,w,dash){
+    const g=st.g(); g.save(); g.strokeStyle=col; g.lineWidth=w||1.2;
+    if(dash) g.setLineDash(dash); g.beginPath();
+    pts.forEach((p,i)=>{const q=st.pr(p); i?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y);});
+    g.stroke(); g.restore();
+  };
+  st.fill=function(pts,col,alpha,stroke){
+    const g=st.g(); g.save(); g.globalAlpha=alpha===undefined?0.2:alpha;
+    g.fillStyle=col; g.beginPath();
+    pts.forEach((p,i)=>{const q=st.pr(p); i?g.lineTo(q.x,q.y):g.moveTo(q.x,q.y);});
+    g.closePath(); g.fill();
+    if(stroke){g.globalAlpha=Math.min(1,(alpha||0.2)*2.2); g.strokeStyle=col; g.lineWidth=1; g.stroke();}
+    g.restore();
+  };
+  st.arrow=function(a,b,col,w,label){
+    st.line(a,b,col,w||2.4);
+    const g=st.g(),A=st.pr(a),Bp=st.pr(b);
+    const an=Math.atan2(Bp.y-A.y,Bp.x-A.x),L=9;
+    g.save(); g.fillStyle=col; g.beginPath();
+    g.moveTo(Bp.x,Bp.y);
+    g.lineTo(Bp.x-L*Math.cos(an-0.4),Bp.y-L*Math.sin(an-0.4));
+    g.lineTo(Bp.x-L*Math.cos(an+0.4),Bp.y-L*Math.sin(an+0.4));
+    g.closePath(); g.fill();
+    if(label){g.font='600 13px ui-monospace,monospace'; g.fillText(label,Bp.x+7,Bp.y-5);}
+    g.restore();
+  };
+  st.dots=function(P,col,r,alpha){
+    const g=st.g(); g.save(); g.fillStyle=col;
+    P.map(p=>st.pr(p)).sort((a,b)=>a.d-b.d).forEach(q=>{
+      g.globalAlpha=alpha===undefined?0.85:alpha;
+      g.beginPath(); g.arc(q.x,q.y,r||2.4,0,6.284); g.fill();
+    });
+    g.restore();
+  };
+  st.sphere=function(col){
+    const t=[];
+    for(let k=0;k<=8;k++){const ph=Math.PI*k/8,c=[];
+      for(let i=0;i<=60;i++){const th=Math.PI*i/60;
+        c.push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);}
+      t.push(c);}
+    for(let k=1;k<8;k++){const th=Math.PI*k/8,c=[];
+      for(let i=0;i<=72;i++){const ph=2*Math.PI*i/72;
+        c.push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);}
+      t.push(c);}
+    const g=st.g();
+    t.forEach(c=>{for(let i=0;i<c.length-1;i++){
+      const A=st.pr(c[i]),Bq=st.pr(c[i+1]);
+      g.save(); g.globalAlpha=((A.d+Bq.d)/2>0)?0.55:0.14;
+      g.strokeStyle=col; g.lineWidth=0.8;
+      g.beginPath(); g.moveTo(A.x,A.y); g.lineTo(Bq.x,Bq.y); g.stroke(); g.restore();
+    }});
+  };
+  st.octant=function(col){
+    const q=[];
+    for(let i=0;i<=24;i++){const t=(Math.PI/2)*i/24;
+      q.push([Math.cos(t),Math.sin(t),0]);}
+    for(let i=0;i<=24;i++){const t=(Math.PI/2)*i/24;
+      q.push([0,Math.cos(t),Math.sin(t)]);}
+    for(let i=0;i<=24;i++){const t=(Math.PI/2)*i/24;
+      q.push([Math.sin(t),0,Math.cos(t)]);}
+    st.fill(q,col,0.10,false);
+  };
+  let drag=false,lx=0,ly=0;
+  cv.style.cursor='grab';
+  cv.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;
+    cv.setPointerCapture(e.pointerId);cv.style.cursor='grabbing';});
+  cv.addEventListener('pointermove',e=>{if(!drag)return;
+    st.az-=(e.clientX-lx)*0.01; st.el+=(e.clientY-ly)*0.01;
+    st.el=Math.max(-1.45,Math.min(1.45,st.el)); lx=e.clientX; ly=e.clientY;
+    if(st.draw)st.draw();});
+  cv.addEventListener('pointerup',e=>{drag=false;cv.style.cursor='grab';});
+  st.resize=function(){size(); if(st.draw)st.draw();};
+  size();
+  window.addEventListener('resize',()=>{size(); if(st.draw)st.draw();});
+  return st;
+}
+
+/* ═══════════════════ F1 · pipeline ═══════════════════ */
+reg(function(){
+  const c=C(), W=880, H=330;
+  function box(x,y,w,h,t1,t2,sec,fillc){
+    return '<g class="f1b" data-sec="'+sec+'" style="cursor:pointer">'+
+      '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="'+(fillc||c.surf)+
+      '" stroke="'+c.rule+'" stroke-width="1.2"/>'+
+      tx(x+w/2,y+(t2?h/2-2:h/2+4),t1,c.ink,12,'middle',600)+
+      (t2?tx(x+w/2,y+h/2+14,t2,c.muted,10.5,'middle'):'')+'</g>';
+  }
+  let s='';
+  s+=box(20,18,180,46,'Data  z  →  u = √z','S1','s1');
+  s+=arw(205,41,245,41,c.ink2,1.6);
+  s+=box(250,18,210,46,'Sufficient statistics','n, s₁, S₂','s4');
+  s+=arw(465,41,505,41,c.ink2,1.6);
+  s+=box(510,18,180,46,'Two moments','μ̂   and   M̂','s5');
+  s+=ln(140,64,140,96,c.ink2,1.4,'4 3')+ln(600,64,600,96,c.ink2,1.4,'4 3');
+  /* left zone */
+  s+='<rect x="20" y="96" width="400" height="206" rx="6" fill="none" stroke="'+c.mu+
+     '" stroke-width="1.3" stroke-dasharray="6 4"/>';
+  s+=tx(32,114,'AT EVERY CANDIDATE SPLIT  (fast)',c.mu,10,'start',700);
+  s+=box(44,126,350,38,'Cholesky of M̂  =  L Lᵀ','','s16');
+  s+=arw(219,166,219,186,c.ink2,1.5);
+  s+=box(44,188,350,38,'ln|S_L| by the Schur identity','','s16');
+  s+=arw(219,228,219,248,c.ink2,1.5);
+  s+=box(44,250,350,38,'split gain  Δℓ','','s16');
+  /* right zone */
+  s+='<rect x="450" y="96" width="410" height="206" rx="6" fill="none" stroke="'+c.axis+
+     '" stroke-width="1.3" stroke-dasharray="6 4"/>';
+  s+=tx(462,114,'ONLY AT TERMINAL NODES',c.axis,10,'start',700);
+  s+=box(472,126,366,36,'Householder  →  B','','s11');
+  s+=arw(655,164,655,180,c.ink2,1.5);
+  s+=box(472,182,366,36,'S_L = Bᵀ M̂ B','','s12');
+  s+=arw(655,220,655,236,c.ink2,1.5);
+  s+=box(472,238,366,24,'eigen  →  λ̂,  W','','s13');
+  s+=arw(655,264,655,276,c.ink2,1.5);
+  s+=box(472,278,366,24,'κ̂,  β̂,  K̂ = BW,  Γ̂','','s14');
+  svg('f1svg',W,H,s);
+  const host=document.getElementById('f1svg');
+  host.querySelectorAll('.f1b').forEach(g=>{
+    g.addEventListener('mouseenter',()=>{
+      const a=document.querySelector('.toc a[href="#'+g.dataset.sec+'"]');
+      if(a) a.classList.add('on');
+    });
+    g.addEventListener('mouseleave',()=>{
+      document.querySelectorAll('.toc a.on').forEach(a=>a.classList.remove('on'));
+    });
+    g.addEventListener('click',()=>{const t=document.getElementById(g.dataset.sec);
+      if(t) t.scrollIntoView({behavior:'smooth'});});
+  });
+});
+
+/* ═══════════════════ F2 · the sphere ═══════════════════ */
+(function(){
+  const V=mk3d('f2cv',{ratio:0.60,s:190,az:-0.7,el:0.42}); if(!V) return;
+  const show={plane:true,rulers:false,axes:true,proj:false};
+  V.draw=function(){
+    const c=C(); V.clear();
+    V.sphere(c.sph); V.octant(c.axis);
+    [E1,E2,E3].forEach(e=>V.line([0,0,0],mul(e,1.18),c.std,1.2));
+    if(show.plane){
+      const r=0.45, q=[add(MU,add(mul(B2,r),mul(B3,r))),add(MU,add(mul(B2,-r),mul(B3,r))),
+                       add(MU,add(mul(B2,-r),mul(B3,-r))),add(MU,add(mul(B2,r),mul(B3,-r)))];
+      V.fill(q,c.ink2,0.13,true);
+    }
+    V.dots(CLOUD.P,c.dot,2.6,0.8);
+    if(show.proj){
+      const Q=CLOUD.P.map(u=>add(MU,sub(u,mul(MU,dot(MU,u)))));
+      V.dots(Q,c.mir,2.2,0.75);
+    }
+    if(show.rulers){
+      V.arrow(MU,add(MU,mul(B2,0.42)),c.rul,2.2,'b₂');
+      V.arrow(MU,add(MU,mul(B3,0.42)),c.rul,2.2,'b₃');
+    }
+    if(show.axes){
+      V.arrow(MU,add(MU,mul(G2,0.42)),c.axis,2.4,'γ̂₂');
+      V.arrow(MU,add(MU,mul(G3,0.42)),c.axis,2.4,'γ̂₃');
+    }
+    V.arrow([0,0,0],mul(MU,1.16),c.mu,2.8,'μ̂');
+  };
+  [['f2-plane','plane'],['f2-rulers','rulers'],['f2-axes','axes'],['f2-proj','proj']]
+   .forEach(([id,k])=>{const b=document.getElementById(id); if(!b)return;
+     b.addEventListener('click',()=>{show[k]=!show[k];
+       b.setAttribute('aria-pressed',show[k]?'true':'false'); V.draw();});});
+  reg(V.draw);
+})();
+
+/* ═══════════════════ F3 · round vs stretched ═══════════════════ */
+reg(function(){
+  const c=C(), w=880, h=250, R=95;
+  function panel(ox,sdx,sdy,ang,lab,cap){
+    const cx=ox+R+14, cy=120, r=mulberry32(11), pts=[];
+    for(let i=0;i<110;i++){
+      const u1=Math.max(1e-12,r()),u2=r(),rad=Math.sqrt(-2*Math.log(u1));
+      const a=rad*Math.cos(2*Math.PI*u2)*sdx, b=rad*Math.sin(2*Math.PI*u2)*sdy;
+      const t=ang*Math.PI/180;
+      pts.push([a*Math.cos(t)-b*Math.sin(t), a*Math.sin(t)+b*Math.cos(t)]);
+    }
+    let s='<rect x="'+ox+'" y="22" width="'+(2*R+28)+'" height="196" rx="4" fill="'+
+      c.surf+'" stroke="'+c.rule+'"/>';
+    s+=tx(cx,42,lab,c.ink,12,'middle',700);
+    s+=pts.map(p=>'<circle cx="'+(cx+p[0]*260).toFixed(1)+'" cy="'+(cy-p[1]*260).toFixed(1)+
+        '" r="2" fill="'+c.dot+'" fill-opacity="0.55"/>').join('');
+    s+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(sdx*260).toFixed(1)+'" ry="'+(sdy*260).toFixed(1)+
+       '" fill="none" stroke="'+c.ink2+'" stroke-width="1.6" transform="rotate('+(-ang)+' '+cx+' '+cy+')"/>';
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="3.4" fill="'+c.mu+'"/>';
+    s+=tx(cx,208,cap,c.muted,10.5,'middle');
+    return s;
+  }
+  let s=panel(16,0.16,0.16,0,'A','round: no direction needed');
+  s+=panel(300,0.22,0.10,40,'B','stretched at +40°');
+  s+=panel(584,0.22,0.10,-35,'C','only K is different');
+  svg('f3svg',w,h,s);
+});
+
+/* ═══════════════════ F4 · one vector split in two ═══════════════════ */
+reg(function(){
+  const c=C(), w=880, h=330, O=[150,280], S=330;
+  const muD=[0.80,0.60], uD=[0.62,0.785];       /* 2-d stand-ins for the picture */
+  const along=0.9867, P=[uD[0]-along*muD[0], uD[1]-along*muD[1]];
+  const px=x=>O[0]+x*S, py=y=>O[1]-y*S;
+  let s='';
+  s+='<path d="M'+px(0)+','+py(0)+' L'+px(1.05*muD[0])+','+py(1.05*muD[1])+'" stroke="'+
+     c.rule+'" stroke-width="1"/>';
+  s+=arw(px(0),py(0),px(muD[0]),py(muD[1]),c.mu,2.6);
+  s+=tx(px(muD[0])+8,py(muD[1])-6,'μ̂',c.mu,13,'start',700);
+  s+=arw(px(0),py(0),px(uD[0]),py(uD[1]),c.ink,2.2);
+  s+=tx(px(uD[0])-4,py(uD[1])-10,'u',c.ink,13,'middle',700);
+  const A=[along*muD[0],along*muD[1]];
+  s+=ln(px(0),py(0),px(A[0]),py(A[1]),c.mu,5,'');
+  s+=ln(px(A[0]),py(A[1]),px(uD[0]),py(uD[1]),c.rul,2.6,'5 4');
+  /* right-angle marker */
+  const n1=unit([muD[0],muD[1],0]), n2=unit([P[0],P[1],0]), d=14;
+  s+='<path d="M'+(px(A[0])+n1[0]*d)+','+(py(A[1])-n1[1]*d)+
+     ' L'+(px(A[0])+n1[0]*d+n2[0]*d)+','+(py(A[1])-n1[1]*d-n2[1]*d)+
+     ' L'+(px(A[0])+n2[0]*d)+','+(py(A[1])-n2[1]*d)+'" fill="none" stroke="'+c.muted+'" stroke-width="1.2"/>';
+  s+=tx(px(A[0]/2)-40,py(A[1]/2)+4,'(μ̂ᵀu) μ̂',c.mu,12,'start',700);
+  s+=tx(px((A[0]+uD[0])/2)+10,py((A[1]+uD[1])/2)-6,'P̂u',c.rul,12,'start',700);
+  s+='<circle cx="'+px(0)+'" cy="'+py(0)+'" r="3" fill="'+c.ink2+'"/>';
+  /* the numbers */
+  s+=tx(470,70,'u = (0.60, 0.48, 0.64)',c.ink2,12.5);
+  s+=tx(470,94,'μ̂ᵀu = 0.9867',c.ink2,12.5);
+  s+=tx(470,118,'along μ̂ = (0.6578, 0.3289, 0.6578)',c.mu,12.5);
+  s+=tx(470,142,'P̂u = (−0.0578, 0.1511, −0.0178)',c.rul,12.5);
+  s+=tx(470,166,'μ̂ᵀP̂u ≈ 0        ‖P̂u‖ ≈ 0.163',c.ink2,12.5);
+  svg('f4svg',w,h,s);
+});
+
+/* ═══════════════════ F5 · side view of the projection ═══════════════════ */
+(function(){
+  const sl=document.getElementById('f5t'); if(!sl) return;
+  function draw(){
+    const c=C(), th=+sl.value, t=th*Math.PI/180;
+    document.getElementById('f5tv').textContent=th+'°';
+    const w=880,h=330,cx=440,cy=272,R=215;
+    let s='';
+    let arc='';
+    for(let i=0;i<=90;i++){const a=-Math.PI/2+Math.PI*i/90;
+      arc+=(i?'L':'M')+(cx+R*Math.sin(a)).toFixed(1)+','+(cy-R*Math.cos(a)).toFixed(1);}
+    s+='<path d="'+arc+'" fill="none" stroke="'+c.sph+'" stroke-width="2"/>';
+    s+=ln(cx-R*0.95,cy-R,cx+R*0.95,cy-R,c.ink2,1.6,'6 4');
+    s+=tx(cx+R*0.95+6,cy-R+4,'tangent line',c.muted,11);
+    s+=arw(cx,cy,cx,cy-R,c.mu,2.4);
+    s+=tx(cx+8,cy-R-8,'μ̂',c.mu,13,'start',700);
+    const X=cx+R*Math.sin(t), Y=cy-R*Math.cos(t);
+    s+=ln(cx,cy,X,Y,c.rule,1.2);
+    s+='<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="5" fill="'+c.dot+'"/>';
+    s+=ln(X,Y,X,cy-R,c.rul,2,'5 4');
+    s+=ln(cx,cy-R,X,cy-R,c.axis,2.6);
+    s+=tx((cx+X)/2,cy-R-9,'v = sin θ',c.axis,11.5,'middle',700);
+    s+=tx(X+8,(Y+cy-R)/2,'drop = 1 − cos θ',c.rul,11.5,'start');
+    svg('f5svg',w,h,s);
+    const v=Math.sin(t),dr=1-Math.cos(t);
+    document.getElementById('f5out').textContent=
+      'θ = '+th+'°    v = sin θ = '+v.toFixed(4)+
+      '    drop = 1 − cos θ = '+dr.toFixed(4)+
+      '    ½v² = '+(0.5*v*v).toFixed(4)+
+      '    (error '+Math.abs(dr-0.5*v*v).toFixed(5)+')';
+  }
+  sl.addEventListener('input',draw); reg(draw);
+})();
+
+/* ═══════════════════ F6 · the mirror in 2-d ═══════════════════ */
+(function(){
+  const sl=document.getElementById('f6t'); if(!sl) return;
+  function draw(){
+    const c=C(), th=+sl.value*Math.PI/180;
+    document.getElementById('f6tv').textContent=sl.value+'°';
+    const w=880,h=380,cx=330,cy=300,R=230;
+    const px=(x,y)=>[cx+x*R,cy-y*R];
+    const mu=[Math.cos(th),Math.sin(th)], b2=[Math.sin(th),-Math.cos(th)];
+    let s='',arc='';
+    for(let i=0;i<=120;i++){const a=2*Math.PI*i/120;
+      arc+=(i?'L':'M')+(cx+R*Math.cos(a)).toFixed(1)+','+(cy-R*Math.sin(a)).toFixed(1);}
+    s+='<path d="'+arc+'Z" fill="none" stroke="'+c.rule+'" stroke-width="1.3"/>';
+    s+=ln(cx-R*1.1,cy,cx+R*1.1,cy,c.std,1)+ln(cx,cy+R*0.5,cx,cy-R*1.1,c.std,1);
+    /* the mirror: line through the origin at angle th/2 */
+    const m=[Math.cos(th/2),Math.sin(th/2)];
+    let p1=px(-m[0]*1.25,-m[1]*1.25), p2=px(m[0]*1.25,m[1]*1.25);
+    s+=ln(p1[0],p1[1],p2[0],p2[1],c.mir,2,'7 5');
+    s+=tx(p2[0]+6,p2[1],'mirror',c.mir,12,'start',700);
+    let q;
+    q=px(1,0); s+=arw(cx,cy,q[0],q[1],c.std,2.2); s+=tx(q[0]+6,q[1]+14,'e₁',c.muted,12);
+    q=px(0,1); s+=arw(cx,cy,q[0],q[1],c.std,2.2); s+=tx(q[0]+8,q[1],'e₂',c.muted,12);
+    q=px(mu[0],mu[1]); s+=arw(cx,cy,q[0],q[1],c.mu,2.8); s+=tx(q[0]+7,q[1]-6,'μ̂',c.mu,13,'start',700);
+    const qb=px(b2[0],b2[1]); s+=arw(cx,cy,qb[0],qb[1],c.rul,2.8);
+    s+=tx(qb[0]+7,qb[1]+12,'b₂',c.rul,13,'start',700);
+    /* dotted segments, both perpendicular to the mirror */
+    const e1p=px(1,0), e2p=px(0,1);
+    s+=ln(e1p[0],e1p[1],q[0],q[1],c.muted,1.2,'3 3');
+    s+=ln(e2p[0],e2p[1],qb[0],qb[1],c.muted,1.2,'3 3');
+    /* the tangent line at mu, along b2 */
+    const t1=px(mu[0]-b2[0]*0.5,mu[1]-b2[1]*0.5), t2=px(mu[0]+b2[0]*0.5,mu[1]+b2[1]*0.5);
+    s+=ln(t1[0],t1[1],t2[0],t2[1],c.rul,1.5,'4 3');
+    svg('f6svg',w,h,s);
+    document.getElementById('f6out').textContent=
+      'μ̂ = ('+mu[0].toFixed(4)+', '+mu[1].toFixed(4)+')    '+
+      'b₂ = ('+b2[0].toFixed(4)+', '+b2[1].toFixed(4)+')    '+
+      'b₂·μ̂ = '+(mu[0]*b2[0]+mu[1]*b2[1]).toFixed(12).replace(/0+$/,'0')+'    '+
+      '‖b₂‖ = '+Math.hypot(b2[0],b2[1]).toFixed(6);
+  }
+  sl.addEventListener('input',draw); reg(draw);
+})();
+
+/* ═══════════════════ F7 · the mirror in 3-d, animated ═══════════════════ */
+(function(){
+  const V=mk3d('f7cv',{ratio:0.60,s:175,az:-0.95,el:0.38}); if(!V) return;
+  let t=0, moveData=false, anim=null;
+  function refl(x,tt){ return sub(x, mul(NMIR, 2*tt*dot(NMIR,x))); }
+  V.draw=function(){
+    const c=C(); V.clear();
+    V.sphere(c.sph);
+    /* the mirror disc: a circle of radius 1.2 through the origin, normal n */
+    let a=unit(Math.abs(NMIR[0])<0.9?[1,0,0]:[0,1,0]);
+    a=unit(sub(a,mul(NMIR,dot(a,NMIR))));
+    const b=[NMIR[1]*a[2]-NMIR[2]*a[1],NMIR[2]*a[0]-NMIR[0]*a[2],NMIR[0]*a[1]-NMIR[1]*a[0]];
+    const disc=[]; for(let i=0;i<=48;i++){const u=2*Math.PI*i/48;
+      disc.push(add(mul(a,1.2*Math.cos(u)),mul(b,1.2*Math.sin(u))));}
+    V.fill(disc,c.mir,0.16,true);
+    if(moveData){
+      V.dots(CLOUD.P.map(p=>refl(p,t)),c.dot,2.6,0.8);
+    }
+    const col = t<0.5 ? [c.std,c.std,c.std] : [c.mu,c.rul,c.rul];
+    [[E1,'e₁'],[E2,'e₂'],[E3,'e₃']].forEach((pair,i)=>{
+      const p=refl(pair[0],t);
+      const nm = t>0.98 ? ['μ̂','b₂','b₃'][i] : (t<0.02?pair[1]:'');
+      V.arrow([0,0,0],mul(p,1.12),col[i],2.6,nm);
+    });
+    V.line([0,0,0],mul(NMIR,1.3),c.mir,1.6,[5,4]);
+  };
+  function run(from,to){
+    if(anim) cancelAnimationFrame(anim);
+    const t0=performance.now(), dur=1500;
+    (function step(now){
+      const k=Math.min(1,(now-t0)/dur);
+      t=from+(to-from)*k; V.draw();
+      if(k<1) anim=requestAnimationFrame(step);
+    })(t0);
+  }
+  document.getElementById('f7go').addEventListener('click',()=>run(t,1));
+  document.getElementById('f7back').addEventListener('click',()=>run(t,0));
+  const bd=document.getElementById('f7data');
+  bd.addEventListener('click',()=>{moveData=!moveData;
+    bd.setAttribute('aria-pressed',moveData?'true':'false'); V.draw();});
+  reg(V.draw);
+})();
+
+/* ═══════════════════ F8 · rulers vs ellipse ═══════════════════ */
+function slPhi(ph){
+  const s=Math.sin(2*ph), c2=Math.cos(2*ph);
+  return [[0.03+0.02*s, 0.02*c2],[0.02*c2, 0.03-0.02*s]];
+}
+function drawTangentPanel(id,outId,phiDeg,extraNote){
+  const c=C(), w=880,h=400,cx=440,cy=200,S=760;
+  const ph=phiDeg*Math.PI/180;
+  let s='';
+  s+='<rect x="90" y="18" width="700" height="364" rx="4" fill="'+c.surf+'" stroke="'+c.rule+'"/>';
+  /* data in ruler coordinates (phi = 0 frame) */
+  s+=CLOUD.TC.map(v=>{
+      const a=v[0]*Math.SQRT1_2 - v[1]*Math.SQRT1_2;   /* axes -> rulers, 45 deg */
+      const b=v[0]*Math.SQRT1_2 + v[1]*Math.SQRT1_2;
+      return '<circle cx="'+(cx+a*S).toFixed(1)+'" cy="'+(cy-b*S).toFixed(1)+
+             '" r="2.2" fill="'+c.dot+'" fill-opacity="0.5"/>';}).join('');
+  /* the ellipse, long axis fixed at 45 degrees */
+  s+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(Math.sqrt(0.05)*S).toFixed(1)+'" ry="'+
+     (Math.sqrt(0.01)*S).toFixed(1)+'" fill="none" stroke="'+c.ink2+
+     '" stroke-width="1.6" stroke-dasharray="6 4" transform="rotate(-45 '+cx+' '+cy+')"/>';
+  /* green axes, fixed at 45 degrees */
+  [[1,0.05],[0,0.01]].forEach((p,i)=>{
+    const a=(i===0?45:135)*Math.PI/180, L=Math.sqrt(p[1])*S*1.35;
+    s+=ln(cx-L*Math.cos(a),cy+L*Math.sin(a),cx+L*Math.cos(a),cy-L*Math.sin(a),c.axis,2.6);
+    s+=tx(cx+(L+12)*Math.cos(a),cy-(L+12)*Math.sin(a)+4,i===0?'γ̂₂':'γ̂₃',c.axis,12.5,'middle',700);
+  });
+  /* purple rulers, rotated by phi */
+  [[ph,'b₂'],[ph+Math.PI/2,'b₃']].forEach(p=>{
+    const L=215;
+    s+=ln(cx-L*Math.cos(p[0]),cy+L*Math.sin(p[0]),cx+L*Math.cos(p[0]),cy-L*Math.sin(p[0]),
+          c.rul,1.9,'7 5');
+    s+=tx(cx+(L+13)*Math.cos(p[0]),cy-(L+13)*Math.sin(p[0])+4,p[1],c.rul,12.5,'middle',700);
+  });
+  s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="'+c.mu+'"/>';
+  svg(id,w,h,s);
+  const M=slPhi(ph), offd=M[0][1];
+  let wrap=45-phiDeg; while(wrap>90)wrap-=180; while(wrap<=-90)wrap+=180;
+  if(outId){
+    document.getElementById(outId).textContent=
+      'S_L(φ) = [ '+M[0][0].toFixed(4)+'  '+M[0][1].toFixed(4)+' ;  '+
+      M[1][0].toFixed(4)+'  '+M[1][1].toFixed(4)+' ]'+
+      (Math.abs(offd)<0.0005?'   ← diagonal':'')+
+      '\nrotation still needed = '+wrap.toFixed(1)+'°'+
+      '\neigenvalues: 0.05 and 0.01  (never change)'+(extraNote?'\n'+extraNote:'');
+  }
+}
+(function(){
+  const sl=document.getElementById('f8p'); if(!sl) return;
+  function draw(){ document.getElementById('f8pv').textContent=sl.value+'°';
+    drawTangentPanel('f8svg','f8out',+sl.value); }
+  sl.addEventListener('input',draw); reg(draw);
+})();
+
+/* ═══════════════════ F9 · applying W ═══════════════════ */
+(function(){
+  if(!document.getElementById('f9svg')) return;
+  let phi=0, anim=null;
+  function draw(){ drawTangentPanel('f9svg','f9out',phi,'K̂ = B W'); }
+  function run(to){
+    if(anim) cancelAnimationFrame(anim);
+    const from=phi, t0=performance.now(), dur=1600;
+    (function step(now){
+      const k=Math.min(1,(now-t0)/dur);
+      phi=from+(to-from)*(0.5-0.5*Math.cos(Math.PI*k));
+      draw(); if(k<1) anim=requestAnimationFrame(step);
+    })(t0);
+  }
+  document.getElementById('f9go').addEventListener('click',()=>run(45));
+  document.getElementById('f9rst').addEventListener('click',()=>run(0));
+  reg(draw);
+})();
+
+/* ═══════════════════ F10 · back to the sphere and the simplex ═════════ */
+(function(){
+  const V=mk3d('f10cv',{ratio:0.90,s:150,az:-0.7,el:0.40});
+  if(V){
+    V.draw=function(){
+      const c=C(); V.clear();
+      V.sphere(c.sph); V.octant(c.axis);
+      [E1,E2,E3].forEach(e=>V.line([0,0,0],mul(e,1.15),c.std,1.1));
+      V.dots(CLOUD.P,c.dot,2.3,0.8);
+      V.arrow([0,0,0],mul(MU,1.14),c.mu,2.6,'μ̂');
+      V.arrow(MU,add(MU,mul(G2,0.42)),c.axis,2.4,'γ̂₂');
+      V.arrow(MU,add(MU,mul(G3,0.42)),c.axis,2.4,'γ̂₃');
+    };
+    reg(V.draw);
+  }
+  reg(function(){
+    const c=C(), w=520,h=470;
+    const A=[260,40], Bc=[40,420], Cc=[480,420];   /* z1 top, z2 left, z3 right */
+    const xy=z=>[A[0]*z[0]+Bc[0]*z[1]+Cc[0]*z[2], A[1]*z[0]+Bc[1]*z[1]+Cc[1]*z[2]];
+    let s='<polygon points="'+A+' '+Bc+' '+Cc+'" fill="'+c.surf+'" stroke="'+c.ink2+'" stroke-width="1.3"/>';
+    for(let g=1;g<5;g++){const f=g/5;
+      let p1=xy([f,1-f,0]),p2=xy([f,0,1-f]); s+=ln(p1[0],p1[1],p2[0],p2[1],c.rule,0.8,'3 3');
+      p1=xy([1-f,f,0]);p2=xy([0,f,1-f]); s+=ln(p1[0],p1[1],p2[0],p2[1],c.rule,0.8,'3 3');
+      p1=xy([1-f,0,f]);p2=xy([0,1-f,f]); s+=ln(p1[0],p1[1],p2[0],p2[1],c.rule,0.8,'3 3');}
+    s+=tx(A[0],A[1]-10,'z₁',c.muted,12,'middle',700);
+    s+=tx(Bc[0]-4,Bc[1]+18,'z₂',c.muted,12,'middle',700);
+    s+=tx(Cc[0]+4,Cc[1]+18,'z₃',c.muted,12,'middle',700);
+    s+=CLOUD.P.map(u=>{const p=xy([u[0]*u[0],u[1]*u[1],u[2]*u[2]]);
+      return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="2.1" fill="'+
+             c.dot+'" fill-opacity="0.55"/>';}).join('');
+    [[G2,'',''],[G3,'6 4','']].forEach((pr,i)=>{
+      let d='';
+      for(let j=0;j<=60;j++){const t=-0.45+0.9*j/60;
+        const q=add(mul(MU,Math.cos(t)),mul(pr[0],Math.sin(t)));
+        const p=xy([q[0]*q[0],q[1]*q[1],q[2]*q[2]]);
+        d+=(j?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1);}
+      s+='<path d="'+d+'" fill="none" stroke="'+c.axis+'" stroke-width="2.4"'+
+         (pr[1]?' stroke-dasharray="'+pr[1]+'"':'')+'/>';
+    });
+    const pm=xy([MU[0]*MU[0],MU[1]*MU[1],MU[2]*MU[2]]);
+    s+='<circle cx="'+pm[0].toFixed(1)+'" cy="'+pm[1].toFixed(1)+'" r="4.5" fill="'+c.mu+'"/>';
+    s+=tx(260,452,'solid = γ̂₂ curve     dashed = γ̂₃ curve',c.muted,11,'middle');
+    svg('f10tern',w,h,s);
+  });
+})();
+
+/* ═══════════════════ F11 · Kent shape explorer ═══════════════════ */
+(function(){
+  const sk=document.getElementById('f11k'), sb=document.getElementById('f11b');
+  if(!sk||!sb) return;
+  function draw(){
+    const c=C(), k=+sk.value;
+    sb.max=Math.max(0,Math.floor(k/2)-1);           /* keep beta below kappa/2 */
+    if(+sb.value>+sb.max) sb.value=sb.max;
+    const b=+sb.value;
+    document.getElementById('f11kv').textContent=k;
+    document.getElementById('f11bv').textContent=b;
+    const l2=1/(k-2*b), l3=1/(k+2*b);
+    const w=880,h=330,cx=440,cy=170, S=430;
+    let s='<rect x="120" y="16" width="640" height="300" rx="4" fill="'+c.surf+
+          '" stroke="'+c.rule+'"/>';
+    for(let m=1;m<=3;m++){
+      s+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(m*Math.sqrt(l2)*S).toFixed(1)+
+         '" ry="'+(m*Math.sqrt(l3)*S).toFixed(1)+'" fill="none" stroke="'+c.ink2+
+         '" stroke-width="'+(m===1?2:1)+'" stroke-opacity="'+(m===1?1:0.4)+'"/>';
+    }
+    const a2=Math.sqrt(l2)*S, a3=Math.sqrt(l3)*S;
+    s+=arw(cx,cy,cx+a2,cy,c.axis,2.4)+tx(cx+a2+8,cy+4,'γ̂₂',c.axis,12.5,'start',700);
+    s+=arw(cx,cy,cx,cy-a3,c.axis,2.4)+tx(cx+6,cy-a3-8,'γ̂₃',c.axis,12.5,'start',700);
+    s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="'+c.mu+'"/>';
+    if(b===0) s+=tx(cx,308,'β₂ = 0  →  a circle  →  von Mises–Fisher',c.axis,12,'middle',700);
+    svg('f11svg',w,h,s);
+    document.getElementById('f11out').textContent=
+      'κ = '+k+'    β₂ = '+b+'    β₃ = '+(-b)+
+      '\nλ₂ = 1/(κ − 2β₂) = '+l2.toFixed(6)+'    λ₃ = 1/(κ + 2β₂) = '+l3.toFixed(6)+
+      '\nsemi-axis ratio √(λ₂/λ₃) = '+Math.sqrt(l2/l3).toFixed(3)+
+      '    constraint κ/2 = '+(k/2).toFixed(1)+' > β₂';
+  }
+  sk.addEventListener('input',draw); sb.addEventListener('input',draw); reg(draw);
+})();
+
+/* ═══════════════════ F12 · where the mirror stands ═══════════════════ */
+reg(function(){
+  const c=C(), w=880,h=380,cx=440,cy=230,R=185;
+  const th=48*Math.PI/180;
+  const px=(x,y)=>[cx+x*R,cy-y*R];
+  const mu=[Math.cos(th),Math.sin(th)];
+  let s='',arc='';
+  for(let i=0;i<=120;i++){const a=2*Math.PI*i/120;
+    arc+=(i?'L':'M')+(cx+R*Math.cos(a)).toFixed(1)+','+(cy-R*Math.sin(a)).toFixed(1);}
+  s+='<path d="'+arc+'Z" fill="none" stroke="'+c.rule+'" stroke-width="1.3"/>';
+  let p=px(1,0); s+=arw(cx,cy,p[0],p[1],c.std,2.4)+tx(p[0]+8,p[1]+5,'e₁',c.muted,12);
+  let q=px(mu[0],mu[1]); s+=arw(cx,cy,q[0],q[1],c.mu,2.8)+tx(q[0]+8,q[1]-6,'μ̂',c.mu,13,'start',700);
+  s+=ln(p[0],p[1],q[0],q[1],c.ink2,1.5,'4 3');
+  const mid=px((1+mu[0])/2,mu[1]/2);
+  s+='<circle cx="'+mid[0].toFixed(1)+'" cy="'+mid[1].toFixed(1)+'" r="4" fill="'+c.ink2+'"/>';
+  s+=tx(mid[0]+10,mid[1]-8,'midpoint',c.ink2,11.5);
+  const m=unit([(1+mu[0])/2,mu[1]/2,0]);
+  let m1=px(-m[0]*1.25,-m[1]*1.25), m2=px(m[0]*1.25,m[1]*1.25);
+  s+=ln(m1[0],m1[1],m2[0],m2[1],c.mir,2.2,'7 5');
+  s+=tx(m2[0]+6,m2[1],'the mirror',c.mir,12,'start',700);
+  /* right-angle marker where v meets the mirror */
+  const vdir=unit([1-mu[0],-mu[1],0]), d=14;
+  s+='<path d="M'+(mid[0]+vdir[0]*d)+','+(mid[1]-vdir[1]*d)+
+     ' L'+(mid[0]+vdir[0]*d+m[0]*d)+','+(mid[1]-vdir[1]*d-m[1]*d)+
+     ' L'+(mid[0]+m[0]*d)+','+(mid[1]-m[1]*d)+'" fill="none" stroke="'+c.muted+'" stroke-width="1.2"/>';
+  /* two equal tick marks on v */
+  [[0.25,0.75],[0.75,0.25]].forEach(function(f){
+    const a=[p[0]*f[0]+q[0]*f[1], p[1]*f[0]+q[1]*f[1]];
+    s+=ln(a[0]-m[0]*6,a[1]+m[1]*6,a[0]+m[0]*6,a[1]-m[1]*6,c.ink2,1.8);
+  });
+  s+=tx(cx-150,cy+150,'v = e₁ − μ̂   is perpendicular to the mirror,',c.ink2,12.5);
+  s+=tx(cx-150,cy+170,'and the mirror passes through the centre.',c.ink2,12.5);
+  svg('f12svg',w,h,s);
+});
+
+/* ═══════════════════ F13 · block matrix ═══════════════════ */
+reg(function(){
+  const g=document.getElementById('f13grid'); if(!g) return;
+  const cells=[
+    ['0.94','bA','a = μ̂ᵀM̂μ̂ — the spread along μ̂. Large, and carries no new information.'],
+    ['0','bC','c = Bᵀ M̂ μ̂ — the cross term. Zero in the population.'],
+    ['0','bC','c = Bᵀ M̂ μ̂ — the cross term. Zero in the population.'],
+    ['0','bC','cᵀ — the same cross term, transposed.'],
+    ['0.03','bS','S_L(1,1) — variance along ruler b₂.'],
+    ['0.02','bS','S_L(1,2) — covariance between the two ruler coordinates.'],
+    ['0','bC','cᵀ — the same cross term, transposed.'],
+    ['0.02','bS','S_L(2,1) — the same covariance.'],
+    ['0.03','bS','S_L(2,2) — variance along ruler b₃.']];
+  g.innerHTML=cells.map(c=>'<div class="'+c[1]+'" title="'+c[2]+'">'+c[0]+'</div>').join('');
+});
+
+/* ═══════════════════ contents, menu, scroll spy ═══════════════════ */
+(function(){
+  const secs=Array.prototype.slice.call(document.querySelectorAll('section[data-t]'));
+  const ol=document.getElementById('toclist');
+  ol.innerHTML=secs.map(function(s){
+    return '<li><a href="#'+s.id+'"><span class="sn">'+s.id.toUpperCase()+
+           '</span><span>'+s.dataset.t+'</span></a></li>';}).join('');
+  const links=Array.prototype.slice.call(ol.querySelectorAll('a'));
+  const toc=document.getElementById('toc'), mb=document.getElementById('menubtn');
+  mb.addEventListener('click',function(){
+    const open=!toc.classList.contains('open');
+    toc.classList.toggle('open',open);
+    mb.setAttribute('aria-expanded',open?'true':'false');
+    mb.textContent=open?'Contents ▴':'Contents ▾';
+  });
+  ol.addEventListener('click',function(e){
+    if(e.target.closest('a')&&window.innerWidth<=900){
+      toc.classList.remove('open'); mb.textContent='Contents ▾';}
+  });
+  let tick=false;
+  function spy(){
+    tick=false; let cur=0;
+    secs.forEach(function(s,i){ if(s.getBoundingClientRect().top<150) cur=i; });
+    links.forEach(function(a,i){ a.classList.toggle('on',i===cur); });
+  }
+  window.addEventListener('scroll',function(){
+    if(!tick){tick=true;requestAnimationFrame(spy);} },{passive:true});
+  spy();
+})();
+
+/* ═══════════════════ KaTeX ═══════════════════ */
+window.addEventListener('DOMContentLoaded',function(){
+  if(window.renderMathInElement){
+    window.renderMathInElement(document.body,{
+      delimiters:[{left:'$$',right:'$$',display:true},
+                  {left:'\\[',right:'\\]',display:true},
+                  {left:'\\(',right:'\\)',display:false}],
+      throwOnError:false
+    });
+  }
+});
+
+/* ═══════════ silent self-check: recompute S_L, its eigenvalues, Schur ═══════ */
+(function(){
+  const M=[[3.99,1.86,3.54],[1.86,1.02,1.86],[3.54,1.86,3.99]].map(r=>r.map(v=>v/9));
+  const H=[[2/3,1/3,2/3],[1/3,2/3,-2/3],[2/3,-2/3,-1/3]];
+  const col=j=>[H[0][j],H[1][j],H[2][j]];
+  const mv=(A,x)=>A.map(r=>r[0]*x[0]+r[1]*x[1]+r[2]*x[2]);
+  const b2=col(1), b3=col(2), mu=col(0);
+  const SL=[[dot(b2,mv(M,b2)),dot(b2,mv(M,b3))],[dot(b3,mv(M,b2)),dot(b3,mv(M,b3))]];
+  const tr=SL[0][0]+SL[1][1], dt=SL[0][0]*SL[1][1]-SL[0][1]*SL[1][0];
+  const disc=Math.sqrt(Math.max(0,tr*tr/4-dt));
+  const det3=A=>A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1])
+               -A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])
+               +A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+  /* mu' M^{-1} mu  by solving M y = mu with Cramer's rule */
+  const dM=det3(M);
+  const sub3=(A,j,v)=>A.map((r,i)=>r.map((x,c)=>c===j?v[i]:x));
+  const y=[0,1,2].map(j=>det3(sub3(M,j,mu))/dM);
+  const quad=dot(mu,y);
+  const a=dot(mu,mv(M,mu));
+  console.log('%c[self-check] Kent estimation explainer','font-weight:bold');
+  console.log(' S_L            =',SL.map(r=>r.map(v=>+v.toFixed(6))));
+  console.log(' eigenvalues    =',[+(tr/2+disc).toFixed(6),+(tr/2-disc).toFixed(6)],'(expect 0.05, 0.01)');
+  console.log(' det S_L        =',+dt.toFixed(8),'(expect 0.0005)');
+  console.log(' a = mu M mu    =',+a.toFixed(6),'(expect 0.94)');
+  console.log(' a + tr S_L     =',+(a+tr).toFixed(6),'(expect 1)');
+  console.log(' c = B M mu     =',[+dot(b2,mv(M,mu)).toFixed(8),+dot(b3,mv(M,mu)).toFixed(8)],'(expect 0, 0)');
+  console.log(' |M|            =',+dM.toFixed(8),'(expect 0.00047)');
+  console.log(" mu' M^-1 mu    =",+quad.toFixed(6),'(expect 1.0638)');
+  console.log(' Schur |M|*quad =',+(dM*quad).toFixed(8),'(expect det S_L)');
+  console.log(' ln|S_L|        =',+Math.log(dt).toFixed(4),'(expect -7.6009)');
+  console.log(' loglik         =',+(-100*(1+Math.log(2*Math.PI))-50*Math.log(dt)).toFixed(2),'(expect 96.26)');
+})();
+
+})();
+</script>
+</body>
+</html>
