@@ -480,7 +480,47 @@ window.MathJax={
 
   <div class="col">
     <p>The TN distribution has the same location and orientation parameters as the Kent distribution, and its tangent variances correspond one-to-one to the Kent concentration and shape through \(\lambda_m=(\kappa-2\beta_m)^{-1}\) (17). Part&nbsp;7 compares the two.</p>
+
+    <h3>Size and shape: \(\kappa\) and \(\beta\)</h3>
+    <p>For \(k=3\), with \(\beta_2=\beta\) and \(\beta_3=-\beta\) (12), the matching (17) and its inverse (Section 3.2.2) are</p>
+    \[ \lambda_2=\frac{1}{\kappa-2\beta},\qquad \lambda_3=\frac{1}{\kappa+2\beta}, \]
+    \[ \kappa=\frac12\Bigl(\frac1{\lambda_2}+\frac1{\lambda_3}\Bigr),\qquad \beta=\frac12\Bigl(\kappa-\frac1{\lambda_2}\Bigr). \]
+    <p>So the two tangent variances can be read as a <b>concentration</b> \(\kappa\), which sets the size of the cloud, and an <b>ovalness</b> \(\beta\), which sets its shape. The Gaussian part has semi-axes proportional to \(\sqrt{\lambda_2}\) and \(\sqrt{\lambda_3}\), so its shape is</p>
+    \[ \frac{\text{long semi-axis}}{\text{short semi-axis}}=\sqrt{\frac{\lambda_2}{\lambda_3}}=\sqrt{\frac{\kappa+2\beta}{\kappa-2\beta}}, \]
+    <p>which depends on \(\beta/\kappa\) only: with \(\kappa=60\) and \(\beta=24\) it is \(\sqrt{108/12}=3\). The condition \(0\le2\beta&lt;\kappa\) of (13) is what keeps \(\lambda_2\) positive and finite; the manuscript notes that (13) holds exactly when \(\lambda_2\ge\lambda_3&gt;0\).</p>
+    <p>Two things differ from the Kent picture. The Gaussian part is cut at the edge of the ball, \(\|\bv\|=1\), so the support ends at the edge of the hemisphere \(H_{\bmu}\). And the contours of \(g\) are the Gaussian ellipses only up to the Jacobian factor \(\bmu^{\top}\bu=(1-\|\bv\|^2)^{1/2}\) of (16), which pulls them in and rounds them when the spread is large. Lower \(\kappa\) to see both.</p>
   </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 5</span><span class="plate-t">move the two sliders and watch the ellipse</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="p4k-k"><span class="ctl-l"><span>&kappa; &mdash; concentration</span><b id="p4k-k-v"></b></span>
+        <input type="range" id="p4k-k" min="4" max="300" step="1" value="60"></label>
+      <label class="ctl" for="p4k-b"><span class="ctl-l"><span>&beta; &mdash; ovalness, as a fraction of &kappa;/2</span><b id="p4k-b-v"></b></span>
+        <input type="range" id="p4k-b" min="0" max="0.94" step="0.01" value="0.80"></label>
+    </div>
+    <ul class="key">
+      <li><i class="ln" style="border-color:var(--ink)"></i>contours of \(g\) (15), 10&ndash;90% of the peak</li>
+      <li><i style="background:var(--dot)"></i>draws by Definition 1</li>
+      <li><i class="ln dash" style="border-color:var(--muted)"></i>edge of the ball \(\|\bv\|=1\) / of \(H_{\bmu}\)</li>
+      <li><i style="background:var(--mu)"></i>\(\bmu\)</li>
+    </ul>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="plot" id="fig4k-a" role="img" aria-label="TN contours and draws on the tangent plane at a fixed scale"></div><div class="panel-t"><b>tangent plane</b>, \(\bv=\bK^{\top}\bu\), fixed scale</div></div>
+        <div><div class="plot" id="fig4k-b" role="img" aria-label="The same TN draws on the sphere"></div><div class="panel-t"><b>on the sphere</b>, \(\bu=\psi(\bv)\) (14)</div></div>
+      </div>
+      <div class="hint">sphere: drag to rotate</div>
+      <div class="scroll">
+        <table><tbody>
+          <tr><td>\(\kappa\)</td><td class="num" id="o4k-k"></td><td>\(\beta\)</td><td class="num" id="o4k-b"></td><td>\(2\beta&lt;\kappa\) (13)?</td><td class="num" id="o4k-ok"></td></tr>
+          <tr><td>\(\lambda_2\) (17)</td><td class="num" id="o4k-l2"></td><td>\(\lambda_3\) (17)</td><td class="num" id="o4k-l3"></td><td>axis ratio \(\sqrt{\lambda_2/\lambda_3}\)</td><td class="num" id="o4k-r"></td></tr>
+          <tr><td>\(1-\pi_{\Lambda}\)</td><td class="num" id="o4k-pi"></td><td>10% contour of \(g\): ratio</td><td class="num" id="o4k-rg"></td><td>draws shown</td><td class="num" id="o4k-n"></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+    <figcaption>The TN version of Figure&nbsp;6 of <a href="../kent/kent_on_the_sphere.html#p6">Kent on the Sphere</a>, with the same sliders. The second slider is a fraction of its maximum, because the legal range of \(\beta\) depends on \(\kappa\): \(2\beta&lt;\kappa\) (13). Slide \(\beta\) to 0: \(\lambda_2=\lambda_3\) and the contours are circles. Slide it to the right: they stretch along <b class="c-g2">\(\bgamma_2\)</b>. Slide \(\kappa\): the whole shape shrinks or grows, with the same \(\sqrt{\lambda_2/\lambda_3}\). For small \(\kappa\) the Gaussian part is wider than the ball: \(1-\pi_{\Lambda}\) is no longer small, the draws crowd inside the dashed circle, and the contours of \(g\) are rounder than \(\sqrt{\lambda_2/\lambda_3}\) (row three gives the ratio of the 10% contour's reach along \(\bgamma_2\) and \(\bgamma_3\)), because of the Jacobian. As on the Kent page, \(\bmu\) is at the north pole here, with \(\bgamma_2\) and \(\bgamma_3\) along the \(x\) and \(y\) axes; moving \(\bmu\) moves the cloud without changing its shape (Figure&nbsp;4 shows it at a composition). The draws reuse the same random numbers, so they move with the sliders instead of jumping.</figcaption>
+  </figure>
 </section>
 
 <!-- =============================== PART 5 =============================== -->
@@ -495,7 +535,7 @@ window.MathJax={
   </div>
 
   <figure class="plate">
-    <div class="plate-head"><span class="plate-n">Figure 5</span><span class="plate-t">contours of \(g\): (a) tangent plane, (b) sphere, (c) triangle</span></div>
+    <div class="plate-head"><span class="plate-n">Figure 6</span><span class="plate-t">contours of \(g\): (a) tangent plane, (b) sphere, (c) triangle</span></div>
     <div class="ctl-row">
       <label class="ctl" for="p5-th"><span class="ctl-l"><span>&theta; &mdash; angle of &mu; from the x&#8323; axis</span><b id="p5-th-v"></b></span>
         <input type="range" id="p5-th" min="2" max="88" step="0.1" value="63.4"></label>
@@ -541,6 +581,48 @@ window.MathJax={
     <div class="readout" id="o5"></div>
     <figcaption><b>(a)</b> The tangent plane, looking straight down \(\bmu\), in the coordinates \(v_2,v_3\) along the axes; the axis scale follows \(\sqrt{\lambda_2}\). The shaded curved triangle is the image of \(\mathcal O\) under \(\bu\mapsto\bK^{\top}\bu\): the tangent coordinates of all compositions. The dotted circle \(\|\bv\|=1\) is the edge of the ball, where the support ends. <b>(b)</b> The same contours on the sphere. The pale cap is the hemisphere \(H_{\bmu}\), the support of the TN distribution; the darker patch is \(\mathcal O\). <b>(c)</b> The contours on the triangle; the orange cross is \(\bmu^2\). The angles \(\theta,\varphi\) place \(\bmu=(\sin\theta\cos\varphi,\ \sin\theta\sin\varphi,\ \cos\theta)\). The axes are \(\bgamma_2=\cos\psi\,\mathbf l+\sin\psi\,\mathbf s\) and \(\bgamma_3=-\sin\psi\,\mathbf l+\cos\psi\,\mathbf s\) in the frame of design K (Appendix A): \(\mathbf s\) points from \(\bmu\) towards the corner \(x_3\), and \(\mathbf l=\mathbf s\times\bmu\) runs parallel to the bottom edge, so \(\psi=0\) lays the long axis horizontally on the triangle and \(\psi=90^\circ\) points it at \(x_3\).</figcaption>
   </figure>
+
+  <div class="col">
+    <h3>Where the contour comes from</h3>
+    <p>Put the mean direction at the north pole, \(\bmu=(0,0,1)\), and let \(\bgamma_2\) be the \(x\) axis and \(\bgamma_3\) the \(y\) axis. A point \(\bu=(x,y,z)\) of the sphere then has tangent coordinates \(\bv=\bK^{\top}\bu=(x,y)\) and \(\bmu^{\top}\bu=z\), and by (15), on the upper hemisphere \(z&gt;0\),</p>
+    \[ \frac{g(\bu)}{g(\bmu)}=z\,\exp\Bigl\{-\frac{x^2}{2\lambda_2}-\frac{y^2}{2\lambda_3}\Bigr\}. \]
+    <p>The contour at a fraction \(f\) of the peak is where this ratio equals \(f\):</p>
+    \[ z=f\,\exp\Bigl\{\frac{x^2}{2\lambda_2}+\frac{y^2}{2\lambda_3}\Bigr\}. \]
+    <p>Read as an equation in \(x,y,z\) alone, without \(x^2+y^2+z^2=1\), this is a <b class="c-b">surface</b> in space: a bowl that sits at height \(f\) on the \(\bmu\) axis and rises in every direction, fastest along \(\bgamma_3\), because \(\lambda_3\le\lambda_2\). It is scaffolding, not a density, and no data lie on it. Where it cuts the sphere is the contour of \(g\): the points that are possible observations and equally likely.</p>
+    <p>On the <a href="../kent/kent_triangle_to_ellipse_web.html#sec-levelset">Kent page</a> the same construction gives \(\kappa z+\beta(x^2-y^2)=C\), a saddle that bends down along \(\bgamma_2\) and up along \(\bgamma_3\). The TN bowl bends up along both axes, and it never comes below the height \(f&gt;0\), so it never meets the lower hemisphere, where the TN density is zero.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 7</span><span class="plate-t">move the sphere, bend the surface, watch the contour</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="p5L-k"><span class="ctl-l"><span>&kappa;</span><b id="p5L-k-v"></b></span>
+        <input type="range" id="p5L-k" min="10" max="150" step="1" value="50"></label>
+      <label class="ctl" for="p5L-b"><span class="ctl-l"><span>&beta; (kept below &kappa;/2)</span><b id="p5L-b-v"></b></span>
+        <input type="range" id="p5L-b" min="0" max="70" step="1" value="18"></label>
+      <label class="ctl" for="p5L-f"><span class="ctl-l"><span>contour level f, as a fraction of the peak density</span><b id="p5L-f-v"></b></span>
+        <input type="range" id="p5L-f" min="0.02" max="0.9" step="0.01" value="0.10"></label>
+    </div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <span class="lab">show</span>
+        <button class="btn" id="b5L-surf" aria-pressed="true">level-set surface</button>
+        <button class="btn" id="b5L-sph" aria-pressed="true">sphere</button>
+        <span class="sep"></span>
+        <button class="btn" id="b5L-zin" aria-label="zoom in">&plus;</button>
+        <button class="btn" id="b5L-zout" aria-label="zoom out">&minus;</button>
+        <button class="btn" id="b5L-reset">reset view</button>
+      </div>
+    </div>
+    <ul class="key">
+      <li><i class="sq" style="background:var(--basis);opacity:.45"></i>level-set surface</li>
+      <li><i class="ln" style="border-color:var(--ink)"></i>the contour of \(g\)</li>
+      <li><i class="ln dash" style="border-color:var(--muted)"></i>edge of \(H_{\bmu}\)</li>
+      <li><i style="background:var(--mu)"></i>\(\bmu\)</li>
+    </ul>
+    <div class="plate-body"><div class="plot tall" id="fig5L" role="img" aria-label="The TN level-set surface cutting the sphere along a density contour"></div><div class="hint">drag to rotate &middot; right-drag to pan &middot; &plus;/&minus; to zoom</div></div>
+    <div class="readout" id="o5L"></div>
+    <figcaption>The TN version of the "try it yourself" figure of Step&nbsp;8 on the <a href="../kent/kent_triangle_to_ellipse_web.html#sec-levelset">Kent page</a>, with the same sliders and defaults. \(\kappa\) and \(\beta\) give \(\lambda_2,\lambda_3\) by (17); the \(\beta\) slider stops below \(\kappa/2\), because (17) needs \(2\beta&lt;\kappa\) for \(\lambda_2\) to be a positive variance. Things to try. <b>\(\beta=0\):</b> \(\lambda_2=\lambda_3\), the bowl is round and the contour is a circle. <b>Raise \(\beta\):</b> the bowl stays low for longer along \(\bgamma_2\), and the contour stretches along it. <b>Lower \(f\) towards 0.02:</b> the bowl drops and the contour widens, but however low \(f\) goes, the bowl stays above height \(f\), so the contour stays in the upper hemisphere. <b>Lower \(\kappa\):</b> the bowl flattens; the read-out compares the contour's reach along the two axes with \(\sqrt{\lambda_2/\lambda_3}\), the ratio of the Gaussian part, and shows the Jacobian rounding the contour. The contour is computed exactly, as in Figure&nbsp;6, by solving for the radius along each direction.</figcaption>
+  </figure>
 </section>
 
 <!-- =============================== PART 6 =============================== -->
@@ -557,7 +639,7 @@ window.MathJax={
   </div>
 
   <figure class="plate">
-    <div class="plate-head"><span class="plate-n">Figure 6</span><span class="plate-t">the TN density on the triangle and on the sphere, with a simulated sample</span></div>
+    <div class="plate-head"><span class="plate-n">Figure 8</span><span class="plate-t">the TN density on the triangle and on the sphere, with a simulated sample</span></div>
     <div class="ctl-row">
       <label class="ctl" for="p6-th"><span class="ctl-l"><span>&theta; &mdash; angle of &mu; from the x&#8323; axis</span><b id="p6-th-v"></b></span>
         <input type="range" id="p6-th" min="2" max="88" step="0.1" value="63.4"></label>
@@ -638,7 +720,7 @@ window.MathJax={
   </div>
 
   <figure class="plate">
-    <div class="plate-head"><span class="plate-n">Figure 7</span><span class="plate-t">Kent and TN with matched parameters (17), side by side</span></div>
+    <div class="plate-head"><span class="plate-n">Figure 9</span><span class="plate-t">Kent and TN with matched parameters (17), side by side</span></div>
     <div class="ctl-row">
       <label class="ctl" for="p7-k"><span class="ctl-l"><span>&kappa; &mdash; Kent concentration (log scale)</span><b id="p7-k-v"></b></span>
         <input type="range" id="p7-k" min="0" max="1000" step="1" value="547"></label>
@@ -1542,6 +1624,110 @@ const J5=job($('fig5a'),function(){
 const params5=tnControls('p5',()=>run(J5));
 slider('p5-nl',v=>v.toFixed(0),()=>run(J5));
 camButtons('b5',['fig5b'],EYE5);
+
+/* ============ Figures 5 and 7: kappa and beta, and the level-set surface ============
+   Both use the standard frame of the Kent pages: mu = e3, gamma2 = e1, gamma3 = e2,
+   so that v = K^T u = (x, y) and mu^T u = z. Lambda comes from (kappa, beta) by (17). */
+const E3=[0,0,1], KSTD=[[1,0,0],[0,1,0]];
+function stdTN(l2,l3){ const pl=TN.piLambda(l2,l3);
+  return {mu:E3,K:KSTD,psi:0,l2,l3,pi:pl.pi,piOut:pl.out,logPi:pl.logPi,
+          logPeak:-Math.log(TAU)-0.5*Math.log(l2*l3)-pl.logPi}; }
+/* the contour of g at level f: one radius per direction (levelRadius, exact), then (14) */
+function stdContour(P,f,M){ M=M||240; const V=[],U=[];
+  for(let i=0;i<=M;i++){ const a=TAU*i/M, r=TN.levelRadius(a,f,P.l2,P.l3), v=[r*Math.cos(a),r*Math.sin(a)];
+    V.push(v); U.push(TN.psiMap(v,P.mu,P.K)); }
+  return {V,U}; }
+function sphereFull(color,opacity){ return cached('sph|'+color+'|'+opacity,()=>{ const nu=48,nv=26,X=[],Y=[],Z=[];
+  for(let j=0;j<=nv;j++){ const th=Math.PI*j/nv,xr=[],yr=[],zr=[];
+    for(let i=0;i<=nu;i++){ const ph=TAU*i/nu; xr.push(Math.sin(th)*Math.cos(ph)); yr.push(Math.sin(th)*Math.sin(ph)); zr.push(Math.cos(th)); }
+    X.push(xr);Y.push(yr);Z.push(zr); }
+  return surfConst(X,Y,Z,color,opacity); }); }
+/* the edge of H_mu for mu = e3: the equator */
+function equator(color){ const c=[]; for(let i=0;i<=180;i++){ const a=TAU*i/180; c.push([1.004*Math.cos(a),1.004*Math.sin(a),0]); } return poly3(c,color,2.5,'dash'); }
+const kbPars=(k,frac)=>{ const b=frac*k/2; return {k,b,l2:1/(k-2*b),l3:1/(k+2*b)}; };   /* (17), beta_2 = beta, beta_3 = -beta */
+
+/* Figure 5: the two sliders */
+const EYE4K={x:0.75,y:1.5,z:1.1}, N4K=260;
+const J4K=job($('fig4k-a'),function(){
+  const t=T(), p=kbPars(+$('p4k-k').value,+$('p4k-b').value), P=stdTN(p.l2,p.l3);
+  const S=TN.simulate(P,N4K,4545);
+  /* tangent plane at a fixed scale: the edge of the ball, the draws, the contours of g */
+  const R=1.06, d=[], cx=[], cy=[];
+  for(let i=0;i<=200;i++){ cx.push(Math.cos(TAU*i/200)); cy.push(Math.sin(TAU*i/200)); }
+  d.push({type:'scatter',mode:'lines',x:cx,y:cy,line:{color:t.muted,width:1.3,dash:'dash'},hoverinfo:'skip'});
+  d.push({type:'scatter',mode:'markers',x:S.map(s=>s.v[0]),y:S.map(s=>s.v[1]),marker:{size:4,color:t.dotc,opacity:.55},
+    hovertemplate:'v = (%{x:.3f}, %{y:.3f})<extra></extra>'});
+  const x=[],y=[],tx=[];
+  TN.levelFractions(5).forEach(f=>{ stdContour(P,f).V.forEach(v=>{ x.push(v[0]); y.push(v[1]); tx.push('g = '+f.toFixed(1)+' × peak'); });
+    x.push(null); y.push(null); tx.push(''); });
+  d.push({type:'scatter',mode:'lines',x,y,text:tx,line:{color:t.ink,width:1.6},hovertemplate:'%{text}<extra></extra>'});
+  const a=R*0.8;
+  draw('fig4k-a',d,base(t,{margin:{l:6,r:6,t:6,b:6},
+    xaxis:{range:[-R,R],zeroline:false,showgrid:false,showticklabels:false,ticks:'',showline:true,linecolor:t.rule2,mirror:true,constrain:'domain'},
+    yaxis:{range:[-R,R],zeroline:false,showgrid:false,showticklabels:false,ticks:'',showline:true,linecolor:t.rule2,mirror:true,scaleanchor:'x',scaleratio:1},
+    annotations:[
+      {x:a,y:0,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,arrowhead:3,arrowsize:1,arrowwidth:2,arrowcolor:t.g2,standoff:0},
+      {x:0,y:a,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,arrowhead:3,arrowsize:1,arrowwidth:2,arrowcolor:t.g3,standoff:0},
+      {x:a,y:0,text:'γ₂',showarrow:false,xanchor:'left',yanchor:'top',font:{color:t.g2,size:13},xshift:3,yshift:-3},
+      {x:0,y:a,text:'γ₃',showarrow:false,xanchor:'left',yanchor:'bottom',font:{color:t.g3,size:13},xshift:4},
+      {x:0,y:0,text:'●',showarrow:false,font:{color:t.mu,size:11}},
+      {x:0,y:0,text:'μ',showarrow:false,font:{color:t.mu,size:13},xshift:-11,yshift:-11},
+      {x:-R,y:-R,text:'‖v‖ = 1',showarrow:false,xanchor:'left',yanchor:'bottom',font:{color:t.muted,size:10},xshift:4,yshift:4}]}));
+  /* the same draws on the sphere */
+  SCOPE='fig4k-b';
+  draw('fig4k-b',[sphereFull(t.sphere,0.45),graticule(t.grat,false),equator(t.muted),
+    pts3(S.map(s=>scale(s.u,1.006)),t.dotc,2.8,'draw on the sphere<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'),
+    seg3([0,0,0],[0,0,1.16],t.mu,4), label3([0,0,1.25],'μ',t.mu,14)],base(t,{scene:scene(EYE4K,FULL)}));
+  /* the table */
+  const r2=TN.levelRadius(0,0.1,p.l2,p.l3), r3=TN.levelRadius(Math.PI/2,0.1,p.l2,p.l3);
+  $('o4k-k').textContent=p.k; $('o4k-b').textContent=p.b.toFixed(1); $('o4k-ok').textContent=(2*p.b<p.k)?'yes':'no';
+  $('o4k-l2').textContent=p.l2.toFixed(4); $('o4k-l3').textContent=p.l3.toFixed(5);
+  $('o4k-r').textContent=Math.sqrt(p.l2/p.l3).toFixed(2);
+  $('o4k-pi').textContent=prob(P.piOut); $('o4k-rg').textContent=(r2/r3).toFixed(2); $('o4k-n').textContent=S.length;
+});
+slider('p4k-k',v=>v.toFixed(0),()=>run(J4K)); slider('p4k-b',f2,()=>run(J4K));
+
+/* Figure 7: the level-set surface z = f exp{x^2/(2 l2) + y^2/(2 l3)} and the sphere */
+const EYE5L={x:1.08,y:0.78,z:0.66}, S5L={surf:true,sph:true};
+function levelSurface(t,f,l2,l3){
+  /* polar grid whose rim is where the bowl reaches z = 1.3 (or radius 1.15), so the edge is smooth */
+  const zc=1.3, Lc=Math.log(zc/f), nT=36, nA=96, X=[],Y=[],Z=[];
+  for(let i=0;i<=nT;i++){ const s=i/nT, xr=[],yr=[],zr=[];
+    for(let j=0;j<=nA;j++){ const a=TAU*j/nA, c=Math.cos(a), sn=Math.sin(a), q=c*c/l2+sn*sn/l3;
+      const rho=s*Math.min(Math.sqrt(2*Lc/q),1.15), x=rho*c, y=rho*sn;
+      xr.push(x); yr.push(y); zr.push(f*Math.exp(0.5*(x*x/l2+y*y/l3))); }
+    X.push(xr); Y.push(yr); Z.push(zr); }
+  const tr=surfConst(X,Y,Z,t.basis,0.42);
+  delete tr.hoverinfo; tr.hovertemplate='level-set surface<br>z = %{z:.3f}<extra></extra>';
+  return tr;
+}
+const J5L=job($('fig5L'),function(){
+  SCOPE='fig5L';
+  const t=T(), k=+$('p5L-k').value, b=+$('p5L-b').value, f=+$('p5L-f').value;
+  const l2=1/(k-2*b), l3=1/(k+2*b), P=stdTN(l2,l3), d=[];
+  if(S5L.sph) d.push(sphereFull(t.sphere,0.22), graticule(t.grat,false));
+  d.push(equator(t.muted));
+  if(S5L.surf) d.push(levelSurface(t,f,l2,l3));
+  const c=stdContour(P,f,480);
+  d.push(poly3(c.U.map(u=>scale(u,1.006)),t.ink,7,'solid',c.U.map(()=>'the contour, g = '+f.toFixed(2)+' × peak')));
+  d.push(seg3([0,0,0],[0,0,1.25],t.mu,6), label3([0,0,1.33],'μ',t.mu,14),
+    seg3([0,0,1],[0.75,0,1],t.g2,5), label3([0.9,0,1],'x = γ₂',t.g2,12),
+    seg3([0,0,1],[0,0.75,1],t.g3,5), label3([0,0.9,1],'y = γ₃',t.g3,12));
+  draw('fig5L',d,base(t,{scene:scene(EYE5L,[-1.1,1.35])}));
+  const r2=TN.levelRadius(0,f,l2,l3), r3=TN.levelRadius(Math.PI/2,f,l2,l3);
+  $('o5L').innerHTML=
+    '<span>level set: <b>z = '+f.toFixed(2)+' · exp(x²/'+sig(2*l2,3)+' + y²/'+sig(2*l3,3)+')</b></span>'+
+    '<span>(17): λ₂ = <b>'+sig(l2,3)+'</b>, λ₃ = <b>'+sig(l3,3)+'</b></span>'+
+    '<span>reaches <b>'+f3(r2)+'</b> along γ₂ and <b>'+f3(r3)+'</b> along γ₃ (ratio <b>'+(r2/r3).toFixed(2)+'</b>; Gaussian part √(λ₂/λ₃) = <b>'+Math.sqrt(l2/l3).toFixed(2)+'</b>)</span>'+
+    '<span>lowest point of the bowl: z = f = <b>'+f.toFixed(2)+'</b> &gt; 0, so it never meets the lower hemisphere</span>'+
+    (b===0?'<span>β = 0: λ₂ = λ₃, a round bowl, and the contour is a circle.</span>':'');
+});
+/* beta is kept below kappa/2: (17) needs 2 beta < kappa for lambda2 to be a positive variance */
+function keepBeta(){ const k=+$('p5L-k').value, sb=$('p5L-b'), bmax=Math.ceil(k/2)-1;
+  if(+sb.value>bmax){ sb.value=bmax; $('p5L-b-v').textContent=sb.value; } run(J5L); }
+slider('p5L-k',v=>v.toFixed(0),keepBeta); slider('p5L-b',v=>v.toFixed(0),keepBeta); slider('p5L-f',f2,()=>run(J5L));
+toggle('b5L-surf',S5L,'surf',()=>run(J5L)); toggle('b5L-sph',S5L,'sph',()=>run(J5L));
+camButtons('b5L',['fig5L'],EYE5L);
 
 /* ============================== Figure 6 ============================== */
 const EYE6={x:0.95,y:0.85,z:0.68};

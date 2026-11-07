@@ -5,7 +5,7 @@ Interactive pages for the manuscript *Compositional random forest*. Every page r
 ## Pages
 
 - `index.html` — landing page that links to every page below.
-- `tn/tn_distribution.html` — the tangent-normal (TN) distribution: compositions in the triangle and in 3D, the square-root map to the sphere, the tangent plane and the map ψ (14), contour sets of g (15) on the tangent plane, the sphere and the triangle, the density as a heatmap and on the sphere with live simulation and estimation, and Kent versus TN with matched parameters (17). Single file.
+- `tn/tn_distribution.html` — the tangent-normal (TN) distribution: compositions in the triangle and in 3D, the square-root map to the sphere, the tangent plane and the map ψ (14), κ and β as size and shape through (17), contour sets of g (15) on the tangent plane, the sphere and the triangle, the level-set surface that cuts the sphere along a contour, the density as a heatmap and on the sphere with live simulation and estimation, and Kent versus TN with matched parameters (17). Single file.
 - `kent/kent_on_the_sphere.html` — "Kent on the Sphere": the Kent distribution from zero, fully interactive (vMF versus Kent, tangent plane, Householder basis, worked example). Single file. Was `kent-on-the-sphere.html`.
 - `kent/kent_triangle_to_ellipse_standalone.html` — "From a triangle to an ellipse": nine steps from the triangle to the Kent ellipse, with rotatable 3D figures. Single file with everything inlined (works offline). Was `kent-geometry-standalone.html`.
 - `kent/kent_triangle_to_ellipse_web.html` — the website build of the same page; needs `assets/` and `figures/`. Was `kent-geometry.html`.
