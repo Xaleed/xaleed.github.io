@@ -586,10 +586,12 @@ window.MathJax={
     <h3>Where the contour comes from</h3>
     <p>Put the mean direction at the north pole, \(\bmu=(0,0,1)\), and let \(\bgamma_2\) be the \(x\) axis and \(\bgamma_3\) the \(y\) axis. A point \(\bu=(x,y,z)\) of the sphere then has tangent coordinates \(\bv=\bK^{\top}\bu=(x,y)\) and \(\bmu^{\top}\bu=z\), and by (15), on the upper hemisphere \(z&gt;0\),</p>
     \[ \frac{g(\bu)}{g(\bmu)}=z\,\exp\Bigl\{-\frac{x^2}{2\lambda_2}-\frac{y^2}{2\lambda_3}\Bigr\}. \]
-    <p>The contour at a fraction \(f\) of the peak is where this ratio equals \(f\):</p>
-    \[ z=f\,\exp\Bigl\{\frac{x^2}{2\lambda_2}+\frac{y^2}{2\lambda_3}\Bigr\}. \]
-    <p>Read as an equation in \(x,y,z\) alone, without \(x^2+y^2+z^2=1\), this is a <b class="c-b">surface</b> in space: a bowl that sits at height \(f\) on the \(\bmu\) axis and rises in every direction, fastest along \(\bgamma_3\), because \(\lambda_3\le\lambda_2\). It is scaffolding, not a density, and no data lie on it. Where it cuts the sphere is the contour of \(g\): the points that are possible observations and equally likely.</p>
-    <p>On the <a href="../kent/kent_triangle_to_ellipse_web.html#sec-levelset">Kent page</a> the same construction gives \(\kappa z+\beta(x^2-y^2)=C\), a saddle that bends down along \(\bgamma_2\) and up along \(\bgamma_3\). The TN bowl bends up along both axes, and it never comes below the height \(f&gt;0\), so it never meets the lower hemisphere, where the TN density is zero.</p>
+    <p>Write \(\lambda_2,\lambda_3\) through \(\kappa,\beta\) by (17), \(1/\lambda_2=\kappa-2\beta\) and \(1/\lambda_3=\kappa+2\beta\). Then</p>
+    \[ \frac{x^2}{2\lambda_2}+\frac{y^2}{2\lambda_3}=\frac{\kappa}{2}\,(x^2+y^2)-\beta\,(x^2-y^2), \]
+    <p>and on the sphere \(x^2+y^2=1-z^2\). Taking logarithms, the contour at a fraction \(f\) of the peak, \(g(\bu)=f\,g(\bmu)\), is</p>
+    \[ \frac{\kappa}{2}\,z^2+\ln z+\beta\,(x^2-y^2)=C,\qquad C=\frac{\kappa}{2}+\ln f. \]
+    <p>Set it beside the Kent density (11) for \(k=3\), whose contours are \(\kappa z+\beta(x^2-y^2)=C\) (see the <a href="../kent/kent_triangle_to_ellipse_web.html#sec-levelset">Kent page</a>). The \(\beta\) term is the same; only \(\kappa z\) becomes \(\tfrac{\kappa}{2}z^2+\ln z\), where \(\ln z\) is the logarithm of the Jacobian \(\bmu^{\top}\bu\) of (16). Because \(\tfrac{\kappa}{2}z^2+\ln z\) increases with \(z\), each point \((x,y)\) gives exactly one height \(z\), so the equation, read in \(x,y,z\) alone, is a <b class="c-b">surface</b>: a sheet across the sphere. With \(\beta=0\) it is a flat horizontal plane, as for Kent (the von Mises&ndash;Fisher case), and \(\beta\) bends it into a saddle, down along \(\bgamma_2\) and up along \(\bgamma_3\). It is scaffolding, not a density, and no data lie on it. Where it cuts the sphere is the contour of \(g\): the points that are possible observations and equally likely.</p>
+    <p>One difference from Kent: \(\ln z\to-\infty\) as \(z\to0\), so the TN sheet always stays above \(z=0\). It never meets the lower hemisphere, where the TN density is zero, however low the level \(f\) is.</p>
   </div>
 
   <figure class="plate">
@@ -621,7 +623,7 @@ window.MathJax={
     </ul>
     <div class="plate-body"><div class="plot tall" id="fig5L" role="img" aria-label="The TN level-set surface cutting the sphere along a density contour"></div><div class="hint">drag to rotate &middot; right-drag to pan &middot; &plus;/&minus; to zoom</div></div>
     <div class="readout" id="o5L"></div>
-    <figcaption>The TN version of the "try it yourself" figure of Step&nbsp;8 on the <a href="../kent/kent_triangle_to_ellipse_web.html#sec-levelset">Kent page</a>, with the same sliders and defaults. \(\kappa\) and \(\beta\) give \(\lambda_2,\lambda_3\) by (17); the \(\beta\) slider stops below \(\kappa/2\), because (17) needs \(2\beta&lt;\kappa\) for \(\lambda_2\) to be a positive variance. Things to try. <b>\(\beta=0\):</b> \(\lambda_2=\lambda_3\), the bowl is round and the contour is a circle. <b>Raise \(\beta\):</b> the bowl stays low for longer along \(\bgamma_2\), and the contour stretches along it. <b>Lower \(f\) towards 0.02:</b> the bowl drops and the contour widens, but however low \(f\) goes, the bowl stays above height \(f\), so the contour stays in the upper hemisphere. <b>Lower \(\kappa\):</b> the bowl flattens; the read-out compares the contour's reach along the two axes with \(\sqrt{\lambda_2/\lambda_3}\), the ratio of the Gaussian part, and shows the Jacobian rounding the contour. The contour is computed exactly, as in Figure&nbsp;6, by solving for the radius along each direction.</figcaption>
+    <figcaption>The TN version of the "try it yourself" figure of Step&nbsp;8 on the <a href="../kent/kent_triangle_to_ellipse_web.html#sec-levelset">Kent page</a>, with the same sliders and defaults. \(\kappa\) and \(\beta\) give \(\lambda_2,\lambda_3\) by (17); the \(\beta\) slider stops below \(\kappa/2\), because (17) needs \(2\beta&lt;\kappa\) for \(\lambda_2\) to be a positive variance. Things to try. <b>\(\beta=0\):</b> \(\lambda_2=\lambda_3\), the sheet is a flat plane and the contour is a circle. <b>Raise \(\beta\):</b> the sheet bends into a saddle, down along \(\bgamma_2\) and up along \(\bgamma_3\), and the contour stretches along \(\bgamma_2\). <b>Lower \(f\) towards 0.02:</b> the sheet drops and the contour widens, but the sheet stays above \(z=0\), so the contour stays in the upper hemisphere. <b>Lower \(\kappa\):</b> the read-out compares the contour's reach along the two axes with \(\sqrt{\lambda_2/\lambda_3}\), the ratio of the Gaussian part, and shows the Jacobian rounding the contour. The contour is computed exactly, as in Figure&nbsp;6, by solving for the radius along each direction.</figcaption>
   </figure>
 </section>
 
@@ -1687,17 +1689,28 @@ const J4K=job($('fig4k-a'),function(){
 });
 slider('p4k-k',v=>v.toFixed(0),()=>run(J4K)); slider('p4k-b',f2,()=>run(J4K));
 
-/* Figure 7: the level-set surface z = f exp{x^2/(2 l2) + y^2/(2 l3)} and the sphere */
+/* Figure 7: the level-set surface and the sphere.
+   With (17), x^2/(2 l2) + y^2/(2 l3) = (kappa/2)(x^2 + y^2) - beta (x^2 - y^2), and x^2 + y^2 = 1 - z^2 on
+   the sphere, so log g(u) - log g(mu) = (kappa/2) z^2 + ln z + beta (x^2 - y^2) - kappa/2 there, and the
+   contour at level f is  (kappa/2) z^2 + ln z + beta (x^2 - y^2) = C,  C = kappa/2 + ln f
+   (Kent: kappa z + beta (x^2 - y^2) = C). The left side increases with z, so one height z per (x, y). */
 const EYE5L={x:1.08,y:0.78,z:0.66}, S5L={surf:true,sph:true};
-function levelSurface(t,f,l2,l3){
-  /* polar grid whose rim is where the bowl reaches z = 1.3 (or radius 1.15), so the edge is smooth */
-  const zc=1.3, Lc=Math.log(zc/f), nT=36, nA=96, X=[],Y=[],Z=[];
-  for(let i=0;i<=nT;i++){ const s=i/nT, xr=[],yr=[],zr=[];
-    for(let j=0;j<=nA;j++){ const a=TAU*j/nA, c=Math.cos(a), sn=Math.sin(a), q=c*c/l2+sn*sn/l3;
-      const rho=s*Math.min(Math.sqrt(2*Lc/q),1.15), x=rho*c, y=rho*sn;
-      xr.push(x); yr.push(y); zr.push(f*Math.exp(0.5*(x*x/l2+y*y/l3))); }
-    X.push(xr); Y.push(yr); Z.push(zr); }
-  const tr=surfConst(X,Y,Z,t.basis,0.42);
+/* the z > 0 with a z^2 + ln z = s, solved for w = ln z (a e^{2w} + w - s is increasing and convex);
+   null above z = 1.25, off the picture, as on the Kent page */
+function sheetZ(s,a){
+  const wmax=Math.log(1.25);
+  if(a*Math.exp(2*wmax)+wmax<s) return null;
+  let lo=Math.min(0,s-a)-1, hi=wmax, w=hi;
+  for(let i=0;i<80;i++){ const e=a*Math.exp(2*w), F=e+w-s; if(F>0) hi=w; else lo=w;
+    let wn=w-F/(2*e+1); if(!(wn>lo&&wn<hi)) wn=0.5*(lo+hi);
+    if(Math.abs(wn-w)<1e-13){ w=wn; break; } w=wn; }
+  return Math.exp(w);
+}
+function levelSheet(t,k,b,f){
+  const a=k/2, C=a+Math.log(f), n=60, R=1.05, xs=[], Z=[];
+  for(let i=0;i<=n;i++) xs.push(-R+2*R*i/n);
+  for(let j=0;j<=n;j++){ const y=xs[j], row=[]; for(let i=0;i<=n;i++){ const x=xs[i]; row.push(sheetZ(C-b*(x*x-y*y),a)); } Z.push(row); }
+  const tr=surfConst(xs,xs,Z,t.basis,0.42);
   delete tr.hoverinfo; tr.hovertemplate='level-set surface<br>z = %{z:.3f}<extra></extra>';
   return tr;
 }
@@ -1707,7 +1720,7 @@ const J5L=job($('fig5L'),function(){
   const l2=1/(k-2*b), l3=1/(k+2*b), P=stdTN(l2,l3), d=[];
   if(S5L.sph) d.push(sphereFull(t.sphere,0.22), graticule(t.grat,false));
   d.push(equator(t.muted));
-  if(S5L.surf) d.push(levelSurface(t,f,l2,l3));
+  if(S5L.surf) d.push(levelSheet(t,k,b,f));
   const c=stdContour(P,f,480);
   d.push(poly3(c.U.map(u=>scale(u,1.006)),t.ink,7,'solid',c.U.map(()=>'the contour, g = '+f.toFixed(2)+' × peak')));
   d.push(seg3([0,0,0],[0,0,1.25],t.mu,6), label3([0,0,1.33],'μ',t.mu,14),
@@ -1716,11 +1729,11 @@ const J5L=job($('fig5L'),function(){
   draw('fig5L',d,base(t,{scene:scene(EYE5L,[-1.1,1.35])}));
   const r2=TN.levelRadius(0,f,l2,l3), r3=TN.levelRadius(Math.PI/2,f,l2,l3);
   $('o5L').innerHTML=
-    '<span>level set: <b>z = '+f.toFixed(2)+' · exp(x²/'+sig(2*l2,3)+' + y²/'+sig(2*l3,3)+')</b></span>'+
+    '<span>level set: <b>'+(k/2)+' z² + ln z + '+b+'(x² − y²) = C</b>, &nbsp;C = κ/2 + ln f = <b>'+(k/2+Math.log(f)).toFixed(3)+'</b></span>'+
     '<span>(17): λ₂ = <b>'+sig(l2,3)+'</b>, λ₃ = <b>'+sig(l3,3)+'</b></span>'+
     '<span>reaches <b>'+f3(r2)+'</b> along γ₂ and <b>'+f3(r3)+'</b> along γ₃ (ratio <b>'+(r2/r3).toFixed(2)+'</b>; Gaussian part √(λ₂/λ₃) = <b>'+Math.sqrt(l2/l3).toFixed(2)+'</b>)</span>'+
-    '<span>lowest point of the bowl: z = f = <b>'+f.toFixed(2)+'</b> &gt; 0, so it never meets the lower hemisphere</span>'+
-    (b===0?'<span>β = 0: λ₂ = λ₃, a round bowl, and the contour is a circle.</span>':'');
+    '<span>ln z → −∞ as z → 0: the sheet stays above z = 0 and never meets the lower hemisphere</span>'+
+    (b===0?'<span>β = 0: a flat plane, z = '+f3(sheetZ(k/2+Math.log(f),k/2))+', and the contour is a circle.</span>':'');
 });
 /* beta is kept below kappa/2: (17) needs 2 beta < kappa for lambda2 to be a positive variance */
 function keepBeta(){ const k=+$('p5L-k').value, sb=$('p5L-b'), bmax=Math.ceil(k/2)-1;
