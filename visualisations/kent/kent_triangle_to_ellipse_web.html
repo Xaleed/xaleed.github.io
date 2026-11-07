@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>From a triangle to an ellipse — Khaled Masoumifard</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../assets/quarto/clipboard/clipboard.min.js"></script>
+<script src="../assets/quarto/quarto-html/tabby.min.js"></script>
+<script src="../assets/quarto/quarto-html/popper.min.js"></script>
+<script src="../assets/quarto/quarto-html/tippy.umd.min.js"></script>
+<link href="../assets/quarto/quarto-html/tippy.css" rel="stylesheet">
+<link href="../assets/quarto/quarto-html/light-border.css" rel="stylesheet">
+<link href="../assets/quarto/quarto-html/quarto-html-734cb40618f438257b19a1e532635a32.min.css" rel="stylesheet" append-hash="true" data-mode="light">
+<link href="../assets/quarto/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<!-- Website build: the page carries its own design (geo-chrome.css),
+     the same one used by Kent on the Sphere. Plotly from a CDN. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Instrument+Serif&amp;family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&amp;display=swap">
+<link rel="stylesheet" href="../assets/kent/geo-chrome.css"><script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="../assets/kent/kent-geometry-3d.js"></script>
+<script src="../assets/kent/geo-chrome.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+
+<header id="title-block-header">
+<h1 class="title">From a triangle to an ellipse</h1>
+<p class="subtitle">A step-by-step picture of the geometry behind the Kent distribution for compositional data</p>
+
+</header>
+
+
+<div class="cell" data-layout-align="center">
+<script>window.GEO={U:[[0.5901238111,0.5475640883,0.5932347399],[0.7715077301,0.5391528322,0.3377721804],[0.682371269,0.5722062155,0.4549170234],[0.6799181715,0.5408231658,0.4951985292],[0.6758151351,0.5578715368,0.4817190588],[0.6513214314,0.5176823535,0.5547840786],[0.7411343823,0.5223559319,0.4217393836],[0.666468085,0.5294620016,0.5248716801],[0.7027193834,0.533319247,0.4709098098],[0.7697259065,0.5326421929,0.351872595],[0.7437283407,0.5181580115,0.4223510748],[0.6528835189,0.5684564469,0.5006000187],[0.7062174273,0.5774622144,0.4096270698],[0.7767811305,0.4890222062,0.3968228285],[0.7202341367,0.5490951456,0.4239779585],[0.7262478909,0.5777440441,0.3725262681],[0.6797942041,0.6038319585,0.4162532955],[0.8043404066,0.509239002,0.3061244014],[0.7675765998,0.5418137919,0.3424382839],[0.7050074764,0.5015549152,0.5014051509],[0.752569577,0.5427901398,0.3728510373],[0.6862901188,0.5341699566,0.4936277244],[0.6991341213,0.5603165714,0.4441360381],[0.7484797478,0.5369664351,0.3891594977],[0.6305945187,0.5793177032,0.5164702815],[0.757699359,0.5030367859,0.4157471268],[0.6445274136,0.5944376819,0.4808619921],[0.742482523,0.567802236,0.3554157058],[0.6553399173,0.5735184366,0.4915345315],[0.7257884349,0.5699853064,0.3851595751],[0.7545721011,0.5236749161,0.3954560992],[0.7343126205,0.5689579042,0.3702321956],[0.6922331018,0.5516737126,0.4652627726],[0.7113644385,0.4976993055,0.4962419138],[0.7314836408,0.5642050776,0.3828894273],[0.776111539,0.530023354,0.3416520499],[0.6228158132,0.5579766745,0.5484181739],[0.7685636887,0.5201540666,0.3724910783],[0.6398107434,0.5313580199,0.5552484735],[0.7667992434,0.4903344637,0.4142354814],[0.762560586,0.5253048306,0.3775661368],[0.6810955979,0.5127746495,0.5226575794],[0.688624731,0.5849654263,0.4284990431],[0.7239244648,0.5477413104,0.4194196301],[0.72476903,0.5097459981,0.4635395026],[0.7225755837,0.5411890084,0.4301150812],[0.7276938576,0.5301390782,0.4352174254],[0.6223229117,0.5624827155,0.5443596131],[0.7093721882,0.5322149554,0.4621020881],[0.7451680549,0.5372962708,0.3950155533],[0.7214934491,0.5430811824,0.4295463097],[0.5952251098,0.5524323871,0.5835456507],[0.5686035172,0.5763869507,0.586914068],[0.6975760908,0.5883571577,0.4089296425],[0.6609025998,0.5426448694,0.5184055356],[0.7736392718,0.5371911468,0.3360177807],[0.6428873147,0.542603993,0.5406263103],[0.6666364374,0.5299801653,0.5241344147],[0.6949923213,0.5168174355,0.4998853986],[0.7428032524,0.5329149012,0.4052715587]],Z:[[0.3482461125,0.2998264308,0.3519274567],[0.5952241777,0.2906857765,0.1140900458],[0.4656305488,0.327419953,0.2069494982],[0.46228872,0.2924896967,0.2452215833],[0.4567260968,0.3112206516,0.2320532516],[0.424219607,0.2679950191,0.3077853738],[0.5492801727,0.2728557196,0.1778641077],[0.4441797083,0.2803300111,0.2754902805],[0.4938145319,0.2844294192,0.221756049],[0.5924779712,0.2837077057,0.1238143231],[0.5531318447,0.2684877249,0.1783804304],[0.4262568893,0.323142732,0.2506003787],[0.4987430546,0.3334626091,0.1677943363],[0.6033889246,0.2391427181,0.1574683573],[0.5187372117,0.3015054789,0.1797573093],[0.5274359991,0.3337881805,0.1387758205],[0.4621201599,0.3646130341,0.173266806],[0.6469634897,0.2593243612,0.09371214913],[0.5891738365,0.2935621851,0.1172639783],[0.4970355417,0.251557333,0.2514071253],[0.5663609682,0.2946211358,0.139017896],[0.4709941272,0.2853375425,0.2436683303],[0.4887885195,0.3139546601,0.1972568203],[0.5602219329,0.2883329524,0.1514451146],[0.397649447,0.3356090013,0.2667415517],[0.5741083186,0.253046008,0.1728456734],[0.4154155869,0.3533561576,0.2312282555],[0.5512802969,0.3223993792,0.1263203239],[0.4294704072,0.3289233972,0.2416061956],[0.5267688523,0.3248832495,0.1483478983],[0.5693790558,0.2742354178,0.1563855264],[0.5392150246,0.3237130967,0.1370718787],[0.4791866673,0.3043438852,0.2164694476],[0.5060393644,0.2477045986,0.246256037],[0.5350683168,0.3183273696,0.1466043135],[0.602349121,0.2809247558,0.1167261232],[0.3878995372,0.3113379693,0.3007624935],[0.5906901436,0.270560253,0.1387496034],[0.4093577873,0.2823413453,0.3083008674],[0.5879810796,0.2404278863,0.1715910341],[0.5814986473,0.2759451651,0.1425561876],[0.4638912135,0.2629378412,0.2731709453],[0.4742040201,0.34218455,0.1836114299],[0.5240666307,0.3000205431,0.1759128262],[0.5252901469,0.2598409826,0.2148688705],[0.5221154741,0.2928855428,0.1849989831],[0.5295383504,0.2810474423,0.1894142074],[0.3872858064,0.3163868053,0.2963273884],[0.5032089014,0.2832527587,0.2135383398],[0.5552754301,0.2886872826,0.1560372874],[0.5205527972,0.2949371707,0.1845100322],[0.3542929313,0.3051815423,0.3405255264],[0.3233099598,0.332221917,0.3444681233],[0.4866124024,0.346164145,0.1672234525],[0.4367922464,0.2944634542,0.2687442993],[0.5985177228,0.2885743282,0.112907949],[0.4133040994,0.2944190932,0.2922768074],[0.4444041397,0.2808789756,0.2747168846],[0.4830143267,0.2671002616,0.2498854117],[0.5517566718,0.283998292,0.1642450363]],mu:[0.7084429672,0.5451956125,0.4481855713],g2:[-0.5720414827,0.07162606983,0.8170913341],g3:[-0.4133728393,0.8352433479,-0.362617492],b1:[0.5451956125,-0.01948580366,-0.8380823632],b2:[0.4481855713,-0.8380823632,0.3110428364],lam2:0.007454535655,lam3:0.0009234984669,kappa:608.4926742,beta:237.1730782,kappaVMF:238.7194861,Rbar:0.9957930614,pi0:[0.5,0.3,0.2]};</script>
+</div>
+<div>
+<blockquote>
+<p><strong>What this page is</strong></p>
+<p>Five pictures, in order, of one idea:</p>
+<p><strong>a triangle → a sphere → a flat plane touching the sphere → a circle → an ellipse</strong></p>
+<p>Every figure uses the <strong>same 60 soil samples</strong>, so you can watch the identical points travel through each stage. No step is skipped, and nothing is assumed beyond knowing what a proportion is.</p>
+</blockquote>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">## 1 simplex</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tern_full</span>(<span class="fu">list</span>(Z), <span class="at">cols =</span> pal<span class="sc">$</span>g2, <span class="at">cexs =</span> <span class="fl">0.55</span>, <span class="at">pchs =</span> <span class="dv">16</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">main =</span> <span class="st">"1. the triangle"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="do">## 2 sphere</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.05</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>))</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"2. the sphere"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) { e <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>); e[i] <span class="ot">&lt;-</span> <span class="fl">1.12</span>; <span class="fu">seg3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), e, V, pal<span class="sc">$</span>rule, <span class="at">lwd =</span> <span class="fl">1.1</span>) }</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.55</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 3 tangent plane</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">oct_view</span>(<span class="dv">46</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"3. the tangent plane"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_patch</span>(MUH, BH, <span class="fl">0.30</span>, V)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), MUH<span class="sc">*</span><span class="fl">1.14</span>, V, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 4 vMF</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAP_VMF, <span class="dv">0</span>, <span class="fl">3.3</span><span class="sc">*</span><span class="fu">sqrt</span>(LAM2), <span class="at">n_pts =</span> <span class="dv">260</span>, <span class="at">seed =</span> <span class="dv">3</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>              <span class="at">main =</span> <span class="st">"4. vMF: circles"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 5 Kent</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAPH, BETH, <span class="fl">3.3</span><span class="sc">*</span><span class="fu">sqrt</span>(LAM2), <span class="at">n_pts =</span> <span class="dv">260</span>, <span class="at">seed =</span> <span class="dv">3</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>              <span class="at">main =</span> <span class="st">"5. Kent: ellipses"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-journey" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-journey-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/kent_triangle_to_ellipse_web/fig-journey-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-journey-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The whole journey on one line. <strong>1</strong> Compositions live in a triangle. <strong>2</strong> The square root lifts the triangle onto the surface of a sphere. <strong>3</strong> We pick the mean direction and rest a flat plane on the sphere there. <strong>4</strong> Flattened onto that plane, a von Mises–Fisher model makes round contours. <strong>5</strong> A Kent model makes elliptical ones. The rest of this page is these five panels, slowly.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<h1 id="sec-simplex">Step 1 — Compositional data live in a triangle</h1>
+<p>A <strong>composition</strong> is a set of proportions that add up to 1. Our example is soil texture: the fraction of a sample that is sand, silt and clay.</p>
+<p><span class="math display">\[\mathbf z=(z_{\text{sand}},\,z_{\text{silt}},\,z_{\text{clay}}),
+\qquad z_j\ge 0,\qquad z_1+z_2+z_3=1 .\]</span></p>
+<p>Here are the first four of our 60 samples.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">round</span>(<span class="fu">cbind</span>(<span class="st">`</span><span class="at">#</span><span class="st">`</span> <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, Z[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, ], <span class="at">sum =</span> <span class="fu">rowSums</span>(Z[<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, ])), <span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-head" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl">
+<div aria-describedby="tbl-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell">
+<thead>
+<tr class="header">
+<th style="text-align: right;">#</th>
+<th style="text-align: right;">sand</th>
+<th style="text-align: right;">silt</th>
+<th style="text-align: right;">clay</th>
+<th style="text-align: right;">sum</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.3482</td>
+<td style="text-align: right;">0.2998</td>
+<td style="text-align: right;">0.3519</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0.5952</td>
+<td style="text-align: right;">0.2907</td>
+<td style="text-align: right;">0.1141</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0.4656</td>
+<td style="text-align: right;">0.3274</td>
+<td style="text-align: right;">0.2069</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0.4623</td>
+<td style="text-align: right;">0.2925</td>
+<td style="text-align: right;">0.2452</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-head-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: The first four soil samples. Each row adds up to 1.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>Because the three numbers must add to 1, only <strong>two</strong> of them are free: tell me sand and silt and I can work out clay. So although each sample has three numbers, the data really live in a two-dimensional space.</p>
+<p>That space is a <strong>triangle</strong>. Each corner is “100% of one component”. A point in the middle is an equal mixture. The closer a point sits to a corner, the more of that component the sample contains. Statisticians call this triangle the <strong>simplex</strong>.</p>
+<div id="fig-simplex" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-simplex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kplot" id="g-simplex" style="height:440px"></div>
+<div class="khint">hover a point for its exact composition · drag to pan · double-click to reset</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simplex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: The 60 soil samples in the simplex. Each dot is one sample; the orange cross is the average. Reading it: dots near the sand corner are sandy, dots near the clay corner are clayey. Notice the cloud is <strong>stretched</strong> along one direction — samples high in sand are low in clay, and the other way round. Remembering that stretch is the whole point of this tutorial.
+</figcaption>
+</figure>
+</div>
+<div>
+<blockquote>
+<p><strong>Why we cannot just use ordinary statistics here</strong></p>
+<p>The triangle has <strong>edges</strong>. A normal distribution does not: it spreads probability everywhere, including to negative proportions and to totals above 1, which are impossible. We need a geometry that respects the constraint instead of fighting it. The next step gives us one.</p>
+</blockquote>
+</div>
+<h1 id="sec-sqrt">Step 2 — The square root lifts the triangle onto a sphere</h1>
+<p>Take the square root of each part:</p>
+<p><span class="math display">\[\mathbf u=\sqrt{\mathbf z}=\bigl(\sqrt{z_1},\,\sqrt{z_2},\,\sqrt{z_3}\bigr).\]</span></p>
+<p>Now compute the squared length of <span class="math inline">\(\mathbf u\)</span>:</p>
+<p><span class="math display">\[\|\mathbf u\|^2=u_1^2+u_2^2+u_3^2=z_1+z_2+z_3=1 .\]</span></p>
+<p>Every transformed point has length exactly 1. Points at distance 1 from the origin form the surface of a ball — a <strong>sphere</strong>. So the square root takes our triangle and lays it on a sphere, with nothing lost: square the result and you get the composition back.</p>
+<p>A worked case, using sample 1:</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>z1 <span class="ot">&lt;-</span> Z[<span class="dv">1</span>, ]; u1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(z1)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="st">"composition z"</span>, <span class="st">"square root u = sqrt(z)"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">"squared length of u"</span>, <span class="st">"squared back, u^2"</span>),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">sand =</span> <span class="fu">c</span>(<span class="fu">round</span>(z1[<span class="dv">1</span>],<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">1</span>],<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>,<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">1</span>]<span class="sc">^</span><span class="dv">2</span>,<span class="dv">4</span>)),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">silt =</span> <span class="fu">c</span>(<span class="fu">round</span>(z1[<span class="dv">2</span>],<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">2</span>],<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>,<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">2</span>]<span class="sc">^</span><span class="dv">2</span>,<span class="dv">4</span>)),</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">clay =</span> <span class="fu">c</span>(<span class="fu">round</span>(z1[<span class="dv">3</span>],<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">3</span>],<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">3</span>]<span class="sc">^</span><span class="dv">2</span>,<span class="dv">4</span>), <span class="fu">round</span>(u1[<span class="dv">3</span>]<span class="sc">^</span><span class="dv">2</span>,<span class="dv">4</span>)),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">total =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="fu">round</span>(<span class="fu">sum</span>(u1),<span class="dv">4</span>), <span class="fu">round</span>(<span class="fu">sum</span>(u1<span class="sc">^</span><span class="dv">2</span>),<span class="dv">4</span>), <span class="dv">1</span>), <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-one" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl">
+<div aria-describedby="tbl-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell">
+<thead>
+<tr class="header">
+<th style="text-align: left;">quantity</th>
+<th style="text-align: right;">sand</th>
+<th style="text-align: right;">silt</th>
+<th style="text-align: right;">clay</th>
+<th style="text-align: right;">total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">composition z</td>
+<td style="text-align: right;">0.3482</td>
+<td style="text-align: right;">0.2998</td>
+<td style="text-align: right;">0.3519</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">square root u = sqrt(z)</td>
+<td style="text-align: right;">0.5901</td>
+<td style="text-align: right;">0.5476</td>
+<td style="text-align: right;">0.5932</td>
+<td style="text-align: right;">1.7309</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">squared length of u</td>
+<td style="text-align: right;">0.3482</td>
+<td style="text-align: right;">0.2998</td>
+<td style="text-align: right;">0.3519</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">squared back, u^2</td>
+<td style="text-align: right;">0.3482</td>
+<td style="text-align: right;">0.2998</td>
+<td style="text-align: right;">0.3519</td>
+<td style="text-align: right;">1.0000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-one-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: One sample through the square-root map, and back again.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>Because square roots are never negative, every <span class="math inline">\(u_j\ge0\)</span>. So the points cannot land just anywhere on the sphere — only on the corner where all three coordinates are positive. That corner is one eighth of the sphere.</p>
+<div id="fig-lift" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-lift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kplot" id="g-lift" style="height:500px"></div>
+<div class="khint">drag to rotate · scroll to zoom · double-click to reset the view</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-lift-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: The square root in action — <strong>rotate it</strong>. The flat grey triangle is the simplex sitting in three-dimensional space, with corners at the ends of the three axes. The curved mesh is the positive eighth of the sphere. Each orange dotted line joins a composition (dark dot, on the flat triangle) to its square root (blue dot, on the curved surface). Turning the scene is the quickest way to see that the map pushes every point <strong>outward</strong> onto the sphere. Every third sample is shown, to keep it readable.
+</figcaption>
+</figure>
+</div>
+<div>
+<blockquote>
+<p><strong>What we gained</strong></p>
+<p>The constraint “the parts add to 1” has become “the length is 1”. The first is awkward to model; the second is the natural home of a whole family of distributions built for directions. We have swapped a hard problem for one that is already solved.</p>
+</blockquote>
+</div>
+<h1 id="sec-sphere">Step 3 — The data on the sphere</h1>
+<p>Here are the same 60 samples, now as points on the sphere, seen from two angles. Nothing has been changed — only the way we are looking at them.</p>
+<div id="fig-on-sphere" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-on-sphere-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kplot" id="g-onsphere" style="height:480px"></div>
+<div class="khint">drag to rotate · look along the cloud to see how flat it is</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-on-sphere-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: The same 60 samples, now as points on the positive eighth of the sphere. Nothing has changed except the way we are looking at them. Spin it until you are sighting along the cloud: the stretch you noticed in the triangle is still there, as a long narrow band lying on a curved surface.
+</figcaption>
+</figure>
+</div>
+<h1 id="sec-tangent">Step 4 — The mean direction, and the plane that touches the sphere</h1>
+<h2 id="the-mean-direction">The mean direction</h2>
+<p>Where is the middle of the cloud? We cannot just average the points: the average of points on a sphere falls <strong>inside</strong> the sphere, not on it. So we average, then stretch the result back out to length 1:</p>
+<p><span class="math display">\[\bar{\mathbf u}=\frac1n\sum_{i=1}^{n}\mathbf u_i,
+\qquad \hat{\boldsymbol\mu}=\frac{\bar{\mathbf u}}{\|\bar{\mathbf u}\|}.\]</span></p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">round</span>(<span class="fu">rbind</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">average of the 60 unit vectors</span><span class="st">`</span> <span class="ot">=</span> ubar,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">mean direction (length 1)</span><span class="st">`</span>      <span class="ot">=</span> MUH,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">squared back to a composition</span><span class="st">`</span>  <span class="ot">=</span> MUH<span class="sc">^</span><span class="dv">2</span>), <span class="dv">4</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-mu" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl">
+<div aria-describedby="tbl-mu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">sand</th>
+<th style="text-align: right;">silt</th>
+<th style="text-align: right;">clay</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">average of the 60 unit vectors</td>
+<td style="text-align: right;">0.7055</td>
+<td style="text-align: right;">0.5429</td>
+<td style="text-align: right;">0.4463</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">mean direction (length 1)</td>
+<td style="text-align: right;">0.7084</td>
+<td style="text-align: right;">0.5452</td>
+<td style="text-align: right;">0.4482</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">squared back to a composition</td>
+<td style="text-align: right;">0.5019</td>
+<td style="text-align: right;">0.2972</td>
+<td style="text-align: right;">0.2009</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-mu-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;3: The mean direction, and the mean composition you get by squaring it.
+</figcaption>
+</figure>
+</div>
+</div>
+<p>The length we divided away, <span class="math inline">\(\bar R=0.9958\)</span>, is itself useful: it is close to 1 when the data are tightly clustered, and close to 0 when they are scattered all over the sphere.</p>
+<h2 id="the-tangent-plane">The tangent plane</h2>
+<p>Rest a flat sheet of card on the sphere so it touches at exactly one point — the mean direction. That sheet is the <strong>tangent plane</strong>. It is the set of directions that are at right angles to <span class="math inline">\(\hat{\boldsymbol\mu}\)</span>:</p>
+<p><span class="math display">\[T_{\hat{\boldsymbol\mu}}=\{\mathbf v:\hat{\boldsymbol\mu}^{\!\top}\mathbf v=0\}.\]</span></p>
+<p>Why bother? Because a sphere is curved and awkward, while a plane is flat and familiar. If the data are tightly packed around <span class="math inline">\(\hat{\boldsymbol\mu}\)</span> — and ours are — then the little patch of sphere they occupy is almost flat, just as a city looks flat even though the Earth is round. On that patch we can use ordinary two-dimensional thinking.</p>
+<div id="fig-plane" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-plane-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kplot" id="g-plane" style="height:500px"></div>
+<div class="khint">drag to rotate · try looking straight down the orange arrow</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-plane-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: The mean direction and the tangent plane. The orange arrow is <span class="math inline">\(\hat{\boldsymbol\mu}\)</span>, pointing from the centre of the sphere out through the middle of the data. The pale square is the tangent plane; it touches the sphere at exactly the tip of the arrow. Rotate until you are looking edge-on at the plane and you will see how little the data depart from it — that near-flatness is what the next step exploits.
+</figcaption>
+</figure>
+</div>
+<h1 id="sec-project">Step 5 — Projecting onto the plane: tangent coordinates</h1>
+<p>Now flatten. For each sample, drop a perpendicular from the point on the sphere onto the tangent plane. What is left after removing the part that points along <span class="math inline">\(\hat{\boldsymbol\mu}\)</span> is the <strong>sideways displacement</strong>:</p>
+<p><span class="math display">\[\mathbf v_i=\mathbf u_i-(\hat{\boldsymbol\mu}^{\!\top}\mathbf u_i)\,\hat{\boldsymbol\mu}.\]</span></p>
+<p>This displacement lies in the plane, so two numbers describe it completely. We measure it along two perpendicular directions in the plane, which we will call <span class="math inline">\(\hat{\boldsymbol\gamma}_2\)</span> and <span class="math inline">\(\hat{\boldsymbol\gamma}_3\)</span>:</p>
+<p><span class="math display">\[v_{i2}=\hat{\boldsymbol\gamma}_2^{\!\top}\mathbf u_i,
+\qquad v_{i3}=\hat{\boldsymbol\gamma}_3^{\!\top}\mathbf u_i .\]</span></p>
+<p>Those two numbers are the <strong>tangent coordinates</strong> of sample <span class="math inline">\(i\)</span>. We have gone from three numbers on a curved surface to two numbers on a flat one, losing almost nothing.</p>
+<div id="fig-project" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-project-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kgrid2">
+  <div><div class="kplot" id="g-project3" style="height:430px"></div>
+       <div class="khint">drag to rotate</div></div>
+  <div><div class="kplot" id="g-project2" style="height:430px"></div>
+       <div class="khint">hover a point for its coordinates</div></div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-project-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Flattening the data. <strong>Left:</strong> each sample on the sphere is joined to its shadow on the tangent plane by a short orange line. Because the cloud is small, the shadows sit very close to the originals — that is what makes the whole approach work. Rotate it to see the shadows land on the plane. <strong>Right:</strong> the shadows on their own, as an ordinary two-dimensional scatter plot, with <span class="math inline">\(\hat{\boldsymbol\mu}\)</span> at the origin. The cloud is plainly wider than it is tall.
+</figcaption>
+</figure>
+</div>
+<p>Look at the right-hand panel. The cloud is clearly <strong>wider than it is tall</strong>. That is the stretch we first noticed back in the triangle, and it has survived every step. The last two steps are about which distribution can describe it.</p>
+<h1 id="sec-vmf">Step 6 — von Mises–Fisher on the plane: circles</h1>
+<p>The simplest distribution for data on a sphere is the <strong>von Mises–Fisher</strong> distribution, written vMF. It has just two parameters:</p>
+<ul>
+<li><span class="math inline">\(\boldsymbol\mu\)</span> — the mean direction, where the cloud is centred;</li>
+<li><span class="math inline">\(\kappa\)</span> — the <strong>concentration</strong>, a single number for how tightly the points cluster. Large <span class="math inline">\(\kappa\)</span> means a tight cloud.</li>
+</ul>
+<p>Its density is <span class="math inline">\(f(\mathbf u)\propto\exp(\kappa\,\boldsymbol\mu^{\!\top}\mathbf u)\)</span>. The only thing it looks at is <span class="math inline">\(\boldsymbol\mu^{\!\top}\mathbf u\)</span>, which is the cosine of the angle between <span class="math inline">\(\mathbf u\)</span> and <span class="math inline">\(\boldsymbol\mu\)</span>. In other words, <strong>vMF only cares how far a point is from the centre, never in which direction</strong>.</p>
+<p>That has an immediate consequence on the tangent plane. All points at the same distance from the centre are equally likely, and the set of points at a fixed distance from a centre is a circle. So the contours must be circles, and the spread must be the same in every direction, namely <span class="math inline">\(1/\kappa\)</span>.</p>
+<div id="fig-vmf" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-vmf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kgrid2">
+  <div><div class="kplot" id="g-vmf" style="height:400px"></div>
+       <div class="khint">hover for the density level</div></div>
+  <div><div class="kplot" id="g-spread-vmf" style="height:400px"></div></div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-vmf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: A von Mises–Fisher distribution fitted to our data, on the tangent plane. <strong>Left:</strong> the contours are perfect circles. The blue dots are the real samples; notice they spill out beyond the contours to left and right, and leave empty space above and below. The model simply cannot lean. <strong>Right:</strong> the same point made another way — the spread measured in each direction around the plane. For vMF it is a flat line: identical in every direction.
+</figcaption>
+</figure>
+</div>
+<h1 id="sec-kent">Step 7 — Kent on the plane: ellipses</h1>
+<p>The <strong>Kent</strong> distribution adds one term to the vMF exponent:</p>
+<p><span class="math display">\[f(\mathbf u)\;\propto\;
+\exp\Bigl\{\kappa\,\boldsymbol\mu^{\!\top}\mathbf u
+\;+\;\beta\bigl[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2
+-(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\bigr]\Bigr\}.\]</span></p>
+<p>Read the new term with the tangent coordinates of Step 5 in mind: it is <span class="math inline">\(\beta(v_2^2-v_3^2)\)</span>. It <strong>adds</strong> probability when a point leans along <span class="math inline">\(\boldsymbol\gamma_2\)</span> and <strong>removes</strong> it when the point leans along <span class="math inline">\(\boldsymbol\gamma_3\)</span>. The circle gets pulled out one way and squeezed the other: an ellipse.</p>
+<h2 id="what-each-of-the-four-parameters-does">What each of the four parameters does</h2>
+<table class="table-striped">
+<caption>The four parameters of the Kent geometry</caption>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 26%">
+<col style="width: 60%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">meaning</th>
+<th style="text-align: left;">what it controls in the picture</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\boldsymbol\mu\)</span></td>
+<td style="text-align: left;">mean direction</td>
+<td style="text-align: left;"><strong>where</strong> the cloud sits; the centre of the ellipse</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\kappa\)</span></td>
+<td style="text-align: left;">concentration</td>
+<td style="text-align: left;">the <strong>size</strong> of the ellipse — large <span class="math inline">\(\kappa\)</span>, small ellipse</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\boldsymbol\gamma_2\)</span></td>
+<td style="text-align: left;">first axis direction</td>
+<td style="text-align: left;">the <strong>long</strong> axis — which way the ellipse points</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><span class="math inline">\(\boldsymbol\gamma_3\)</span></td>
+<td style="text-align: left;">second axis direction</td>
+<td style="text-align: left;">the <strong>short</strong> axis, at right angles to <span class="math inline">\(\boldsymbol\gamma_2\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><span class="math inline">\(\beta\)</span></td>
+<td style="text-align: left;">ovalness</td>
+<td style="text-align: left;"><strong>how stretched</strong> the ellipse is; <span class="math inline">\(\beta=0\)</span> gives a circle, i.e.&nbsp;vMF</td>
+</tr>
+</tbody>
+</table>
+<p>The spread along each axis is</p>
+<p><span class="math display">\[\lambda_2=\frac1{\kappa-2\beta}\ \ (\text{along }\boldsymbol\gamma_2),
+\qquad
+\lambda_3=\frac1{\kappa+2\beta}\ \ (\text{along }\boldsymbol\gamma_3),\]</span></p>
+<p>so <span class="math inline">\(\beta\)</span> pushes the two apart while <span class="math inline">\(\kappa\)</span> sets their overall scale. This is also where the condition <span class="math inline">\(2\beta&lt;\kappa\)</span> comes from: any larger and <span class="math inline">\(\lambda_2\)</span> stops being a positive, finite variance, and the shape stops being a single bump.</p>
+<div id="fig-kent" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-kent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kgrid2">
+  <div><div class="kplot" id="g-kent" style="height:400px"></div>
+       <div class="khint">hover for the density level</div></div>
+  <div><div class="kplot" id="g-spread-kent" style="height:400px"></div></div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: A Kent distribution fitted to the same data. <strong>Left:</strong> the contours are ellipses, and now the blue samples lie inside them in every direction. The blue arrow is <span class="math inline">\(\hat{\boldsymbol\gamma}_2\)</span>, the long axis; the green arrow is <span class="math inline">\(\hat{\boldsymbol\gamma}_3\)</span>, the short one. Both are drawn two standard deviations long, so their lengths are in true proportion. <strong>Right:</strong> the spread direction by direction is no longer flat — largest along <span class="math inline">\(\hat{\boldsymbol\gamma}_2\)</span> at 0 and 180 degrees, smallest along <span class="math inline">\(\hat{\boldsymbol\gamma}_3\)</span> at 90 and 270. The dashed grey line is vMF, for comparison.
+</figcaption>
+</figure>
+</div>
+<h2 id="turning-the-ellipse-back-into-a-statement-about-soil">Turning the ellipse back into a statement about soil</h2>
+<div class="cell" data-layout-align="center">
+<p>The fitted long axis is <span class="math inline">\(\hat{\boldsymbol\gamma}_2=(-0.572,\ 0.072,\ 0.817)\)</span> in the order (sand, silt, clay). Its two biggest entries belong to <strong>clay</strong> and <strong>sand</strong>, and they have opposite signs: moving along this axis, clay rises while sand falls. The third component, <strong>silt</strong>, has coefficient 0.072 — near enough to zero that it hardly changes along this axis.</p>
+<p>The ellipse is 2.8 times longer than it is wide (<span class="math inline">\(\lambda_2/\lambda_3=8.1\)</span>). In plain words: <em>these soils differ mainly by trading clay against sand, and hardly at all in silt</em> — exactly the stretch we saw in the triangle in Step 1, now measured.</p>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="st">"mean composition"</span>, <span class="st">"kappa"</span>, <span class="st">"beta"</span>, <span class="st">"lambda2"</span>, <span class="st">"lambda3"</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>               <span class="st">"axis ratio sqrt(lambda2/lambda3)"</span>, <span class="st">"2*beta &lt; kappa ?"</span>),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fitted =</span> <span class="fu">c</span>(<span class="fu">paste</span>(<span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, MUH<span class="sc">^</span><span class="dv">2</span>), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sprintf</span>(<span class="st">"%.0f"</span>, KAPH), <span class="fu">sprintf</span>(<span class="st">"%.0f"</span>, BETH),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sprintf</span>(<span class="st">"%.5f"</span>, LAM2), <span class="fu">sprintf</span>(<span class="st">"%.5f"</span>, LAM3),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, <span class="fu">sqrt</span>(LAM2<span class="sc">/</span>LAM3)),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>             <span class="fu">ifelse</span>(<span class="dv">2</span><span class="sc">*</span>BETH <span class="sc">&lt;</span> KAPH, <span class="st">"yes"</span>, <span class="st">"no"</span>)),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">true value</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">paste</span>(<span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, PI0), <span class="at">collapse =</span> <span class="st">", "</span>),</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sprintf</span>(<span class="st">"%.0f"</span>, KAP0), <span class="fu">sprintf</span>(<span class="st">"%.0f"</span>, BET0),</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sprintf</span>(<span class="st">"%.5f"</span>, <span class="dv">1</span><span class="sc">/</span>(KAP0 <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>BET0)), <span class="fu">sprintf</span>(<span class="st">"%.5f"</span>, <span class="dv">1</span><span class="sc">/</span>(KAP0 <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>BET0)),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>             <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, <span class="fu">sqrt</span>((KAP0 <span class="sc">+</span> <span class="dv">2</span><span class="sc">*</span>BET0)<span class="sc">/</span>(KAP0 <span class="sc">-</span> <span class="dv">2</span><span class="sc">*</span>BET0))),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>             <span class="st">"yes"</span>),</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-fit" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl">
+<div aria-describedby="tbl-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell">
+<colgroup>
+<col style="width: 45%">
+<col style="width: 27%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">quantity</th>
+<th style="text-align: left;">fitted</th>
+<th style="text-align: left;">true value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">mean composition</td>
+<td style="text-align: left;">0.502, 0.297, 0.201</td>
+<td style="text-align: left;">0.500, 0.300, 0.200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">kappa</td>
+<td style="text-align: left;">608</td>
+<td style="text-align: left;">700</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">beta</td>
+<td style="text-align: left;">237</td>
+<td style="text-align: left;">270</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">lambda2</td>
+<td style="text-align: left;">0.00745</td>
+<td style="text-align: left;">0.00625</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">lambda3</td>
+<td style="text-align: left;">0.00092</td>
+<td style="text-align: left;">0.00081</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">axis ratio sqrt(lambda2/lambda3)</td>
+<td style="text-align: left;">2.84</td>
+<td style="text-align: left;">2.78</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2*beta &lt; kappa ?</td>
+<td style="text-align: left;">yes</td>
+<td style="text-align: left;">yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-fit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;4: The fitted geometry, recovered from the data by the five steps above. The true values used to simulate the data are shown for comparison — the procedure gets them back.
+</figcaption>
+</figure>
+</div>
+</div>
+<h1 id="sec-levelset">Step 8 — Where the contour actually comes from</h1>
+<p>Up to now the contours have simply appeared, drawn for you. This step shows the machinery that produces them. It is the one piece of the subject that is worth seeing in three dimensions rather than taking on trust.</p>
+<h2 id="the-set-up">The set-up</h2>
+<p>Put the mean direction at the North Pole, <span class="math inline">\(\boldsymbol\mu=(0,0,1)\)</span>, and let <span class="math inline">\(\boldsymbol\gamma_2\)</span> be the <span class="math inline">\(x\)</span> axis and <span class="math inline">\(\boldsymbol\gamma_3\)</span> the <span class="math inline">\(y\)</span> axis. Then <span class="math inline">\(\boldsymbol\mu^{\!\top}\mathbf u=z\)</span>, <span class="math inline">\(\boldsymbol\gamma_2^{\!\top}\mathbf u=x\)</span> and <span class="math inline">\(\boldsymbol\gamma_3^{\!\top}\mathbf u=y\)</span>, so the Kent density is just</p>
+<p><span class="math display">\[f(\mathbf u)\;\propto\;\exp\{\kappa z+\beta(x^2-y^2)\}.\]</span></p>
+<p>A <strong>contour</strong> is a set of points where the density takes one fixed value. Because the exponential is increasing, fixing the density is the same as fixing the exponent. Call that fixed value <span class="math inline">\(C\)</span>:</p>
+<p><span id="eq-levelset"><span class="math display">\[\kappa z+\beta(x^2-y^2)=C
+\qquad\Longleftrightarrow\qquad
+z=\frac{C-\beta(x^2-y^2)}{\kappa}.
+\tag{1}\]</span></span></p>
+<div>
+<blockquote>
+<p><strong>Three different objects — do not mix them up</strong></p>
+<table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: left;">what it is</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">the <strong>sphere</strong> <span class="math inline">\(x^2+y^2+z^2=1\)</span></td>
+<td style="text-align: left;">where the observations live. Every data point is on it.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">the <strong>level-set surface</strong> <a href="#eq-levelset" class="quarto-xref">Equation&nbsp;1</a></td>
+<td style="text-align: left;">an <em>auxiliary</em> surface. It is <strong>not</strong> a probability, not a density, and no data lie on it. It is scaffolding: a bookkeeping device for “all the places in space where the exponent equals <span class="math inline">\(C\)</span>”.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">their <strong>intersection</strong></td>
+<td style="text-align: left;">the Kent density contour. These are the points that are both <em>possible observations</em> and <em>equally likely</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>In the figures the auxiliary surface is drawn in <strong>violet</strong>, the same colour this site uses elsewhere for scaffolding that is chosen rather than measured.</p>
+</blockquote>
+</div>
+<p><span class="math display">\[\boxed{\ \text{level-set surface}\ }\ \ \cap\ \ \boxed{\ \text{unit sphere}\ }\ \ =\ \ \boxed{\ \text{Kent contour}\ }\]</span></p>
+<h2 id="the-three-objects-one-at-a-time">The three objects, one at a time</h2>
+<div id="fig-mechanism" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-mechanism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kctl" style="border-top:1px solid var(--border,#D8D7CE)">
+  <label style="flex:1 1 100%">show
+    <span>
+      <button class="kbtn" id="g-mech-sphere" aria-pressed="true">the sphere</button>
+      <button class="kbtn" id="g-mech-surface" aria-pressed="true">the level-set surface</button>
+      <button class="kbtn" id="g-mech-curve" aria-pressed="true">their intersection</button>
+    </span>
+  </label>
+</div>
+<div class="kplot" id="g-mech" style="height:520px"></div>
+<div class="khint">drag to rotate · switch the three objects on and off to see which is which</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mechanism-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: The mechanism, with <span class="math inline">\(\kappa=50\)</span>, <span class="math inline">\(\beta=18\)</span> and <span class="math inline">\(C\)</span> set so the contour sits where the density is 10% of its peak. Turn the three objects on and off with the buttons. The <strong>sphere</strong> is where data live. The violet <strong>level-set surface</strong> is a saddle: it dips as you move along <span class="math inline">\(x\)</span> and rises as you move along <span class="math inline">\(y\)</span>, and nothing lives on it — it is pure scaffolding. The dark curve where the two surfaces cut each other is the <strong>Kent density contour</strong>: every point on it has exactly the same density. Rotating the scene is the fastest way to convince yourself the curve really does lie on both surfaces at once.
+</figcaption>
+</figure>
+</div>
+<h2 id="setting-beta0-gives-von-misesfisher-and-a-circle">Setting <span class="math inline">\(\beta=0\)</span> gives von Mises–Fisher, and a circle</h2>
+<p>If <span class="math inline">\(\beta=0\)</span> the <span class="math inline">\(x^2-y^2\)</span> term vanishes and <a href="#eq-levelset" class="quarto-xref">Equation&nbsp;1</a> collapses to</p>
+<p><span class="math display">\[z=\frac{C}{\kappa},\]</span></p>
+<p>which has no <span class="math inline">\(x\)</span> or <span class="math inline">\(y\)</span> in it at all: a <strong>flat horizontal plane</strong>. A horizontal plane cuts a sphere in a circle. That is the whole reason vMF contours are circular — there is nothing in its level-set surface that can tell one sideways direction from another.</p>
+<p>Turn <span class="math inline">\(\beta\)</span> up and the flat plane buckles into a saddle. The intersection stops being a circle.</p>
+<div id="fig-beta-switch" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-beta-switch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kctl" style="border-top:1px solid var(--border,#D8D7CE)">
+  <label for="g-beta-s">β &nbsp;<b id="g-beta-v">18</b>
+    <input type="range" id="g-beta-s" min="0" max="24" step="1" value="18"></label>
+</div>
+<div class="kplot" id="g-beta" style="height:500px"></div>
+<div class="kout" id="g-beta-out"></div>
+<div class="khint">drag to rotate · slide β to 0 and watch the saddle flatten into a plane</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-beta-switch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: The same <span class="math inline">\(\kappa\)</span> and the same <span class="math inline">\(C\)</span>; only <span class="math inline">\(\beta\)</span> changes. At <span class="math inline">\(\beta=0\)</span> the level-set surface is a flat horizontal plane at height <span class="math inline">\(z=C/\kappa\)</span>, and it slices the sphere in a perfect circle — that is von Mises–Fisher. As <span class="math inline">\(\beta\)</span> grows the plane buckles into a saddle which dips along <span class="math inline">\(x\)</span> and rises along <span class="math inline">\(y\)</span>, so the curve it cuts reaches further out along <span class="math inline">\(x\)</span> and pulls in along <span class="math inline">\(y\)</span>. Once <span class="math inline">\(\beta&gt;0\)</span> the original circle is kept on screen in faint grey, so you can see exactly how far the contour has moved.
+</figcaption>
+</figure>
+</div>
+<h2 id="why-it-stretches-one-way-and-squeezes-the-other">Why it stretches one way and squeezes the other</h2>
+<p>This is the heart of it, and it is easiest to see in two flat slices.</p>
+<p>Set <span class="math inline">\(y=0\)</span> and look in the <span class="math inline">\(x\)</span>–<span class="math inline">\(z\)</span> plane. The level-set surface becomes</p>
+<p><span class="math display">\[z=\frac{C}{\kappa}-\frac{\beta}{\kappa}x^{2},\]</span></p>
+<p>a <strong>downward</strong> parabola. As you move away from the pole along <span class="math inline">\(x\)</span> it sinks <em>below</em> the vMF height <span class="math inline">\(C/\kappa\)</span>, so it meets the sphere <strong>further from the pole</strong>. The contour is pushed <strong>out</strong>.</p>
+<p>Now set <span class="math inline">\(x=0\)</span> and look in the <span class="math inline">\(y\)</span>–<span class="math inline">\(z\)</span> plane:</p>
+<p><span class="math display">\[z=\frac{C}{\kappa}+\frac{\beta}{\kappa}y^{2},\]</span></p>
+<p>an <strong>upward</strong> parabola. It climbs <em>above</em> <span class="math inline">\(C/\kappa\)</span>, so it meets the sphere <strong>closer to the pole</strong>. The contour is pulled <strong>in</strong>.</p>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>z0 <span class="ot">&lt;-</span> CC <span class="sc">/</span> KA</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>xr_vmf <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">-</span> z0<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">family =</span> <span class="st">"sans"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>slice <span class="ot">&lt;-</span> <span class="cf">function</span>(sign, lab, axcol, hit) {</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  tt <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span><span class="fl">0.78</span>, <span class="fl">0.78</span>, <span class="at">length.out =</span> <span class="dv">400</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  zz <span class="ot">&lt;-</span> z0 <span class="sc">+</span> sign <span class="sc">*</span> (BE<span class="sc">/</span>KA) <span class="sc">*</span> tt<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">3.4</span>, <span class="fl">3.6</span>, <span class="fl">2.0</span>, <span class="fl">0.8</span>))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="cn">NA</span>, <span class="at">xlim =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.85</span>, <span class="fl">0.85</span>), <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.72</span>, <span class="fl">1.06</span>), <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">xlab =</span> <span class="st">""</span>, <span class="at">ylab =</span> <span class="st">""</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">title</span>(<span class="at">main =</span> lab, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  arc <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="sc">-</span>pi<span class="sc">/</span><span class="dv">2</span>, pi<span class="sc">/</span><span class="dv">2</span>, <span class="at">length.out =</span> <span class="dv">400</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="fu">sin</span>(arc), <span class="fu">cos</span>(arc), <span class="at">col =</span> pal<span class="sc">$</span>sph, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abline</span>(<span class="at">h =</span> z0, <span class="at">col =</span> pal<span class="sc">$</span>mut, <span class="at">lwd =</span> <span class="fl">1.6</span>, <span class="at">lty =</span> <span class="dv">2</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(tt, zz, <span class="at">col =</span> pal<span class="sc">$</span>bs, <span class="at">lwd =</span> <span class="fl">2.6</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="do">## the crossing point, taken from the exact intersection curve rather than</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="do">## from a grid search, so the figure and the table cannot disagree</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  hz  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">max</span>(<span class="dv">0</span>, <span class="dv">1</span> <span class="sc">-</span> hit<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="fu">c</span>(hit, <span class="sc">-</span>hit), <span class="fu">c</span>(hz, hz), <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">1.4</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="fu">c</span>(xr_vmf, <span class="sc">-</span>xr_vmf), <span class="fu">c</span>(z0, z0), <span class="at">pch =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">col =</span> pal<span class="sc">$</span>mut, <span class="at">lwd =</span> <span class="fl">1.6</span>)</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">points</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">1.3</span>, <span class="at">col =</span> pal<span class="sc">$</span>mu)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="fu">expression</span>(mu), <span class="at">col =</span> pal<span class="sc">$</span>mu, <span class="at">pos =</span> <span class="dv">3</span>, <span class="at">cex =</span> <span class="fl">0.9</span>, <span class="at">font =</span> <span class="dv">2</span>, <span class="at">offset =</span> <span class="fl">0.3</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">1</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">col.axis =</span> pal<span class="sc">$</span>mut, <span class="at">cex.axis =</span> <span class="fl">0.72</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">col =</span> pal<span class="sc">$</span>rule, <span class="at">col.axis =</span> pal<span class="sc">$</span>mut, <span class="at">cex.axis =</span> <span class="fl">0.72</span>, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(axcol<span class="sc">$</span>lab, <span class="at">side =</span> <span class="dv">1</span>, <span class="at">line =</span> <span class="fl">2.1</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> axcol<span class="sc">$</span>col)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mtext</span>(<span class="st">"z"</span>, <span class="at">side =</span> <span class="dv">2</span>, <span class="at">line =</span> <span class="fl">2.4</span>, <span class="at">cex =</span> <span class="fl">0.8</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink2, <span class="at">las =</span> <span class="dv">1</span>)</span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">text</span>(hit, hz, <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">abs</span>(hit)), <span class="at">pos =</span> <span class="cf">if</span> (sign <span class="sc">&lt;</span> <span class="dv">0</span>) <span class="dv">4</span> <span class="cf">else</span> <span class="dv">2</span>,</span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex =</span> <span class="fl">0.78</span>, <span class="at">col =</span> pal<span class="sc">$</span>ink, <span class="at">font =</span> <span class="dv">2</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">box</span>(<span class="at">col =</span> pal<span class="sc">$</span>rule)</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">abs</span>(hit)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>h1 <span class="ot">&lt;-</span> <span class="fu">slice</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="st">"slice y = 0:  the surface bends DOWN"</span>,</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">lab =</span> <span class="fu">expression</span>(x <span class="sc">~</span> <span class="st">"  (along "</span> <span class="sc">*</span> gamma[<span class="dv">2</span>] <span class="sc">*</span> <span class="st">")"</span>), <span class="at">col =</span> pal<span class="sc">$</span>g2),</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>            <span class="at">hit =</span> <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[, <span class="dv">1</span>])))</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>h2 <span class="ot">&lt;-</span> <span class="fu">slice</span>(<span class="sc">+</span><span class="dv">1</span>, <span class="st">"slice x = 0:  the surface bends UP"</span>,</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="at">lab =</span> <span class="fu">expression</span>(y <span class="sc">~</span> <span class="st">"  (along "</span> <span class="sc">*</span> gamma[<span class="dv">3</span>] <span class="sc">*</span> <span class="st">")"</span>), <span class="at">col =</span> pal<span class="sc">$</span>g3),</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>            <span class="at">hit =</span> <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[, <span class="dv">2</span>])))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-slices" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-slices-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/kent_triangle_to_ellipse_web/fig-slices-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1320">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-slices-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: The two slices that explain everything. In each panel the grey arc is the sphere, the dashed grey line is the flat vMF level set at <span class="math inline">\(z=C/\kappa\)</span>, and the violet curve is the Kent level set. <strong>Left (<span class="math inline">\(y=0\)</span>):</strong> the violet parabola bends downward, so it crosses the sphere further round, at <span class="math inline">\(x=0.509\)</span> instead of <span class="math inline">\(0.300\)</span>. <strong>Right (<span class="math inline">\(x=0\)</span>):</strong> it bends upward and crosses sooner, at <span class="math inline">\(y=0.231\)</span>. Same surface, same <span class="math inline">\(C\)</span> — opposite effects, purely because of the minus sign in <span class="math inline">\(x^2-y^2\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">data.frame</span>(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="fu">c</span>(<span class="st">"along gamma2 (the x axis)"</span>, <span class="st">"along gamma3 (the y axis)"</span>, <span class="st">"ratio"</span>),</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">vMF, beta = 0</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, xr_vmf), <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, xr_vmf), <span class="st">"1.00"</span>),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Kent, beta = 18</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">1</span>]))),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">sprintf</span>(<span class="st">"%.3f"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">2</span>]))),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">sprintf</span>(<span class="st">"%.2f"</span>, <span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">1</span>]))<span class="sc">/</span><span class="fu">max</span>(<span class="fu">abs</span>(CURVE[,<span class="dv">2</span>])))),</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div id="tbl-reach" class="cell quarto-float quarto-figure quarto-figure-center" data-layout-align="center">
+<figure class="quarto-float quarto-float-tbl">
+<div aria-describedby="tbl-reach-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<table class="do-not-create-environment cell">
+<thead>
+<tr class="header">
+<th style="text-align: left;">direction</th>
+<th style="text-align: left;">vMF, beta = 0</th>
+<th style="text-align: left;">Kent, beta = 18</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">along gamma2 (the x axis)</td>
+<td style="text-align: left;">0.300</td>
+<td style="text-align: left;">0.509</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">along gamma3 (the y axis)</td>
+<td style="text-align: left;">0.300</td>
+<td style="text-align: left;">0.230</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ratio</td>
+<td style="text-align: left;">1.00</td>
+<td style="text-align: left;">2.21</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-tbl" id="tbl-reach-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5: How far the contour reaches in each direction, read off the exact intersection curve. The vMF circle is the same distance in both; Kent is further out along <span class="math inline">\(\gamma_2\)</span> and closer in along <span class="math inline">\(\gamma_3\)</span>.
+</figcaption>
+</figure>
+</div>
+</div>
+<h2 id="the-exact-curve-and-its-elliptical-shadow">The exact curve, and its elliptical shadow</h2>
+<p>The intersection is a genuine curve <strong>on the sphere</strong> — it is not an ellipse, because the sphere is curved. But look at it from directly above <span class="math inline">\(\boldsymbol\mu\)</span>, in the tangent plane of Step 4, and it is very nearly one. That near-ellipse is what Step 7 was drawing.</p>
+<div id="fig-exact-vs-ellipse" class="quarto-float quarto-figure quarto-figure-center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-exact-vs-ellipse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="kgrid2">
+  <div><div class="kplot" id="g-exact3" style="height:440px"></div>
+       <div class="khint">drag to rotate</div></div>
+  <div><div class="kplot" id="g-exact2" style="height:440px"></div>
+       <div class="khint">hover to tell the curves apart</div></div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-exact-vs-ellipse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: <strong>Left:</strong> the exact intersection curve resting on the sphere, with the tangent plane at <span class="math inline">\(\boldsymbol\mu\)</span> shown for reference. <strong>Right:</strong> two contours seen from straight down the <span class="math inline">\(\boldsymbol\mu\)</span> axis, each with the ellipse through its own two axes drawn over it (dashed blue). The inner curve, at 10% of the peak density, is so close to an ellipse that you cannot separate them by eye. The outer curve, at 1% of the peak, is much wider and starts to pull away. That is the honest version of “a Kent contour is an ellipse”: an excellent approximation close to <span class="math inline">\(\boldsymbol\mu\)</span>, degrading slowly as the contour wraps further around the sphere.
+</figcaption>
+</figure>
+</div>
+<h2 id="try-it-yourself">Try it yourself</h2>
+<div class="kplay">
+  <div class="kplay-head">Try it yourself <span>move the sphere, bend the surface, watch the contour</span></div>
+  <div class="kctl">
+    <label for="ls-k">κ &nbsp;<b id="ls-vk">50</b>
+      <input type="range" id="ls-k" min="10" max="150" step="1" value="50"></label>
+    <label for="ls-b">β &nbsp;<b id="ls-vb">18</b>
+      <input type="range" id="ls-b" min="0" max="70" step="1" value="18"></label>
+    <label for="ls-c">contour level, as a fraction of the peak density &nbsp;<b id="ls-vc">0.10</b>
+      <input type="range" id="ls-c" min="0.02" max="0.90" step="0.01" value="0.10"></label>
+  </div>
+  <div class="kplay-body"><div class="kplot" id="ls-plot" style="height:460px"></div>
+    <div class="khint">drag to rotate · scroll to zoom</div></div>
+  <div class="kout" id="ls-out"></div>
+</div>
+<script>
+/* every interactive figure on this page is wired up here, once, after the
+   whole document exists */
+window.kentReady(function () {
+  var K = window.KentGeo;
+  K.simplex("g-simplex");
+  K.lift("g-lift");
+  K.onSphere("g-onsphere");
+  K.plane("g-plane");
+  K.project("g-project3", "g-project2");
+  K.tangentFit("g-vmf",  "vmf");   K.spread("g-spread-vmf",  false);
+  K.tangentFit("g-kent", "kent");  K.spread("g-spread-kent", true);
+  K.mechanism({ plot:"g-mech", sphere:"g-mech-sphere",
+                surface:"g-mech-surface", curve:"g-mech-curve" });
+  K.betaSwitch({ plot:"g-beta", beta:"g-beta-s", vb:"g-beta-v", out:"g-beta-out" });
+  K.exactVsEllipse("g-exact3", "g-exact2");
+  K.levelSet({ kap:"ls-k", bet:"ls-b", lev:"ls-c",
+               vk:"ls-vk", vb:"ls-vb", vc:"ls-vc", plot:"ls-plot", out:"ls-out" });
+});
+</script>
+<p>Three things are worth doing with the sliders.</p>
+<p>Set <span class="math inline">\(\beta\)</span> to <strong>0</strong> and the violet surface flattens into a horizontal plane, and the contour snaps to a circle: that is von Mises–Fisher. Push <span class="math inline">\(\beta\)</span> up and watch the saddle deepen and the contour stretch. Push it past <span class="math inline">\(\kappa/2\)</span> — the readout will warn you — and the surface bends so hard that it no longer cuts a single closed loop around the pole: the model has stopped being a single bump, which is exactly what the constraint <span class="math inline">\(2\beta&lt;\kappa\)</span> forbids.</p>
+<p>Finally, move the <strong>contour level</strong> slider on its own. The surface slides up and down without changing shape, and the contour grows and shrinks. That is one density, sliced at different heights — the spherical equivalent of the rings on a contour map.</p>
+<h1 id="sec-together">Step 9 — Putting it together</h1>
+<div class="cell" data-layout-align="center">
+<details class="code-fold">
+<summary>show the R code that drew this</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tern_full</span>(<span class="fu">list</span>(Z), <span class="at">cols =</span> pal<span class="sc">$</span>g2, <span class="at">cexs =</span> <span class="fl">0.55</span>, <span class="at">pchs =</span> <span class="dv">16</span>, <span class="at">main =</span> <span class="st">"1. triangle"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">view_basis</span>(<span class="fu">c</span>(<span class="fl">1.05</span>, <span class="fl">0.62</span>, <span class="fl">0.52</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"2. sphere"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) { e <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>); e[i] <span class="ot">&lt;-</span> <span class="fl">1.12</span>; <span class="fu">seg3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), e, V, pal<span class="sc">$</span>rule, <span class="at">lwd =</span> <span class="fl">1.1</span>) }</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>); <span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.55</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">oct_view</span>(<span class="dv">46</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="fu">blank</span>(<span class="at">xr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.95</span>, <span class="fl">0.95</span>), <span class="at">yr =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">0.35</span>, <span class="fl">1.08</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="fl">1.0</span>, <span class="fl">0.2</span>, <span class="fl">1.8</span>, <span class="fl">0.2</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="fu">title</span>(<span class="at">main =</span> <span class="st">"3. tangent plane"</span>, <span class="at">cex.main =</span> <span class="fl">0.95</span>, <span class="at">font.main =</span> <span class="dv">1</span>, <span class="at">col.main =</span> pal<span class="sc">$</span>ink2)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="fu">draw_sphere</span>(V, <span class="at">octant =</span> <span class="cn">TRUE</span>); <span class="fu">tangent_patch</span>(MUH, BH, <span class="fl">0.30</span>, V)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="fu">sphere_pts</span>(U, V, <span class="at">col =</span> pal<span class="sc">$</span>g2, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">alpha =</span> <span class="fl">0.95</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="fu">arrow3</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>), MUH<span class="sc">*</span><span class="fl">1.14</span>, V, pal<span class="sc">$</span>mu, <span class="at">lwd =</span> <span class="fl">2.2</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAP_VMF, <span class="dv">0</span>, R6, <span class="at">n_pts =</span> <span class="dv">0</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"4. vMF: circle"</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(V2, V3, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> pal<span class="sc">$</span>g2)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="fu">tangent_panel</span>(KAPH, BETH, R6, <span class="at">n_pts =</span> <span class="dv">0</span>, <span class="at">axes =</span> <span class="cn">FALSE</span>, <span class="at">main =</span> <span class="st">"5. Kent: ellipse"</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="fu">points</span>(V2, V3, <span class="at">pch =</span> <span class="dv">16</span>, <span class="at">cex =</span> <span class="fl">0.5</span>, <span class="at">col =</span> pal<span class="sc">$</span>g2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<div id="fig-summary" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/kent_triangle_to_ellipse_web/fig-summary-1.png" class="img-fluid quarto-figure quarto-figure-center" width="1440">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: The same 60 samples at every stage, once more. Read left to right: a cloud in a triangle; the cloud lifted onto a sphere; a flat plane resting on the sphere at the mean direction; the cloud flattened onto that plane; and the two models competing to describe it — vMF forced to be round, Kent free to be oval.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<h2 id="the-five-sentences-to-remember">The five sentences to remember</h2>
+<ol type="1">
+<li><strong>Compositions live in a triangle</strong> because the parts must add to 1, so three numbers really carry only two pieces of information.</li>
+<li><strong>The square root turns the triangle into part of a sphere</strong>, exactly and reversibly, because <span class="math inline">\(\sum_j z_j=1\)</span> becomes <span class="math inline">\(\sum_j u_j^2=1\)</span>.</li>
+<li><strong>The tangent plane flattens the neighbourhood of the mean direction</strong>, which lets us use ordinary two-dimensional ideas on a curved surface.</li>
+<li><strong>von Mises–Fisher draws circles</strong> on that plane, because it only looks at the distance from the centre and ignores the direction.</li>
+<li><strong>Kent draws ellipses</strong>, because the extra term <span class="math inline">\(\beta(v_2^2-v_3^2)\)</span> treats the two tangent directions differently — and real compositional data, where one component trades off against another, are elliptical.</li>
+</ol>
+<div>
+<blockquote>
+<p><strong>The one-line version</strong></p>
+<p>Squaring roots puts compositions on a sphere; the tangent plane makes the sphere flat again; and the only question left is whether the flattened cloud is round (vMF) or oval (Kent). For soil texture, it is oval.</p>
+</blockquote>
+</div>
+
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+    tabsets.forEach(function(tabset) {
+      const tabby = new Tabby('#' + tabset.id);
+    });
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'light-border',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+
+
+
+
+</body></html>

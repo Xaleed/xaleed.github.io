@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Compositions on the Sphere &mdash; Khaled Masoumifard</title>
+<meta name="description" content="Interactive companions to the manuscript Compositional random forest: the square-root transformation, the Kent distribution and the tangent-normal (TN) distribution for compositional data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+<style>
+/* The design tokens of "Kent on the Sphere" and "Tangent-Normal on the Sphere". */
+:root{
+  color-scheme:light;
+  --bg:#f8f8f6;--surface:#fcfcfb;--surface-2:#f1f1ec;--ink:#141412;--ink-2:#4d4c48;--muted:#8a8883;
+  --rule:#e2e1da;--rule-2:#cdccc3;--mu:#eb6834;--g2:#2a78d6;--g3:#1baf7a;--basis:#4a3aa7;--wash:rgba(20,20,18,0.045);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0d0d0c;--surface:#1a1a19;--surface-2:#232321;--ink:#f4f3ef;--ink-2:#c3c2b7;--muted:#8d8b84;
+    --rule:#2c2c2a;--rule-2:#3c3b38;--mu:#d95926;--g2:#3987e5;--g3:#199e70;--basis:#9085e9;--wash:rgba(255,255,255,0.05);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0d0d0c;--surface:#1a1a19;--surface-2:#232321;--ink:#f4f3ef;--ink-2:#c3c2b7;--muted:#8d8b84;
+  --rule:#2c2c2a;--rule-2:#3c3b38;--mu:#d95926;--g2:#3987e5;--g3:#199e70;--basis:#9085e9;--wash:rgba(255,255,255,0.05);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Serif 4",Georgia,serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;text-wrap:balance}
+.mono,.eyebrow,.tag,.links a,.foot{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+a{color:var(--ink);text-decoration-color:var(--rule-2);text-underline-offset:2px}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--rule)}
+.topbar-in{max-width:960px;margin-inline:auto;padding:9px 20px;display:flex;align-items:center;gap:14px}
+.backlink{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;flex:none;border:1px solid var(--rule-2);color:var(--ink-2);text-decoration:none;font-size:14px;line-height:1}
+.backlink:hover{background:var(--wash);color:var(--ink)}
+.brand{font-family:"Instrument Serif",serif;font-size:1.06rem;line-height:1;white-space:nowrap}
+.brand .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mu);margin-right:7px}
+.wrap{max-width:960px;margin-inline:auto;padding:0 20px 80px}
+.hero{max-width:67ch;margin:0 auto;padding:52px 0 18px}
+.hero .meta{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.hero h1{font-size:clamp(2.5rem,8vw,4.1rem);line-height:1.03;margin:0 0 .3em}
+.hero p{font-size:1.12rem;color:var(--ink-2);margin:0}
+section{margin-top:44px}
+.eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--rule)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.card{border:1px solid var(--rule);border-radius:3px;background:var(--surface);padding:16px 18px 14px;display:flex;flex-direction:column;gap:8px}
+.card.feature{border-color:var(--rule-2);grid-column:1/-1}
+.card h2{font-size:1.5rem;line-height:1.15;margin:0}
+.card h2 a{text-decoration:none}
+.card h2 a:hover{text-decoration:underline}
+.card p{margin:0;color:var(--ink-2);font-size:.98rem}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.64rem;letter-spacing:.06em;padding:2px 8px;border-radius:99px;border:1px solid var(--rule-2);color:var(--ink-2);white-space:nowrap}
+.tag.new{border-color:var(--mu);color:var(--mu)}
+.links{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:auto;padding-top:6px;border-top:1px solid var(--rule)}
+.links a{font-size:.72rem;letter-spacing:.03em;color:var(--ink);text-decoration:none;padding:3px 0}
+.links a::before{content:"\2192\00a0";color:var(--mu)}
+.links a:hover{text-decoration:underline}
+.links span{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--muted)}
+.note{max-width:67ch;margin:40px auto 0;border-left:2px solid var(--rule-2);padding:2px 0 2px 18px;color:var(--ink-2);font-size:.95rem}
+.note b{color:var(--ink)}
+.foot{max-width:960px;margin:0 auto;padding:18px 20px 40px;border-top:1px solid var(--rule);font-size:.7rem;color:var(--muted)}
+.foot a{color:var(--ink-2)}
+@media (max-width:520px){.card.feature{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="topbar-in">
+  <a class="backlink" href="../blog.html" title="Back to the blog">&larr;</a>
+  <span class="brand"><span class="dot"></span>Compositions on the Sphere</span>
+</div></div>
+
+<main class="wrap">
+  <div class="hero">
+    <div class="meta">Interactive notes &middot; compositional random forest</div>
+    <h1>Compositions on the sphere</h1>
+    <p>Interactive companions to the manuscript <em>Compositional random forest</em>: how the square root turns a composition into a direction, and the two distributions used for such directions, the Kent distribution and the tangent-normal (TN) distribution.</p>
+  </div>
+
+  <section aria-labelledby="h-tn">
+    <div class="eyebrow" id="h-tn">Tangent-normal</div>
+    <div class="cards">
+      <article class="card feature">
+        <div class="tags"><span class="tag new">new</span><span class="tag">single file</span><span class="tag">interactive</span></div>
+        <h2><a href="tn/tn_distribution.html">The tangent-normal distribution</a></h2>
+        <p>The TN distribution step by step: compositions in the triangle and on the plane x&#8321; + x&#8322; + x&#8323; = 1, their square roots on the sphere, the tangent plane and the map &psi; of eq. (14), contour sets on the plane, the sphere and the triangle, the density as colour with live simulation and estimation, and Kent and TN side by side.</p>
+        <div class="links"><a href="tn/tn_distribution.html">open</a></div>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-kent">
+    <div class="eyebrow" id="h-kent">Kent</div>
+    <div class="cards">
+      <article class="card">
+        <div class="tags"><span class="tag">single file</span><span class="tag">interactive</span></div>
+        <h2><a href="kent/kent_on_the_sphere.html">Kent on the Sphere</a></h2>
+        <p>The Kent distribution from zero on one interactive page: directional data, the square-root map, von Mises&ndash;Fisher versus Kent, the tangent plane, the Householder basis, signs and ties, and a complete worked example.</p>
+        <div class="links"><a href="kent/kent_on_the_sphere.html">open</a></div>
+      </article>
+      <article class="card">
+        <div class="tags"><span class="tag">two builds</span><span class="tag">rotatable 3D</span></div>
+        <h2><a href="kent/kent_triangle_to_ellipse_standalone.html">From a triangle to an ellipse</a></h2>
+        <p>Nine steps from compositions in a triangle to the Kent ellipse on the tangent plane, including where the contour comes from: the level set of the density cut by the sphere.</p>
+        <div class="links"><a href="kent/kent_triangle_to_ellipse_standalone.html">single file</a><a href="kent/kent_triangle_to_ellipse_web.html">website build</a></div>
+      </article>
+      <article class="card">
+        <div class="tags"><span class="tag">two builds</span><span class="tag">with R code</span></div>
+        <h2><a href="kent/kent_from_zero_standalone.html">The Kent distribution, from zero</a></h2>
+        <p>The Kent tutorial written in Quarto, with the R code behind every figure: from directional data and the square-root map to the second-moment matrix, the Householder basis and the eigen-decomposition.</p>
+        <div class="links"><a href="kent/kent_from_zero_standalone.html">single file</a><a href="kent/kent_from_zero_web.html">website build</a></div>
+      </article>
+      <article class="card">
+        <div class="tags"><span class="tag">single file</span><span class="tag">estimation</span></div>
+        <h2><a href="kent/kent_estimation_explainer.html">How the Kent leaf parameters are estimated</a></h2>
+        <p>The moment estimator used in the Kent leaves of the forest: sufficient statistics, the projection that removes &mu;&#770;, the Householder reflector, the tangent block and its eigen-decomposition, and the split gain.</p>
+        <div class="links"><a href="kent/kent_estimation_explainer.html">open</a></div>
+      </article>
+    </div>
+  </section>
+
+  <div class="note">
+    <p><b>Single file</b> pages carry everything they need and work offline (the libraries come from a CDN). The <b>website builds</b> are smaller; they need the <span class="mono">assets/</span> folder next to <span class="mono">kent/</span>, and they use the site's own navigation and <span class="mono">css/style.css</span>, which they expect two folders up.</p>
+  </div>
+</main>
+
+<footer class="foot">&copy; 2026 Khaled Masoumifard &nbsp;&middot;&nbsp; <a href="../blog.html">&larr; Back to the blog</a></footer>
+</body>
+</html>

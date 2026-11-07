@@ -1,0 +1,1744 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>The Tangent-Normal Distribution &mdash; Khaled Masoumifard</title>
+<meta name="description" content="An interactive tutorial on the tangent-normal (TN) distribution for compositional data: the square-root map, the tangent plane, contour sets on the plane, the sphere and the simplex, live densities, simulation and estimation, and a side-by-side comparison with the Kent distribution.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+<style>
+/* Design tokens and layout are those of "Kent on the Sphere", so the two pages
+   read as one series. Additions: --out (points with no composition), --tint
+   (the image of the orthant on the tangent plane) and the one-hue blue
+   sequential ramp --seq0..6 for densities (light->dark; anchor flipped in dark). */
+:root{
+  color-scheme: light;
+  --bg:#f8f8f6;
+  --surface:#fcfcfb;
+  --surface-2:#f1f1ec;
+  --ink:#141412;
+  --ink-2:#4d4c48;
+  --muted:#8a8883;
+  --rule:#e2e1da;
+  --rule-2:#cdccc3;
+  --chrome:#2b3a44;
+  --mu:#eb6834;
+  --g2:#2a78d6;
+  --g3:#1baf7a;
+  --basis:#4a3aa7;
+  --out:#e34948;
+  --tint:rgba(74,58,167,0.08);
+  --wash:rgba(20,20,18,0.045);
+  --shadow:rgba(20,20,18,0.07);
+  --sphere:#dedcd2;
+  --hemi:#efeee8;
+  --grat:#b9b7ab;
+  --dot:#5a5955;
+  --seq0:#fcfcfb; --seq1:#cde2fb; --seq2:#9ec5f4; --seq3:#6da7ec;
+  --seq4:#3987e5; --seq5:#1c5cab; --seq6:#0d366b;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0d0d0c;
+    --surface:#1a1a19;
+    --surface-2:#232321;
+    --ink:#f4f3ef;
+    --ink-2:#c3c2b7;
+    --muted:#8d8b84;
+    --rule:#2c2c2a;
+    --rule-2:#3c3b38;
+    --chrome:#b9c6ce;
+    --mu:#d95926;
+    --g2:#3987e5;
+    --g3:#199e70;
+    --basis:#9085e9;
+    --out:#e66767;
+    --tint:rgba(144,133,233,0.11);
+    --wash:rgba(255,255,255,0.05);
+    --shadow:rgba(0,0,0,0.4);
+    --sphere:#35342f;
+    --hemi:#262623;
+    --grat:#54534c;
+    --dot:#a9a7a0;
+    --seq0:#1a1a19; --seq1:#0d366b; --seq2:#184f95; --seq3:#256abf;
+    --seq4:#3987e5; --seq5:#6da7ec; --seq6:#b7d3f6;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0d0d0c;
+  --surface:#1a1a19;
+  --surface-2:#232321;
+  --ink:#f4f3ef;
+  --ink-2:#c3c2b7;
+  --muted:#8d8b84;
+  --rule:#2c2c2a;
+  --rule-2:#3c3b38;
+  --chrome:#b9c6ce;
+  --mu:#d95926;
+  --g2:#3987e5;
+  --g3:#199e70;
+  --basis:#9085e9;
+  --out:#e66767;
+  --tint:rgba(144,133,233,0.11);
+  --wash:rgba(255,255,255,0.05);
+  --shadow:rgba(0,0,0,0.4);
+  --sphere:#35342f;
+  --hemi:#262623;
+  --grat:#54534c;
+  --dot:#a9a7a0;
+  --seq0:#1a1a19; --seq1:#0d366b; --seq2:#184f95; --seq3:#256abf;
+  --seq4:#3987e5; --seq5:#6da7ec; --seq6:#b7d3f6;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+[hidden]:not([hidden=until-found i]){display:none!important}
+body{
+  margin:0;padding:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:17px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+img{max-width:100%}
+h1,h2,h3,h4{font-family:"Instrument Serif",Georgia,serif;font-weight:400;text-wrap:balance;letter-spacing:.005em}
+.mono,code,.num,.eyebrow,.plate-n,figcaption,th,td,.ctl-l,.tag,.readout{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+
+/* ---------- chrome ---------- */
+.topbar{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:40;
+  background:var(--bg);
+  background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--rule);
+}
+.topbar-in{max-width:960px;margin-inline:auto;padding:9px 20px;display:flex;align-items:center;gap:14px}
+.backlink{display:inline-flex;align-items:center;justify-content:center;
+  width:26px;height:26px;border-radius:50%;flex:none;
+  border:1px solid var(--rule-2);color:var(--ink-2);text-decoration:none;
+  font-size:14px;line-height:1;margin-right:2px}
+.backlink:hover{background:var(--wash);color:var(--ink)}
+.brand{font-family:"Instrument Serif",serif;font-size:1.06rem;line-height:1;white-space:nowrap}
+.brand .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mu);margin-right:7px;vertical-align:baseline}
+.here{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.tocbtn{
+  font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  background:none;border:1px solid var(--rule-2);color:var(--ink-2);
+  padding:5px 11px;border-radius:2px;cursor:pointer;white-space:nowrap;
+}
+.tocbtn:hover{background:var(--wash);color:var(--ink)}
+@media (max-width:560px){.here{visibility:hidden}}
+.toc{
+  position:fixed;inset:0;z-index:50;display:none;
+  background:color-mix(in srgb,var(--bg) 93%,transparent);
+  backdrop-filter:blur(6px);overflow-y:auto;
+  padding:calc(env(safe-area-inset-top,0px) + 56px) 20px 60px;
+}
+.toc.open{display:block}
+.toc-in{max-width:760px;margin-inline:auto}
+.toc h3{font-size:1.5rem;margin:0 0 4px}
+.toc ol{list-style:none;padding:0;margin:18px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px}
+.toc a{display:flex;gap:12px;align-items:baseline;text-decoration:none;color:var(--ink);padding:8px 10px;border-radius:2px;line-height:1.35}
+.toc a:hover{background:var(--wash)}
+.toc .n{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--muted);min-width:2.1em}
+
+/* ---------- layout ---------- */
+.wrap{max-width:960px;margin-inline:auto;padding-inline:20px;padding-block:0 96px}
+.col{max-width:67ch;margin-inline:auto}
+.part{padding-block:14px 8px;scroll-margin-top:70px}
+.part + .part{border-top:1px solid var(--rule);margin-top:44px;padding-top:44px}
+.eyebrow{font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--mu);display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--rule)}
+h2{font-size:clamp(1.7rem,4.4vw,2.35rem);margin:0 0 .5em;line-height:1.14}
+h3{font-size:1.28rem;margin:2em 0 .4em;line-height:1.25}
+h4{font-size:1.02rem;margin:1.6em 0 .3em;font-family:"Source Serif 4",serif;font-weight:700}
+p{margin:0 0 1.05em}
+.lede{font-size:1.1rem;color:var(--ink-2)}
+ul,ol{margin:0 0 1.05em;padding-left:1.25em}
+li{margin-bottom:.4em}
+strong{font-weight:700}
+a{color:var(--ink);text-decoration-color:var(--rule-2);text-underline-offset:2px}
+
+/* ---------- hero ---------- */
+.hero{padding-block:52px 34px}
+.hero h1{font-size:clamp(2.6rem,8.5vw,4.4rem);line-height:1.02;margin:0 0 .28em}
+.hero .sub{font-size:1.16rem;color:var(--ink-2);max-width:56ch}
+.hero .meta{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:20px}
+
+/* ---------- semantic colour ---------- */
+.c-mu{color:var(--mu)}
+.c-g2{color:var(--g2)}
+.c-g3{color:var(--g3)}
+.c-b{color:var(--basis)}
+.c-out{color:var(--out)}
+.key{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 0;padding:0;list-style:none}
+.key li{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--ink-2);display:flex;align-items:center;gap:7px;margin:0}
+.key i{width:11px;height:11px;border-radius:50%;display:block;flex:none}
+.key i.ln{width:18px;height:0;border-radius:0;border-top:2px solid}
+.key i.ln.dash{border-top-style:dashed}
+.key i.sq{border-radius:1px}
+.key i.x{width:11px;height:11px;border-radius:0;background:none;position:relative}
+.key i.x::before,.key i.x::after{content:"";position:absolute;left:5px;top:-1px;width:2px;height:13px;background:var(--out);transform:rotate(45deg)}
+.key i.x::after{transform:rotate(-45deg)}
+.plate .key{margin:0;padding:8px 14px;border-bottom:1px solid var(--rule)}
+
+/* ---------- callouts ---------- */
+.note{border-left:2px solid var(--rule-2);padding:2px 0 2px 18px;margin:1.4em 0;color:var(--ink-2)}
+.note .tag{display:block;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.2em}
+.note p:last-child{margin-bottom:0}
+.note.warm{border-left-color:var(--mu)}
+.note.warm .tag{color:var(--mu)}
+
+/* ---------- plates (figures) ---------- */
+.plate{margin:30px 0 34px;border:1px solid var(--rule);border-radius:3px;background:var(--surface);overflow:hidden}
+.plate-head{display:flex;align-items:baseline;gap:12px;padding:9px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2)}
+.plate-n{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);white-space:nowrap}
+.plate-t{font-size:.78rem;color:var(--ink-2);font-family:"IBM Plex Mono",monospace;line-height:1.35}
+.plate-body{padding:10px}
+figcaption{font-size:.76rem;line-height:1.6;color:var(--ink-2);padding:10px 14px 13px;border-top:1px solid var(--rule)}
+figcaption b{color:var(--ink);font-weight:500}
+.plot{width:100%;height:420px}
+.plot.tall{height:480px}
+.plot.short{height:320px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.grid2 .plot{height:380px}
+.grid3 .plot{height:320px}
+@media (max-width:700px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .plot,.grid2 .plot,.grid3 .plot{height:330px}
+  .plot.tall{height:360px}
+}
+.panel-t{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--ink-2);text-align:center;padding:4px 0 0}
+.panel-t b{color:var(--ink);font-weight:600}
+.panel-t.colhead{padding:2px 0 6px;border-bottom:1px solid var(--rule);margin-bottom:4px;font-size:.74rem}
+.hint{font-family:"IBM Plex Mono",monospace;font-size:.66rem;color:var(--muted);text-align:right;padding:2px 6px 0}
+
+/* ---------- controls ---------- */
+.ctl-row{display:flex;flex-wrap:wrap;gap:14px 26px;padding:12px 14px;border-bottom:1px solid var(--rule);background:var(--surface-2)}
+.ctl{display:flex;flex-direction:column;gap:5px;flex:1 1 200px;min-width:0}
+.ctl-l{font-size:.7rem;letter-spacing:.06em;color:var(--ink-2);display:flex;justify-content:space-between;gap:10px}
+.ctl-l b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:18px;background:transparent;cursor:pointer;margin:0}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--rule-2);border-radius:2px}
+input[type=range]::-moz-range-track{height:2px;background:var(--rule-2);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:15px;height:15px;border-radius:50%;background:var(--ink);margin-top:-6.5px;border:0}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--ink);border:0}
+input[type=range]:focus-visible{outline:2px solid var(--mu);outline-offset:3px;border-radius:3px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btnrow .lab{font-family:"IBM Plex Mono",monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.btnrow .sep{width:1px;align-self:stretch;background:var(--rule-2);margin:0 4px}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:.68rem;letter-spacing:.06em;background:var(--surface);border:1px solid var(--rule-2);color:var(--ink-2);padding:6px 12px;border-radius:2px;cursor:pointer}
+.btn:hover{background:var(--wash);color:var(--ink)}
+.btn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.go{border-color:var(--ink);color:var(--ink);font-weight:600}
+.btn:focus-visible{outline:2px solid var(--mu);outline-offset:2px}
+
+/* ---------- live read-outs ---------- */
+.readout{display:flex;flex-wrap:wrap;gap:4px 22px;padding:9px 14px;border-top:1px solid var(--rule);font-size:.72rem;line-height:1.6;color:var(--ink-2)}
+.readout b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.readout .warn{color:var(--out)}
+
+/* ---------- tables ---------- */
+.scroll{overflow-x:auto;margin:1.3em 0;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+.plate .scroll{margin:10px 0 0}
+table{border-collapse:collapse;width:100%;font-size:.78rem}
+th,td{padding:7px 12px;text-align:left;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums;white-space:nowrap}
+th{font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td.t{font-family:"Source Serif 4",serif;font-size:.86rem;white-space:normal;min-width:16ch}
+td.r,th.r{text-align:right}
+.num{font-variant-numeric:tabular-nums}
+
+.bigfive{list-style:none;padding:0;counter-reset:bf}
+.bigfive li{counter-increment:bf;display:flex;gap:16px;padding:14px 0;border-top:1px solid var(--rule)}
+.bigfive li::before{content:counter(bf);font-family:"Instrument Serif",serif;font-size:1.9rem;line-height:1;color:var(--mu);min-width:1.1em}
+.bigfive b{display:block;margin-bottom:.15em}
+
+details.impl{margin:1.4em 0;border:1px solid var(--rule);border-radius:3px;background:var(--surface)}
+details.impl summary{cursor:pointer;padding:10px 14px;font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.04em;color:var(--ink-2)}
+details.impl > div{padding:2px 18px 10px;font-size:.92rem;color:var(--ink-2)}
+
+.foot{max-width:960px;margin:0 auto;padding:18px 20px 40px;border-top:1px solid var(--rule);font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--muted)}
+.foot a{color:var(--ink-2)}
+
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+mjx-container[display="true"]{margin:1.1em 0 !important;display:block;min-width:0 !important}  /* tagged equations scroll inside their box on phones */
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+if(!window.Plotly){document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"><\/scr'+'ipt>');}
+window.MathJax={
+  tex:{
+    inlineMath:[['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],
+    macros:{
+      bmu:'{\\boldsymbol{\\mu}}', bgamma:'{\\boldsymbol{\\gamma}}', bGamma:'{\\boldsymbol{\\Gamma}}',
+      bu:'{\\mathbf u}', bv:'{\\mathbf v}', bz:'{\\mathbf z}', bw:'{\\mathbf w}', be:'{\\mathbf e}',
+      bU:'{\\mathbf U}', bV:'{\\mathbf V}', bK:'{\\mathbf K}', bB:'{\\mathbf B}', bH:'{\\mathbf H}',
+      bI:'{\\mathbf I}', bM:'{\\mathbf M}', bW:'{\\mathbf W}', bs:'{\\mathbf s}',
+      R:'{\\mathbb R}', diag:'{\\operatorname{diag}}'
+    }
+  },
+  options:{skipHtmlTags:['script','noscript','style','textarea','pre','code'],enableMenu:false},
+  chtml:{scale:1.0,matchFontHeight:false}
+};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-in">
+    <a class="backlink" href="../index.html" title="All visualisations">&larr;</a>
+    <span class="brand"><span class="dot"></span>Tangent-Normal on the Sphere</span>
+    <span class="here" id="here">Part 1 &middot; Compositional data in the triangle</span>
+    <button class="tocbtn" id="tocbtn" aria-expanded="false">Contents</button>
+  </div>
+</div>
+
+<nav class="toc" id="toc" hidden>
+  <div class="toc-in">
+    <h3>Contents</h3>
+    <p style="color:var(--ink-2);font-size:.9rem;margin:0">Eight parts, from a triangle of proportions to a fitted distribution on the sphere and back.</p>
+    <ol id="toclist"></ol>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section class="hero">
+  <div class="col">
+    <div class="meta">A tutorial &middot; the TN distribution for compositional data</div>
+    <h1>The tangent-normal distribution</h1>
+    <p class="sub">A normal distribution on the tangent plane of the sphere, carried back to the sphere and to the triangle of compositions. Every picture drawn for the Kent distribution, redrawn for its tangent-normal twin.</p>
+    <ul class="key">
+      <li><i style="background:var(--mu)"></i>\(\bmu\) &mdash; mean direction</li>
+      <li><i style="background:var(--g2)"></i>\(\bgamma_2\) &mdash; first axis of \(\bK\)</li>
+      <li><i style="background:var(--g3)"></i>\(\bgamma_3\) &mdash; second axis of \(\bK\)</li>
+      <li><i style="background:var(--basis)"></i>\(T_{\bmu}\) &mdash; tangent plane</li>
+      <li><i class="x"></i>outside \(\mathcal O\) &mdash; no composition</li>
+    </ul>
+    <div class="note" style="margin-top:26px">
+      <span class="tag">How to read this</span>
+      <p>Every figure is live. Drag the 3D pictures to rotate them, right-drag to pan, and use the &plus;/&minus; buttons to zoom. Move a slider and every panel of that figure redraws. All numbers are computed in your browser from the definitions of the tangent-normal distribution in the manuscript <em>Compositional random forest</em> (van der Westhuizen and Masoumifard); equation numbers such as (14) refer to it. Notation follows the manuscript: \(k\) parts, the simplex \(\mathbf S^k\), the sphere \(S^{k-1}\). All pictures use \(k=3\).</p>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== PART 1 =============================== -->
+<section class="part" id="p1" data-title="Compositional data in the triangle">
+  <div class="col">
+    <div class="eyebrow">Part 1</div>
+    <h2>Compositional data in the triangle</h2>
+    <p class="lede">A composition records how a whole splits into parts. Only the proportions matter, so the parts are scaled to sum to one.</p>
+    <p>With three parts, a composition is \(\bz=(z_1,z_2,z_3)\) with \(z_j\ge0\) and \(z_1+z_2+z_3=1\), the closure (1) with \(c=1\). All such vectors form the simplex \(\mathbf S^3\) of (2), which for three parts is a triangle. Each corner is a composition made of a single part, each edge is where one part is zero, and the grid lines mark the levels \(z_j=0.1,0.2,\dots,0.9\).</p>
+    <p>The 150 points below are simulated. They are drawn from the tangent-normal distribution of Part&nbsp;4, so that one data set travels through the whole page.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 1</span><span class="plate-t">150 compositions in the simplex \(\mathbf S^3\)</span></div>
+    <div class="plate-body"><div class="plot" id="fig1" role="img" aria-label="Ternary diagram of 150 simulated three-part compositions"></div></div>
+    <figcaption>A ternary diagram. Read \(x_3\) on the horizontal lines (labels on the left edge), \(x_1\) on the lines parallel to the right edge (labels on the bottom edge) and \(x_2\) on the lines parallel to the left edge (labels on the right edge). Hover over a point for its three parts. The cloud is centred near \((0.50,0.30,0.20)\) and is longer in one direction than the other, which a single variance could not describe.</figcaption>
+  </figure>
+</section>
+
+<!-- =============================== PART 2 =============================== -->
+<section class="part" id="p2" data-title="The simplex as a plane in 3D">
+  <div class="col">
+    <div class="eyebrow">Part 2</div>
+    <h2>The simplex as a plane in 3D</h2>
+    <p class="lede">The triangle is not only a diagram. It is a piece of a plane in ordinary three-dimensional space.</p>
+    <p>The condition \(z_1+z_2+z_3=1\) defines a plane in \(\R^3\), and the three conditions \(z_j\ge0\) cut a triangle out of it. Its corners are the unit vectors \(\be_1=(1,0,0)\), \(\be_2=(0,1,0)\) and \(\be_3=(0,0,1)\) on the coordinate axes. Every point of the ternary diagram is a point of this triangle. Rotate the picture, or press <em>look along (1,1,1)</em>, and the triangle becomes the diagram of Figure&nbsp;1.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 2</span><span class="plate-t">the plane \(x_1+x_2+x_3=1\) in \(\R^3\), with the data</span></div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <button class="btn" id="b2-iso">look along (1,1,1)</button>
+        <span class="sep"></span>
+        <button class="btn" id="b2-zin" aria-label="zoom in">&plus;</button>
+        <button class="btn" id="b2-zout" aria-label="zoom out">&minus;</button>
+        <button class="btn" id="b2-reset">reset view</button>
+      </div>
+    </div>
+    <div class="plate-body"><div class="plot tall" id="fig2" role="img" aria-label="Three-dimensional view of the simplex as a triangle in the plane x1+x2+x3=1"></div><div class="hint">drag to rotate &middot; right-drag to pan &middot; &plus;/&minus; to zoom</div></div>
+    <figcaption>The shaded triangle is \(\mathbf S^3\), with the same grid lines as Figure&nbsp;1; the grey lines from the origin are the coordinate axes \(x_1,x_2,x_3\). The 150 compositions all lie on the triangle, because their parts add up to one.</figcaption>
+  </figure>
+</section>
+
+<!-- =============================== PART 3 =============================== -->
+<section class="part" id="p3" data-title="Projection onto the sphere">
+  <div class="col">
+    <div class="eyebrow">Part 3</div>
+    <h2>Projection onto the sphere</h2>
+    <p class="lede">The square root turns a composition into a unit vector, and the triangle into a curved triangle on the sphere.</p>
+    <p>The <strong>square-root transformation</strong> of Section 2.1 takes square roots part by part, \(\bu=\sqrt{\bz}\), that is \(u_j=\sqrt{z_j}\). Because \(\sum_j z_j=1\), we get \(\sum_j u_j^2=1\): every \(\bu\) is a unit vector, a point of the sphere \(S^{k-1}=\{\bu\in\R^k:\|\bu\|=1\}\). Taking the non-negative root puts it in the <strong>positive orthant</strong></p>
+    \[ \mathcal O=\{\bu\in S^{k-1}:\ u_j\ge0\ \text{for all } j\}, \]
+    <p>the curved triangle in the picture. The map is one-to-one, and squaring undoes it: \(\bz=\bu^2\). Zeros cause no difficulty, because \(\sqrt0=0\): a composition with a zero part lands on an edge of \(\mathcal O\), with no replacement or perturbation, unlike the log-ratio transformations.</p>
+    <p>The square root is not the straight-line projection \(\bz/\|\bz\|\) from the origin. It stretches small parts (\(\sqrt{0.01}=0.1\)), so the projection lines below are not aimed at the origin, and the equally spaced grid lines of the triangle land unequally spaced on the sphere.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 3</span><span class="plate-t">\(\bz\mapsto\bu=\sqrt{\bz}\): from the triangle to the positive orthant</span></div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <span class="lab">show</span>
+        <button class="btn" id="b3-lines" aria-pressed="true">projection lines</button>
+        <button class="btn" id="b3-tri" aria-pressed="true">triangle</button>
+        <button class="btn" id="b3-sph" aria-pressed="true">sphere</button>
+        <span class="sep"></span>
+        <button class="btn" id="b3-zin" aria-label="zoom in">&plus;</button>
+        <button class="btn" id="b3-zout" aria-label="zoom out">&minus;</button>
+        <button class="btn" id="b3-reset">reset view</button>
+      </div>
+    </div>
+    <ul class="key">
+      <li><i style="background:var(--dot)"></i>composition \(\bz\) on the triangle</li>
+      <li><i style="background:var(--g2)"></i>its square root \(\bu\) on the sphere</li>
+      <li><i class="ln" style="border-color:var(--mu)"></i>the map \(\bz\mapsto\sqrt{\bz}\)</li>
+    </ul>
+    <div class="plate-body"><div class="plot tall" id="fig3" role="img" aria-label="Compositions on the triangle joined by line segments to their square roots on the sphere"></div><div class="hint">drag to rotate &middot; right-drag to pan &middot; &plus;/&minus; to zoom</div></div>
+    <figcaption>Each orange segment joins a composition \(\bz\) on the flat triangle to \(\sqrt{\bz}\) on the sphere. The dark arcs bound \(\mathcal O\); they are the images of the triangle's edges, where one part is zero. The thin curves on the sphere are the images of the triangle's grid lines: \(z_j=c\) becomes the circle \(u_j=\sqrt c\).</figcaption>
+  </figure>
+</section>
+
+<!-- =============================== PART 4 =============================== -->
+<section class="part" id="p4" data-title="The tangent-normal distribution">
+  <div class="col">
+    <div class="eyebrow">Part 4</div>
+    <h2>The tangent-normal distribution</h2>
+    <p class="lede">The idea of Section 3.2 of the manuscript: choose a centre on the sphere, flatten the sphere around it onto the plane that touches it there, put an ordinary normal distribution on that plane, and carry it back.</p>
+
+    <h3>The centre and its tangent plane</h3>
+    <p>The <b class="c-mu">mean direction</b> \(\bmu\in S^{k-1}\) is a unit vector; for compositions it lies in \(\mathcal O\), and \(\bmu^2\) is the composition at the centre. Two sets belong to it, the open hemisphere centred at \(\bmu\) and the open unit ball:</p>
+    \[ H_{\bmu}=\{\bu\in S^{k-1}:\ \bmu^{\top}\bu&gt;0\},\qquad \mathbb B^{k-1}=\{\bv\in\R^{k-1}:\ \|\bv\|&lt;1\}. \]
+    <p>The <b class="c-b">tangent plane</b> at \(\bmu\) is \(T_{\bmu}=\{\mathbf x\in\R^{k}:\ \bmu^{\top}\mathbf x=0\}\). Let \(\bK\) be a \(k\times(k-1)\) matrix with \(\bK^{\top}\bK=\bI_{k-1}\) whose columns span \(T_{\bmu}\); then \(\bGamma=(\bmu,\bK)\) is orthogonal (Lemma 1). For \(k=3\) we write \(\bK=(\bgamma_2,\bgamma_3)\), its <b class="c-g2">first</b> and <b class="c-g3">second</b> axis: the same orientation parameters as in the Kent density (11).</p>
+
+    <h3>Tangent coordinates</h3>
+    <p>The map</p>
+    \[ \psi(\bv)=\bigl(1-\|\bv\|^{2}\bigr)^{1/2}\bmu+\bK\bv,\qquad \bv\in\mathbb B^{k-1}, \tag{14} \]
+    <p>is a bijection from the ball onto the hemisphere \(H_{\bmu}\), with inverse \(\psi^{-1}(\bu)=\bK^{\top}\bu\) (Lemma 1). The vector \(\bv=\bK^{\top}\bu=(v_2,\dots,v_k)^{\top}\) holds the <em>tangent coordinates</em> of \(\bu\): the coordinates, in the basis \(\bK\), of its orthogonal projection onto \(T_{\bmu}\). If \(\theta\) is the angle between \(\bu\) and \(\bmu\), then \(\|\bv\|=\sin\theta\) and \(\bmu^{\top}\bu=\cos\theta\).</p>
+
+    <h3>The Gaussian part</h3>
+    <p>Let \(\bV_0\sim N_{k-1}(\mathbf 0,\Lambda)\) with \(\Lambda=\diag(\lambda_2,\dots,\lambda_k)\) and \(\lambda_2\ge\dots\ge\lambda_k&gt;0\), the <em>tangent variances</em>. Let \(\bV\) have the distribution of \(\bV_0\) given \(\|\bV_0\|&lt;1\), and set \(\bU=\psi(\bV)\). Then \(\bU\) has the <strong>tangent-normal distribution</strong> with mean direction \(\bmu\), axes \(\bK\) and tangent variances \(\Lambda\), written \(\bU\sim\mathrm{TN}(\bmu,\bK,\Lambda)\) (Definition 1). Simulating it follows the definition: draw \(\bV_0\), reject it if \(\|\bV_0\|\ge1\), and apply (14).</p>
+
+    <h3>The density</h3>
+    <p>With \(\varphi_{\Lambda}\) the density of \(N_{k-1}(\mathbf 0,\Lambda)\) and \(\pi_{\Lambda}=P(\|\bV_0\|&lt;1)\), the density of \(\bU\) with respect to the surface measure \(\sigma\) on \(S^{k-1}\) is (Lemma 2)</p>
+    \[ g(\bu)=\frac{\varphi_{\Lambda}(\bK^{\top}\bu)\;\bmu^{\top}\bu}{\pi_{\Lambda}},\qquad \bu\in H_{\bmu}, \tag{15} \]
+    <p>and \(g(\bu)=0\) outside \(H_{\bmu}\). The factor \(\bmu^{\top}\bu\) is the Jacobian of (14),</p>
+    \[ d\bv=(\bmu^{\top}\bu)\,\sigma(d\bu), \tag{16} \]
+    <p>which turns the density of the tangent coordinates, with respect to area on the flat plane, into a density on the curved sphere. For \(k=3\), written out,</p>
+    \[ g(\bu)=\frac{\bmu^{\top}\bu}{2\pi\sqrt{\lambda_2\lambda_3}\;\pi_{\Lambda}}\,
+       \exp\Bigl\{-\frac{(\bgamma_2^{\top}\bu)^2}{2\lambda_2}-\frac{(\bgamma_3^{\top}\bu)^2}{2\lambda_3}\Bigr\}. \]
+    <p>The truncation to the ball removes very little: \(1-\pi_{\Lambda}\le2^{(k-1)/2}\exp\{-1/(4\lambda_2)\}\) by (19), which for the default \(\sqrt{\lambda_2}=0.14\) is below \(10^{-5}\).</p>
+
+    <h3>Back to the triangle</h3>
+    <p>On \(\mathcal O\), squaring undoes the square root: \(\bz=\bu^2\). If \(\bmu\) has positive components, every \(\bu\in\mathcal O\) has a positive part \(u_j\), so \(\bmu^{\top}\bu\ge\mu_ju_j&gt;0\); hence \(\mathcal O\subset H_{\bmu}\), and every composition, including one with zero parts, has positive density. The hemisphere is larger than the orthant, however: points of \(H_{\bmu}\) with a negative coordinate are not square roots of any composition. This is the price the manuscript pays for a normalising constant \(\pi_{\Lambda}\) that depends on \(\Lambda\) only. On this page such points stay on the sphere, drawn in <b class="c-out">red</b>; they are left out of the triangle, and their probability \(P(\bU\notin\mathcal O)\) is reported.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 4</span><span class="plate-t">sphere, mean direction, tangent plane, and the map \(\psi\) of (14)</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="p4-v2"><span class="ctl-l"><span>probe: tangent coordinate v&#8322; (along &gamma;&#8322;)</span><b id="p4-v2-v"></b></span>
+        <input type="range" id="p4-v2" min="-0.95" max="0.95" step="0.01" value="0.45"></label>
+      <label class="ctl" for="p4-v3"><span class="ctl-l"><span>probe: tangent coordinate v&#8323; (along &gamma;&#8323;)</span><b id="p4-v3-v"></b></span>
+        <input type="range" id="p4-v3" min="-0.95" max="0.95" step="0.01" value="-0.25"></label>
+    </div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <span class="lab">show</span>
+        <button class="btn" id="b4-plane" aria-pressed="true">tangent plane</button>
+        <button class="btn" id="b4-pts" aria-pressed="true">sample points</button>
+        <button class="btn" id="b4-ball" aria-pressed="false">edge of the ball</button>
+        <button class="btn" id="b4-tri" aria-pressed="false">triangle</button>
+        <span class="sep"></span>
+        <button class="btn" id="b4-zin" aria-label="zoom in">&plus;</button>
+        <button class="btn" id="b4-zout" aria-label="zoom out">&minus;</button>
+        <button class="btn" id="b4-reset">reset view</button>
+      </div>
+    </div>
+    <ul class="key">
+      <li><i style="background:var(--g2)"></i>\(\bu\) on the sphere</li>
+      <li><i style="background:var(--basis)"></i>\(\bmu+\bK\bv\) on the plane</li>
+      <li><i class="ln dash" style="border-color:var(--ink-2)"></i>\(\bu\leftrightarrow\bv\), parallel to \(\bmu\)</li>
+      <li><i style="background:var(--ink)"></i>probe</li>
+    </ul>
+    <div class="plate-body"><div class="plot tall" id="fig4" role="img" aria-label="The sphere with the mean direction, the tangent plane, and points mapped between the sphere and the plane"></div><div class="hint">drag to rotate &middot; right-drag to pan &middot; &plus;/&minus; to zoom</div></div>
+    <div class="readout" id="o4"></div>
+    <figcaption>The <b class="c-mu">orange arrow</b> is \(\bmu\), the square root of the composition \((0.50,0.30,0.20)\); the <b class="c-b">violet square</b> is the tangent plane, drawn through the point \(\bmu\), with the axes <b class="c-g2">\(\bgamma_2\)</b> and <b class="c-g3">\(\bgamma_3\)</b>. Ten points \(\bu\) on the sphere are joined to their tangent points \(\bmu+\bK\bv\), \(\bv=\bK^{\top}\bu\); they are drawn from a TN distribution with the same \(\bmu\) and \(\bK\) as the data but a larger spread, because for the data the gaps would be too small to see. Each dashed segment is parallel to \(\bmu\), because by (14) \(\bu\) and \(\bmu+\bK\bv\) differ only by \(\{1-(1-\|\bv\|^2)^{1/2}\}\bmu\). The button <em>edge of the ball</em> adds two dashed circles: the edge of the ball, \(\|\bv\|=1\), drawn on the plane, and the edge of the hemisphere \(H_{\bmu}\), the great circle at \(90^\circ\) from \(\bmu\); \(\psi\) sends the first towards the second (zoom out to see them whole). The probe sliders move a point on the plane and show where (14) sends it, and <em>triangle</em> follows it on to \(\bz=\bu^2\).</figcaption>
+  </figure>
+
+  <div class="col">
+    <p>The TN distribution has the same location and orientation parameters as the Kent distribution, and its tangent variances correspond one-to-one to the Kent concentration and shape through \(\lambda_m=(\kappa-2\beta_m)^{-1}\) (17). Part&nbsp;7 compares the two.</p>
+  </div>
+</section>
+
+<!-- =============================== PART 5 =============================== -->
+<section class="part" id="p5" data-title="Contour sets">
+  <div class="col">
+    <div class="eyebrow">Part 5</div>
+    <h2>Contour sets</h2>
+    <p class="lede">A contour set is where the density takes one value. Here are the contours of \(g\) on the tangent plane, on the sphere and on the triangle.</p>
+    <p>The density (15) peaks at \(\bu=\bmu\), where both \(\varphi_{\Lambda}(\bK^{\top}\bu)\) and \(\bmu^{\top}\bu\) are largest, so \(g(\bmu)=\varphi_{\Lambda}(\mathbf 0)/\pi_{\Lambda}\). We draw the sets where \(g\) equals a fraction \(f\) of this peak; with five levels, \(f=0.1,0.3,0.5,0.7,0.9\), as on the Kent pages. In tangent coordinates, by (14)&ndash;(16),</p>
+    \[ \frac{g\{\psi(\bv)\}}{g(\bmu)}=\exp\Bigl(-\tfrac12\,\bv^{\top}\Lambda^{-1}\bv\Bigr)\,\bigl(1-\|\bv\|^{2}\bigr)^{1/2}. \]
+    <p>Without the last factor, the Jacobian, the contours would be the ellipses \(\bv^{\top}\Lambda^{-1}\bv=-2\ln f\) of the Gaussian part (dashed); the ellipse at level \(f\) holds a share \(1-f\) of \(N(\mathbf 0,\Lambda)\). The Jacobian pulls the contours in slightly, visibly only when the spread is large. Along every ray from the centre the ratio falls from 1 to 0 before the edge of the ball, so each contour is a single closed curve. Mapped by \(\psi\) it becomes a contour on the sphere, and squared it becomes a contour on the triangle. The parts outside \(\mathcal O\) are dashed red on the plane and the sphere, and are absent from the triangle.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 5</span><span class="plate-t">contours of \(g\): (a) tangent plane, (b) sphere, (c) triangle</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="p5-th"><span class="ctl-l"><span>&theta; &mdash; angle of &mu; from the x&#8323; axis</span><b id="p5-th-v"></b></span>
+        <input type="range" id="p5-th" min="2" max="88" step="0.1" value="63.4"></label>
+      <label class="ctl" for="p5-ph"><span class="ctl-l"><span>&phi; &mdash; angle around it, from x&#8321; to x&#8322;</span><b id="p5-ph-v"></b></span>
+        <input type="range" id="p5-ph" min="2" max="88" step="0.1" value="37.8"></label>
+      <label class="ctl" for="p5-ps"><span class="ctl-l"><span>&psi; &mdash; turn of the axes in T<sub>&mu;</sub></span><b id="p5-ps-v"></b></span>
+        <input type="range" id="p5-ps" min="0" max="180" step="1" value="30"></label>
+      <label class="ctl" for="p5-s2"><span class="ctl-l"><span>&radic;&lambda;&#8322; &mdash; spread along &gamma;&#8322;</span><b id="p5-s2-v"></b></span>
+        <input type="range" id="p5-s2" min="0.02" max="0.6" step="0.005" value="0.14"></label>
+      <label class="ctl" for="p5-s3"><span class="ctl-l"><span>&radic;&lambda;&#8323; &mdash; spread along &gamma;&#8323; (&le; &radic;&lambda;&#8322;)</span><b id="p5-s3-v"></b></span>
+        <input type="range" id="p5-s3" min="0.02" max="0.6" step="0.005" value="0.06"></label>
+      <label class="ctl" for="p5-nl"><span class="ctl-l"><span>number of contour levels</span><b id="p5-nl-v"></b></span>
+        <input type="range" id="p5-nl" min="1" max="9" step="1" value="5"></label>
+    </div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <span class="lab">presets</span>
+        <button class="btn" data-preset="p5:default">default</button>
+        <button class="btn" data-preset="p5:edge">near the edge x&#8323; = 0</button>
+        <button class="btn" data-preset="p5:wide">dispersed</button>
+        <button class="btn" data-preset="p5:round">round (&lambda;&#8322; = &lambda;&#8323;)</button>
+        <span class="sep"></span>
+        <button class="btn" id="b5-zin" aria-label="zoom the sphere in">&plus;</button>
+        <button class="btn" id="b5-zout" aria-label="zoom the sphere out">&minus;</button>
+        <button class="btn" id="b5-reset">reset sphere view</button>
+      </div>
+    </div>
+    <ul class="key">
+      <li><i class="ln" style="border-color:var(--ink)"></i>contour of \(g\) (15)</li>
+      <li><i class="ln dash" style="border-color:var(--muted)"></i>Gaussian part \(\varphi_{\Lambda}\) alone</li>
+      <li><i class="ln dash" style="border-color:var(--out)"></i>contour outside \(\mathcal O\)</li>
+      <li><i class="sq" style="background:var(--tint);border:1px solid var(--basis)"></i>image of \(\mathcal O\) (compositions)</li>
+      <li><i style="background:var(--mu)"></i>\(\bmu\) and \(\bmu^2\)</li>
+    </ul>
+    <div class="plate-body">
+      <div class="grid3">
+        <div><div class="plot" id="fig5a" role="img" aria-label="Contours on the tangent plane"></div><div class="panel-t"><b>(a)</b> tangent plane, \(\bv=\bK^{\top}\bu\)</div></div>
+        <div><div class="plot" id="fig5b" role="img" aria-label="Contours on the sphere"></div><div class="panel-t"><b>(b)</b> sphere, \(\bu=\psi(\bv)\) (14)</div></div>
+        <div><div class="plot" id="fig5c" role="img" aria-label="Contours on the triangle"></div><div class="panel-t"><b>(c)</b> triangle, \(\bz=\bu^2\)</div></div>
+      </div>
+      <div class="hint">(b): drag to rotate</div>
+    </div>
+    <div class="readout" id="o5"></div>
+    <figcaption><b>(a)</b> The tangent plane, looking straight down \(\bmu\), in the coordinates \(v_2,v_3\) along the axes; the axis scale follows \(\sqrt{\lambda_2}\). The shaded curved triangle is the image of \(\mathcal O\) under \(\bu\mapsto\bK^{\top}\bu\): the tangent coordinates of all compositions. The dotted circle \(\|\bv\|=1\) is the edge of the ball, where the support ends. <b>(b)</b> The same contours on the sphere. The pale cap is the hemisphere \(H_{\bmu}\), the support of the TN distribution; the darker patch is \(\mathcal O\). <b>(c)</b> The contours on the triangle; the orange cross is \(\bmu^2\). The angles \(\theta,\varphi\) place \(\bmu=(\sin\theta\cos\varphi,\ \sin\theta\sin\varphi,\ \cos\theta)\). The axes are \(\bgamma_2=\cos\psi\,\mathbf l+\sin\psi\,\mathbf s\) and \(\bgamma_3=-\sin\psi\,\mathbf l+\cos\psi\,\mathbf s\) in the frame of design K (Appendix A): \(\mathbf s\) points from \(\bmu\) towards the corner \(x_3\), and \(\mathbf l=\mathbf s\times\bmu\) runs parallel to the bottom edge, so \(\psi=0\) lays the long axis horizontally on the triangle and \(\psi=90^\circ\) points it at \(x_3\).</figcaption>
+  </figure>
+</section>
+
+<!-- =============================== PART 6 =============================== -->
+<section class="part" id="p6" data-title="Density, simulation and estimation">
+  <div class="col">
+    <div class="eyebrow">Part 6</div>
+    <h2>Density, simulation and estimation</h2>
+    <p class="lede">The same density as colour, a sample drawn from it, and the parameters estimated back from the sample.</p>
+    <p><b>On the sphere</b> the colour is \(g\) of (15). <b>On the triangle</b> it is, by default, \(g(\sqrt{\bz})\): the value of (15) at the square root of the composition, so that colours and contours on the triangle are those of the sphere, carried over by \(\bz=\bu^2\). This is not a density with respect to area on the triangle. The switch <em>density of Z</em> shows that density instead,</p>
+    \[ f_Z(\bz)=\frac{g(\sqrt{\bz})}{4\sqrt{z_1z_2z_3}}, \]
+    <p>which is <em>not in the manuscript</em>: it adds the Jacobian of the square-root map, \(\sigma(d\bu)=dz_1\,dz_2/(4\sqrt{z_1z_2z_3})\). It is infinite on the edges wherever \(g\) is positive there, and it integrates over the triangle to \(P(\bU\in\mathcal O)\), not to 1, because the mass outside \(\mathcal O\) has no composition.</p>
+    <p><b>Resample</b> draws a new sample of size \(n\) by Definition 1. The sample moves with the sliders, because the same random numbers are reused until you press the button. Points that land outside \(\mathcal O\) appear on the sphere as <b class="c-out">red crosses</b>; they are not compositions, so the triangle shows only the others.</p>
+    <p><b>Estimation</b> follows Section 3.2.3: the sufficient statistics (21) with \(\hat{\bM}=S_2/n\), the normalised resultant \(\hat\bmu=\bs_1/\|\bs_1\|\) (22), the Householder reflector (26) with \(\bH=(\hat\bmu,\bB)\), the projected second moment \(S_T=\bB^{\top}\hat{\bM}\bB\), its spectral decomposition \(S_T=\bW\diag(\hat\lambda_2,\hat\lambda_3)\bW^{\top}\) (33) with \(\hat\bK=\bB\bW\), and the Kent parameters (34).</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 6</span><span class="plate-t">the TN density on the triangle and on the sphere, with a simulated sample</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="p6-th"><span class="ctl-l"><span>&theta; &mdash; angle of &mu; from the x&#8323; axis</span><b id="p6-th-v"></b></span>
+        <input type="range" id="p6-th" min="2" max="88" step="0.1" value="63.4"></label>
+      <label class="ctl" for="p6-ph"><span class="ctl-l"><span>&phi; &mdash; angle around it, from x&#8321; to x&#8322;</span><b id="p6-ph-v"></b></span>
+        <input type="range" id="p6-ph" min="2" max="88" step="0.1" value="37.8"></label>
+      <label class="ctl" for="p6-ps"><span class="ctl-l"><span>&psi; &mdash; turn of the axes in T<sub>&mu;</sub></span><b id="p6-ps-v"></b></span>
+        <input type="range" id="p6-ps" min="0" max="180" step="1" value="30"></label>
+      <label class="ctl" for="p6-s2"><span class="ctl-l"><span>&radic;&lambda;&#8322; &mdash; spread along &gamma;&#8322;</span><b id="p6-s2-v"></b></span>
+        <input type="range" id="p6-s2" min="0.02" max="0.6" step="0.005" value="0.14"></label>
+      <label class="ctl" for="p6-s3"><span class="ctl-l"><span>&radic;&lambda;&#8323; &mdash; spread along &gamma;&#8323; (&le; &radic;&lambda;&#8322;)</span><b id="p6-s3-v"></b></span>
+        <input type="range" id="p6-s3" min="0.02" max="0.6" step="0.005" value="0.06"></label>
+      <label class="ctl" for="p6-n"><span class="ctl-l"><span>sample size n</span><b id="p6-n-v"></b></span>
+        <input type="range" id="p6-n" min="0" max="13" step="1" value="7"></label>
+    </div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <button class="btn go" id="b6-resample">Resample</button>
+        <span class="sep"></span>
+        <span class="lab">triangle</span>
+        <button class="btn" id="b6-dg" aria-pressed="true">g(&radic;z) (15)</button>
+        <button class="btn" id="b6-dz" aria-pressed="false">density of Z</button>
+        <span class="sep"></span>
+        <span class="lab">colour</span>
+        <button class="btn" id="b6-lin" aria-pressed="true">linear</button>
+        <button class="btn" id="b6-log" aria-pressed="false">log</button>
+        <span class="sep"></span>
+        <button class="btn" id="b6-pts" aria-pressed="true">points</button>
+      </div>
+    </div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <span class="lab">presets</span>
+        <button class="btn" data-preset="p6:default">default</button>
+        <button class="btn" data-preset="p6:edge">near the edge x&#8323; = 0</button>
+        <button class="btn" data-preset="p6:wide">dispersed</button>
+        <button class="btn" data-preset="p6:round">round (&lambda;&#8322; = &lambda;&#8323;)</button>
+        <span class="sep"></span>
+        <button class="btn" id="b6-zin" aria-label="zoom the sphere in">&plus;</button>
+        <button class="btn" id="b6-zout" aria-label="zoom the sphere out">&minus;</button>
+        <button class="btn" id="b6-reset">reset sphere view</button>
+      </div>
+    </div>
+    <ul class="key">
+      <li><i class="sq" style="background:linear-gradient(90deg,var(--seq1),var(--seq4),var(--seq6))"></i>density, low &rarr; high</li>
+      <li><i style="background:var(--ink);box-shadow:0 0 0 1.5px var(--surface)"></i>simulated composition</li>
+      <li><i class="x"></i>draw outside \(\mathcal O\) (sphere only)</li>
+      <li><i style="background:var(--mu)"></i>\(\bmu\), \(\bmu^2\)</li>
+    </ul>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="plot" id="fig6a" role="img" aria-label="Heatmap of the TN density over the triangle with simulated compositions"></div><div class="panel-t" id="fig6a-t"><b>triangle</b></div></div>
+        <div><div class="plot" id="fig6b" role="img" aria-label="The TN density coloured on the sphere with simulated points"></div><div class="panel-t"><b>sphere</b>: \(g\) on the hemisphere \(H_{\bmu}\)</div></div>
+      </div>
+      <div class="hint">sphere: drag to rotate</div>
+      <div class="scroll">
+        <table id="t6">
+          <thead><tr><th>parameter</th><th class="r">true</th><th class="r">estimate, all n draws</th><th class="r">estimate, compositions only</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="readout" id="o6"></div>
+    <figcaption>Left: the colour scale is the same blue ramp throughout, light for low and dark for high (reversed in dark mode). In the default mode the triangle and the sphere share one scale, so equal colours mean equal values of \(g\). In <em>log</em> mode the scale covers four powers of ten below the maximum, which shows the tails, where the boundary effects live. With <em>density of Z</em> the scale is capped at the largest value away from the edges, since \(f_Z\) is infinite on them. Table: the column <em>all n draws</em> uses the whole TN sample, including points outside \(\mathcal O\); <em>compositions only</em> uses the draws that are compositions, as real data would be. The angle \(\psi\) of \(\hat\bgamma_2\) is measured in the frame \((\mathbf l,\mathbf s)\) at \(\hat\bmu\), modulo \(180^\circ\). The estimates \(\hat\lambda_m\) maximise the Gaussian part of the log-likelihood (Theorem&nbsp;1); they estimate \(E(V_m^2)\), which falls below \(\lambda_m\) when the truncation \(1-\pi_{\Lambda}\) is not small, because the manuscript neglects the \(\ln\pi_{\Lambda}\) term of (20).</figcaption>
+  </figure>
+</section>
+
+<!-- =============================== PART 7 =============================== -->
+<section class="part" id="p7" data-title="Kent versus tangent-normal">
+  <div class="col">
+    <div class="eyebrow">Part 7</div>
+    <h2>Kent versus tangent-normal</h2>
+    <p class="lede">The TN distribution was built to share the parameters of the Kent distribution. How alike are their shapes?</p>
+    <p>For \(k=3\) the Kent density (11) is</p>
+    \[ f(\bu)=c(\kappa,\beta)^{-1}\exp\bigl\{\kappa\,\bmu^{\top}\bu+\beta\bigl[(\bgamma_2^{\top}\bu)^2-(\bgamma_3^{\top}\bu)^2\bigr]\bigr\},\qquad \bu\in S^{2}, \]
+    <p>positive on the whole sphere, with \(0\le2\beta&lt;\kappa\) by (13). With \(\beta_2=\beta\) and \(\beta_3=-\beta\) (12), the matching (17), \(\lambda_m=(\kappa-2\beta_m)^{-1}\), gives</p>
+    \[ \lambda_2=\frac{1}{\kappa-2\beta},\qquad \lambda_3=\frac{1}{\kappa+2\beta}. \]
+    <p>The two distributions then have the same location and orientation and the same normal limit as \(\kappa\to\infty\) (Scealy and Welsh, 2011, Theorem 3), so for large \(\kappa\) their contours coincide. Away from that limit they differ: the Kent density is positive on the whole sphere, the TN density only on the hemisphere \(H_{\bmu}\). Lower \(\kappa\) towards 2 and watch the outer Kent contours reach the edge of the hemisphere and pass it, while the TN contours stay inside. Both families are drawn at the same fractions of their own peaks.</p>
+  </div>
+
+  <figure class="plate">
+    <div class="plate-head"><span class="plate-n">Figure 7</span><span class="plate-t">Kent and TN with matched parameters (17), side by side</span></div>
+    <div class="ctl-row">
+      <label class="ctl" for="p7-k"><span class="ctl-l"><span>&kappa; &mdash; Kent concentration (log scale)</span><b id="p7-k-v"></b></span>
+        <input type="range" id="p7-k" min="0" max="1000" step="1" value="547"></label>
+      <label class="ctl" for="p7-r"><span class="ctl-l"><span>2&beta;/&kappa; &mdash; ovalness, &lt; 1 by (13)</span><b id="p7-r-v"></b></span>
+        <input type="range" id="p7-r" min="0" max="0.9" step="0.01" value="0.5"></label>
+      <label class="ctl" for="p7-th"><span class="ctl-l"><span>&theta; &mdash; angle of &mu; from the x&#8323; axis</span><b id="p7-th-v"></b></span>
+        <input type="range" id="p7-th" min="2" max="88" step="0.1" value="63.4"></label>
+      <label class="ctl" for="p7-ph"><span class="ctl-l"><span>&phi; &mdash; angle around it, from x&#8321; to x&#8322;</span><b id="p7-ph-v"></b></span>
+        <input type="range" id="p7-ph" min="2" max="88" step="0.1" value="37.8"></label>
+      <label class="ctl" for="p7-ps"><span class="ctl-l"><span>&psi; &mdash; turn of the axes in T<sub>&mu;</sub></span><b id="p7-ps-v"></b></span>
+        <input type="range" id="p7-ps" min="0" max="180" step="1" value="30"></label>
+      <label class="ctl" for="p7-nl"><span class="ctl-l"><span>number of contour levels</span><b id="p7-nl-v"></b></span>
+        <input type="range" id="p7-nl" min="1" max="9" step="1" value="5"></label>
+    </div>
+    <div class="ctl-row">
+      <div class="btnrow">
+        <span class="lab">presets</span>
+        <button class="btn" data-preset="p7:tight">concentrated (&kappa; = 300)</button>
+        <button class="btn" data-preset="p7:mid">moderate (&kappa; = 30)</button>
+        <button class="btn" data-preset="p7:low">diffuse (&kappa; = 2.5)</button>
+        <span class="sep"></span>
+        <button class="btn" id="b7-zin" aria-label="zoom both spheres in">&plus;</button>
+        <button class="btn" id="b7-zout" aria-label="zoom both spheres out">&minus;</button>
+        <button class="btn" id="b7-reset">reset sphere views</button>
+      </div>
+    </div>
+    <ul class="key">
+      <li><i class="ln" style="border-color:var(--basis)"></i>Kent (11)</li>
+      <li><i class="ln" style="border-color:var(--ink)"></i>TN (15)</li>
+      <li><i class="ln dash" style="border-color:var(--out)"></i>outside \(\mathcal O\)</li>
+      <li><i class="ln dash" style="border-color:var(--muted)"></i>edge of \(H_{\bmu}\)</li>
+    </ul>
+    <div class="plate-body">
+      <div class="grid2">
+        <div><div class="panel-t colhead"><b>Kent</b>, eq. (11)</div><div class="plot" id="fig7a" role="img" aria-label="Kent contours on the sphere"></div><div class="plot" id="fig7c" role="img" aria-label="Kent contours on the triangle"></div></div>
+        <div><div class="panel-t colhead"><b>tangent-normal</b>, eq. (15)</div><div class="plot" id="fig7b" role="img" aria-label="TN contours on the sphere"></div><div class="plot" id="fig7d" role="img" aria-label="TN contours on the triangle"></div></div>
+      </div>
+      <div class="plot short" id="fig7e" role="img" aria-label="Kent and TN contours overlaid on the tangent plane" style="margin-top:10px"></div>
+      <div class="panel-t"><b>both</b> on the tangent plane, \(\bv=\bK^{\top}\bu\): TN solid, Kent dashed (shown where \(\bmu^{\top}\bu&gt;0\))</div>
+      <div class="hint">spheres: drag to rotate</div>
+    </div>
+    <div class="readout" id="o7"></div>
+    <figcaption>Top: the contours on the sphere; the darker patch is \(\mathcal O\) and the dashed great circle is the edge of \(H_{\bmu}\). Middle: the parts inside \(\mathcal O\), squared onto the triangle. Bottom: both families in the tangent coordinates of the TN distribution. The read-out gives what each distribution places where no composition lives: for Kent, the mass on the far hemisphere and outside \(\mathcal O\); for TN, the mass removed by the truncation, \(1-\pi_{\Lambda}\), and the mass outside \(\mathcal O\). At \(\kappa=300\) the two families coincide. As \(\kappa\) falls, the Kent contours become wider and more elongated than the TN contours: to second order in the angle \(\theta\) from \(\bmu\), the Jacobian factor \(\bmu^{\top}\bu=\cos\theta\) of (15) adds the same curvature in every direction, which tightens and rounds the TN contours. At \(\kappa=2.5\) the outer Kent contours pass the edge of the hemisphere, which the TN contours never do.</figcaption>
+  </figure>
+</section>
+
+<!-- =============================== PART 8 =============================== -->
+<section class="part" id="p8" data-title="Putting it together">
+  <div class="col">
+    <div class="eyebrow">Part 8</div>
+    <h2>Putting it together</h2>
+    <ol class="bigfive">
+      <li><div><b>A composition is a point of the sphere.</b> The square root sends \(\bz\) to the unit vector \(\bu=\sqrt{\bz}\) in the positive orthant \(\mathcal O\); squaring sends it back, and zeros land on the edges.</div></li>
+      <li><div><b>A centre gives a flat chart.</b> The mean direction \(\bmu\) and an orthonormal basis \(\bK\) of \(T_{\bmu}\) give tangent coordinates \(\bv=\bK^{\top}\bu\), and \(\psi(\bv)=(1-\|\bv\|^2)^{1/2}\bmu+\bK\bv\) goes back (14).</div></li>
+      <li><div><b>On that chart the TN distribution is exactly normal.</b> \(\bv\) is \(N(\mathbf 0,\Lambda)\) truncated to the unit ball; on the sphere the density is \(\varphi_{\Lambda}(\bK^{\top}\bu)\,\bmu^{\top}\bu/\pi_{\Lambda}\) (15), where \(\bmu^{\top}\bu\) is the Jacobian (16).</div></li>
+      <li><div><b>It is the Kent distribution's twin.</b> Same \(\bmu\) and \(\bK\), and \(\lambda_m=(\kappa-2\beta_m)^{-1}\) (17); for large \(\kappa\) the two coincide, and \(1-\pi_{\Lambda}\) is exponentially small (19). For small \(\kappa\) they part, and the TN keeps to its hemisphere.</div></li>
+      <li><div><b>Its shape is estimated in closed form.</b> Given \(\hat\bmu\), the axes and tangent variances are the eigenvectors and eigenvalues of \(S_T=\bB^{\top}\hat{\bM}\bB\) (33); this is what makes the TN split criterion cheap.</div></li>
+    </ol>
+
+    <details class="impl">
+      <summary>How the numbers on this page are computed</summary>
+      <div>
+        <ul>
+          <li><b>\(\pi_{\Lambda}\)</b> (Lemma 2). For \(k-1=2\), writing \(\bV_0=(\sqrt{\lambda_2}X,\sqrt{\lambda_3}Y)\) with \((X,Y)=R(\cos b,\sin b)\) and \(R^2\sim\chi^2_2\), one has exactly
+            \[ 1-\pi_{\Lambda}=\frac1{2\pi}\int_0^{2\pi}\exp\Bigl\{-\frac{1}{2\lambda_2\cos^2b+2\lambda_3\sin^2b}\Bigr\}\,db. \]
+            The integrand is smooth and periodic, so the trapezoidal rule converges geometrically; it agrees with Ruben's (1962) series, used in the manuscript, to the accuracy of that series.</li>
+          <li><b>Contours.</b> Along each direction of the tangent plane, the radius where \(g\{\psi(\bv)\}/g(\bmu)=f\) is found by a safeguarded Newton iteration; the points where a contour crosses an edge of \(\mathcal O\) are located by bisection, so the curves on the triangle end exactly on its edges.</li>
+          <li><b>\(P(\bU\notin\mathcal O)\).</b> \(\mathcal O\) is convex on the sphere, so each ray of the tangent plane leaves its image once, at a radius found in closed form; the probability is then a one-dimensional integral of the same kind as \(\pi_{\Lambda}\).</li>
+          <li><b>Simulation</b> follows Definition 1 (normal draws by the polar method from a seeded generator, rejection of \(\|\bV_0\|\ge1\), then (14)). <b>Estimation</b> follows (21), (22), (26), (33) and (34).</li>
+          <li><b>Kent.</b> The normalising constant is \(c(\kappa,\beta)=2\pi\int_{-1}^{1}e^{\kappa t}I_0\{\beta(1-t^2)\}\,dt\), and the masses on the far hemisphere and outside \(\mathcal O\) are computed by adaptive Simpson quadrature. Kent contours solve a quadratic in \(\cos\theta\) per direction.</li>
+          <li><b>Not in the manuscript:</b> the frame \((\mathbf l,\mathbf s)\) of design K used to turn the axes by \(\psi\), and the density \(f_Z\) of Part&nbsp;6.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <a href="../index.html">&larr; All visualisations</a> &nbsp;&middot;&nbsp; <a href="../kent/kent_on_the_sphere.html">Kent on the Sphere</a> &nbsp;&middot;&nbsp; &copy; 2026 Khaled Masoumifard
+</footer>
+
+<noscript><p style="max-width:60ch;margin:2rem auto;font-family:sans-serif">The figures on this page are drawn by JavaScript, which is turned off in this browser.</p></noscript>
+
+<!-- =====================================================================
+     1. THE MATHEMATICS — pure functions, no page access.
+     Every function cites the equation it implements; numbers refer to the
+     manuscript "Compositional random forest" (van der Westhuizen and
+     Masoumifard). k = 3 throughout: u lives on S^2, the tangent
+     coordinates v = (v2, v3) are 2-vectors and Lambda = diag(l2, l3).
+     Exposed as window.TN so the numbers can be checked from the console.
+     ===================================================================== -->
+<script id="tn-math">
+window.TN = (function(){
+"use strict";
+const TAU = 2*Math.PI;
+const DEG = Math.PI/180;
+
+/* ---------------------------- 3-vectors ---------------------------- */
+const dot   = (a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm  = a=>Math.sqrt(dot(a,a));
+const scale = (a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const lin2  = (s,a,t,b)=>[s*a[0]+t*b[0], s*a[1]+t*b[1], s*a[2]+t*b[2]];
+const lin3  = (r,a,s,b,t,c)=>[r*a[0]+s*b[0]+t*c[0], r*a[1]+s*b[1]+t*c[1], r*a[2]+s*b[2]+t*c[2]];
+const cross = (a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+const unit  = a=>{const n=norm(a); return n>0?scale(a,1/n):a.slice();};
+
+/* ------------------- Section 2.1: the square-root map -------------------
+   u = sqrt(z) part by part maps the simplex S^k (eq. 2, c = 1) one-to-one onto
+   the positive orthant O = {u in S^{k-1}: u_j >= 0}. Exact zeros are
+   admissible: sqrt(0) = 0 lies on an edge of O. The closure (eq. 1) is
+   re-applied first so that rounding cannot push u off the sphere.        */
+function sqrtMap(z){
+  const a=Math.max(z[0],0), b=Math.max(z[1],0), c=Math.max(z[2],0), s=a+b+c;
+  return [Math.sqrt(a/s), Math.sqrt(b/s), Math.sqrt(c/s)];
+}
+/* Membership of O. A tolerance of 1e-12 absorbs rounding on the faces. */
+const TOL_O = 1e-12;
+const inO = u => !!u && u[0]>=-TOL_O && u[1]>=-TOL_O && u[2]>=-TOL_O;
+/* Inverse on O: z = u^2. A point of the sphere with a negative coordinate is
+   not in O and is the square root of no composition: return null.        */
+function squareMap(u){
+  if(!inO(u)) return null;
+  const z=[u[0]*u[0], u[1]*u[1], u[2]*u[2]], s=z[0]+z[1]+z[2];
+  return [z[0]/s, z[1]/s, z[2]/s];
+}
+
+/* ---------------------------- parameters ----------------------------
+   Slider parametrisation (a convenience of this page, not of the paper):
+   mu from two angles, theta from the x3-axis and phi around it.          */
+function muFromAngles(thDeg, phDeg){
+  const t=thDeg*DEG, p=phDeg*DEG;
+  return [Math.sin(t)*Math.cos(p), Math.sin(t)*Math.sin(p), Math.cos(t)];
+}
+/* Reference frame in T_mu: the frame of design K (Appendix A, above eq. A.4),
+   s(mu) = (I - mu mu^T) e3 / ||(I - mu mu^T) e3||,  l(mu) = s(mu) x mu.
+   s points from mu towards the x3 corner; l keeps u3 fixed to first order,
+   i.e. it runs parallel to the x1-x2 edge of the triangle.               */
+function frameLS(mu){
+  let s = [-mu[2]*mu[0], -mu[2]*mu[1], 1-mu[2]*mu[2]];
+  if(norm(s) < 1e-9) s = [1-mu[0]*mu[0], -mu[0]*mu[1], -mu[0]*mu[2]];  // mu = e3: use e1
+  s = unit(s);
+  return {l: cross(s, mu), s};
+}
+/* The axes K = (gamma2, gamma3) of Definition 1: the frame (l, s) turned by
+   psi inside T_mu. K^T K = I_2 and K^T mu = 0, as Lemma 1 requires.       */
+function axesK(mu, psiDeg){
+  const f=frameLS(mu), c=Math.cos(psiDeg*DEG), s=Math.sin(psiDeg*DEG);
+  return [lin2(c,f.l, s,f.s), lin2(-s,f.l, c,f.s)];
+}
+
+/* pi_Lambda = P(||V0|| < 1), V0 ~ N_2(0, Lambda) (Lemma 2).
+   With V0 = (sqrt(l2) X, sqrt(l3) Y), (X, Y) = R (cos b, sin b), R^2 ~ chi^2_2
+   independent of b ~ U(0, 2pi), and ||V0||^2 = R^2 (l2 cos^2 b + l3 sin^2 b):
+     1 - pi = (2 pi)^{-1} int_0^{2pi} exp{-1/(2 l2 cos^2 b + 2 l3 sin^2 b)} db.
+   Exact; the integrand is smooth and periodic, so the midpoint rule converges
+   geometrically. 1 - pi is computed directly so that tiny values keep their
+   relative accuracy (cf. the bound 19). The manuscript computes pi_Lambda by
+   Ruben's (1962) series; the two agree (checked against CompQuadForm::ruben). */
+function piLambda(l2, l3){
+  const N=2048; let acc=0;
+  for(let i=0;i<N;i++){
+    const b=TAU*(i+0.5)/N, c=Math.cos(b), s=Math.sin(b);
+    acc += Math.exp(-1/(2*(l2*c*c + l3*s*s)));
+  }
+  const out = acc/N;
+  return {pi:1-out, out, logPi:Math.log1p(-out)};
+}
+
+/* A TN(mu, K, Lambda) parameter set (Definition 1) with what the density needs. */
+function makeTN(mu, psiDeg, l2, l3){
+  const K=axesK(mu, psiDeg), pl=piLambda(l2,l3);
+  return {mu, K, psi:psiDeg, l2, l3, pi:pl.pi, piOut:pl.out, logPi:pl.logPi,
+          /* log g(mu) = log phi_Lambda(0) - log pi_Lambda: the peak of eq. (15) */
+          logPeak: -Math.log(TAU) - 0.5*Math.log(l2*l3) - pl.logPi};
+}
+
+/* ------------------------- Lemma 1 / eq. (14) ------------------------- */
+/* inverse of psi: the tangent coordinates v = K^T u */
+const tangentCoords = (u, K)=>[dot(K[0],u), dot(K[1],u)];
+/* eq. (14): psi(v) = (1 - ||v||^2)^{1/2} mu + K v, a bijection from the open
+   unit ball B^{k-1} onto the open hemisphere H_mu. Outside the ball: null. */
+function psiMap(v, mu, K){
+  const r2=v[0]*v[0]+v[1]*v[1];
+  if(!(r2 < 1)) return null;
+  return lin3(Math.sqrt(1-r2), mu, v[0], K[0], v[1], K[1]);
+}
+
+/* --------------------- Lemma 2 / eqs. (15) and (16) --------------------- */
+/* log phi_Lambda(v), the N_2(0, Lambda) log-density */
+function logPhi(v, l2, l3){
+  return -Math.log(TAU) - 0.5*Math.log(l2*l3) - 0.5*(v[0]*v[0]/l2 + v[1]*v[1]/l3);
+}
+/* eq. (15): g(u) = phi_Lambda(K^T u) mu^T u / pi_Lambda for u in H_mu, and 0
+   outside H_mu. The factor mu^T u is the Jacobian (16): dv = (mu^T u) sigma(du). */
+function logDensity(u, P){
+  const c=dot(P.mu,u);
+  if(!(c > 0)) return -Infinity;                 // outside the hemisphere H_mu
+  return logPhi(tangentCoords(u,P.K), P.l2, P.l3) + Math.log(c) - P.logPi;
+}
+const density = (u,P)=>Math.exp(logDensity(u,P));
+/* Density of the composition Z = U^2 with respect to dz1 dz2 on the triangle.
+   NOT IN THE MANUSCRIPT: it adds the Jacobian of the square-root map,
+   sigma(du) = 2^{-(k-1)} prod_j z_j^{-1/2} dz_1...dz_{k-1} (k = 3: 1/(4 sqrt(z1 z2 z3))),
+   and integrates over the triangle to P(U in O).                         */
+function logDensityZ(z, P){
+  return logDensity(sqrtMap(z),P) - Math.log(4) - 0.5*(Math.log(z[0])+Math.log(z[1])+Math.log(z[2]));
+}
+
+/* ------------------------------ contours ------------------------------
+   Level f of the peak: by (14)-(16), at v = r (cos a, sin a),
+     g{psi(v)} / g(mu) = exp(-r^2 q(a)/2) (1 - r^2)^{1/2},  q(a) = cos^2 a/l2 + sin^2 a/l3,
+   which falls strictly from 1 (r = 0) to 0 (r -> 1): one radius per direction.
+   Solve F(t) = t q/2 - ln(1 - t)/2 + ln f = 0 for t = r^2 by Newton's method,
+   kept inside a bisection bracket (F is increasing and convex on [0, 1)). */
+function levelRadius(a, f, l2, l3){
+  const c=Math.cos(a), s=Math.sin(a), q=c*c/l2+s*s/l3, L=Math.log(f);
+  let lo=0, hi=1, t=Math.min(-2*L/q, 0.999999);
+  for(let it=0; it<100; it++){
+    const F=0.5*t*q - 0.5*Math.log1p(-t) + L;
+    if(F>0) hi=t; else lo=t;
+    let tn = t - F/(0.5*q + 0.5/(1-t));
+    if(!(tn>lo && tn<hi)) tn=0.5*(lo+hi);
+    if(Math.abs(tn-t) <= 1e-15) { t=tn; break; }
+    t=tn;
+  }
+  return Math.sqrt(t);
+}
+/* the Gaussian part alone: the ellipse v^T Lambda^{-1} v = -2 ln f */
+function gaussRadius(a, f, l2, l3){
+  const c=Math.cos(a), s=Math.sin(a);
+  return Math.sqrt(-2*Math.log(f)/(c*c/l2+s*s/l3));
+}
+/* n levels f = (2i - 1)/(2n): 0.1, 0.3, ..., 0.9 for n = 5, as on the Kent pages */
+function levelFractions(n){ const out=[]; for(let i=1;i<=n;i++) out.push((2*i-1)/(2*n)); return out; }
+
+/* A closed curve on the sphere, u(a) for a in [0, 2 pi], sampled at M + 1
+   points and marked inside / outside O. Where it crosses an edge of O the
+   crossing is located by bisection in a and inserted, on the face u_j = 0,
+   so that its image on the triangle ends exactly on the edge.            */
+function traceCurve(uOf, M){
+  M = M || 360;
+  const raw=[];
+  for(let i=0;i<=M;i++){ const a=TAU*i/M, u=uOf(a); raw.push({a, u, inO:inO(u)}); }
+  const pts=[];
+  for(let i=0;i<raw.length;i++){
+    const p=raw[i];
+    if(i>0){
+      const q=raw[i-1];
+      if(q.u && p.u && q.inO!==p.inO){
+        let lo=q.a, hi=p.a; const loIn=q.inO;
+        for(let k=0;k<44;k++){ const m=0.5*(lo+hi), u=uOf(m); if(!u) break; if(inO(u)===loIn) lo=m; else hi=m; }
+        const ac=loIn?lo:hi, u=uOf(ac);
+        if(u) pts.push({a:ac, u:[Math.max(u[0],0),Math.max(u[1],0),Math.max(u[2],0)], inO:true, cross:true});
+      }
+    }
+    pts.push(p);
+  }
+  return pts;
+}
+/* contour of g at level f, as a curve on the sphere (via eq. 14) */
+function tnLevelCurve(P, f, M){
+  return traceCurve(a=>{ const r=levelRadius(a,f,P.l2,P.l3);
+    return psiMap([r*Math.cos(a), r*Math.sin(a)], P.mu, P.K); }, M);
+}
+
+/* ----------------------- the orthant O, seen from mu ----------------------- */
+/* The edges of O: the quarter circles u_j = 0 (images of the triangle's edges),
+   e1 -> e2 -> e3 -> e1, as one closed list of points.                     */
+function orthantLoop(n){
+  const E=[[0,1],[1,2],[2,0]], pts=[];
+  E.forEach(([i,j])=>{ for(let k=0;k<n;k++){ const t=Math.PI/2*k/n, u=[0,0,0]; u[i]=Math.cos(t); u[j]=Math.sin(t); pts.push(u);} });
+  pts.push([1,0,0]);
+  return pts;
+}
+/* Along the great-circle arc from mu in the tangent direction e = K(cos a, sin a),
+   u(theta) = cos(theta) mu + sin(theta) e, part j changes sign where
+   tan(theta) = mu_j/(-e_j) (only if e_j < 0). O is convex on the sphere, so the
+   arc leaves O once, at theta* = min_j of these. In tangent coordinates the
+   exit is at radius sin(theta*) <= 1.                                     */
+function exitAngle(a, mu, K){
+  const e=lin2(Math.cos(a),K[0],Math.sin(a),K[1]);
+  let th=Math.PI/2;
+  for(let j=0;j<3;j++) if(e[j]<0){ const tj=Math.atan2(mu[j],-e[j]); if(tj<th) th=tj; }
+  return th;
+}
+/* P(U not in O) for U ~ TN: with the parametrisation of piLambda,
+     P(V0 in ball, psi(V0) not in O) = (2 pi)^{-1} int [exp(-R*^2/(2 qt)) - exp(-1/(2 qt))] db,
+   R*(a) = sin(theta*(a)) for the direction a of V0, qt = l2 cos^2 b + l3 sin^2 b;
+   dividing by pi_Lambda conditions on the ball (Definition 1).           */
+function probOutsideO(P, N){
+  N=N||4096; const s2=Math.sqrt(P.l2), s3=Math.sqrt(P.l3); let acc=0;
+  for(let i=0;i<N;i++){
+    const b=TAU*(i+0.5)/N, cb=Math.cos(b), sb=Math.sin(b);
+    const qt=P.l2*cb*cb + P.l3*sb*sb;
+    const R=Math.sin(exitAngle(Math.atan2(s3*sb, s2*cb), P.mu, P.K));
+    acc += Math.exp(-R*R/(2*qt)) - Math.exp(-1/(2*qt));
+  }
+  return Math.max(0, acc/N)/P.pi;
+}
+
+/* ------------------------- simulation (Definition 1) -------------------------
+   Draw V0 ~ N_2(0, Lambda), reject ||V0|| >= 1 (so V = V0 | ||V0|| < 1), map
+   U = psi(V) by eq. (14). A seeded generator makes every figure reproducible. */
+function rng32(seed){ let a=seed|0; return function(){ a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function normalPair(rnd){   // Marsaglia's polar method
+  let x,y,s; do{ x=2*rnd()-1; y=2*rnd()-1; s=x*x+y*y; }while(s>=1 || s===0);
+  const m=Math.sqrt(-2*Math.log(s)/s); return [x*m, y*m];
+}
+function simulate(P, n, seed){
+  const rnd=rng32(seed), s2=Math.sqrt(P.l2), s3=Math.sqrt(P.l3), out=[];
+  let tries=0;
+  while(out.length<n && tries<1000*n+1000){
+    tries++;
+    const g=normalPair(rnd), v=[s2*g[0], s3*g[1]];
+    if(v[0]*v[0]+v[1]*v[1] >= 1) continue;                 // V = V0 | ||V0|| < 1
+    const u=psiMap(v, P.mu, P.K);                           // eq. (14)
+    out.push({u, v, inO:inO(u)});
+  }
+  return out;
+}
+
+/* ------------------------- estimation (Section 3.2.3) ------------------------- */
+/* eq. (26): Householder reflector H = I - 2 h h^T/(h^T h), h = e1 - mu, with
+   H e1 = mu; its last two columns are the orthonormal basis B of T_mu.   */
+function householderB(mu){
+  const h=[1-mu[0], -mu[1], -mu[2]], hh=dot(h,h);
+  if(hh < 1e-24) return [[0,1,0],[0,0,1]];                  // mu = e1: H = I
+  const col=j=>{ const e=[0,0,0]; e[j]=1; const c=2*h[j]/hh; return [e[0]-c*h[0], e[1]-c*h[1], e[2]-c*h[2]]; };
+  return [col(1), col(2)];
+}
+/* eigen-decomposition of a symmetric 2x2 matrix, eigenvalues descending */
+function eig2(S){
+  const a=S[0][0], b=S[0][1], c=S[1][1], m=(a+c)/2, d=Math.hypot((a-c)/2, b);
+  const t=0.5*Math.atan2(2*b, a-c);
+  return {l:[m+d, m-d], W:[[Math.cos(t),Math.sin(t)], [-Math.sin(t),Math.cos(t)]]};
+}
+function estimate(U){
+  const n=U.length; if(n<3) return null;
+  const s1=[0,0,0], S2=[[0,0,0],[0,0,0],[0,0,0]];
+  for(const u of U) for(let j=0;j<3;j++){ s1[j]+=u[j]; for(let l=0;l<3;l++) S2[j][l]+=u[j]*u[l]; }   // eq. (21)
+  const R=norm(s1); if(!(R>0)) return null;
+  const mu=scale(s1,1/R);                                    // eq. (22)
+  const M=S2.map(r=>r.map(x=>x/n));                          // M_hat = S2/n
+  const B=householderB(mu);                                  // eq. (26)
+  const q=(x,y)=>{ let s=0; for(let j=0;j<3;j++) for(let l=0;l<3;l++) s+=x[j]*M[j][l]*y[l]; return s; };
+  const ST=[[q(B[0],B[0]), q(B[0],B[1])], [q(B[1],B[0]), q(B[1],B[1])]];   // S_T = B^T M B
+  const E=eig2(ST);                                          // eq. (33)
+  const K=[lin2(E.W[0][0],B[0],E.W[0][1],B[1]), lin2(E.W[1][0],B[0],E.W[1][1],B[1])];   // K_hat = B W
+  const l2=E.l[0], l3=E.l[1];
+  const kappa=0.5*(1/l2+1/l3), beta=0.5*(kappa-1/l2);        // eq. (34), k = 3
+  const f=frameLS(mu);                                       // angle of gamma2_hat in (l, s), mod 180
+  let psi=Math.atan2(dot(K[0],f.s), dot(K[0],f.l))/DEG; psi=((psi%180)+180)%180;
+  let J=0; for(const u of U) J+=Math.log(dot(mu,u));         // Jacobian term J(A), eq. (30)
+  const ellTN = -n*(1+Math.log(TAU)) - 0.5*n*(Math.log(l2)+Math.log(l3));   // eq. (23) via (25)/(31)
+  return {n, mu, K, l2, l3, kappa, beta, psi, ST, J, ellTN};
+}
+
+/* ------------------------- Kent, eqs. (11)-(13) and (17) ------------------------- */
+/* matched parameters (17): lambda_m = (kappa - 2 beta_m)^{-1}, k = 3: beta_2 = beta, beta_3 = -beta (12) */
+const kentToTN = (kappa, beta)=>({l2:1/(kappa-2*beta), l3:1/(kappa+2*beta)});
+const tnToKent = (l2, l3)=>{ const kappa=0.5*(1/l2+1/l3); return {kappa, beta:0.5*(kappa-1/l2)}; };
+/* Kent level set, eq. (11) for k = 3 in the frame (mu, gamma2, gamma3): at angle
+   theta from mu in direction a, log f - log f(mu) = kappa(x - 1) + beta(1 - x^2) cos 2a,
+   x = cos theta, which increases with x when 2 beta < kappa (13): one root.     */
+function kentLevelCos(a, f, kappa, beta){
+  const c2=Math.cos(2*a), L=Math.log(f);
+  const G=x=>kappa*(x-1)+beta*(1-x*x)*c2-L;
+  if(G(-1) >= 0) return null;                                 // level below the minimum
+  let lo=-1, hi=1, x=Math.max(-0.999, 1+L/kappa);
+  for(let it=0; it<100; it++){
+    const g=G(x); if(g>0) hi=x; else lo=x;
+    let xn=x - g/(kappa-2*beta*c2*x);
+    if(!(xn>lo && xn<hi)) xn=0.5*(lo+hi);
+    if(Math.abs(xn-x) <= 1e-15) { x=xn; break; }
+    x=xn;
+  }
+  return x;
+}
+function kentLevelCurve(Kp, f, M){
+  return traceCurve(a=>{ const x=kentLevelCos(a,f,Kp.kappa,Kp.beta); if(x===null) return null;
+    const s=Math.sqrt(Math.max(0,1-x*x));
+    return lin3(x,Kp.mu, s*Math.cos(a),Kp.K[0], s*Math.sin(a),Kp.K[1]); }, M);
+}
+/* exp(-x) I0(x), x >= 0 (Abramowitz and Stegun 9.8.1-9.8.2, relative error < 2e-7) */
+function i0e(x){
+  if(x<3.75){ const y=(x/3.75)*(x/3.75);
+    return Math.exp(-x)*(1+y*(3.5156229+y*(3.0899424+y*(1.2067492+y*(0.2659732+y*(0.0360768+y*0.0045813)))))); }
+  const y=3.75/x;
+  return (0.39894228+y*(0.01328592+y*(0.00225319+y*(-0.00157565+y*(0.00916281+y*(-0.02057706+y*(0.02635537+y*(-0.01647633+y*0.00392377))))))))/Math.sqrt(x);
+}
+/* 16-point Gauss-Legendre rule on [-1, 1] (nodes by Newton's method on P_16) */
+const GL=(function(n){
+  const x=new Array(n), w=new Array(n);
+  for(let i=0;i<Math.ceil(n/2);i++){
+    let z=Math.cos(Math.PI*(i+0.75)/(n+0.5)), z1, pp;
+    do{ let p1=1, p2=0; for(let j=1;j<=n;j++){ const p3=p2; p2=p1; p1=((2*j-1)*z*p2-(j-1)*p3)/j; }
+        pp=n*(z*p1-p2)/(z*z-1); z1=z; z=z1-p1/pp; }while(Math.abs(z-z1)>1e-15);
+    x[i]=-z; x[n-1-i]=z; w[i]=w[n-1-i]=2/((1-z*z)*pp*pp);
+  }
+  return {x,w};
+})(16);
+function glInt(f,a,b){ const c=(a+b)/2, h=(b-a)/2; let s=0; for(let i=0;i<16;i++) s+=GL.w[i]*f(c+h*GL.x[i]); return s*h; }
+/* int_lo^hi f for an f that is largest at hi and decays to the left at least like
+   exp(-rate (hi - x)): Gauss-Legendre on panels that double in width away from hi.
+   Bounded work (at most ~45 panels), whatever the parameters.             */
+function intDecayLeft(f, lo, hi, rate){
+  let total=0, w=Math.min(hi-lo, 0.25/Math.max(rate,1e-9)), right=hi;
+  while(right>lo){
+    const left=Math.max(lo,right-w), part=glInt(f,left,right);
+    total+=part; right=left; w*=2;
+    if(part<=1e-17*total) break;
+  }
+  return total;
+}
+/* Integrating eq. (11) around mu: c(kappa, beta) = 2 pi int_{-1}^{1} e^{kappa t} I0{beta(1 - t^2)} dt.
+   Returned relative to e^kappa; the part over t < 0 is the far-hemisphere mass.
+   The integrand increases with t when 2 beta < kappa (13).               */
+function kentMass(kappa, beta){
+  const f=t=>{ const x=beta*(1-t*t); return Math.exp(kappa*(t-1)+x)*i0e(x); };
+  const rate=kappa-2*beta, near=intDecayLeft(f,0,1,rate), far=intDecayLeft(f,-1,0,rate);
+  return {cRel: TAU*(near+far), far: far/(near+far)};
+}
+/* Kent P(U not in O): for each direction a around mu, integrate eq. (11) over the
+   part of the great circle beyond the exit angle theta*(a) (x = cos theta from -1
+   to cos theta*); sigma(du) = dx da in these coordinates.                 */
+function kentProbOutsideO(Kp, cRel, Na){
+  Na=Na||360; let acc=0; const rate=Kp.kappa-2*Kp.beta;
+  for(let i=0;i<Na;i++){
+    const a=TAU*(i+0.5)/Na, c2=Math.cos(2*a), xs=Math.cos(exitAngle(a,Kp.mu,Kp.K));
+    acc += intDecayLeft(x=>Math.exp(Kp.kappa*(x-1)+Kp.beta*(1-x*x)*c2), -1, xs, rate);
+  }
+  return Math.min(1, acc*(TAU/Na)/cRel);
+}
+
+return {
+  vec:{dot, norm, scale, lin2, lin3, cross, unit},
+  sqrtMap, squareMap, inO, muFromAngles, frameLS, axesK, piLambda, makeTN,
+  tangentCoords, psiMap, logPhi, logDensity, density, logDensityZ,
+  levelRadius, gaussRadius, levelFractions, traceCurve, tnLevelCurve,
+  orthantLoop, exitAngle, probOutsideO,
+  rng32, normalPair, simulate, householderB, eig2, estimate,
+  kentToTN, tnToKent, kentLevelCos, kentLevelCurve, i0e, glInt, intDecayLeft, kentMass, kentProbOutsideO
+};
+})();
+</script>
+
+<!-- =====================================================================
+     2. THE PAGE — figures, controls, contents.
+     ===================================================================== -->
+<script id="tn-ui">
+(function(){
+"use strict";
+const TN=window.TN, {dot, scale, lin2, lin3}=TN.vec;
+const $=id=>document.getElementById(id);
+const TAU=2*Math.PI, H3=Math.sqrt(3)/2;
+
+/* ---------------------------- theme ---------------------------- */
+function T(){
+  const cs=getComputedStyle(document.documentElement), g=n=>cs.getPropertyValue(n).trim();
+  return {ink:g('--ink'),ink2:g('--ink-2'),muted:g('--muted'),rule:g('--rule'),rule2:g('--rule-2'),
+    surface:g('--surface'),surface2:g('--surface-2'),bg:g('--bg'),mu:g('--mu'),g2:g('--g2'),g3:g('--g3'),
+    basis:g('--basis'),out:g('--out'),tint:g('--tint'),sphere:g('--sphere'),hemi:g('--hemi'),
+    grat:g('--grat'),dotc:g('--dot'),seq:[0,1,2,3,4,5,6].map(i=>g('--seq'+i))};
+}
+/* one-hue sequential ramp anchored at the surface colour */
+const seqScale=t=>[[0,t.seq[0]],[0.08,t.seq[1]],[0.25,t.seq[2]],[0.45,t.seq[3]],[0.65,t.seq[4]],[0.83,t.seq[5]],[1,t.seq[6]]];
+
+/* ------------------------- number formats ------------------------- */
+const SUP={'-':'\u207b','0':'\u2070','1':'\u00b9','2':'\u00b2','3':'\u00b3','4':'\u2074','5':'\u2075','6':'\u2076','7':'\u2077','8':'\u2078','9':'\u2079'};
+function sci(x,d){ if(x===0) return '0'; const e=Math.floor(Math.log10(Math.abs(x))), m=x/Math.pow(10,e);
+  return m.toFixed(d===undefined?1:d)+'\u00d710'+String(e).split('').map(c=>SUP[c]||c).join(''); }
+function sig(x,s){ if(!isFinite(x)) return '\u2014'; if(x===0) return '0'; const a=Math.abs(x);
+  if(a<1e-3||a>=1e5) return sci(x,s-1); return Number(x.toPrecision(s)).toString(); }
+function prob(p){ if(!(p>0)) return '0'; if(p<1e-4) return sci(p,1); if(p<0.01) return (100*p).toFixed(3)+'%'; return (100*p).toFixed(2)+'%'; }
+const f3=x=>x.toFixed(3), f2=x=>x.toFixed(2);
+const vec3=v=>'('+v.map(f3).join(', ')+')';
+
+/* ---------------------- plotting infrastructure ---------------------- */
+const HAS_PLOTLY=!!window.Plotly;
+if(!HAS_PLOTLY){
+  document.querySelectorAll('.plot').forEach(el=>{
+    el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='center';
+    el.style.color='var(--muted)';el.style.fontFamily='IBM Plex Mono, monospace';el.style.fontSize='12px';
+    el.textContent='This figure needs the plotting library, which did not load.';
+  });
+}
+const CFG={displayModeBar:false,responsive:true,scrollZoom:false};
+function draw(id,data,layout){ if(!HAS_PLOTLY) return; const el=$(id); if(el) Plotly.react(el,data,layout,CFG); }
+function base(t,extra){
+  return Object.assign({paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',margin:{l:0,r:0,t:0,b:0},
+    showlegend:false,font:{family:'IBM Plex Mono, monospace',size:11,color:t.ink2},
+    hoverlabel:{font:{family:'IBM Plex Mono, monospace',size:11}}},extra||{});
+}
+
+/* Lazy, coalesced redraws: a figure is drawn when it comes near the screen,
+   and slider input is collapsed to at most one redraw per animation frame. */
+const jobs=[];
+function job(el,fn){
+  const J={el,fn,dirty:true,visible:false,raf:0};
+  jobs.push(J);
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>{es.forEach(e=>{J.visible=e.isIntersecting; if(J.visible&&J.dirty) run(J);});},{rootMargin:'500px 0px'}).observe(el);
+  } else { J.visible=true; run(J); }
+  return J;
+}
+function run(J){
+  J.dirty=true;
+  if(!J.visible||J.raf) return;
+  J.raf=requestAnimationFrame(()=>{ J.raf=0; J.dirty=false; try{J.fn();}catch(e){ if(window.console) console.error(e); } });
+}
+function redrawAll(){ jobs.forEach(run); }
+try{ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawAll); }catch(e){}
+new MutationObserver(redrawAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ------------------------------ 3D pieces ------------------------------ */
+const OCT=[-0.12,1.36], FULL=[-1.06,1.2];
+/* Traces that do not change between redraws are built once and passed back as the
+   same objects, so Plotly.react sees them unchanged and skips them; a small LRU
+   keeps the meshes that depend on (mu, psi) only. */
+const CACHE=new Map();
+let SCOPE='';                        /* the figure being built: no trace object is shared between two plots */
+function cached(key,make){
+  key=SCOPE+'#'+key;
+  if(CACHE.has(key)){ const v=CACHE.get(key); CACHE.delete(key); CACHE.set(key,v); return v; }
+  const v=make(); CACHE.set(key,v);
+  if(CACHE.size>60) CACHE.delete(CACHE.keys().next().value);
+  return v;
+}
+function scene(eye,range){
+  const ax=()=>({visible:false,range:range.slice(),autorange:false});
+  return {xaxis:ax(),yaxis:ax(),zaxis:ax(),aspectmode:'cube',bgcolor:'rgba(0,0,0,0)',dragmode:'orbit',
+    camera:{eye:Object.assign({},eye),up:{x:0,y:0,z:1},center:{x:0,y:0,z:0}},uirevision:'cam'};
+}
+function surfConst(X,Y,Z,color,opacity){
+  return {type:'surface',x:X,y:Y,z:Z,showscale:false,opacity,colorscale:[[0,color],[1,color]],
+    surfacecolor:Z.map(r=>r.map(()=>0)),cmin:0,cmax:1,hoverinfo:'skip',
+    lighting:{ambient:1,diffuse:0,specular:0,roughness:1,fresnel:0},
+    contours:{x:{highlight:false},y:{highlight:false},z:{highlight:false}}};
+}
+/* the patch O of the sphere (the positive orthant) */
+function octantSurface(color,opacity){ return cached('oct|'+color+'|'+opacity,()=>octantSurfaceRaw(color,opacity)); }
+function octantSurfaceRaw(color,opacity){
+  const n=28,X=[],Y=[],Z=[];
+  for(let i=0;i<=n;i++){ const th=Math.PI/2*i/n,xr=[],yr=[],zr=[];
+    for(let j=0;j<=n;j++){ const ph=Math.PI/2*j/n; xr.push(Math.sin(th)*Math.cos(ph)); yr.push(Math.sin(th)*Math.sin(ph)); zr.push(Math.cos(th)); }
+    X.push(xr);Y.push(yr);Z.push(zr); }
+  return surfConst(X,Y,Z,color,opacity);
+}
+/* a mesh of the hemisphere H_mu in the frame (mu, K): theta from 0 to 90 degrees,
+   clustered towards mu where densities vary fastest */
+function hemiMesh(mu,K,nT,nA,fn){
+  const X=[],Y=[],Z=[],C=[];
+  for(let i=0;i<=nT;i++){ const th=Math.PI/2*Math.pow(i/nT,1.45), ct=Math.cos(th), st=Math.sin(th), xr=[],yr=[],zr=[],cr=[];
+    for(let j=0;j<=nA;j++){ const al=TAU*j/nA, u=lin3(ct,mu,st*Math.cos(al),K[0],st*Math.sin(al),K[1]);
+      xr.push(u[0]);yr.push(u[1]);zr.push(u[2]); cr.push(fn?fn(u):0); }
+    X.push(xr);Y.push(yr);Z.push(zr);C.push(cr); }
+  return {X,Y,Z,C};
+}
+/* H_mu in two tones: O darker, the rest of the hemisphere paler (depends on mu, psi only) */
+function hemiTwoTone(t,P,opacity){
+  return cached('h2|'+P.mu.join(',')+'|'+P.psi+'|'+t.hemi+'|'+t.sphere+'|'+opacity,()=>hemiTwoToneRaw(t,P,opacity));
+}
+function hemiTwoToneRaw(t,P,opacity){
+  const m=hemiMesh(P.mu,P.K,32,96,u=>TN.inO(u)?1:0);
+  return {type:'surface',x:m.X,y:m.Y,z:m.Z,surfacecolor:m.C,cmin:0,cmax:1,showscale:false,opacity,
+    colorscale:[[0,t.hemi],[0.5,t.hemi],[0.5,t.sphere],[1,t.sphere]],hoverinfo:'skip',
+    lighting:{ambient:1,diffuse:0,specular:0,roughness:1,fresnel:0},
+    contours:{x:{highlight:false},y:{highlight:false},z:{highlight:false}}};
+}
+function graticule(color,octant){ return cached('grat|'+color+'|'+octant,()=>graticuleRaw(color,octant)); }
+function graticuleRaw(color,octant){
+  const xs=[],ys=[],zs=[],r=1.003;
+  const push=p=>{xs.push(p[0]*r);ys.push(p[1]*r);zs.push(p[2]*r);}, brk=()=>{xs.push(null);ys.push(null);zs.push(null);};
+  const nm=octant?4:12, thMax=octant?Math.PI/2:Math.PI, phMax=octant?Math.PI/2:TAU;
+  for(let k=0;k<=nm;k++){ if(!octant&&k===nm) break; const ph=phMax*k/nm;
+    for(let j=0;j<=60;j++){const th=thMax*j/60; push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);} brk(); }
+  const nl=octant?4:6;
+  for(let k=1;k<nl;k++){ const th=thMax*k/nl;
+    for(let i=0;i<=96;i++){const ph=phMax*i/96; push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);} brk(); }
+  return {type:'scatter3d',mode:'lines',x:xs,y:ys,z:zs,line:{color,width:1},hoverinfo:'skip'};
+}
+function poly3(P,color,width,dash,text){
+  const tr={type:'scatter3d',mode:'lines',x:P.map(p=>p?p[0]:null),y:P.map(p=>p?p[1]:null),z:P.map(p=>p?p[2]:null),
+    line:{color,width:width||3,dash:dash||'solid'}};
+  if(text){ tr.text=text; tr.hovertemplate='%{text}<extra></extra>'; } else tr.hoverinfo='skip';
+  return tr;
+}
+const seg3=(a,b,color,width,dash)=>poly3([a,b],color,width,dash);
+function label3(p,text,color,size){
+  return {type:'scatter3d',mode:'text',x:[p[0]],y:[p[1]],z:[p[2]],text:[text],
+    textfont:{color,size:size||13,family:'IBM Plex Mono, monospace'},hoverinfo:'skip'};
+}
+function pts3(P,color,size,tmpl,symbol,lineColor){
+  const m={size:size||4,color,opacity:0.95,symbol:symbol||'circle'};
+  if(lineColor) m.line={color:lineColor,width:1};
+  return {type:'scatter3d',mode:'markers',x:P.map(p=>p[0]),y:P.map(p=>p[1]),z:P.map(p=>p[2]),marker:m,
+    hovertemplate:tmpl||'(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'};
+}
+function axesTraces(t,len){ return cached('axes|'+t.rule2+'|'+t.ink2+'|'+len,()=>axesTracesRaw(t,len)); }
+function axesTracesRaw(t,len){
+  const d=[], lab=['x\u2081','x\u2082','x\u2083'];
+  [0,1,2].forEach(i=>{ const e=[0,0,0]; e[i]=len; d.push(seg3([0,0,0],e,t.rule2,3)); const p=[0,0,0]; p[i]=len+0.08; d.push(label3(p,lab[i],t.ink2,12)); });
+  return d;
+}
+const triMesh=(t,opacity)=>({type:'mesh3d',x:[1,0,0],y:[0,1,0],z:[0,0,1],i:[0],j:[1],k:[2],color:t.basis,opacity,
+  hoverinfo:'skip',flatshading:true,lighting:{ambient:1,diffuse:0,specular:0}});
+/* the triangle's edges and its grid lines z_j = 0.2, ..., 0.8 */
+function triGrid3(t){
+  const P=[];
+  [0.2,0.4,0.6,0.8].forEach(c=>{ P.push([c,1-c,0],[c,0,1-c],null,[1-c,c,0],[0,c,1-c],null,[1-c,0,c],[0,1-c,c],null); });
+  return [poly3(P,t.rule2,1.5), poly3([[1,0,0],[0,1,0],[0,0,1],[1,0,0]],t.ink2,3)];
+}
+/* the images of those grid lines on the sphere: z_j = c becomes the circle u_j = sqrt(c) */
+function sphereGrid3(t){
+  const P=[];
+  [0.2,0.4,0.6,0.8].forEach(c=>{ for(let j=0;j<3;j++){ const k=(j+1)%3,l=(j+2)%3,r=Math.sqrt(1-c);
+    for(let i=0;i<=40;i++){ const a=Math.PI/2*i/40, u=[0,0,0]; u[j]=Math.sqrt(c); u[k]=r*Math.cos(a); u[l]=r*Math.sin(a); P.push(scale(u,1.003)); } P.push(null); } });
+  return poly3(P,t.grat,1.5);
+}
+const orthantEdges3=t=>cached('oedge|'+t.ink2,()=>poly3(TN.orthantLoop(30).map(u=>scale(u,1.004)),t.ink2,3.5));
+/* the labels x1, x2, x3 just outside the sphere */
+const axisLabels3=t=>cached('albl|'+t.ink2,()=>['x₁','x₂','x₃'].map((s,i)=>{const e=[0,0,0]; e[i]=1.1; return label3(e,s,t.ink2,12);}));
+function hemiEdge3(t,P){ const C=[]; for(let i=0;i<=180;i++){ const a=TAU*i/180; C.push(scale(lin2(Math.cos(a),P.K[0],Math.sin(a),P.K[1]),1.004)); } return poly3(C,t.muted,3,'dash'); }
+function planePatch(mu,b1,b2,r,color,opacity){
+  const X=[[],[]],Y=[[],[]],Z=[[],[]];
+  [-r,r].forEach((s,i)=>{[-r,r].forEach(q=>{const p=lin3(1,mu,s,b1,q,b2);X[i].push(p[0]);Y[i].push(p[1]);Z[i].push(p[2]);});});
+  return {type:'surface',x:X,y:Y,z:Z,showscale:false,opacity,colorscale:[[0,color],[1,color]],
+    surfacecolor:[[0,0],[0,0]],cmin:0,cmax:1,hoverinfo:'skip',lighting:{ambient:1,diffuse:0,specular:0}};
+}
+/* camera buttons */
+function camButtons(prefix,ids,eye){
+  const zoom=k=>ids.forEach(id=>{ const gd=$(id); if(!gd||!gd.layout||!gd.layout.scene) return;
+    const e=(gd.layout.scene.camera&&gd.layout.scene.camera.eye)||eye;
+    Plotly.relayout(gd,{'scene.camera.eye':{x:e.x*k,y:e.y*k,z:e.z*k}}); });
+  const zi=$(prefix+'-zin'), zo=$(prefix+'-zout'), rs=$(prefix+'-reset');
+  if(zi) zi.addEventListener('click',()=>zoom(0.8));
+  if(zo) zo.addEventListener('click',()=>zoom(1.25));
+  if(rs) rs.addEventListener('click',()=>ids.forEach(id=>{ const gd=$(id); if(gd&&gd.layout&&gd.layout.scene)
+    Plotly.relayout(gd,{'scene.camera':{eye:Object.assign({},eye),up:{x:0,y:0,z:1},center:{x:0,y:0,z:0}}}); }));
+}
+function toggle(id,state,key,after){
+  const b=$(id); if(!b) return;
+  b.addEventListener('click',()=>{ state[key]=!state[key]; b.setAttribute('aria-pressed',state[key]?'true':'false'); after(); });
+}
+
+/* --------------------------- ternary (2D) pieces ---------------------------
+   x1 at the bottom left, x2 at the bottom right, x3 at the top: the triangle as
+   seen in 3D from the direction (1,1,1), so the 2D and 3D pictures agree. */
+const TX=z=>z[1]+0.5*z[2], TY=z=>H3*z[2];
+function ternLayout(t,opt){
+  opt=opt||{};
+  const ann=[], shapes=[];
+  const lab=(x,y,text,xa,ya,dx,dy)=>ann.push({x,y,text,showarrow:false,xanchor:xa,yanchor:ya,xshift:dx||0,yshift:dy||0,font:{size:9,color:t.muted}});
+  [0.2,0.4,0.6,0.8].forEach(c=>{
+    lab(c/2,H3*c,c.toFixed(1),'right','middle',-4,0);            // x3, left edge
+    lab(1-c,0,c.toFixed(1),'center','top',0,-3);                 // x1, bottom edge
+    lab((1+c)/2,H3*(1-c),c.toFixed(1),'left','middle',4,0);      // x2, right edge
+  });
+  const vl=(x,y,text,xa,ya,dx,dy)=>ann.push({x,y,text,showarrow:false,xanchor:xa,yanchor:ya,xshift:dx,yshift:dy,font:{size:13,color:t.ink}});
+  vl(0,0,'x\u2081','right','top',-6,-4); vl(1,0,'x\u2082','left','top',6,-4); vl(0.5,H3,'x\u2083','center','bottom',0,5);
+  if(opt.mask) shapes.push({type:'path',layer:'above',fillrule:'evenodd',fillcolor:t.surface,line:{width:0},
+    path:'M -0.4 -0.4 L 1.4 -0.4 L 1.4 1.3 L -0.4 1.3 Z M 0 0 L 0.5 '+H3+' L 1 0 Z'});
+  return base(t,{margin:{l:14,r:opt.mr||14,t:14,b:18},annotations:ann,shapes,
+    xaxis:{range:[-0.1,1.1],visible:false,fixedrange:false},
+    yaxis:{range:[-0.07,H3+0.06],visible:false,scaleanchor:'x',scaleratio:1}});
+}
+function ternGrid(t,color){
+  const x=[],y=[];
+  const L=(a,b)=>{x.push(TX(a),TX(b),null);y.push(TY(a),TY(b),null);};
+  for(let i=1;i<10;i++){ const c=i/10; L([c,1-c,0],[c,0,1-c]); L([1-c,c,0],[0,c,1-c]); L([1-c,0,c],[0,1-c,c]); }
+  return {type:'scatter',mode:'lines',x,y,line:{color:color||t.rule,width:1},hoverinfo:'skip'};
+}
+const ternEdge=t=>({type:'scatter',mode:'lines',x:[0,1,0.5,0],y:[0,0,H3,0],line:{color:t.ink2,width:1.3},hoverinfo:'skip'});
+function ternPts(Z,color,size,name,ring){
+  return {type:'scatter',mode:'markers',x:Z.map(TX),y:Z.map(TY),customdata:Z,
+    marker:{size,color,line:{color:ring||'rgba(0,0,0,0)',width:ring?1:0}},
+    hovertemplate:'x\u2081 %{customdata[0]:.3f}<br>x\u2082 %{customdata[1]:.3f}<br>x\u2083 %{customdata[2]:.3f}<extra>'+(name||'')+'</extra>'};
+}
+const ternMu=(t,mu)=>({type:'scatter',mode:'markers',x:[TX(mu.map(m=>m*m))],y:[TY(mu.map(m=>m*m))],
+  marker:{size:13,color:t.mu,symbol:'x-thin',line:{color:t.mu,width:2.5}},
+  hovertemplate:'\u03bc\u00b2 = ('+mu.map(m=>(m*m).toFixed(3)).join(', ')+')<extra>centre</extra>'});
+
+/* --------------------- contour curves -> plot traces ---------------------
+   A traced curve (TN.traceCurve) is split into its runs inside and outside O;
+   the crossing points belong to both runs, so the two meet on the edge.   */
+function curveTraces(curves,map,opt){
+  const IN={x:[],y:[],z:[],t:[]}, OUT={x:[],y:[],z:[],t:[]};
+  const put=(S,c,lab)=>{ if(c){S.x.push(c[0]);S.y.push(c[1]);S.z.push(c[2]===undefined?null:c[2]);S.t.push(lab);} else {S.x.push(null);S.y.push(null);S.z.push(null);S.t.push('');} };
+  curves.forEach(cv=>{
+    const lab=(opt.name||'')+' level '+cv.f.toFixed(2)+' \u00d7 peak';
+    cv.pts.forEach(p=>{
+      const c=p.u?map(p.u):null;
+      if(!c){ put(IN,null); put(OUT,null); return; }
+      if(p.cross){ put(IN,c,lab); put(OUT,c,lab); }
+      else if(p.inO){ put(IN,c,lab); put(OUT,null); }
+      else { put(IN,null); put(OUT,c,lab); }
+    });
+    put(IN,null); put(OUT,null);
+  });
+  return {IN,OUT};
+}
+function lineTrace(S,color,width,dash,is3d){
+  const tr={type:is3d?'scatter3d':'scatter',mode:'lines',x:S.x,y:S.y,line:{color,width,dash:dash||'solid'},
+    text:S.t,hovertemplate:'%{text}<extra></extra>'};
+  if(is3d) tr.z=S.z;
+  return tr;
+}
+const mapSphere=u=>scale(u,1.006);
+const mapTern=u=>{ const z=TN.squareMap(u); return z?[TX(z),TY(z)]:null; };
+const mapTangent=P=>u=>(dot(P.mu,u)>0?[dot(P.K[0],u),dot(P.K[1],u)]:null);
+
+/* the tangent-plane panel: frame, the image of O, the edge of the ball, axis arrows */
+function tangentBase(t,P,R){
+  const d=[];
+  const D=TN.orthantLoop(60).map(u=>[dot(P.K[0],u),dot(P.K[1],u)]);
+  d.push({type:'scatter',mode:'lines',x:D.map(p=>p[0]),y:D.map(p=>p[1]),fill:'toself',fillcolor:t.tint,
+    line:{color:t.basis,width:1},hoverinfo:'skip'});
+  const cx=[],cy=[]; for(let i=0;i<=200;i++){const a=TAU*i/200; cx.push(Math.cos(a)); cy.push(Math.sin(a));}
+  d.push({type:'scatter',mode:'lines',x:cx,y:cy,line:{color:t.muted,width:1.2,dash:'dot'},hoverinfo:'skip'});
+  const L=base(t,{margin:{l:40,r:8,t:8,b:34},
+    xaxis:{range:[-R,R],zeroline:false,showgrid:false,tickfont:{size:9,color:t.muted},nticks:5,showline:true,linecolor:t.rule2,mirror:true,constrain:'domain',
+      title:{text:'v\u2082',font:{size:11,color:t.g2},standoff:2}},
+    yaxis:{range:[-R,R],zeroline:false,showgrid:false,tickfont:{size:9,color:t.muted},nticks:5,showline:true,linecolor:t.rule2,mirror:true,scaleanchor:'x',scaleratio:1,
+      title:{text:'v\u2083',font:{size:11,color:t.g3},standoff:2}},
+    annotations:[]});
+  const a2=0.42*R;
+  L.annotations.push(
+    {x:a2,y:0,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,arrowhead:3,arrowsize:1,arrowwidth:2,arrowcolor:t.g2,standoff:0},
+    {x:0,y:a2,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,arrowhead:3,arrowsize:1,arrowwidth:2,arrowcolor:t.g3,standoff:0},
+    {x:a2,y:0,text:'\u03b3\u2082',showarrow:false,xanchor:'left',yanchor:'top',font:{color:t.g2,size:12},xshift:2,yshift:-2},
+    {x:0,y:a2,text:'\u03b3\u2083',showarrow:false,xanchor:'left',yanchor:'bottom',font:{color:t.g3,size:12},xshift:3},
+    {x:0,y:0,text:'\u25cf',showarrow:false,font:{color:t.mu,size:11}},
+    {x:0,y:0,text:'\u03bc',showarrow:false,font:{color:t.mu,size:12},xshift:-10,yshift:-10});
+  return {d,L};
+}
+function gaussEllipses(t,P,fr){
+  const x=[],y=[],tx=[];
+  fr.forEach(f=>{ for(let i=0;i<=240;i++){ const a=TAU*i/240, r=TN.gaussRadius(a,f,P.l2,P.l3);
+      if(r<1){x.push(r*Math.cos(a));y.push(r*Math.sin(a));tx.push('Gaussian part, level '+f.toFixed(2));} else {x.push(null);y.push(null);tx.push('');} }
+    x.push(null);y.push(null);tx.push(''); });
+  return {type:'scatter',mode:'lines',x,y,text:tx,line:{color:t.muted,width:1.1,dash:'dash'},hovertemplate:'%{text}<extra></extra>'};
+}
+
+/* --------------------------- slider plumbing --------------------------- */
+function slider(id,fmt,onInput){
+  const el=$(id), out=$(id+'-v');
+  const show=()=>{ if(out) out.textContent=fmt(+el.value); };
+  el.addEventListener('input',()=>{show(); onInput();});
+  show();
+  return el;
+}
+const degFmt=v=>v.toFixed(1)+'\u00b0';
+/* the five TN parameters; the second spread is kept <= the first (lambda2 >= lambda3, Definition 1) */
+function tnControls(pre,onInput){
+  const s2=$(pre+'-s2'), s3=$(pre+'-s3');
+  slider(pre+'-th',degFmt,onInput); slider(pre+'-ph',degFmt,onInput);
+  slider(pre+'-ps',v=>v.toFixed(0)+'\u00b0',onInput);
+  const show3=()=>{$(pre+'-s3-v').textContent=(+s3.value).toFixed(3);};
+  slider(pre+'-s2',v=>v.toFixed(3),()=>{ if(+s3.value>+s2.value){ s3.value=s2.value; show3(); } onInput(); });
+  slider(pre+'-s3',v=>v.toFixed(3),()=>{ if(+s3.value>+s2.value){ s3.value=s2.value; show3(); } onInput(); });
+  return ()=>TN.makeTN(TN.muFromAngles(+$(pre+'-th').value,+$(pre+'-ph').value),+$(pre+'-ps').value,
+                       Math.pow(+s2.value,2),Math.pow(+s3.value,2));
+}
+const PRESETS={
+  default:{th:63.4,ph:37.8,ps:30,s2:0.14,s3:0.06},
+  edge:   {th:77.1,ph:40.5,ps:70,s2:0.16,s3:0.07},
+  wide:   {th:54.7,ph:45.0,ps:0, s2:0.45,s3:0.25},
+  round:  {th:63.4,ph:37.8,ps:0, s2:0.10,s3:0.10}
+};
+function applyPreset(pre,p,after){
+  Object.keys(p).forEach(k=>{ const el=$(pre+'-'+k); if(el){ el.value=p[k]; const o=$(pre+'-'+k+'-v'); if(o) o.textContent=(k==='s2'||k==='s3')?(+p[k]).toFixed(3):(k==='ps'?p[k].toFixed(0)+'\u00b0':(+p[k]).toFixed(1)+'\u00b0'); } });
+  after();
+}
+
+/* --------------------------- the shared data set ---------------------------
+   150 compositions drawn from the default TN distribution, used by Parts 1-4. */
+const P0=TN.makeTN(TN.muFromAngles(63.4,37.8),30,0.14*0.14,0.06*0.06);
+const U0=TN.simulate(P0,150,2026).filter(d=>d.inO).map(d=>d.u);
+const Z0=U0.map(TN.squareMap);
+
+/* ============================== Figure 1 ============================== */
+job($('fig1'),function(){
+  const t=T();
+  draw('fig1',[ternGrid(t),ternEdge(t),ternPts(Z0,t.dotc,7,'composition',t.surface)],ternLayout(t));
+});
+
+/* ============================== Figure 2 ============================== */
+const EYE2={x:1.32,y:0.58,z:0.45};
+job($('fig2'),function(){
+  SCOPE='fig2';
+  const t=T(), d=[];
+  /* the plane x1 + x2 + x3 = 1 continues beyond the triangle (faint), down to z_j = -0.12 */
+  const a=-0.12, b=1-2*a;
+  d.push({type:'mesh3d',x:[b,a,a],y:[a,b,a],z:[a,a,b],i:[0],j:[1],k:[2],color:t.basis,opacity:0.05,
+    hoverinfo:'skip',flatshading:true,lighting:{ambient:1,diffuse:0,specular:0}});
+  d.push(...axesTraces(t,1.25), triMesh(t,0.12), ...triGrid3(t));
+  d.push(pts3(Z0,t.dotc,3.6,'composition z<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+  draw('fig2',d,base(t,{scene:scene(EYE2,OCT)}));
+});
+camButtons('b2',['fig2'],EYE2);
+$('b2-iso').addEventListener('click',()=>{ const gd=$('fig2'); if(gd&&gd.layout&&gd.layout.scene)
+  Plotly.relayout(gd,{'scene.camera':{eye:{x:1.25,y:1.25,z:1.25},up:{x:0,y:0,z:1},center:{x:0,y:0,z:0}}}); });
+
+/* ============================== Figure 3 ============================== */
+const EYE3={x:0.48,y:1.35,z:0.42};
+const S3={lines:true,tri:true,sph:true};
+const J3=job($('fig3'),function(){
+  SCOPE='fig3';
+  const t=T(), d=[...axesTraces(t,1.25)];
+  if(S3.sph){ d.push(octantSurface(t.sphere,0.42), graticule(t.grat,true), sphereGrid3(t), orthantEdges3(t)); }
+  if(S3.tri){ d.push(triMesh(t,0.12), ...triGrid3(t)); }
+  if(S3.lines){ const P=[]; Z0.forEach((z,i)=>{P.push(z,U0[i],null);}); d.push(poly3(P,t.mu,2)); }
+  d.push(pts3(Z0,t.dotc,3.4,'composition z<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+  d.push(pts3(U0.map(u=>scale(u,1.004)),t.g2,3.8,'u = \u221az<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+  draw('fig3',d,base(t,{scene:scene(EYE3,OCT)}));
+});
+toggle('b3-lines',S3,'lines',()=>run(J3)); toggle('b3-tri',S3,'tri',()=>run(J3)); toggle('b3-sph',S3,'sph',()=>run(J3));
+camButtons('b3',['fig3'],EYE3);
+
+/* ============================== Figure 4 ============================== */
+const EYE4={x:0.15,y:1.1,z:0.2};
+const S4={plane:true,pts:true,ball:false,tri:false};
+/* ten illustrative points: same mu and K as the data, but a larger spread, so the
+   gap between the sphere and the plane, 1 - (1 - |v|^2)^(1/2), is visible */
+const U4=TN.simulate(TN.makeTN(P0.mu,30,0.42*0.42,0.28*0.28),400,99)
+  .filter(d=>d.inO&&Math.hypot(d.v[0],d.v[1])>0.3).slice(0,10).map(d=>d.u);
+const J4=job($('fig4'),function(){
+  SCOPE='fig4';
+  const t=T(), P=P0, d=[];
+  d.push(...axesTraces(t,1.2), octantSurface(t.sphere,0.38), graticule(t.grat,true), orthantEdges3(t));
+  if(S4.tri) d.push(triMesh(t,0.10), ...triGrid3(t));
+  if(S4.plane){ d.push(planePatch(P.mu,P.K[0],P.K[1],0.7,t.basis,0.16));
+    d.push(seg3(P.mu,lin2(1,P.mu,0.36,P.K[0]),t.g2,6), label3(lin2(1,P.mu,0.44,P.K[0]),'\u03b3\u2082',t.g2),
+           seg3(P.mu,lin2(1,P.mu,0.36,P.K[1]),t.g3,6), label3(lin2(1,P.mu,0.44,P.K[1]),'\u03b3\u2083',t.g3)); }
+  if(S4.ball){
+    const pc=[],hc=[]; for(let i=0;i<=200;i++){ const a=TAU*i/200, e=lin2(Math.cos(a),P.K[0],Math.sin(a),P.K[1]); pc.push(lin2(1,P.mu,1,e)); hc.push(scale(e,1.004)); }
+    d.push(poly3(pc,t.basis,2,'dash'), poly3(hc,t.muted,2.5,'dash')); }
+  d.push(seg3([0,0,0],scale(P.mu,1.2),t.mu,6), label3(scale(P.mu,1.28),'\u03bc',t.mu,15));
+  if(S4.pts){
+    const U=U4, V=U.map(u=>TN.tangentCoords(u,P.K)), F=V.map(v=>lin3(1,P.mu,v[0],P.K[0],v[1],P.K[1]));
+    const S=[]; U.forEach((u,i)=>S.push(u,F[i],null));
+    d.push(poly3(S,t.ink2,2,'dash'));
+    d.push(pts3(U.map(u=>scale(u,1.004)),t.g2,4.5,'u on the sphere<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+    d.push(pts3(F,t.basis,4,'\u03bc + Kv on the plane<extra></extra>'));
+  }
+  /* the probe: v on the plane -> psi(v) on the sphere (14) -> z = u^2 on the triangle */
+  let v=[+$('p4-v2').value,+$('p4-v3').value]; const r=Math.hypot(v[0],v[1]), cl=r>0.995;
+  if(cl) v=[v[0]*0.995/r,v[1]*0.995/r];
+  const u=TN.psiMap(v,P.mu,P.K), w=lin3(1,P.mu,v[0],P.K[0],v[1],P.K[1]), z=TN.squareMap(u);
+  d.push(seg3(w,u,t.ink,4,'dot'));
+  d.push(pts3([w],t.ink,6,'probe on the plane: \u03bc + Kv<extra></extra>','diamond'));
+  d.push(pts3([scale(u,1.004)],z?t.ink:t.out,7,'probe on the sphere: \u03c8(v)<extra></extra>',z?'circle':'x'));
+  if(z&&S4.tri){ d.push(seg3(u,z,t.mu,3,'dot'), pts3([z],t.ink,5,'probe on the triangle: z = u\u00b2<extra></extra>','square')); }
+  draw('fig4',d,base(t,{scene:scene(EYE4,[-1.05,1.5])}));
+  const c=Math.sqrt(1-v[0]*v[0]-v[1]*v[1]), gu=TN.density(u,P);
+  $('o4').innerHTML=
+    '<span>v = (<b>'+f3(v[0])+'</b>, <b>'+f3(v[1])+'</b>)'+(cl?' <span class="warn">(held inside the ball, \u2016v\u2016 &lt; 1)</span>':'')+'</span>'+
+    '<span>\u2016v\u2016 = sin \u03b8 = <b>'+f3(Math.hypot(v[0],v[1]))+'</b>, \u03b8 = <b>'+(Math.asin(Math.min(1,Math.hypot(v[0],v[1])))*180/Math.PI).toFixed(1)+'\u00b0</b></span>'+
+    '<span>Jacobian (16): \u03bc\u1d40u = <b>'+f3(c)+'</b></span>'+
+    '<span>u = \u03c8(v) = <b>'+vec3(u)+'</b></span>'+
+    (z?'<span>z = u\u00b2 = <b>'+vec3(z)+'</b></span>':'<span class="warn">u has a negative part: outside \u2009O, no composition</span>')+
+    '<span>g(u) = <b>'+sig(gu,4)+'</b> = <b>'+sig(gu/Math.exp(P.logPeak),3)+'</b> \u00d7 g(\u03bc)</span>';
+});
+slider('p4-v2',f2,()=>run(J4)); slider('p4-v3',f2,()=>run(J4));
+toggle('b4-plane',S4,'plane',()=>run(J4)); toggle('b4-pts',S4,'pts',()=>run(J4));
+toggle('b4-ball',S4,'ball',()=>run(J4)); toggle('b4-tri',S4,'tri',()=>run(J4));
+camButtons('b4',['fig4'],EYE4);
+
+/* ============================== Figure 5 ============================== */
+const EYE5={x:0.95,y:0.85,z:0.68};
+const J5=job($('fig5a'),function(){
+  const t=T(), P=params5(), fr=TN.levelFractions(+$('p5-nl').value);
+  const curves=fr.map(f=>({f,pts:TN.tnLevelCurve(P,f,360)}));
+  /* (a) the tangent plane */
+  const R=Math.min(1.08,Math.max(0.12,3.6*Math.sqrt(P.l2)));
+  const A=tangentBase(t,P,R), ca=curveTraces(curves,mapTangent(P),{name:'g'});
+  A.d.push(gaussEllipses(t,P,fr), lineTrace(ca.IN,t.ink,1.8), lineTrace(ca.OUT,t.out,1.8,'dash'));
+  draw('fig5a',A.d,A.L);
+  /* (b) the sphere */
+  SCOPE='fig5b';
+  const cb=curveTraces(curves,mapSphere,{name:'g'});
+  const d=[hemiTwoTone(t,P,0.55), graticule(t.grat,false), orthantEdges3(t), hemiEdge3(t,P),
+    seg3([0,0,0],scale(P.mu,1.16),t.mu,5), label3(scale(P.mu,1.24),'\u03bc',t.mu,14),
+    lineTrace(cb.IN,t.ink,4,'solid',true), lineTrace(cb.OUT,t.out,4,'dash',true), ...axisLabels3(t)];
+  draw('fig5b',d,base(t,{scene:scene(EYE5,FULL)}));
+  /* (c) the triangle */
+  const cc=curveTraces(curves,mapTern,{name:'g'});
+  draw('fig5c',[ternGrid(t),ternEdge(t),lineTrace(cc.IN,t.ink,1.8),ternMu(t,P.mu)],ternLayout(t));
+  /* read-out */
+  const kp=TN.tnToKent(P.l2,P.l3), pout=TN.probOutsideO(P);
+  $('o5').innerHTML=
+    '<span>\u03bc = <b>'+vec3(P.mu)+'</b></span><span>\u03bc\u00b2 = <b>'+vec3(P.mu.map(m=>m*m))+'</b></span>'+
+    '<span>\u03bb\u2082 = <b>'+sig(P.l2,3)+'</b>, \u03bb\u2083 = <b>'+sig(P.l3,3)+'</b></span>'+
+    '<span>g(\u03bc) = <b>'+sig(Math.exp(P.logPeak),4)+'</b></span>'+
+    '<span>1 \u2212 \u03c0<sub>\u039b</sub> = <b>'+prob(P.piOut)+'</b></span>'+
+    '<span'+(pout>0.001?' class="warn"':'')+'>P(U \u2209 O) = <b>'+prob(pout)+'</b></span>'+
+    '<span>Kent via (17): \u03ba = <b>'+sig(kp.kappa,4)+'</b>, \u03b2 = <b>'+sig(kp.beta,4)+'</b></span>';
+});
+const params5=tnControls('p5',()=>run(J5));
+slider('p5-nl',v=>v.toFixed(0),()=>run(J5));
+camButtons('b5',['fig5b'],EYE5);
+
+/* ============================== Figure 6 ============================== */
+const EYE6={x:0.95,y:0.85,z:0.68};
+const NLIST=[10,20,30,50,75,100,150,200,300,500,750,1000,1500,2000];
+const S6={dens:'g',log:false,pts:true,seed:7};
+/* the fixed grid of the triangle heatmap: cell centres, clamped just inside the
+   triangle so the colours run to the edges under the mask */
+const HM=(function(){
+  const nx=150, ny=Math.round(150*H3), xs=[], ys=[], Z=[], text=[], edge=[];
+  for(let i=0;i<nx;i++) xs.push((i+0.5)/nx);
+  for(let j=0;j<ny;j++) ys.push((j+0.5)/ny*H3);
+  for(let j=0;j<ny;j++){ const zr=[], tr=[], er=[];
+    for(let i=0;i<nx;i++){
+      let z3=ys[j]/H3, z2=xs[i]-0.5*z3, z1=1-z2-z3;
+      const inside=z1>=0&&z2>=0&&z3>=0, m=Math.min(z1,z2,z3);
+      z1=Math.max(z1,2e-4); z2=Math.max(z2,2e-4); z3=Math.max(z3,2e-4);
+      const s=z1+z2+z3, z=[z1/s,z2/s,z3/s];
+      zr.push(z); er.push(m<2/nx);
+      tr.push(inside?('x\u2081 '+z[0].toFixed(3)+'<br>x\u2082 '+z[1].toFixed(3)+'<br>x\u2083 '+z[2].toFixed(3)):'outside the triangle');
+    }
+    Z.push(zr); text.push(tr); edge.push(er); }
+  return {nx,ny,xs,ys,Z,text,edge};
+})();
+function colourbar(t,title,log,cmin,cmax){
+  const cb={thickness:9,len:0.78,x:1.0,xpad:2,outlinewidth:0,tickfont:{size:9,color:t.muted},ticks:'outside',ticklen:3,
+    tickcolor:t.rule2,title:{text:title,side:'right',font:{size:10,color:t.ink2}}};
+  if(log){ const tv=[]; for(let e=Math.ceil(cmin);e<=Math.floor(cmax);e++) tv.push(e);
+    cb.tickvals=tv; cb.ticktext=tv.map(e=>'10'+String(e).split('').map(c=>SUP[c]||c).join('')); }
+  return cb;
+}
+const J6=job($('fig6a'),function(){
+  const t=T(), P=params6(), n=NLIST[+$('p6-n').value];
+  const S=TN.simulate(P,n,S6.seed), all=S.map(s=>s.u), comp=S.filter(s=>s.inO).map(s=>s.u);
+  const gPeak=Math.exp(P.logPeak);
+  /* left: the triangle */
+  const vals=[]; let vmax=0;
+  for(let j=0;j<HM.ny;j++){ const row=[];
+    for(let i=0;i<HM.nx;i++){ const z=HM.Z[j][i];
+      const v=S6.dens==='g'?TN.density(TN.sqrtMap(z),P):Math.exp(TN.logDensityZ(z,P));
+      row.push(v); if(S6.dens!=='g'&&!HM.edge[j][i]&&v>vmax) vmax=v; }
+    vals.push(row); }
+  if(S6.dens==='g') vmax=gPeak;
+  vmax=Math.max(vmax,1e-300);
+  let zmat=vals, zmin=0, zmax=vmax, ttl=S6.dens==='g'?'g(\u221az)':'f<sub>Z</sub>(z)';
+  if(S6.log){ zmax=Math.log10(vmax); zmin=zmax-4; zmat=vals.map(r=>r.map(v=>v>0?Math.max(Math.log10(v),zmin-1):zmin-1)); }
+  const hm={type:'heatmap',x:HM.xs,y:HM.ys,z:zmat,zmin,zmax,zsmooth:'best',colorscale:seqScale(t),
+    colorbar:colourbar(t,ttl,S6.log,zmin,zmax),text:HM.text,
+    hovertemplate:'%{text}<br>'+(S6.log?'log\u2081\u2080 ':'')+ttl+' = %{z:.3g}<extra></extra>'};
+  const left=[hm,ternGrid(t,t.rule2),ternEdge(t)];
+  if(S6.pts&&comp.length) left.push(ternPts(comp.map(TN.squareMap),t.ink,n>500?3.5:5,'simulated',t.surface));
+  left.push(ternMu(t,P.mu));
+  draw('fig6a',left,ternLayout(t,{mask:true,mr:4}));
+  $('fig6a-t').innerHTML=S6.dens==='g'
+    ?'<b>triangle</b>: g(\u221az), the density (15) at the square root'
+    :'<b>triangle</b>: density of Z, f<sub>Z</sub>(z) &mdash; <span class="c-out">not in the manuscript</span>';
+  /* right: the sphere; the mesh depends on (mu, psi) only, the colours on everything */
+  SCOPE='fig6b';
+  const m=cached('mesh|'+P.mu.join(',')+'|'+P.psi,()=>hemiMesh(P.mu,P.K,50,100,null));
+  const C=m.X.map((r,i)=>r.map((x,j)=>TN.density([x,m.Y[i][j],m.Z[i][j]],P)));
+  let sc=C, smin=0, smax=gPeak;
+  if(S6.log){ smax=Math.log10(gPeak); smin=smax-4; sc=C.map(r=>r.map(v=>v>0?Math.max(Math.log10(v),smin-1):smin-1)); }
+  const d=[{type:'surface',x:m.X,y:m.Y,z:m.Z,surfacecolor:sc,cmin:smin,cmax:smax,colorscale:seqScale(t),showscale:false,
+      lighting:{ambient:1,diffuse:0,specular:0,roughness:1,fresnel:0},hoverinfo:'skip',
+      contours:{x:{highlight:false},y:{highlight:false},z:{highlight:false}}},
+    graticule(t.grat,false), orthantEdges3(t), hemiEdge3(t,P),
+    seg3([0,0,0],scale(P.mu,1.16),t.mu,5), label3(scale(P.mu,1.24),'\u03bc',t.mu,14), ...axisLabels3(t)];
+  if(S6.pts){
+    const ins=S.filter(s=>s.inO).map(s=>scale(s.u,1.01)), outs=S.filter(s=>!s.inO).map(s=>scale(s.u,1.01));
+    if(ins.length) d.push(pts3(ins,t.ink,n>500?1.8:2.5,'simulated composition<extra></extra>','circle',t.surface));
+    if(outs.length) d.push(pts3(outs,t.out,n>500?3:4,'outside O: no composition<extra></extra>','x'));
+  }
+  draw('fig6b',d,base(t,{scene:scene(EYE6,FULL)}));
+  /* the estimates (Section 3.2.3) */
+  table6(P,TN.estimate(all),TN.estimate(comp),n,comp.length);
+  const pout=TN.probOutsideO(P);
+  $('o6').innerHTML='<span>n = <b>'+n+'</b> draws, of which <b>'+comp.length+'</b> are compositions</span>'+
+    '<span'+(n-comp.length>0?' class="warn"':'')+'>outside O: <b>'+(n-comp.length)+'</b> observed, <b>'+prob(pout)+'</b> expected</span>'+
+    '<span>1 \u2212 \u03c0<sub>\u039b</sub> = <b>'+prob(P.piOut)+'</b></span>';
+});
+function table6(P,EA,EC,n,nO){
+  const kp=TN.tnToKent(P.l2,P.l3), mu2=P.mu.map(m=>m*m);
+  const ang=E=>E?(Math.acos(Math.min(1,dot(E.mu,P.mu)))*180/Math.PI).toFixed(2)+'\u00b0':'\u2014';
+  const c=(E,fn)=>E?fn(E):'\u2014';
+  const rows=[
+    ['mean composition \u03bc\u00b2', vec3(mu2), c(EA,E=>vec3(E.mu.map(m=>m*m))), c(EC,E=>vec3(E.mu.map(m=>m*m)))],
+    ['angle between estimated and true \u03bc', '0\u00b0', ang(EA), ang(EC)],
+    ['axis angle \u03c8', P.psi.toFixed(1)+'\u00b0', c(EA,E=>E.psi.toFixed(1)+'\u00b0'), c(EC,E=>E.psi.toFixed(1)+'\u00b0')],
+    ['\u03bb\u2082', sig(P.l2,4), c(EA,E=>sig(E.l2,4)), c(EC,E=>sig(E.l2,4))],
+    ['\u03bb\u2083', sig(P.l3,4), c(EA,E=>sig(E.l3,4)), c(EC,E=>sig(E.l3,4))],
+    ['axis ratio \u221a(\u03bb\u2082/\u03bb\u2083)', f2(Math.sqrt(P.l2/P.l3)), c(EA,E=>f2(Math.sqrt(E.l2/E.l3))), c(EC,E=>f2(Math.sqrt(E.l2/E.l3)))],
+    ['\u03ba (17), (34)', sig(kp.kappa,4), c(EA,E=>sig(E.kappa,4)), c(EC,E=>sig(E.kappa,4))],
+    ['\u03b2 (17), (34)', sig(kp.beta,4), c(EA,E=>sig(E.beta,4)), c(EC,E=>sig(E.beta,4))],
+    ['sample size', '', String(n), String(nO)]
+  ];
+  $('t6').tBodies[0].innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td class="r">'+r[1]+'</td><td class="r">'+r[2]+'</td><td class="r">'+r[3]+'</td></tr>').join('');
+}
+const params6=tnControls('p6',()=>run(J6));
+slider('p6-n',v=>String(NLIST[v]),()=>run(J6));
+$('b6-resample').addEventListener('click',()=>{ S6.seed=(S6.seed*48271+12345)%2147483647; run(J6); });
+function seg2(a,b,key,va,vb){
+  const A=$(a),B=$(b);
+  A.addEventListener('click',()=>{S6[key]=va;A.setAttribute('aria-pressed','true');B.setAttribute('aria-pressed','false');run(J6);});
+  B.addEventListener('click',()=>{S6[key]=vb;B.setAttribute('aria-pressed','true');A.setAttribute('aria-pressed','false');run(J6);});
+}
+seg2('b6-dg','b6-dz','dens','g','fz'); seg2('b6-lin','b6-log','log',false,true);
+toggle('b6-pts',S6,'pts',()=>run(J6));
+camButtons('b6',['fig6b'],EYE6);
+
+/* ============================== Figure 7 ============================== */
+const EYE7={x:0.95,y:0.85,z:0.68};
+const kapOf=w=>2*Math.pow(500,w/1000);
+let massT=0;
+const J7=job($('fig7a'),function(){
+  const t=T(), kappa=kapOf(+$('p7-k').value), r=+$('p7-r').value, beta=0.5*r*kappa;
+  const mu=TN.muFromAngles(+$('p7-th').value,+$('p7-ph').value), lam=TN.kentToTN(kappa,beta);
+  const P=TN.makeTN(mu,+$('p7-ps').value,lam.l2,lam.l3), Kp={mu,K:P.K,kappa,beta};
+  const fr=TN.levelFractions(+$('p7-nl').value);
+  const cK=fr.map(f=>({f,pts:TN.kentLevelCurve(Kp,f,360)})), cT=fr.map(f=>({f,pts:TN.tnLevelCurve(P,f,360)}));
+  const sphere=(scope,curves,col,name)=>{
+    SCOPE=scope;
+    const c=curveTraces(curves,mapSphere,{name});
+    return [octantSurface(t.sphere,0.4), graticule(t.grat,false), orthantEdges3(t), hemiEdge3(t,P),
+      seg3([0,0,0],scale(mu,1.16),t.mu,5), label3(scale(mu,1.24),'\u03bc',t.mu,14),
+      lineTrace(c.IN,col,4,'solid',true), lineTrace(c.OUT,t.out,4,'dash',true), ...axisLabels3(t)];
+  };
+  draw('fig7a',sphere('fig7a',cK,t.basis,'Kent'),base(t,{scene:scene(EYE7,FULL)}));
+  draw('fig7b',sphere('fig7b',cT,t.ink,'TN'),base(t,{scene:scene(EYE7,FULL)}));
+  const tern=(curves,col,name)=>{ const c=curveTraces(curves,mapTern,{name}); return [ternGrid(t),ternEdge(t),lineTrace(c.IN,col,1.8),ternMu(t,mu)]; };
+  draw('fig7c',tern(cK,t.basis,'Kent'),ternLayout(t));
+  draw('fig7d',tern(cT,t.ink,'TN'),ternLayout(t));
+  /* overlay on the tangent plane of the TN distribution */
+  const R=Math.min(1.08,Math.max(0.12,3.6*Math.sqrt(P.l2)));
+  const A=tangentBase(t,P,R), k2=curveTraces(cK,mapTangent(P),{name:'Kent'}), t2=curveTraces(cT,mapTangent(P),{name:'TN'});
+  A.d.push(lineTrace(t2.IN,t.ink,1.8), lineTrace(t2.OUT,t.out,1.8), lineTrace(k2.IN,t.basis,2,'dash'), lineTrace(k2.OUT,t.out,1.6,'dash'));
+  A.L.margin={l:40,r:8,t:8,b:34};
+  draw('fig7e',A.d,A.L);
+  /* read-out: the masses need quadrature, so they follow the sliders a moment later */
+  const head='<span>\u03ba = <b>'+sig(kappa,4)+'</b>, \u03b2 = <b>'+sig(beta,4)+'</b></span>'+
+    '<span>\u03bb\u2082 = <b>'+sig(P.l2,3)+'</b>, \u03bb\u2083 = <b>'+sig(P.l3,3)+'</b> by (17)</span>';
+  $('o7').innerHTML=head+'<span>computing masses\u2026</span>';
+  clearTimeout(massT);
+  massT=setTimeout(()=>{
+    const km=TN.kentMass(kappa,beta), kout=TN.kentProbOutsideO(Kp,km.cRel), tout=TN.probOutsideO(P);
+    $('o7').innerHTML=head+
+      '<span>Kent: far hemisphere <b>'+prob(km.far)+'</b>, outside O <b>'+prob(kout)+'</b></span>'+
+      '<span>TN: removed by truncation 1 \u2212 \u03c0<sub>\u039b</sub> <b>'+prob(P.piOut)+'</b>, outside O <b>'+prob(tout)+'</b></span>';
+  },140);
+});
+slider('p7-k',w=>sig(kapOf(w),3),()=>run(J7));
+slider('p7-r',v=>v.toFixed(2),()=>run(J7));
+slider('p7-th',degFmt,()=>run(J7)); slider('p7-ph',degFmt,()=>run(J7));
+slider('p7-ps',v=>v.toFixed(0)+'\u00b0',()=>run(J7));
+slider('p7-nl',v=>v.toFixed(0),()=>run(J7));
+camButtons('b7',['fig7a','fig7b'],EYE7);
+/* keep the two spheres looking from the same side (one lock for both, so the
+   echo of a synchronised move cannot bounce back) */
+let camSync=false;
+['fig7a','fig7b'].forEach((id,i)=>{ const gd=$(id), other=$(i?'fig7a':'fig7b');
+  if(!gd||!HAS_PLOTLY) return;
+  const hook=()=>{ if(!gd.on) return false;
+    gd.on('plotly_relayout',ev=>{ if(camSync||!ev||!ev['scene.camera']||!other.layout) return; camSync=true;
+      Plotly.relayout(other,{'scene.camera':ev['scene.camera']}).then(()=>{camSync=false;},()=>{camSync=false;}); });
+    return true; };
+  const poll=setInterval(()=>{ if(hook()) clearInterval(poll); },300);
+});
+const P7PRE={tight:{k:Math.round(1000*Math.log(150)/Math.log(500)),r:0.5},mid:{k:Math.round(1000*Math.log(15)/Math.log(500)),r:0.5},low:{k:Math.round(1000*Math.log(1.25)/Math.log(500)),r:0.5}};
+
+/* ------------------------------ presets ------------------------------ */
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{
+  const [pre,name]=b.dataset.preset.split(':');
+  if(pre==='p7'){ const p=P7PRE[name]; $('p7-k').value=p.k; $('p7-r').value=p.r;
+    $('p7-k-v').textContent=sig(kapOf(p.k),3); $('p7-r-v').textContent=p.r.toFixed(2); run(J7); return; }
+  applyPreset(pre,PRESETS[name],()=>run(pre==='p5'?J5:J6));
+}));
+
+/* ------------------------- contents and position ------------------------- */
+(function(){
+  const parts=[].slice.call(document.querySelectorAll('.part[data-title]'));
+  $('toclist').innerHTML=parts.map((p,i)=>'<li><a href="#'+p.id+'"><span class="n">'+String(i+1).padStart(2,'0')+'</span><span>'+p.dataset.title+'</span></a></li>').join('');
+  const toc=$('toc'), btn=$('tocbtn');
+  function setToc(open){ toc.hidden=!open; toc.classList.toggle('open',open); btn.setAttribute('aria-expanded',open?'true':'false'); btn.textContent=open?'Close':'Contents'; }
+  btn.addEventListener('click',()=>setToc(toc.hidden));
+  toc.addEventListener('click',e=>{ if(e.target.closest('a')) setToc(false); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') setToc(false); });
+  const here=$('here'); let ticking=false;
+  function spy(){ ticking=false; let cur=parts[0], k=0;
+    parts.forEach((p,i)=>{ if(p.getBoundingClientRect().top<140){cur=p;k=i;} });
+    here.textContent='Part '+(k+1)+' \u00b7 '+cur.dataset.title; }
+  addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(spy);} },{passive:true});
+  spy();
+})();
+
+/* re-typeset the maths written into the page by script */
+function typeset(){ if(window.MathJax&&window.MathJax.typesetPromise) window.MathJax.typesetPromise(); }
+if(window.MathJax&&window.MathJax.startup&&window.MathJax.startup.promise) window.MathJax.startup.promise.then(typeset);
+else addEventListener('load',()=>setTimeout(typeset,400));
+})();
+</script>
+</body>
+</html>
