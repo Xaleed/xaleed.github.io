@@ -1,0 +1,32 @@
+[
+  {
+    "file": "campus.jpg",
+    "author": "Lourie Pieterse",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Stellenbosch_university_campus.jpg",
+    "alt": "Stellenbosch University campus, viewed from the Merensky building",
+    "date": "2011",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "mountains.jpg",
+    "author": "Khanya Ntantiso Arosi",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Jonkershoek_%26_Stellenbosch.jpg",
+    "alt": "Jonkershoek and Stellenbosch Mountains seen from the R604",
+    "date": "2020",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "jonkershoek.jpg",
+    "author": "Orrling",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Jonkershoek.jpg",
+    "alt": "An archival view of vineyards and mountains in Jonkershoek valley",
+    "date": "1994",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  }
+]

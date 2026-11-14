@@ -210,8 +210,11 @@
       .conf-item { grid-template-columns: 1fr; gap: 0.3rem; }
     }
   </style>
+<link rel="stylesheet" href="css/site-polish.css">
+<script src="assets/site.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <nav>
   <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
@@ -220,23 +223,26 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="index.html">About</a></li>
-    <li><a href="cv.html" class="active">CV</a></li>
-    <li><a href="projects.html">Projects</a></li>
-    <li><a href="blog.html">Blog</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
+<li><a href="index.html">About</a></li>
+<li><a href="publications.html">Publications</a></li>
+<li><a href="cv.html" class="active">CV</a></li>
+<li><a href="projects.html">Projects</a></li>
+<li><a href="visualisations/index.html">Interactive notes</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
 </nav>
 
-<main>
+<main id="main-content">
   <div class="page-header fade-up">
     <span class="eyebrow">Curriculum Vitae</span>
     <h1>Khaled Masoumifard</h1>
+<p class="page-intro">Academic training, research, software and experience in statistics, machine learning and actuarial science.</p>
   </div>
 
   <div class="cv-download-bar fade-up">
-    <p>Full academic CV including all publications, talks, and teaching history.</p>
-    <a class="btn" href="assets/cv.pdf">↓ Download PDF</a>
+    <p>Download a PDF copy, or browse my academic and professional experience below.</p>
+    <button class="btn" type="button" onclick="window.print()">Print this CV</button><a class="btn" href="assets/cv.pdf">↓ Download PDF</a>
   </div>
 
   <div class="cv-tab-bar fade-up">
@@ -289,7 +295,7 @@
         <div>
           <div class="cv-role">Postdoctoral Fellow</div>
           <div class="cv-org">MuViSU — Centre for Multi-dimensional Data Visualisation, Stellenbosch University</div>
-          <div class="cv-desc">Developing machine learning libraries for compositional and spatial data, with research in statistical modeling and algorithm development.</div>
+          <div class="cv-desc">Develop statistical methods and machine learning software for compositional and spatial data. Research combines model development, efficient algorithms and visualisation.</div>
           <div class="postdoc-projects">
             <a class="postdoc-link" href="posts/postdoc-compositional-rf.html">
               <span class="postdoc-icon">🌿</span>
@@ -323,7 +329,7 @@
         <div>
           <div class="cv-role">Data Scientist</div>
           <div class="cv-org">Securities and Exchange Organization of Iran</div>
-          <div class="cv-desc">Monitored large-scale trade transaction data (thousands per minute) to detect fraud and market manipulation. Developed time-series models and deep learning architectures (LSTM, RNN) using Python, R, and Oracle BI.</div>
+          <div class="cv-desc">Analysed high-volume trading data to detect fraud and market manipulation. Developed time-series and deep learning models, including LSTM and RNN models, using Python, R and Oracle BI.</div>
           <div class="postdoc-projects" style="margin-top:0.75rem;">
             <a class="postdoc-link" href="posts/seo_iran.html">
               <span class="postdoc-icon">📈</span>
@@ -341,7 +347,7 @@
         <div>
           <div class="cv-role">Data Scientist <span style="font-weight:300;font-size:0.85em;">(Part-time)</span></div>
           <div class="cv-org">Tejaratno Company, Tehran, Iran</div>
-          <div class="cv-desc">Actuarial modeling for health insurance and reinsurance, including rate-making and predictive analytics.</div>
+          <div class="cv-desc">Developed actuarial models for health insurance and reinsurance, with a focus on pricing and predictive analysis.</div>
           <div class="postdoc-projects" style="margin-top:0.75rem;">
             <a class="postdoc-link" href="posts/reinsurance_pricing.html">
               <span class="postdoc-icon">📊</span>
@@ -359,14 +365,14 @@
         <div>
           <div class="cv-role">Lecturer <span style="font-weight:300;font-size:0.85em;">(Part-time)</span></div>
           <div class="cv-org">Department of Mathematical Sciences, Shahid Beheshti University</div>
-          <div class="cv-desc">Taught and supervised students in statistics and actuarial science.</div>
+          <div class="cv-desc">Taught statistics and actuarial science and supervised student work.</div>
         </div>
       </div>
       <div class="cv-item">
         <span class="cv-date">2020 – 2022</span>
         <div>
           <div class="cv-role">Quantitative Trading Researcher <span style="font-weight:300;font-size:0.85em;">(Freelance)</span></div>
-          <div class="cv-desc">Developed dynamic algorithms for high- and low-frequency trading. Designed mathematical models, applied deep learning, and processed large-scale online trading data.</div>
+          <div class="cv-desc">Developed algorithms for high- and low-frequency trading. Built mathematical and deep learning models and processed large volumes of live market data.</div>
         </div>
       </div>
       <div class="cv-item">
@@ -374,7 +380,7 @@
         <div>
           <div class="cv-role">Data Scientist</div>
           <div class="cv-org">Mellat Insurance Company, Tehran, Iran</div>
-          <div class="cv-desc">Led healthcare pricing models for short- and long-term products. Co-supervised two PhD researchers and developed an interactive Shiny dashboard later deployed via Django.</div>
+          <div class="cv-desc">Led pricing-model development for short- and long-term healthcare products. Co-supervised two PhD researchers and developed an interactive Shiny dashboard, later deployed through Django.</div>
         </div>
       </div>
     </div>
@@ -387,13 +393,13 @@
       <div class="filter-bar">
         <button class="filter-btn active" onclick="filterPubs('all',this)">All</button>
         <button class="filter-btn" onclick="filterPubs('journal',this)">Journal Articles</button>
-        <button class="filter-btn" onclick="filterPubs('submitted',this)">Submitted</button>
+        <button class="filter-btn" onclick="filterPubs('submitted',this)">Preprints &amp; submissions</button>
         <button class="filter-btn" onclick="filterPubs('book',this)">Book Chapters</button>
       </div>
 
       <!-- 2026 -->
       <div class="pub-year-group">
-        <p class="pub-year-heading">2026</p>
+        <p class="pub-year-heading">2026</p><div class="pub-item" data-type="submitted"><div class="pub-accent-bar"></div><div><div class="pub-title">Compositional random forest <span class="pub-badge">Preprint</span></div><div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div><div class="pub-venue">arXiv:2611.14275 &middot; 2026 &middot; Not yet published in a peer-reviewed journal</div><div class="pub-links"><a href="https://arxiv.org/abs/2611.14275" target="_blank" rel="noopener noreferrer">Read preprint &rarr;</a><a href="presentation/tn_talk.html">Presentation &rarr;</a></div></div></div>
 
         <div class="pub-item" data-type="book">
           <div class="pub-accent-bar"></div>
@@ -404,7 +410,7 @@
             </div>
             <div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div>
             <div class="pub-venue">In A. Bekker et al. (Eds.), <em>Environmental modelling with contemporary statistics: Learning, directionality, and space-time dynamics</em> · CRC Press · ISBN 9781032903910</div>
-            <div class="pub-links"><a href="#">DOI</a></div>
+            <div class="pub-links"></div>
           </div>
         </div>
 
@@ -442,7 +448,7 @@
             <div class="pub-title">Hazard Rate Order Between Parallel Systems With Multiple Types of Scaled Components</div>
             <div class="pub-authors"><strong>Masoumifard, K.</strong>, Haidari, A., Torrado, N.</div>
             <div class="pub-venue">Applied Stochastic Models in Business and Industry · 41(2), e70008 · 2025</div>
-            <div class="pub-links"><a href="https://doi.org/10.1002/asmb.70008" target="_blank">DOI</a></div>
+            <div class="pub-links"><a href="https://doi.org/10.1002/asmb.70008" target="_blank" rel="noopener noreferrer">DOI</a></div>
           </div>
         </div>
       </div>
@@ -456,7 +462,7 @@
             <div class="pub-title">On Bayesian credibility mean for finite mixture distributions</div>
             <div class="pub-authors">Jahanbani, E., Najafabadi, A.T.P., <strong>Masoumifard, K.</strong></div>
             <div class="pub-venue">Annals of Actuarial Science · pp. 1–25 · 2023</div>
-            <div class="pub-links"><a href="#">DOI</a></div>
+            <div class="pub-links"></div>
           </div>
         </div>
       </div>
@@ -470,7 +476,7 @@
             <div class="pub-title">Optimal dynamic reinsurance strategies in multidimensional portfolio</div>
             <div class="pub-authors"><strong>Masoumifard, K.</strong>, Zokaei, M.</div>
             <div class="pub-venue">Stochastic Analysis and Applications · 39(1), 1–21 · 2021</div>
-            <div class="pub-links"><a href="#">DOI</a></div>
+            <div class="pub-links"></div>
           </div>
         </div>
       </div>
@@ -484,7 +490,7 @@
             <div class="pub-title">Stochastic comparisons of series and parallel systems with generalized exponential components</div>
             <div class="pub-authors">Balakrishnan, N., Haidari, A., <strong>Masoumifard, K.</strong></div>
             <div class="pub-venue">IEEE Transactions on Reliability · 64(1), 333–348 · 2014</div>
-            <div class="pub-links"><a href="#">DOI</a></div>
+            <div class="pub-links"></div>
           </div>
         </div>
       </div>
@@ -505,8 +511,8 @@
           </div>
           <div class="pub-authors" style="margin-bottom:0.4rem;"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Lubbe, S.</div>
           <div class="pub-links">
-            <a href="https://CRAN.R-project.org/package=DirichletRF" target="_blank">CRAN</a>
-            <a href="https://doi.org/10.32614/CRAN.package.DirichletRF" target="_blank">DOI</a>
+            <a href="https://CRAN.R-project.org/package=DirichletRF" target="_blank" rel="noopener noreferrer">CRAN</a>
+            <a href="https://doi.org/10.32614/CRAN.package.DirichletRF" target="_blank" rel="noopener noreferrer">DOI</a>
           </div>
         </div>
       </div>
@@ -525,7 +531,7 @@
           <div class="conf-authors">Masoumifard, K., van der Westhuizen, S., Gardner-Lubbe, S.</div>
           <div class="conf-venue">Data Science, Statistics &amp; Visualisation (DSSV) Conference · JDSSV · Book of Abstracts</div>
           <span class="conf-scope intl">International</span>
-          &nbsp;<a href="https://iasc-isi.org/dssv2025/programme/" target="_blank"
+          &nbsp;<a href="https://iasc-isi.org/dssv2025/programme/" target="_blank" rel="noopener noreferrer"
              style="font-family:var(--font-mono);font-size:0.6rem;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--border);">Programme ↗</a>
         </div>
       </div>
@@ -604,8 +610,8 @@
           <p class="ref-title">Professor</p>
           <p class="ref-inst">Stellenbosch University</p>
           <div class="ref-links">
-            <a href="https://researcherprofiles.sun.ac.za/1996-sugnet-lubbe" target="_blank">Profile</a>
-            <a href="https://scholar.google.co.za/citations?user=Wf0H128AAAAJ" target="_blank">Scholar</a>
+            <a href="https://researcherprofiles.sun.ac.za/1996-sugnet-lubbe" target="_blank" rel="noopener noreferrer">Profile</a>
+            <a href="https://scholar.google.co.za/citations?user=Wf0H128AAAAJ" target="_blank" rel="noopener noreferrer">Scholar</a>
             <a href="mailto:slubbe@sun.ac.za">Email</a>
           </div>
         </div>
@@ -614,8 +620,8 @@
           <p class="ref-title">Lecturer</p>
           <p class="ref-inst">Stellenbosch University</p>
           <div class="ref-links">
-            <a href="https://researcherprofiles.sun.ac.za/8957-stephan-van-der-westhuizen" target="_blank">Profile</a>
-            <a href="https://scholar.google.com/citations?user=Qx6QxUgAAAAJ" target="_blank">Scholar</a>
+            <a href="https://researcherprofiles.sun.ac.za/8957-stephan-van-der-westhuizen" target="_blank" rel="noopener noreferrer">Profile</a>
+            <a href="https://scholar.google.com/citations?user=Qx6QxUgAAAAJ" target="_blank" rel="noopener noreferrer">Scholar</a>
             <a href="mailto:stephanvdw@sun.ac.za">Email</a>
           </div>
         </div>
@@ -624,7 +630,7 @@
           <p class="ref-title">Professor</p>
           <p class="ref-inst">Shahid Beheshti University</p>
           <div class="ref-links">
-            <a href="https://scholar.google.com/citations?user=Ghg08WgAAAAJ" target="_blank">Scholar</a>
+            <a href="https://scholar.google.com/citations?user=Ghg08WgAAAAJ" target="_blank" rel="noopener noreferrer">Scholar</a>
             <a href="mailto:amirtpayandeh@gmail.com">Email</a>
           </div>
         </div>

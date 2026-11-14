@@ -293,6 +293,7 @@ window.MathJax={
 };
 </script>
 <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+<link rel="stylesheet" href="../../css/reading.css">
 </head>
 <body>
 
@@ -308,7 +309,7 @@ window.MathJax={
 <nav class="toc" id="toc" hidden>
   <div class="toc-in">
     <h3>Contents</h3>
-    <p style="color:var(--ink-2);font-size:.9rem;margin:0">Eight parts, from a triangle of proportions to a fitted distribution on the sphere and back.</p>
+    <p style="color:var(--ink-2);font-size:.9rem;margin:0">Eight sections connect compositions, spherical geometry and the tangent normal model. Use the overview for intuition, then explore the formulas and figures.</p>
     <ol id="toclist"></ol>
   </div>
 </nav>
@@ -318,8 +319,9 @@ window.MathJax={
 <section class="hero">
   <div class="col">
     <div class="meta">A tutorial &middot; the TN distribution for compositional data</div>
-    <h1>The tangent-normal distribution</h1>
-    <p class="sub">A normal distribution on the tangent plane of the sphere, carried back to the sphere and to the triangle of compositions. Every picture drawn for the Kent distribution, redrawn for its tangent-normal twin.</p>
+    <div class="reader-breadcrumb"><a href="../../index.html">About</a><span>/</span><a href="../../visualisations/index.html">Interactive research</a><span>/</span><span>Tangent normal</span></div>
+<h1>The tangent-normal distribution</h1>
+    <p class="sub">A visual guide to a spherical distribution built from normal tangent coordinates. Follow a composition from the simplex to the sphere, explore the model and compare its contours with Kent.</p><div class="reader-guide"><a href="#p1"><strong>Begin with compositions</strong><small>The triangle and square-root map</small></a><a href="#p4"><strong>Build the model</strong><small>Tangent coordinates, density and support</small></a><a href="#p7"><strong>Compare with Kent</strong><small>Matched parameters, different distributions</small></a></div>
     <ul class="key">
       <li><i style="background:var(--mu)"></i>\(\bmu\) &mdash; mean direction</li>
       <li><i style="background:var(--g2)"></i>\(\bgamma_2\) &mdash; first axis of \(\bK\)</li>
@@ -329,7 +331,7 @@ window.MathJax={
     </ul>
     <div class="note" style="margin-top:26px">
       <span class="tag">How to read this</span>
-      <p>Every figure is live. Drag the 3D pictures to rotate them, right-drag to pan, and use the &plus;/&minus; buttons to zoom. Move a slider and every panel of that figure redraws. All numbers are computed in your browser from the definitions of the tangent-normal distribution in the manuscript <em>Compositional random forest</em> (van der Westhuizen and Masoumifard); equation numbers such as (14) refer to it. Notation follows the manuscript: \(k\) parts, the simplex \(\mathbf S^k\), the sphere \(S^{k-1}\). All pictures use \(k=3\).</p>
+      <p>Rotate the 3D figures, change the sliders and follow the same simulated observations through the page. Definitions and equation numbers refer to <a href="https://arxiv.org/abs/2611.14275">Compositional random forest</a> by Masoumifard, van der Westhuizen and Gardner-Lubbe. The figures use three components; the formulas allow \(k\) components.</p>
     </div>
   </div>
 </section>
@@ -339,9 +341,9 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 1</div>
     <h2>Compositional data in the triangle</h2>
-    <p class="lede">A composition records how a whole splits into parts. Only the proportions matter, so the parts are scaled to sum to one.</p>
+    <p class="lede">A composition describes the relative sizes of its components. Dividing each component by their total gives non-negative proportions that sum to one.</p>
     <p>With three parts, a composition is \(\bz=(z_1,z_2,z_3)\) with \(z_j\ge0\) and \(z_1+z_2+z_3=1\), the closure (1) with \(c=1\). All such vectors form the simplex \(\mathbf S^3\) of (2), which for three parts is a triangle. Each corner is a composition made of a single part, each edge is where one part is zero, and the grid lines mark the levels \(z_j=0.1,0.2,\dots,0.9\).</p>
-    <p>The 150 points below are simulated. They are drawn from the tangent-normal distribution of Part&nbsp;4, so that one data set travels through the whole page.</p>
+    <p>The 150 observations below are simulated from the TN model introduced in Section 4. The same observations are used throughout, so you can follow what each transformation changes.</p>
   </div>
 
   <figure class="plate">
@@ -356,7 +358,7 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 2</div>
     <h2>The simplex as a plane in 3D</h2>
-    <p class="lede">The triangle is not only a diagram. It is a piece of a plane in ordinary three-dimensional space.</p>
+    <p class="lede">For three components, the simplex is a flat triangle in three-dimensional space.</p>
     <p>The condition \(z_1+z_2+z_3=1\) defines a plane in \(\R^3\), and the three conditions \(z_j\ge0\) cut a triangle out of it. Its corners are the unit vectors \(\be_1=(1,0,0)\), \(\be_2=(0,1,0)\) and \(\be_3=(0,0,1)\) on the coordinate axes. Every point of the ternary diagram is a point of this triangle. Rotate the picture, or press <em>look along (1,1,1)</em>, and the triangle becomes the diagram of Figure&nbsp;1.</p>
   </div>
 
@@ -381,10 +383,10 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 3</div>
     <h2>Projection onto the sphere</h2>
-    <p class="lede">The square root turns a composition into a unit vector, and the triangle into a curved triangle on the sphere.</p>
+    <p class="lede">Componentwise square roots turn compositions into unit vectors on the non-negative part of the sphere.</p>
     <p>The <strong>square-root transformation</strong> of Section 2.1 takes square roots part by part, \(\bu=\sqrt{\bz}\), that is \(u_j=\sqrt{z_j}\). Because \(\sum_j z_j=1\), we get \(\sum_j u_j^2=1\): every \(\bu\) is a unit vector, a point of the sphere \(S^{k-1}=\{\bu\in\R^k:\|\bu\|=1\}\). Taking the non-negative root puts it in the <strong>positive orthant</strong></p>
     \[ \mathcal O=\{\bu\in S^{k-1}:\ u_j\ge0\ \text{for all } j\}, \]
-    <p>the curved triangle in the picture. The map is one-to-one, and squaring undoes it: \(\bz=\bu^2\). Zeros cause no difficulty, because \(\sqrt0=0\): a composition with a zero part lands on an edge of \(\mathcal O\), with no replacement or perturbation, unlike the log-ratio transformations.</p>
+    <p>This region is the curved triangle shown below. The map is one-to-one, with inverse \(\bz=\bu^2\). It also admits zero components: \(\sqrt0=0\), so zeros lie on the boundary of the spherical orthant.</p>
     <p>The square root is not the straight-line projection \(\bz/\|\bz\|\) from the origin. It stretches small parts (\(\sqrt{0.01}=0.1\)), so the projection lines below are not aimed at the origin, and the equally spaced grid lines of the triangle land unequally spaced on the sphere.</p>
   </div>
 
@@ -417,7 +419,7 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 4</div>
     <h2>The tangent-normal distribution</h2>
-    <p class="lede">The idea of Section 3.2 of the manuscript: choose a centre on the sphere, flatten the sphere around it onto the plane that touches it there, put an ordinary normal distribution on that plane, and carry it back.</p>
+    <p class="lede">Choose a mean direction and express nearby spherical observations in tangent coordinates. Define a zero-mean normal distribution conditioned on the open unit ball, then use the map below to obtain a distribution on a hemisphere.</p>
 
     <h3>The centre and its tangent plane</h3>
     <p>The <b class="c-mu">mean direction</b> \(\bmu\in S^{k-1}\) is a unit vector; for compositions it lies in \(\mathcal O\), and \(\bmu^2\) is the composition at the centre. Two sets belong to it, the open hemisphere centred at \(\bmu\) and the open unit ball:</p>
@@ -440,7 +442,7 @@ window.MathJax={
     <p>which turns the density of the tangent coordinates, with respect to area on the flat plane, into a density on the curved sphere. For \(k=3\), written out,</p>
     \[ g(\bu)=\frac{\bmu^{\top}\bu}{2\pi\sqrt{\lambda_2\lambda_3}\;\pi_{\Lambda}}\,
        \exp\Bigl\{-\frac{(\bgamma_2^{\top}\bu)^2}{2\lambda_2}-\frac{(\bgamma_3^{\top}\bu)^2}{2\lambda_3}\Bigr\}. \]
-    <p>The truncation to the ball removes very little: \(1-\pi_{\Lambda}\le2^{(k-1)/2}\exp\{-1/(4\lambda_2)\}\) by (19), which for the default \(\sqrt{\lambda_2}=0.14\) is below \(10^{-5}\).</p>
+    <p>The omitted normal mass is bounded by \(1-\pi_{\Lambda}\le2^{(k-1)/2}\exp\{-1/(4\lambda_2)\}\). At the default \(\sqrt{\lambda_2}=0.14\), this bound is below \(10^{-5}\). For more diffuse settings, check the displayed truncation probability rather than assuming it is negligible.</p>
 
     <h3>Back to the triangle</h3>
     <p>On \(\mathcal O\), squaring undoes the square root: \(\bz=\bu^2\). If \(\bmu\) has positive components, every \(\bu\in\mathcal O\) has a positive part \(u_j\), so \(\bmu^{\top}\bu\ge\mu_ju_j&gt;0\); hence \(\mathcal O\subset H_{\bmu}\), and every composition, including one with zero parts, has positive density. The hemisphere is larger than the orthant, however: points of \(H_{\bmu}\) with a negative coordinate are not square roots of any composition. This is the price the manuscript pays for a normalising constant \(\pi_{\Lambda}\) that depends on \(\Lambda\) only. On this page such points stay on the sphere, drawn in <b class="c-out">red</b>; they are left out of the triangle, and their probability \(P(\bU\notin\mathcal O)\) is reported.</p>
@@ -528,10 +530,10 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 5</div>
     <h2>Contour sets</h2>
-    <p class="lede">A contour set is where the density takes one value. Here are the contours of \(g\) on the tangent plane, on the sphere and on the triangle.</p>
+    <p class="lede">A contour line connects points with the same density value. These figures show level sets of the spherical TN density and their images on the tangent plane and simplex. Mapping a level set does not generally make it a density contour in the new coordinates.</p>
     <p>The density (15) peaks at \(\bu=\bmu\), where both \(\varphi_{\Lambda}(\bK^{\top}\bu)\) and \(\bmu^{\top}\bu\) are largest, so \(g(\bmu)=\varphi_{\Lambda}(\mathbf 0)/\pi_{\Lambda}\). We draw the sets where \(g\) equals a fraction \(f\) of this peak; with five levels, \(f=0.1,0.3,0.5,0.7,0.9\), as on the Kent pages. In tangent coordinates, by (14)&ndash;(16),</p>
     \[ \frac{g\{\psi(\bv)\}}{g(\bmu)}=\exp\Bigl(-\tfrac12\,\bv^{\top}\Lambda^{-1}\bv\Bigr)\,\bigl(1-\|\bv\|^{2}\bigr)^{1/2}. \]
-    <p>Without the last factor, the Jacobian, the contours would be the ellipses \(\bv^{\top}\Lambda^{-1}\bv=-2\ln f\) of the Gaussian part (dashed); the ellipse at level \(f\) holds a share \(1-f\) of \(N(\mathbf 0,\Lambda)\). The Jacobian pulls the contours in slightly, visibly only when the spread is large. Along every ray from the centre the ratio falls from 1 to 0 before the edge of the ball, so each contour is a single closed curve. Mapped by \(\psi\) it becomes a contour on the sphere, and squared it becomes a contour on the triangle. The parts outside \(\mathcal O\) are dashed red on the plane and the sphere, and are absent from the triangle.</p>
+    <p>Without the Jacobian factor, the plane curves would be Gaussian ellipses \(\bv^{\top}\Lambda^{-1}\bv=-2\ln f\). In two dimensions, the ellipse encloses probability \(1-f\) under the untruncated normal. The TN Jacobian changes these level curves, especially at larger spreads. Mapping by \(\psi\) gives spherical density contours; squaring maps their admissible portions to the simplex. Red dashed portions lie outside the non-negative orthant and are omitted from the triangle.</p>
   </div>
 
   <figure class="plate">
@@ -632,12 +634,12 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 6</div>
     <h2>Density, simulation and estimation</h2>
-    <p class="lede">The same density as colour, a sample drawn from it, and the parameters estimated back from the sample.</p>
+    <p class="lede">Use colour to inspect the spherical density, draw a sample, and compare its fitted moment direction and Gaussian tangent shape with the generating parameters.</p>
     <p><b>On the sphere</b> the colour is \(g\) of (15). <b>On the triangle</b> it is, by default, \(g(\sqrt{\bz})\): the value of (15) at the square root of the composition, so that colours and contours on the triangle are those of the sphere, carried over by \(\bz=\bu^2\). This is not a density with respect to area on the triangle. The switch <em>density of Z</em> shows that density instead,</p>
     \[ f_Z(\bz)=\frac{g(\sqrt{\bz})}{4\sqrt{z_1z_2z_3}}, \]
-    <p>which is <em>not in the manuscript</em>: it adds the Jacobian of the square-root map, \(\sigma(d\bu)=dz_1\,dz_2/(4\sqrt{z_1z_2z_3})\). It is infinite on the edges wherever \(g\) is positive there, and it integrates over the triangle to \(P(\bU\in\mathcal O)\), not to 1, because the mass outside \(\mathcal O\) has no composition.</p>
+    <p>The square-root Jacobian converts the spherical density to a function of simplex coordinates. It integrates to \(P(\bU\in\mathcal O)\), rather than one, because TN may allocate mass outside the orthant. A conditional density on the simplex would also require division by this probability. Positive spherical boundary density does not assign probability mass to exact structural zeros.</p>
     <p><b>Resample</b> draws a new sample of size \(n\) by Definition 1. The sample moves with the sliders, because the same random numbers are reused until you press the button. Points that land outside \(\mathcal O\) appear on the sphere as <b class="c-out">red crosses</b>; they are not compositions, so the triangle shows only the others.</p>
-    <p><b>Estimation</b> follows Section 3.2.3: the sufficient statistics (21) with \(\hat{\bM}=S_2/n\), the normalised resultant \(\hat\bmu=\bs_1/\|\bs_1\|\) (22), the Householder reflector (26) with \(\bH=(\hat\bmu,\bB)\), the projected second moment \(S_T=\bB^{\top}\hat{\bM}\bB\), its spectral decomposition \(S_T=\bW\diag(\hat\lambda_2,\hat\lambda_3)\bW^{\top}\) (33) with \(\hat\bK=\bB\bW\), and the Kent parameters (34).</p>
+    <p>The fitted mean direction is the normalised resultant \(\hat\bmu=\bs_1/\|\bs_1\|\). A Householder basis \(\bB\) gives the tangent second moment \(S_T=\bB^{\top}(S_2/n)\bB\). Its eigenvalues and eigenvectors give the Gaussian tangent shape conditional on that direction. This uses a moment location and a Gaussian approximation; full truncated TN maximum likelihood is a different estimation problem.</p>
   </div>
 
   <figure class="plate">
@@ -713,12 +715,12 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 7</div>
     <h2>Kent versus tangent-normal</h2>
-    <p class="lede">The TN distribution was built to share the parameters of the Kent distribution. How alike are their shapes?</p>
+    <p class="lede">Kent and TN use matching location, orientation and concentration parameters. Compare their contours to see where that matching is accurate and where their supports and shapes differ.</p>
     <p>For \(k=3\) the Kent density (11) is</p>
     \[ f(\bu)=c(\kappa,\beta)^{-1}\exp\bigl\{\kappa\,\bmu^{\top}\bu+\beta\bigl[(\bgamma_2^{\top}\bu)^2-(\bgamma_3^{\top}\bu)^2\bigr]\bigr\},\qquad \bu\in S^{2}, \]
     <p>positive on the whole sphere, with \(0\le2\beta&lt;\kappa\) by (13). With \(\beta_2=\beta\) and \(\beta_3=-\beta\) (12), the matching (17), \(\lambda_m=(\kappa-2\beta_m)^{-1}\), gives</p>
     \[ \lambda_2=\frac{1}{\kappa-2\beta},\qquad \lambda_3=\frac{1}{\kappa+2\beta}. \]
-    <p>The two distributions then have the same location and orientation and the same normal limit as \(\kappa\to\infty\) (Scealy and Welsh, 2011, Theorem 3), so for large \(\kappa\) their contours coincide. Away from that limit they differ: the Kent density is positive on the whole sphere, the TN density only on the hemisphere \(H_{\bmu}\). Lower \(\kappa\) towards 2 and watch the outer Kent contours reach the edge of the hemisphere and pass it, while the TN contours stay inside. Both families are drawn at the same fractions of their own peaks.</p>
+    <p>The matched models share location and orientation and approach the same tangent-normal limit as concentration increases. Their contours can therefore be close at high concentration, but need not coincide at finite values. At lower concentration, Kent can extend over the whole sphere while TN remains on its hemisphere. The figure uses the same fractions of each model's own peak density.</p>
   </div>
 
   <figure class="plate">

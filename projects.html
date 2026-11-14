@@ -36,8 +36,11 @@
     }
     @media (max-width: 580px) { .projects-grid { grid-template-columns: 1fr; } }
   </style>
+<link rel="stylesheet" href="css/site-polish.css">
+<script src="assets/site.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <nav>
   <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
@@ -45,22 +48,25 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="index.html">About</a></li>
-    <li><a href="cv.html">CV</a></li>
-    <li><a href="projects.html" class="active">Projects</a></li>
-    <li><a href="blog.html">Blog</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
+<li><a href="index.html">About</a></li>
+<li><a href="publications.html">Publications</a></li>
+<li><a href="cv.html">CV</a></li>
+<li><a href="projects.html" class="active">Projects</a></li>
+<li><a href="visualisations/index.html">Interactive notes</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
 </nav>
 
-<main>
+<main id="main-content">
 
   <div class="page-header fade-up">
     <p class="eyebrow">Code &amp; Software</p>
     <h1>Projects &amp; Repositories</h1>
+<p class="page-intro">Software, interactive explanations and reproducible research. Explore the ideas, try the visualisations, or open the code.</p>
   </div>
 
-  <p class="section-divider fade-up">R Library</p>
+  <a class="feature-link fade-up" href="presentation/tn_talk.html"><span>Research presentation &middot; 14-minute talk</span><strong>Random forests for compositional data</strong><p>From the simplex to the sphere: understand Dirichlet, Kent and tangent normal models, then explore their use in random forest splitting. Open the interactive presentation &rarr;</p></a><p class="section-divider fade-up">Interactive research</p><div class="projects-grid"><article class="project-card fade-up"><img class="project-image" src="visualisations/kent/figures/kent_from_zero_web/fig-simplex-sphere-1.png" alt="A composition shown in a simplex and on a sphere" loading="lazy"><h3>Compositions on the sphere</h3><p class="project-desc">Explore why square roots place compositions on a sphere, how Kent controls shape and orientation, and how tangent normal models support efficient tree splitting.</p><div class="project-links"><a href="visualisations/index.html">Explore the collection &rarr;</a><a href="visualisations/tn/tn_distribution.html">Tangent normal &rarr;</a></div></article><article class="project-card fade-up"><img class="project-image" src="visualisations/kent/figures/kent_triangle_to_ellipse_web/fig-summary-1.png" alt="The geometry connecting compositional data with a tangent ellipse" loading="lazy"><h3>Kent: geometry and estimation</h3><p class="project-desc">Interactive explanations connect the distribution on the sphere with tangent-plane approximations, covariance structure and moment-based parameter estimates.</p><div class="project-links"><a href="visualisations/kent/kent_on_the_sphere.html">Start with the geometry &rarr;</a><a href="visualisations/kent/kent_estimation_explainer.html">Study estimation &rarr;</a></div></article></div><p class="section-divider fade-up">Research software</p>
 
   <div class="projects-grid">
 
@@ -70,15 +76,13 @@
         <span class="project-status">Active</span>
       </div>
       <h3>Dirichlet Random Forest</h3>
-      <p class="project-desc">A machine learning library for predicting compositional data using Dirichlet-based random forest models. Developed as part of postdoctoral research at MuViSU, Stellenbosch University.</p>
+      <p class="project-desc">An R library for random forests with compositional responses. The Dirichlet node model adapts tree splitting to proportions, with examples and an installation guide linked below.</p>
       <div class="project-tags">
         <span class="tag">Compositional Data</span>
         <span class="tag">Random Forest</span>
         <span class="tag">Dirichlet</span>
       </div>
-      <div class="project-links">
-        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
-      </div>
+      <div class="project-links"><a href="posts/dirichletrf-package.html">Package guide &rarr;</a></div>
     </div>
 
 
@@ -105,7 +109,7 @@
         <span class="tag">Reinsurance</span>
       </div>
       <div class="project-links">
-        <a href="https://github.com/Xaleed" target="_blank">GitHub →</a>
+        <a href="https://github.com/Xaleed" target="_blank" rel="noopener noreferrer">GitHub →</a>
         <a href="publications.html">Paper →</a>
       </div>
     </div>

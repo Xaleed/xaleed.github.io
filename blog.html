@@ -82,8 +82,11 @@
       .blog-subitems { margin-left: 0; }
     }
   </style>
+<link rel="stylesheet" href="css/site-polish.css">
+<script src="assets/site.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <nav>
   <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
@@ -91,22 +94,26 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="index.html">About</a></li>
-    <li><a href="cv.html">CV</a></li>
-    <li><a href="projects.html">Projects</a></li>
-    <li><a href="blog.html" class="active">Blog</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
+<li><a href="index.html">About</a></li>
+<li><a href="publications.html">Publications</a></li>
+<li><a href="cv.html">CV</a></li>
+<li><a href="projects.html">Projects</a></li>
+<li><a href="visualisations/index.html">Interactive notes</a></li>
+<li><a href="blog.html" class="active">Blog</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
 </nav>
 
-<main>
+<main id="main-content">
 
   <div class="page-header fade-up">
     <p class="eyebrow">Writing &amp; Notes</p>
     <h1>Blog</h1>
+<p class="page-intro">Research explained through examples, interactive figures and practical notes on statistical computing.</p>
   </div>
 
-  <div class="blog-list fade-up">
+  <a class="feature-link fade-up" href="presentation/tn_talk.html"><span>Research presentation &middot; 14-minute talk</span><strong>Random forests for compositional data</strong><p>From the simplex to the sphere: understand Dirichlet, Kent and tangent normal models, then explore their use in random forest splitting. Open the interactive presentation &rarr;</p></a>
+<div class="blog-list fade-up">
 
     <!-- ══════════════════════════════════════════
          DIRICHLETRF — GROUP ENTRY (two sub-links)
@@ -153,7 +160,7 @@
       </div>
       <div>
         <p class="blog-title">The tangent-normal distribution</p>
-        <p class="blog-excerpt">The Kent distribution's tangent-normal twin: a normal distribution on the tangent plane of the sphere, carried back to the sphere and to the triangle of compositions. Contour sets on the plane, the sphere and the triangle, the density as a heatmap with live simulation and estimation, and Kent and TN side by side. All pages in the series are collected under <span style="white-space:nowrap">Compositions on the sphere</span>.</p>
+        <p class="blog-excerpt">Start with a composition, take square roots, and explore a normal model in tangent coordinates. Interactive figures explain the construction, its hemisphere support and how it compares with Kent.</p>
         <p class="blog-read-time">8 parts · fully interactive</p>
       </div>
     </a>
@@ -165,7 +172,7 @@
       </div>
       <div>
         <p class="blog-title">Compositions on the sphere</p>
-        <p class="blog-excerpt">All the interactive pages on compositional data on the sphere in one place: the tangent-normal distribution, Kent on the Sphere, From a triangle to an ellipse, the Kent tutorial with its R code, and how the Kent leaf parameters are estimated.</p>
+        <p class="blog-excerpt">A guided collection of interactive explanations: compositional geometry, the Kent distribution, tangent normal models and parameter estimation. Choose a starting point to match your background.</p>
         <p class="blog-read-time">5 pages · index</p>
       </div>
     </a>
@@ -177,7 +184,7 @@
       </div>
       <div>
         <p class="blog-title">How the Kent leaf parameters are estimated</p>
-        <p class="blog-excerpt">The estimator, step by step: from n compositions in a node to μ̂, κ̂, β̂ and K̂, and to the split gain. Why the projected second moment is singular, why a Householder mirror fixes it, and why the eigendecomposition is only ever needed at terminal nodes. With an animated mirror, a ruler-rotation slider, and a worked example whose every number is checked.</p>
+        <p class="blog-excerpt">Follow the large-concentration moment approximation from observation summaries to mean direction, tangent axes and a fast Gaussian split score. Includes a worked example and an interactive Householder reflection.</p>
         <p class="blog-read-time">20 sections · interactive</p>
       </div>
     </a>
@@ -189,7 +196,7 @@
       </div>
       <div>
         <p class="blog-title">From a triangle to an ellipse</p>
-        <p class="blog-excerpt">The geometry behind the Kent distribution, one picture at a time: compositions live in a triangle, a square root lifts the triangle onto a sphere, a flat plane rests on the sphere at the mean direction, and on that plane von Mises–Fisher can only draw circles while Kent draws ellipses. The same 60 soil samples appear in every figure. Ends by opening up the machinery itself — a saddle-shaped level-set surface cutting the sphere, with sliders for κ, β and the contour level.</p>
+        <p class="blog-excerpt">Follow the same compositional observations from a triangle to a sphere and a tangent plane. See how concentration, shape and orientation change Kent contours, with the limits of the ellipse approximation made explicit.</p>
         <p class="blog-read-time">9 steps · start here</p>
       </div>
     </a>
@@ -201,7 +208,7 @@
       </div>
       <div>
         <p class="blog-title">Kent on the Sphere</p>
-        <p class="blog-excerpt">Why a square root turns compositional data into points on a sphere, what the von Mises–Fisher distribution cannot do about it, and how the Kent distribution fixes that. Seventeen parts, built from zero — every figure is live: rotate the spheres, drag the sliders for κ and β, and watch the Householder basis turn while the answer stays put.</p>
+        <p class="blog-excerpt">An introduction to directional data and the Kent distribution. Rotate the sphere, change its parameters and connect the geometry with a complete worked example.</p>
         <p class="blog-read-time">17 parts · fully interactive</p>
       </div>
     </a>

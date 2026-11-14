@@ -1,0 +1,10 @@
+
+(() => {
+  const menu=document.querySelector('.nav-links'),toggle=document.querySelector('.nav-toggle');
+  if(menu&&toggle){menu.id=menu.id||'site-menu';toggle.setAttribute('aria-controls',menu.id);const sync=()=>toggle.setAttribute('aria-expanded',String(menu.classList.contains('open')));sync();new MutationObserver(sync).observe(menu,{attributes:true,attributeFilter:['class']});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open')){menu.classList.remove('open');toggle.focus();}});menu.addEventListener('click',e=>{if(e.target.closest('a'))menu.classList.remove('open');});}
+  document.querySelectorAll('.nav-links a.active').forEach(a=>a.setAttribute('aria-current','page'));
+  document.querySelectorAll('a[target="_blank"]').forEach(a=>a.rel='noopener noreferrer');
+  const tabs=[...document.querySelectorAll('.cv-tab-btn')],bar=document.querySelector('.cv-tab-bar');
+  if(bar){bar.setAttribute('role','tablist');bar.setAttribute('aria-label','CV sections');const sync=()=>tabs.forEach((b,i)=>{const id=b.getAttribute('onclick').match(/switchTab\('([^']+)'/)[1],panel=document.getElementById('panel-'+id),active=b.classList.contains('active');b.id='tab-'+id;b.setAttribute('role','tab');b.setAttribute('aria-controls',panel.id);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1;panel.setAttribute('role','tabpanel');panel.setAttribute('aria-labelledby',b.id);});sync();tabs.forEach((b,i)=>{b.addEventListener('click',sync);b.addEventListener('keydown',e=>{let n;if(e.key==='ArrowRight')n=(i+1)%tabs.length;else if(e.key==='ArrowLeft')n=(i+tabs.length-1)%tabs.length;else if(e.key==='Home')n=0;else if(e.key==='End')n=tabs.length-1;else return;e.preventDefault();tabs[n].click();tabs[n].focus();});});}
+  document.querySelectorAll('.filter-btn').forEach(b=>{const sync=()=>document.querySelectorAll('.filter-btn').forEach(x=>x.setAttribute('aria-pressed',String(x.classList.contains('active'))));sync();b.addEventListener('click',sync);});
+})();

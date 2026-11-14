@@ -1551,13 +1551,15 @@ else build();
 </script>
 
 
+<link rel="stylesheet" href="../../css/reading.css">
 </head>
 
 <body>
 
 
 <header id="title-block-header">
-<h1 class="title">From a triangle to an ellipse</h1>
+<div class="reader-breadcrumb"><a href="../../index.html">About</a><span>/</span><a href="../../visualisations/index.html">Interactive research</a><span>/</span><span>From simplex to tangent plane</span></div>
+<h1 class="title">From a triangle to an ellipse</h1><aside class="reading-note"><strong>Read the pictures in order.</strong> The square-root map is exact. A tangent ellipse is a local approximation to a concentrated Kent distribution. A mapped spherical density contour need not be an equal-density contour on the simplex: a change of density also needs its Jacobian.</aside>
 <p class="subtitle">A step-by-step picture of the geometry behind the Kent distribution for compositional data</p>
 <p class="author">Working notes for the compositional random forest manuscript</p>
 
@@ -1929,7 +1931,7 @@ Figure 7: A von Mises–Fisher distribution fitted to our data, on the tangent 
 \;+\;\beta\bigl[(\boldsymbol\gamma_2^{\!\top}\mathbf u)^2
 -(\boldsymbol\gamma_3^{\!\top}\mathbf u)^2\bigr]\Bigr\}.$$</span></p>
 <p>Read the new term with the tangent coordinates of Step 5 in mind: it is <span class="math inline"><em>β</em>(<em>v</em><sub>2</sub><sup>2</sup> − <em>v</em><sub>3</sub><sup>2</sup>)</span>. It <strong>adds</strong> probability when a point leans along <span class="math inline"><strong>γ</strong><sub>2</sub></span> and <strong>removes</strong> it when the point leans along <span class="math inline"><strong>γ</strong><sub>3</sub></span>. The circle gets pulled out one way and squeezed the other: an ellipse.</p>
-<h2 id="what-each-of-the-four-parameters-does" class="anchored">What each of the four parameters does</h2>
+<h2 id="what-each-of-the-four-parameters-does" class="anchored">What the parameters control</h2>
 <table class="table-striped">
 <caption>The four parameters of the Kent geometry</caption>
 <colgroup>
@@ -2077,7 +2079,7 @@ Table 4: The fitted geometry, recovered from the data by the five steps above. 
 </figure>
 </div>
 </div>
-<h1 id="sec-levelset">Step 8 — Where the contour actually comes from</h1>
+<h1 id="sec-levelset">Step 8 — How the spherical contour is defined</h1>
 <p>Up to now the contours have simply appeared, drawn for you. This step shows the machinery that produces them. It is the one piece of the subject that is worth seeing in three dimensions rather than taking on trust.</p>
 <h2 id="the-set-up" class="anchored">The set-up</h2>
 <p>Put the mean direction at the North Pole, <span class="math inline"><strong>μ</strong> = (0, 0, 1)</span>, and let <span class="math inline"><strong>γ</strong><sub>2</sub></span> be the <span class="math inline"><em>x</em></span> axis and <span class="math inline"><strong>γ</strong><sub>3</sub></span> the <span class="math inline"><em>y</em></span> axis. Then <span class="math inline"><strong>μ</strong><sup> ⊤</sup><strong>u</strong> = <em>z</em></span>, <span class="math inline"><strong>γ</strong><sub>2</sub><sup> ⊤</sup><strong>u</strong> = <em>x</em></span> and <span class="math inline"><strong>γ</strong><sub>3</sub><sup> ⊤</sup><strong>u</strong> = <em>y</em></span>, so the Kent density is just</p>
@@ -2272,7 +2274,7 @@ Table 5: How far the contour reaches in each direction, read off the exact inte
 </figure>
 </div>
 </div>
-<h2 id="the-exact-curve-and-its-elliptical-shadow" class="anchored">The exact curve, and its elliptical shadow</h2>
+<h2 id="the-exact-curve-and-its-elliptical-shadow" class="anchored">The exact spherical curve and its tangent approximation</h2>
 <p>The intersection is a genuine curve <strong>on the sphere</strong> — it is not an ellipse, because the sphere is curved. But look at it from directly above <span class="math inline"><strong>μ</strong></span>, in the tangent plane of Step 4, and it is very nearly one. That near-ellipse is what Step 7 was drawing.</p>
 <div id="fig-exact-vs-ellipse" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig">
@@ -2365,7 +2367,7 @@ Figure 13: The same 60 samples at every stage, once more. Read left to right: a
 </div>
 </div>
 </div>
-<h2 id="the-five-sentences-to-remember" class="anchored">The five sentences to remember</h2>
+<h2 id="the-five-sentences-to-remember" class="anchored">Five key ideas</h2>
 <ol type="1">
 <li><strong>Compositions live in a triangle</strong> because the parts must add to 1, so three numbers really carry only two pieces of information.</li>
 <li><strong>The square root turns the triangle into part of a sphere</strong>, exactly and reversibly, because <span class="math inline">∑<sub><em>j</em></sub><em>z</em><sub><em>j</em></sub> = 1</span> becomes <span class="math inline">∑<sub><em>j</em></sub><em>u</em><sub><em>j</em></sub><sup>2</sup> = 1</span>.</li>

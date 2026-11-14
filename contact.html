@@ -34,8 +34,11 @@
     .office-hours { margin-top: 1.6rem; padding-top: 1.6rem; border-top: 1px solid var(--border); }
     @media (max-width: 620px) { .contact-grid { grid-template-columns: 1fr; gap: 2rem; } }
   </style>
+<link rel="stylesheet" href="css/site-polish.css">
+<script src="assets/site.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <nav>
   <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
@@ -44,18 +47,21 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="index.html">About</a></li>
-    <li><a href="cv.html">CV</a></li>
-    <li><a href="projects.html">Projects</a></li>
-    <li><a href="blog.html">Blog</a></li>
-    <li><a href="contact.html" class="active">Contact</a></li>
-  </ul>
+<li><a href="index.html">About</a></li>
+<li><a href="publications.html">Publications</a></li>
+<li><a href="cv.html">CV</a></li>
+<li><a href="projects.html">Projects</a></li>
+<li><a href="visualisations/index.html">Interactive notes</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="contact.html" class="active">Contact</a></li>
+</ul>
 </nav>
 
-<main>
+<main id="main-content">
   <div class="page-header fade-up">
     <span class="eyebrow">Get in Touch</span>
     <h1>Contact</h1>
+<p class="page-intro">For research questions, collaboration and academic conversations.</p>
   </div>
 
   <div class="contact-grid">
@@ -66,11 +72,11 @@
           <span class="contact-link-label">Email</span>
           <span class="contact-link-value">masoumifardk@yahoo.com</span>
         </a>
-        <a class="contact-link" href="https://github.com/Xaleed" target="_blank">
+        <a class="contact-link" href="https://github.com/Xaleed" target="_blank" rel="noopener noreferrer">
           <span class="contact-link-label">GitHub</span>
           <span class="contact-link-value">github.com/Xaleed</span>
         </a>
-        <a class="contact-link" href="https://www.linkedin.com/in/khaled-masoumifard-9b498294" target="_blank">
+        <a class="contact-link" href="https://www.linkedin.com/in/khaled-masoumifard-9b498294" target="_blank" rel="noopener noreferrer">
           <span class="contact-link-label">LinkedIn</span>
           <span class="contact-link-value">khaled-masoumifard</span>
         </a>
@@ -81,7 +87,7 @@
       </div>
     </div>
 
-    <div class="location-card fade-up">
+    <div class="location-card fade-up"><img class="location-photo" src="assets/img/stellenbosch/campus.jpg" alt="A view of Stellenbosch University campus" loading="lazy"><p class="photo-source">Campus photograph by Lourie Pieterse ? <a href="assets/img/stellenbosch/credits.html">Source &amp; licence</a></p>
       <span class="section-label">Location</span>
       <p><strong>Stellenbosch University</strong></p>
       <p>MuViSU — Centre for Multi-dimensional Data Visualisation</p>

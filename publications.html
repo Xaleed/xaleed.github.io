@@ -41,8 +41,11 @@
     }
     .pub-links a:hover { color: var(--accent); border-color: var(--accent); }
   </style>
+<link rel="stylesheet" href="css/site-polish.css">
+<script src="assets/site.js" defer></script>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 
 <nav>
   <a class="nav-logo" href="index.html">Khaled Masoumifard</a>
@@ -50,44 +53,47 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="index.html">About</a></li>
-    <li><a href="publications.html" class="active">Publications</a></li>
-    <li><a href="cv.html">CV</a></li>
-    <li><a href="projects.html">Projects</a></li>
-    <li><a href="blog.html">Blog</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
+<li><a href="index.html">About</a></li>
+<li><a href="publications.html" class="active">Publications</a></li>
+<li><a href="cv.html">CV</a></li>
+<li><a href="projects.html">Projects</a></li>
+<li><a href="visualisations/index.html">Interactive notes</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
 </nav>
 
-<main>
+<main id="main-content">
   <div class="page-header fade-up">
     <p class="eyebrow">Research Output</p>
     <h1>Publications</h1>
+<p class="page-intro">Research in statistics, machine learning, reliability and actuarial science. Preprints are labelled separately from journal articles and book chapters.</p>
   </div>
 
   <div class="filter-bar fade-up">
     <button class="filter-btn active" onclick="filterPubs('all', this)">All</button>
     <button class="filter-btn" onclick="filterPubs('journal', this)">Journal Articles</button>
     <button class="filter-btn" onclick="filterPubs('conference', this)">Conference Papers</button>
-    <button class="filter-btn" onclick="filterPubs('book', this)">Book Chapters</button>
+    <button class="filter-btn" onclick="filterPubs('book', this)">Book Chapters</button><button class="filter-btn" onclick="filterPubs('submitted',this)">Preprints</button>
   </div>
 
-  <!-- 2025 -->
+  <div class="pub-year-group fade-up"><p class="pub-year-heading">2026</p><div class="pub-item" data-type="book">
+          <div class="pub-accent-bar"></div>
+          <div>
+            <div class="pub-title">
+              Dirichlet-random forest for predicting compositional data
+              <span class="pub-badge inpress">In Press</span>
+            </div>
+            <div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div>
+            <div class="pub-venue">In A. Bekker et al. (Eds.), <em>Environmental modelling with contemporary statistics: Learning, directionality, and space-time dynamics</em> · CRC Press · ISBN 9781032903910</div>
+            <div class="pub-links"></div>
+          </div>
+        </div><div class="pub-item" data-type="submitted"><div class="pub-accent-bar"></div><div><div class="pub-title">Compositional random forest <span class="pub-badge">Preprint</span></div><div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div><div class="pub-venue">arXiv:2611.14275 &middot; 2026 &middot; Not yet published in a peer-reviewed journal</div><div class="pub-links"><a href="https://arxiv.org/abs/2611.14275" target="_blank" rel="noopener noreferrer">Read preprint &rarr;</a><a href="presentation/tn_talk.html">Presentation &rarr;</a></div></div></div></div>
+<!-- 2025 -->
   <div class="pub-year-group fade-up">
     <p class="pub-year-heading">2025</p>
 
-    <div class="pub-item" data-type="book">
-      <div class="pub-accent-bar"></div>
-      <div>
-        <div class="pub-title">Dirichlet-random forest for predicting compositional data</div>
-        <div class="pub-authors"><strong>Masoumifard, K.</strong>, van der Westhuizen, S., Gardner-Lubbe, S.</div>
-        <div class="pub-venue">Environmental Statistics: Innovative Methods and Applications · 2025</div>
-        <div class="pub-links">
-          <a href="#">PDF</a>
-          <a href="#">DOI</a>
-        </div>
-      </div>
-    </div>
+
 
     <div class="pub-item" data-type="journal">
       <div class="pub-accent-bar"></div>
@@ -96,8 +102,8 @@
         <div class="pub-authors"><strong>Masoumifard, K.</strong>, Haidari, A., Torrado, N.</div>
         <div class="pub-venue">Applied Stochastic Models in Business and Industry · 41(2), e70008 · 2025</div>
         <div class="pub-links">
-          <a href="#">PDF</a>
-          <a href="https://doi.org/10.1002/asmb.70008" target="_blank">DOI</a>
+
+          <a href="https://doi.org/10.1002/asmb.70008" target="_blank" rel="noopener noreferrer">DOI</a>
         </div>
       </div>
     </div>
@@ -114,8 +120,8 @@
         <div class="pub-authors">Jahanbani, E., Najafabadi, A.T.P., <strong>Masoumifard, K.</strong></div>
         <div class="pub-venue">Annals of Actuarial Science · pp. 1–25 · 2023</div>
         <div class="pub-links">
-          <a href="#">PDF</a>
-          <a href="#">DOI</a>
+
+
         </div>
       </div>
     </div>
@@ -132,8 +138,8 @@
         <div class="pub-authors"><strong>Masoumifard, K.</strong>, Zokaei, M.</div>
         <div class="pub-venue">Stochastic Analysis and Applications · 39(1), 1–21 · 2021</div>
         <div class="pub-links">
-          <a href="#">PDF</a>
-          <a href="#">DOI</a>
+
+
         </div>
       </div>
     </div>
@@ -150,8 +156,8 @@
         <div class="pub-authors">Balakrishnan, N., Haidari, A., <strong>Masoumifard, K.</strong></div>
         <div class="pub-venue">IEEE Transactions on Reliability · 64(1), 333–348 · 2014</div>
         <div class="pub-links">
-          <a href="#">PDF</a>
-          <a href="#">DOI</a>
+
+
         </div>
       </div>
     </div>

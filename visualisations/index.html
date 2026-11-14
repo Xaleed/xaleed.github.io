@@ -67,6 +67,7 @@ section{margin-top:44px}
 .foot a{color:var(--ink-2)}
 @media (max-width:520px){.card.feature{grid-column:auto}}
 </style>
+<link rel="stylesheet" href="../css/reading.css">
 </head>
 <body>
 <div class="topbar"><div class="topbar-in">
@@ -78,17 +79,17 @@ section{margin-top:44px}
   <div class="hero">
     <div class="meta">Interactive notes &middot; compositional random forest</div>
     <h1>Compositions on the sphere</h1>
-    <p>Interactive companions to the manuscript <em>Compositional random forest</em>: how the square root turns a composition into a direction, and the two distributions used for such directions, the Kent distribution and the tangent-normal (TN) distribution.</p>
+    <p>Visual explanations of compositional data and spherical models. Start with the geometry, explore Kent and tangent normal distributions, then connect them with efficient random forest splitting. The companion <a href="https://arxiv.org/abs/2611.14275">research preprint</a> gives the full derivations.</p>
   </div>
 
-  <section aria-labelledby="h-tn">
+  <div class="reader-guide"><a href="kent/kent_on_the_sphere.html"><strong>New to the topic?</strong><small>Start with directions and compositions.</small></a><a href="tn/tn_distribution.html"><strong>Explore tangent normal</strong><small>Build the distribution step by step.</small></a><a href="../presentation/tn_talk.html"><strong>Watch the research talk</strong><small>A 14-minute route through the main ideas.</small></a></div><section aria-labelledby="h-tn">
     <div class="eyebrow" id="h-tn">Tangent-normal</div>
     <div class="cards">
       <article class="card feature">
-        <div class="tags"><span class="tag new">new</span><span class="tag">single file</span><span class="tag">interactive</span></div>
+        <div class="tags"><span class="tag new">new</span><span class="tag">interactive</span></div>
         <h2><a href="tn/tn_distribution.html">The tangent-normal distribution</a></h2>
-        <p>The TN distribution step by step: compositions in the triangle and on the plane x&#8321; + x&#8322; + x&#8323; = 1, their square roots on the sphere, the tangent plane and the map &psi; of eq. (14), contour sets on the plane, the sphere and the triangle, the density as colour with live simulation and estimation, and Kent and TN side by side.</p>
-        <div class="links"><a href="tn/tn_distribution.html">open</a></div>
+        <p>Follow one simulated data set from the simplex to the sphere. Explore the unit-ball-conditioned normal construction, its hemisphere support, density contours and a comparison with Kent.</p>
+        <div class="links"><a href="tn/tn_distribution.html">Explore the tutorial</a></div>
       </article>
     </div>
   </section>
@@ -97,35 +98,33 @@ section{margin-top:44px}
     <div class="eyebrow" id="h-kent">Kent</div>
     <div class="cards">
       <article class="card">
-        <div class="tags"><span class="tag">single file</span><span class="tag">interactive</span></div>
+        <div class="tags"><span class="tag">interactive</span></div>
         <h2><a href="kent/kent_on_the_sphere.html">Kent on the Sphere</a></h2>
-        <p>The Kent distribution from zero on one interactive page: directional data, the square-root map, von Mises&ndash;Fisher versus Kent, the tangent plane, the Householder basis, signs and ties, and a complete worked example.</p>
-        <div class="links"><a href="kent/kent_on_the_sphere.html">open</a></div>
+        <p>A visual introduction to directional data, compositional geometry and Kent parameters. Interactive examples connect concentration, orientation and ovalness with the shapes on the sphere.</p>
+        <div class="links"><a href="kent/kent_on_the_sphere.html">Explore the tutorial</a></div>
       </article>
       <article class="card">
-        <div class="tags"><span class="tag">two builds</span><span class="tag">rotatable 3D</span></div>
+        <div class="tags"><span class="tag">geometry</span><span class="tag">rotatable 3D</span></div>
         <h2><a href="kent/kent_triangle_to_ellipse_standalone.html">From a triangle to an ellipse</a></h2>
         <p>Nine steps from compositions in a triangle to the Kent ellipse on the tangent plane, including where the contour comes from: the level set of the density cut by the sphere.</p>
-        <div class="links"><a href="kent/kent_triangle_to_ellipse_standalone.html">single file</a><a href="kent/kent_triangle_to_ellipse_web.html">website build</a></div>
+        <div class="links"><a href="kent/kent_triangle_to_ellipse_standalone.html">interactive</a><a href="kent/kent_triangle_to_ellipse_web.html">compact view</a></div>
       </article>
       <article class="card">
-        <div class="tags"><span class="tag">two builds</span><span class="tag">with R code</span></div>
+        <div class="tags"><span class="tag">geometry</span><span class="tag">with R code</span></div>
         <h2><a href="kent/kent_from_zero_standalone.html">The Kent distribution, from zero</a></h2>
         <p>The Kent tutorial written in Quarto, with the R code behind every figure: from directional data and the square-root map to the second-moment matrix, the Householder basis and the eigen-decomposition.</p>
-        <div class="links"><a href="kent/kent_from_zero_standalone.html">single file</a><a href="kent/kent_from_zero_web.html">website build</a></div>
+        <div class="links"><a href="kent/kent_from_zero_standalone.html">interactive</a><a href="kent/kent_from_zero_web.html">compact view</a></div>
       </article>
       <article class="card">
-        <div class="tags"><span class="tag">single file</span><span class="tag">estimation</span></div>
+        <div class="tags"><span class="tag">interactive</span><span class="tag">estimation</span></div>
         <h2><a href="kent/kent_estimation_explainer.html">How the Kent leaf parameters are estimated</a></h2>
-        <p>The moment estimator used in the Kent leaves of the forest: sufficient statistics, the projection that removes &mu;&#770;, the Householder reflector, the tangent block and its eigen-decomposition, and the split gain.</p>
-        <div class="links"><a href="kent/kent_estimation_explainer.html">open</a></div>
+        <p>Understand the large-concentration moment approximation: additive summaries, a tangent basis, principal axes and the Gaussian part of an efficient split score. Full Kent maximum likelihood is distinguished from this approximation.</p>
+        <div class="links"><a href="kent/kent_estimation_explainer.html">Explore the tutorial</a></div>
       </article>
     </div>
   </section>
 
-  <div class="note">
-    <p><b>Single file</b> pages carry everything they need and work offline (the libraries come from a CDN). The <b>website builds</b> are smaller; they need the <span class="mono">assets/</span> folder next to <span class="mono">kent/</span>, and they use the site's own navigation and <span class="mono">css/style.css</span>, which they expect two folders up.</p>
-  </div>
+  <div class="note"><p><b>Using the figures.</b> Rotate a 3D view and move its sliders to explore one change at a time. These pages load plotting libraries and fonts from a CDN, so an internet connection is required. Formulas, support conditions and approximation limits are explained beside the relevant figures.</p></div>
 </main>
 
 <footer class="foot">&copy; 2026 Khaled Masoumifard &nbsp;&middot;&nbsp; <a href="../blog.html">&larr; Back to the blog</a></footer>

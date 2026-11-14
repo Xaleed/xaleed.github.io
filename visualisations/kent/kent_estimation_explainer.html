@@ -195,6 +195,7 @@ tr:last-child td{border-bottom:0}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<link rel="stylesheet" href="../../css/reading.css">
 </head>
 <body>
 
@@ -208,16 +209,15 @@ tr:last-child td{border-bottom:0}
 <nav class="gtoc" id="gtoc" hidden>
   <div class="gtoc-in">
     <h3>Contents</h3>
-    <p>Twenty sections, in order. Each one only uses ideas from the sections before it.</p>
+    <p>A detailed guide to the moment approximation, with a worked example and optional checks along the way.</p>
     <ol id="toclist"></ol>
   </div>
 </nav>
 <main>
 
+<div class="reader-breadcrumb"><a href="../../index.html">About</a><span>/</span><a href="../../visualisations/index.html">Interactive research</a><span>/</span><span>Moment-based estimation</span></div>
 <h1>How the Kent leaf parameters are estimated</h1>
-<p class="sub">From <span class="mono">n</span> compositions in a node to
-\(\hat\mu,\hat\kappa,\hat\beta,\hat K\) — and to the split gain. Every step is
-a closed-form formula. There is no optimisation anywhere.</p>
+<p class="sub">Estimate a mean direction and tangent shape from observations in a tree node. This guide explains a <strong>large-concentration moment approximation</strong> and its Gaussian tangent split score. Full Kent maximum likelihood generally requires numerical optimisation.</p><aside class="reading-note"><strong>What this guide estimates.</strong> The formulas describe a moment-based, large-concentration approximation to Kent and the Gaussian tangent part of a split score. They are not an exact Kent MLE. The current TN forest also adds an approximate Jacobian contribution and omits a concentration-dependent truncation term. <a href="../../visualisations/tn/tn_distribution.html">Read the TN construction</a> or <a href="../../presentation/tn_talk.html#27">see the split-score explanation</a>.</aside>
 
 <ul class="key">
   <li><i style="border-top:3px solid var(--mu)"></i>\(\hat\mu\) mean direction</li>
@@ -229,26 +229,17 @@ a closed-form formula. There is no optimisation anywhere.</p>
 
 <div class="box remark">
   <b>A note on names</b>
-  <p>The current paper draft calls the Householder completion \(\hat K\). On this
-  page we rename it \(\mathbf B\), and we keep \(\hat K\) for the estimate of
-  \(K\), the ellipse axes. So \(\hat K = \mathbf{B}W\): the rulers, then the
-  rotation.</p>
+  <p>We use \(\mathbf B\) for an orthonormal basis of the tangent plane and \(\hat K\) for the estimated principal axes. Their relationship is \(\hat K=\mathbf BW\): first choose coordinates, then rotate them to align with the data.</p>
 </div>
 
 <section id="s0" data-t="The big picture">
 <h2 class="sh"><span class="snum">S0</span>The big picture</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>A node holds \(n\) compositions; we turn them into two moments, and from those
-two moments we read off every Kent parameter in closed form.</p></div>
+<p>A node contains \(n\) compositions. Their first and second moments give a mean direction and an approximate Kent parameter estimate. The approximation is most appropriate when observations are concentrated around the mean direction.</p></div>
 
-<p>Each observation is a composition: a list of parts that add up to one. We
-first put it on a sphere. Then we collect only two summaries of the node: the
-sum of the vectors, and the sum of their outer products. Everything else is
-algebra on those two summaries.</p>
+<p>Each composition has non-negative components that sum to one. Take square roots to obtain unit vectors, then retain the count, vector sum and sum of outer products. These additive summaries support the Gaussian tangent score derived here.</p>
 
-<p>The work splits into two zones. While the tree is searching for a split we
-need one number per candidate, and we get it cheaply. Only when a node becomes
-a leaf do we build the full parameter set.</p>
+<p>Split search needs a scalar score for each candidate child. Reporting a fitted distribution also needs its axes and variances. Keeping these calculations separate avoids constructing a complete parameter estimate at every threshold.</p>
 
 <figure id="f1">
   <div class="fhead">Figure F1 · the pipeline</div>
@@ -259,24 +250,19 @@ a leaf do we build the full parameter set.</p>
 </figure>
 
 <div class="box why"><b>Why is this step necessary?</b>
-<p>A decision tree evaluates thousands of candidate splits. If each one needed
-an eigendecomposition the forest would be far too slow. Separating the two
-zones is what makes the method practical.</p></div>
+<p>A decision tree compares many candidate splits. A log-determinant identity lets us evaluate the Gaussian tangent score without an eigendecomposition at every candidate.</p></div>
 </section>
 
 
 <section id="s1" data-t="From compositions to the sphere">
 <h2 class="sh"><span class="snum">S1</span>From compositions to the sphere</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Take the square root of each part, and the composition becomes a point on the
-unit sphere.</p></div>
+<p>Taking componentwise square roots maps a composition to the non-negative orthant of the unit sphere.</p></div>
 
 <p>Let \(z=(z_1,\dots,z_k)\) be a composition, so \(z_j\ge 0\) and
 \(\sum_j z_j = 1\). Put</p>
 $$u_j=\sqrt{z_j},\qquad j=1,\dots,k,$$
-<p>and then renormalise to \(\|u\|=1\). Because \(\sum_j z_j=1\) we already have
-\(\sum_j u_j^2=1\), so \(u\) lies on the unit sphere \(S^{k-1}\), in the
-positive orthant (the corner where every coordinate is positive).</p>
+<p>Since the original components sum to one, the square-root vector already satisfies \(\|u\|=1\). Any numerical renormalisation is only a rounding safeguard. Zero components remain zero.</p>
 
 <div class="box example"><b>Our example</b>
 <p>\(z=(0.36,\,0.2304,\,0.4096)\) gives \(u=(0.60,\,0.48,\,0.64)\), and
@@ -306,13 +292,12 @@ family of distributions is already built for that.</p></div>
 <section id="s2" data-t="The Kent distribution and its parameters">
 <h2 class="sh"><span class="snum">S2</span>The Kent distribution and its parameters</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Kent describes an elliptical cloud on the sphere: a centre, an overall size, a
-shape, and the directions the ellipse points in.</p></div>
+<p>Kent describes an oriented cloud on the sphere. Its parameters control the mean direction, concentration, ovalness and orientation. Elliptical tangent contours are a useful approximation at high concentration.</p></div>
 
 <p>The density on the sphere is</p>
 $$f(u)=c(\kappa,\beta)^{-1}\exp\!\Big[\kappa\,\mu^{\mathsf T}u+\sum_{m=2}^{k-1}\beta_m(\gamma_m^{\mathsf T}u)^2-\Big(\sum_{m=2}^{k-1}\beta_m\Big)(\gamma_k^{\mathsf T}u)^2\Big].$$
 
-<p>In simple words:</p>
+<p>The parameters have the following roles:</p>
 <ul>
 <li>\(\mu\): the centre of the cloud, the mean direction.</li>
 <li>\(\kappa\): the overall size. Large \(\kappa\) means a small, tight cloud.</li>
@@ -355,9 +340,7 @@ to the \(\lambda_m\), and the eigenvectors correspond to \(K\).</p></div>
 </figure>
 
 <div class="box why"><b>Why is this step necessary?</b>
-<p>Without \(\beta\) and \(K\) the model can only describe round clouds. Real
-compositional data in a node are usually stretched along one trade-off between
-components.</p></div>
+<p>Ovalness and orientation allow different spreads along tangent directions. This is useful for elongated data; when the cloud is close to rotationally symmetric, the simpler von Mises&ndash;Fisher model may be sufficient.</p></div>
 
 <details class="check"><summary>Check yourself</summary><div class="qa">
 <p>After estimating \(\hat\mu\), which parameters are still unknown, and what does
@@ -456,13 +439,9 @@ be inverted to give \(\kappa\) and \(\beta\).</p></div>
 <section id="s6" data-t="Why the second moment?">
 <h2 class="sh"><span class="snum">S6</span>Why the second moment?</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>The mean sees only the centre; the products \(u_iu_j\) are what reveal shape and
-orientation.</p></div>
+<p>The first moment describes mean direction. Products of coordinates in the second moment describe spread and orientation.</p></div>
 
-<p>Two clouds can have the same centre but be stretched in different directions.
-They then have exactly the same \(\bar u\). Only the second moment
-\(\hat M=S_2/n\) can tell them apart, because it contains the products
-\(u_iu_j\).</p>
+<p>Two clouds can share a mean direction while having different spreads and orientations. The second moment \(\hat M=S_2/n\) records the coordinate products needed to describe these differences.</p>
 
 <div class="box example"><b>Our example</b>
 <p>$$\hat M=\tfrac19\begin{pmatrix}3.99&1.86&3.54\\1.86&1.02&1.86\\3.54&1.86&3.99\end{pmatrix}=\begin{pmatrix}0.4433&0.2067&0.3933\\0.2067&0.1133&0.2067\\0.3933&0.2067&0.4433\end{pmatrix}$$
@@ -550,8 +529,7 @@ information because the trace is one.</p>
 <section id="s8" data-t="The problem: P̂M̂P̂ is singular">
 <h2 class="sh"><span class="snum">S8</span>The problem: \(\hat P\hat M\hat P\) is singular</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Projecting leaves a \(3\times3\) matrix describing a 2-dimensional table, so one
-eigenvalue is exactly zero and the determinant dies.</p></div>
+<p>The projected \(3\times3\) matrix describes a two-dimensional tangent space. One eigenvalue is therefore zero, so its full determinant is not the determinant needed for the tangent likelihood.</p></div>
 
 <p>Since \(\hat P\hat\mu=0\) we have \(\hat P\hat M\hat P\,\hat\mu=0\). So
 \(\hat\mu\) is an eigenvector with eigenvalue \(0\).</p>
@@ -565,9 +543,7 @@ real \(\lambda_m\) can be genuinely tiny — say \(10^{-4}\) — and become hard
 tell apart from the fake zero.</p>
 
 <div class="box why"><b>Why is this step necessary?</b>
-<p>The cause is simple: three numbers are being used to describe a two-dimensional
-table. The fix is to describe the table with two numbers, which is what the
-next sections build.</p></div>
+<p>Use a two-dimensional orthonormal basis to represent the tangent plane. This removes the redundant coordinate while preserving its geometry.</p></div>
 
 <details class="check"><summary>Check yourself</summary><div class="qa">
 <p>What is \(\hat P\hat M\hat P\,\hat\mu\), and why is that a problem?</p>
@@ -577,11 +553,10 @@ next sections build.</p></div>
 </section>
 
 
-<section id="s9" data-t="What we need: rulers on the table">
-<h2 class="sh"><span class="snum">S9</span>What we need: rulers on the table</h2>
+<section id="s9" data-t="An orthonormal tangent basis">
+<h2 class="sh"><span class="snum">S9</span>An orthonormal tangent basis</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Lay two perpendicular unit rulers on the table and measure every point with
-them; the \(3\times3\) problem becomes a clean \(2\times2\) one.</p></div>
+<p>Choose two orthogonal unit vectors spanning the tangent plane. Expressing the projected observations in that basis reduces the \(3\times3\) matrix to a \(2\times2\) tangent covariance.</p></div>
 
 <p>The rulers \(b_2,b_3\) must satisfy</p>
 $$b_2^{\mathsf T}\hat\mu=b_3^{\mathsf T}\hat\mu=0,\qquad b_2^{\mathsf T}b_3=0,\qquad \|b_2\|=\|b_3\|=1 .$$
@@ -609,10 +584,9 @@ to each other.</p>
 </section>
 
 <section id="s10" data-t="Perfect rulers at the north pole">
-<h2 class="sh"><span class="snum">S10</span>The idea: perfect rulers at the north pole</h2>
+<h2 class="sh"><span class="snum">S10</span>Constructing a basis at a coordinate pole</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>At the north pole the rulers are obvious; move the whole rigid frame there with
-one orthogonal map and the rulers come along for free.</p></div>
+<p>At a coordinate pole, a tangent basis is immediate. An orthogonal transformation carries that basis to the estimated mean direction while preserving lengths and angles.</p></div>
 
 <p>At \(e_1=(1,0,0)\) the choice is free and obvious: take \(e_2=(0,1,0)\) and
 \(e_3=(0,0,1)\). Now move the rigid frame \((e_1,e_2,e_3)\) with a single map
@@ -646,8 +620,7 @@ simpler: there is one obvious choice, and it is explicit.</p></div>
 <section id="s11" data-t="The Householder reflector">
 <h2 class="sh"><span class="snum">S11</span>The Householder reflector (the mirror)</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Stand a mirror halfway between \(e_1\) and \(\hat\mu\); reflecting the frame in
-it sends \(e_1\) to \(\hat\mu\) and hands you the rulers.</p></div>
+<p>A Householder reflection maps a coordinate pole to the estimated mean direction. Its remaining columns provide an orthonormal tangent basis.</p></div>
 
 <p>A <em>Householder reflector</em> is the matrix of a mirror through the origin.
 Where should the mirror stand? In the middle of the segment from \(e_1\) to
@@ -805,8 +778,7 @@ so its rulers have no reason to line up with the ellipse.</p>
 <section id="s13" data-t="Eigendecomposition: λ̂, W, K̂ = BW">
 <h2 class="sh"><span class="snum">S13</span>Eigendecomposition: \(\hat\lambda\), \(W\) and \(\hat K=\mathbf BW\)</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Turn the rulers until the covariance vanishes; the turn is \(W\), and the turned
-rulers are the ellipse axes.</p></div>
+<p>Diagonalise the tangent covariance to find its principal axes. The eigenvectors give the rotation \(W\), and the resulting axes are \(\hat K=\mathbf BW\).</p></div>
 
 <p>An <em>eigendecomposition</em> writes a symmetric matrix as a rotation, a
 stretch, and the rotation back:</p>
@@ -878,17 +850,13 @@ eigenvalues.</p></div>
 <section id="s14" data-t="Moment equation 2 → K, κ, β">
 <h2 class="sh"><span class="snum">S14</span>Moment equation 2 (second moment) → \(K,\kappa,\beta\)</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Match the projected second moment to its population form; the spectral theorem
-solves it uniquely, and the eigenvalues convert straight into \(\kappa\) and
-\(\beta\).</p></div>
+<p>Match the projected second moment to its large-concentration approximation. The eigenvalues estimate the tangent variances, which are converted to concentration and ovalness.</p></div>
 
 <p>In the population,
 \(PMP=K\operatorname{diag}(\mathbb E v_2^2,\dots,\mathbb E v_k^2)K^{\mathsf T}\approx K\operatorname{diag}(\lambda_2,\dots,\lambda_k)K^{\mathsf T}\).
 The moment equation is</p>
 $$K\operatorname{diag}(\lambda)K^{\mathsf T}=\hat P\hat M\hat P .$$
-<p>By the spectral theorem this has a unique solution, up to the signs of the
-columns: that gives \(\hat K\) and \(\hat\lambda\). Then \(1/\lambda_m=\kappa-2\beta_m\);
-summing over \(m\) and using \(\sum_m\beta_m=0\),</p>
+<p>The spectral decomposition determines the tangent variances and their eigenspaces. Distinct eigenvalues identify axes up to sign; repeated eigenvalues leave their orientation undetermined. The approximate parameter conversion then uses \(1/\lambda_m=\kappa-2\beta_m\).</p>
 $$\hat\kappa=\frac{1}{k-1}\sum_m\frac{1}{\hat\lambda_m},\qquad
 \hat\beta_m=\tfrac12\Big(\hat\kappa-\frac{1}{\hat\lambda_m}\Big).$$
 
@@ -905,7 +873,7 @@ The constraint \(30>20\ge-20\ge-20\) holds automatically: ordered
 unknowns. Tangent block: \(k(k-1)/2\) equations, for \(K\) given \(\mu\)
 (\((k-1)(k-2)/2\) unknowns) plus \(\kappa\) and \(\beta\) (\(k-1\) unknowns). And</p>
 $$\frac{(k-1)(k-2)}{2}+(k-1)=\frac{k(k-1)}{2}.$$
-<p>So the model is exactly identified. Closed form, no optimisation.</p>
+<p>This gives a closed-form solution to the approximate moment equations. It should not be interpreted as an exact Kent maximum likelihood estimate.</p>
 
 <p><b>The moment information we do not use.</b> \(a\) carries nothing new, because
 \(a=1-\operatorname{tr}S_L\). And \(c\) gives \(k-1\) further equations; in the
@@ -939,11 +907,10 @@ never the split criterion.</p></div>
 </section>
 
 
-<section id="s15" data-t="Why this estimator is a good one">
-<h2 class="sh"><span class="snum">S15</span>Why this estimator is a good one</h2>
+<section id="s15" data-t="What the estimator guarantees">
+<h2 class="sh"><span class="snum">S15</span>What the estimator guarantees</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>It is the sample version of an exact population fact, its variances are proper
-variances, and given \(\hat\mu\) no other frame fits better.</p></div>
+<p>The construction respects the tangent geometry and maximises the Gaussian surrogate conditional on the chosen mean direction. Its conversion to Kent concentration and ovalness remains an approximation.</p></div>
 
 <ol class="body">
 <li>It is the sample version of S3. The population says \(\Gamma\) diagonalises
@@ -961,8 +928,7 @@ equality only when \(G^{\mathsf T}\hat MG\) is diagonal — that is, when
 </ol>
 
 <div class="box why"><b>Why is this step necessary?</b>
-<p>It tells us the closed-form answer is not a shortcut that sacrifices quality. It
-is the best frame under the surrogate we are actually using.</p></div>
+<p>The fitted axes are optimal for the Gaussian tangent surrogate being used. This does not imply optimality for the full Kent likelihood in every concentration regime.</p></div>
 </section>
 
 
@@ -975,7 +941,7 @@ one Cholesky factorisation of \(\hat M\).</p></div>
 $$\hat\ell(A)=-\frac{n_A(k-1)}{2}\big(1+\ln 2\pi\big)-\frac{n_A}{2}\ln|S_L(A)| .$$
 <p>The split gain is</p>
 $$\Delta\ell=-\tfrac12\Big[n_L\ln|S_L(L)|+n_R\ln|S_L(R)|-n\ln|S_L(\Omega)|\Big],$$
-<p>which rewards children with smaller ellipses.</p>
+<p>This Gaussian term rewards a reduction in within-child tangent covariance. The current TN criterion also includes a Jacobian contribution; see the note above.</p>
 
 <p>The <em>Schur complement</em> identity — the determinant of a block of a matrix,
 written through the whole matrix — gives</p>
@@ -984,8 +950,7 @@ $$|S_L|=|\hat M|\cdot\hat\mu^{\mathsf T}\hat M^{-1}\hat\mu .$$
 \(\mathbf B\) we chose. One <em>Cholesky factorisation</em> \(\hat M=LL^{\mathsf T}\)
 delivers both pieces:</p>
 $$\ln|\hat M|=2\sum_j\ln L_{jj},\qquad \hat\mu^{\mathsf T}\hat M^{-1}\hat\mu=\|L^{-1}\hat\mu\|^2 .$$
-<p>So the Householder reflector and the eigendecomposition are used
-<strong>only at terminal nodes</strong>.</p>
+<p>The score can be evaluated without constructing the tangent basis or its eigenvectors. Those quantities are needed when reporting axes and variances, rather than for each candidate threshold.</p>
 
 <div class="box example"><b>Our example</b>
 <p>\(\ln|S_L|=\ln 0.0005=-7.6009\), so</p>
@@ -1006,8 +971,7 @@ the left child — so \(S_L(L)\) and \(S_L(R)\) read badly. A different name suc
 <section id="s17" data-t="Model-implied mean">
 <h2 class="sh"><span class="snum">S17</span>Model-implied mean</h2>
 <div class="box idea"><b>Idea in one sentence</b>
-<p>Squaring the frame and weighting by the variances returns the mean composition —
-and it lands on the empirical mean.</p></div>
+<p>The fitted tangent approximation gives a model-implied mean composition. Its relationship with the empirical mean depends on the moment cross term and any finite-sample adjustment.</p></div>
 
 $$\mathbb E(z)=\Gamma^{2}\,\mathbb E(u^{*2}),\qquad
 \mathbb E(u^{*2})\approx\Big(1-\textstyle\sum_m\lambda_m,\ \lambda_2,\dots,\lambda_k\Big),$$
@@ -1045,7 +1009,7 @@ valid rulers, which is all we need. For compositions \(\hat\mu_1>0\), so then
 precision in exactly the nodes where the data are most concentrated.</p></div>
 
 <div class="box remark"><b>To do</b>
-<p>Check which version <code>kent_forest.cpp</code> uses.</p></div>
+<p>A numerical implementation should use the stable sign convention and handle the coordinate-pole case explicitly.</p></div>
 </section>
 
 

@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Khaled Masoumifard</title>
+  <title>Khaled Masoumifard | Statistics &amp; Machine Learning</title>
+<meta name="description" content="Khaled Masoumifard: statistics, machine learning and compositional data research at Stellenbosch University. Research, software and interactive explanations.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
@@ -367,15 +368,13 @@
       color: rgba(255,255,255,0.15); z-index: 50; pointer-events: none;
     }
   </style>
+<link rel="stylesheet" href="css/site-polish.css">
+<script src="assets/site.js" defer></script>
 </head>
-<body>
+<body class="page-home">
+<a class="skip-link" href="#inner-0">Skip to content</a>
 
-<div id="bg">
-  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=1800&q=85')"></div>
-<!--  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1800&q=85')"></div>
-  <div class="bg-layer" style="background-image:url('https://images.unsplash.com/photo-1502920514313-52581002a659?w=1800&q=85')"></div> -->
-</div>
-
+<div id="bg" aria-hidden="true"><div class="bg-layer active" style="background-image:url('assets/img/stellenbosch/mountains.jpg')"></div><div class="bg-layer" style="background-image:url('assets/img/stellenbosch/campus.jpg')"></div></div>
 <div id="bg-overlay"></div>
 
 <nav class="topnav">
@@ -385,15 +384,17 @@
     <span></span><span></span><span></span>
   </button>
   <ul class="nav-links">
-    <li><a href="index.html" class="active">About</a></li>
-    <li><a href="cv.html">CV</a></li>
-    <li><a href="projects.html">Projects</a></li>
-    <li><a href="blog.html">Blog</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
+<li><a href="index.html" class="active">About</a></li>
+<li><a href="publications.html">Publications</a></li>
+<li><a href="cv.html">CV</a></li>
+<li><a href="projects.html">Projects</a></li>
+<li><a href="visualisations/index.html">Interactive notes</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
 </nav>
 
-<div class="slider" id="slider">
+<div class="slider" id="slider" role="main" aria-label="About Khaled Masoumifard">
 
   <!-- SLIDE 1 — PROFILE -->
   <div class="slide">
@@ -404,7 +405,7 @@
         <div class="photo-placeholder" style="display:none;">👤</div>
       </div>
       <h1 class="profile-name">Khaled<br>Masoumifard</h1>
-      <p class="profile-role">Postdoctoral Fellow · Statistics</p>
+      <p class="profile-role">Postdoctoral Fellow &middot; Statistics</p><p class="profile-summary">Statistical modelling, machine learning<br>and the geometry of data.</p><div class="profile-actions"><a href="cv.html">View CV</a><a href="visualisations/index.html">Explore the research</a></div>
       <div class="contact-list">
         <div class="contact-item">
           <span class="contact-icon">📍</span>
@@ -412,7 +413,7 @@
         </div>
         <div class="contact-item">
           <span class="contact-icon">✉️</span>
-          <a href="/cdn-cgi/l/email-protection#adc0ccdec2d8c0c4cbccdfc9c6edd4ccc5c2c283cec2c0"><span class="__cf_email__" data-cfemail="6904081a061c04000f081b0d02291008010606470a0604">masoumifardk@yahoo.com</span></a>
+          <a href="mailto:masoumifardk@yahoo.com">masoumifardk@yahoo.com</a>
         </div>
         <div class="contact-item">
           <span class="contact-icon">🎓</span>
@@ -420,10 +421,10 @@
         </div>
       </div>
       <div class="social-row">
-        <a class="s-btn" href="https://github.com/Xaleed" target="_blank" title="GitHub">
+        <a class="s-btn" href="https://github.com/Xaleed" target="_blank" rel="noopener noreferrer" title="GitHub">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
         </a>
-        <a class="s-btn" href="https://www.linkedin.com/in/khaled-masoumifard-9b498294" target="_blank" title="LinkedIn">
+        <a class="s-btn" href="https://www.linkedin.com/in/khaled-masoumifard-9b498294" target="_blank" rel="noopener noreferrer" title="LinkedIn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
         </a>
         <a class="s-btn" href="cv.html" title="CV">
@@ -440,15 +441,15 @@
   <div class="slide">
     <div class="about-wrap slide-inner" id="inner-1">
       <span class="slide-label">Research &amp; Background</span>
-      <h2 class="about-title">Working at the edge of<br><em>mathematics &amp; data</em></h2>
+      <h2 class="about-title">Connecting statistical ideas<br><em>with useful models</em></h2>
 
       <div class="glass-block">
         <p class="glass-block-title">About</p>
         <div class="about-bio">
-          <p>I am a postdoctoral fellow at Stellenbosch University working on problems in mathematics and statistics, with a focus on statistical modeling and machine learning. I spend much of my time reading research, coding, and building models for complex data, aiming to connect theoretical ideas with practical applications. Before this, I spent several years working as a data scientist on financial and insurance data.</p>
-          <p>My interest in mathematics and probability started early and grew through years of problem solving and discussions, which led to achievements such as <strong>first place in the Iranian Statistical Student Competition</strong> and <strong>second place in the National Statistical Olympiad</strong>. That same curiosity continues to shape my work — approaching problems with a balance of rigor and exploration, using tools like R, Python, Julia, and C++ across data science, actuarial science, and statistical modeling.</p>
+          <p>I am a postdoctoral fellow at <strong>Stellenbosch University</strong>, working on statistical modelling and machine learning. My research focuses on compositional data, random forests and methods for understanding complex data. I develop both the mathematics and the software behind these methods.</p>
+          <p>Before joining Stellenbosch, I worked with financial and insurance data. I use R, Python, Julia and C++ to connect research with practical problems. My earlier achievements include <strong>first place in the Iranian Statistical Student Competition</strong> and <strong>second place in the National Statistical Olympiad</strong>.</p>
           <p>Outside of work, I enjoy spending time in nature — hiking, exploring farms, and experiencing the landscapes around Stellenbosch.</p>
-        </div>
+        </div><div class="research-shortcuts"><a href="visualisations/kent/kent_on_the_sphere.html">Understand Kent &rarr;</a><a href="visualisations/tn/tn_distribution.html">Explore tangent normal &rarr;</a><a href="presentation/tn_talk.html">Watch the research talk &rarr;</a></div>
       </div>
 
       <div class="glass-block">
@@ -471,26 +472,26 @@
   <div class="slide">
     <div class="albums-wrap slide-inner" id="inner-2">
       <div class="albums-header">
-        <h2 class="nature-title">Life around <em>Stellenbosch</em></h2>
-        <p class="nature-sub">Click an album to browse</p>
+        <h2 class="nature-title">A sense of <em>Stellenbosch</em></h2>
+        <p class="nature-sub">Campus, mountains and the landscape around the research. These are credited public photographs; my own photo collection will follow.</p>
       </div>
-      <div class="album-grid" id="album-grid"></div>
+      <div class="album-grid" id="album-grid"></div><p class="gallery-credit">Photographs: Lourie Pieterse, Khanya Ntantiso Arosi and Orrling &middot; <a href="assets/img/stellenbosch/credits.html">Sources &amp; licences</a></p>
     </div>
   </div>
 
 </div>
 
-<div class="lightbox" id="lightbox">
-  <button class="lb-close" onclick="closeLightbox()">✕</button>
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Stellenbosch photograph viewer" aria-hidden="true">
+  <button class="lb-close" aria-label="Close photograph" onclick="closeLightbox()">✕</button>
   <div class="lb-img-wrap">
-    <button class="lb-arrow prev" onclick="lbStep(-1)">&#8592;</button>
+    <button class="lb-arrow prev" aria-label="Previous photograph" onclick="lbStep(-1)">&#8592;</button>
     <img id="lb-img" src="" alt="">
-    <button class="lb-arrow next" onclick="lbStep(1)">&#8594;</button>
+    <button class="lb-arrow next" aria-label="Next photograph" onclick="lbStep(1)">&#8594;</button>
   </div>
   <div class="lb-meta">
     <span class="lb-album-name" id="lb-album-name"></span>
     <span class="lb-counter" id="lb-counter"></span>
-    <div class="lb-dots" id="lb-dots"></div>
+    <div class="lb-dots" id="lb-dots"></div><div class="lb-credit" id="lb-credit"></div>
   </div>
 </div>
 
@@ -502,18 +503,14 @@
 
 <div class="credit">© 2026 Khaled Masoumifard</div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   /* ── Albums config ── */
-  const albums = [
-    { id:'mountains', label:'Stellenbosch Mountains', cover:'assets/img/mountains/cover.jpg', coverFallback:'https://images.unsplash.com/photo-1600270762567-f2e93dd3c47e?w=600&q=80', images:['assets/img/mountains/01.jpg','assets/img/mountains/02.jpg','assets/img/mountains/03.jpg','assets/img/mountains/04.jpg','assets/img/mountains/05.jpg'] },
-    { id:'farmlands',  label:'Farmlands',              cover:'assets/img/farmlands/cover.jpg',  coverFallback:'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=600&q=80', images:['assets/img/farmlands/01.jpg','assets/img/farmlands/02.jpg','assets/img/farmlands/03.jpg'] },
-    { id:'winelands',  label:'Winelands',              cover:'assets/img/winelands/cover.jpg',  coverFallback:'https://images.unsplash.com/photo-1580060839134-75a5edca2e99?w=600&q=80', images:['assets/img/winelands/01.jpg','assets/img/winelands/02.jpg','assets/img/winelands/03.jpg','assets/img/winelands/04.jpg'] },
-    { id:'fynbos',     label:'Fynbos',                 cover:'assets/img/fynbos/cover.jpg',     coverFallback:'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=600&q=80', images:['assets/img/fynbos/01.jpg','assets/img/fynbos/02.jpg','assets/img/fynbos/03.jpg'] }
-  ];
+  const albums = [{"id": "campus", "label": "University campus", "cover": "assets/img/stellenbosch/campus.jpg", "images": ["assets/img/stellenbosch/campus.jpg"]}, {"id": "landscape", "label": "Mountains & valley", "cover": "assets/img/stellenbosch/mountains.jpg", "images": ["assets/img/stellenbosch/mountains.jpg", "assets/img/stellenbosch/jonkershoek.jpg"]}];
+  const photoCredits = {"assets/img/stellenbosch/campus.jpg": {"file": "campus.jpg", "author": "Lourie Pieterse", "license": "CC BY-SA 3.0", "license_url": "https://creativecommons.org/licenses/by-sa/3.0/", "source_url": "https://commons.wikimedia.org/wiki/File:Stellenbosch_university_campus.jpg", "alt": "Stellenbosch University campus, viewed from the Merensky building", "date": "2011", "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."}, "assets/img/stellenbosch/mountains.jpg": {"file": "mountains.jpg", "author": "Khanya Ntantiso Arosi", "license": "CC BY-SA 4.0", "license_url": "https://creativecommons.org/licenses/by-sa/4.0/", "source_url": "https://commons.wikimedia.org/wiki/File:Jonkershoek_%26_Stellenbosch.jpg", "alt": "Jonkershoek and Stellenbosch Mountains seen from the R604", "date": "2020", "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."}, "assets/img/stellenbosch/jonkershoek.jpg": {"file": "jonkershoek.jpg", "author": "Orrling", "license": "CC BY-SA 3.0", "license_url": "https://creativecommons.org/licenses/by-sa/3.0/", "source_url": "https://commons.wikimedia.org/wiki/File:Jonkershoek.jpg", "alt": "An archival view of vineyards and mountains in Jonkershoek valley", "date": "1994", "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."}};
   const grid = document.getElementById('album-grid');
   albums.forEach((a, i) => {
     const n = a.images.length;
-    grid.innerHTML += `<div class="album-card" onclick="openAlbum(${i})"><img src="${a.cover}" alt="${a.label}" onerror="this.src='${a.coverFallback}'"><div class="album-caption"><span class="album-name">${a.label}</span><span class="album-count">${n} photo${n!==1?'s':''}</span></div><div class="album-play"><svg width="10" height="10" viewBox="0 0 10 10" fill="white"><polygon points="2,1 9,5 2,9"/></svg></div></div>`;
+    grid.innerHTML += `<button type="button" class="album-card" onclick="openAlbum(${i})" aria-label="Open ${a.label} photographs"><img src="${a.cover}" alt="${a.label}" loading="lazy"><div class="album-caption"><span class="album-name">${a.label}</span><span class="album-count">${n} photo${n!==1?'s':''}</span></div><div class="album-play"><svg width="10" height="10" viewBox="0 0 10 10" fill="white"><polygon points="2,1 9,5 2,9"/></svg></div></button>`;
   });
 
   /* ── Lightbox ── */
@@ -521,31 +518,32 @@
   const lightbox=document.getElementById('lightbox'), lbImg=document.getElementById('lb-img'),
         lbName=document.getElementById('lb-album-name'), lbCount=document.getElementById('lb-counter'),
         lbDots=document.getElementById('lb-dots');
-  function openAlbum(i){ lbAlbum=albums[i]; lbIndex=0; lbName.textContent=lbAlbum.label; buildDots(); showImg(false); lightbox.classList.add('open'); }
-  function closeLightbox(){ lightbox.classList.remove('open'); }
+  let galleryReturnFocus=null;
+  function openAlbum(i){ galleryReturnFocus=document.activeElement;lbAlbum=albums[i]; lbIndex=0; lbName.textContent=lbAlbum.label; buildDots(); showImg(false); lightbox.classList.add('open');lightbox.setAttribute('aria-hidden','false');lightbox.querySelector('.lb-close').focus(); }
+  function closeLightbox(){ lightbox.classList.remove('open');lightbox.setAttribute('aria-hidden','true');galleryReturnFocus?.focus(); }
   function lbStep(d){ lbIndex=(lbIndex+d+lbAlbum.images.length)%lbAlbum.images.length; showImg(true); }
-  function showImg(anim){ if(anim){ lbImg.classList.add('fade'); setTimeout(()=>{ lbImg.src=lbAlbum.images[lbIndex]; lbImg.onload=lbImg.onerror=()=>lbImg.classList.remove('fade'); },160); } else { lbImg.src=lbAlbum.images[lbIndex]; } lbCount.textContent=(lbIndex+1)+' / '+lbAlbum.images.length; updateDots(); }
-  function buildDots(){ lbDots.innerHTML=''; lbAlbum.images.forEach((_,i)=>{ const d=document.createElement('div'); d.className='lb-dot'+(i===0?' active':''); d.onclick=()=>{lbIndex=i;showImg(true);}; lbDots.appendChild(d); }); }
+  function showImg(anim){ const c=photoCredits[lbAlbum.images[lbIndex]];lbImg.alt=c.alt;document.getElementById('lb-credit').innerHTML=`${c.alt} &middot; ${c.date}<br>Photo: <a href="${c.source_url}" target="_blank" rel="noopener noreferrer">${c.author}</a> &middot; <a href="${c.license_url}" target="_blank" rel="noopener noreferrer">${c.license}</a>`; if(anim){ lbImg.classList.add('fade'); setTimeout(()=>{ lbImg.src=lbAlbum.images[lbIndex]; lbImg.onload=lbImg.onerror=()=>lbImg.classList.remove('fade'); },160); } else { lbImg.src=lbAlbum.images[lbIndex]; } lbCount.textContent=(lbIndex+1)+' / '+lbAlbum.images.length; updateDots(); }
+  function buildDots(){ lbDots.innerHTML=''; lbAlbum.images.forEach((_,i)=>{ const d=document.createElement('button');d.type='button';d.setAttribute('aria-label','Photograph '+(i+1)); d.className='lb-dot'+(i===0?' active':''); d.onclick=()=>{lbIndex=i;showImg(true);}; lbDots.appendChild(d); }); }
   function updateDots(){ lbDots.querySelectorAll('.lb-dot').forEach((d,i)=>d.classList.toggle('active',i===lbIndex)); }
   lightbox.addEventListener('click',e=>{ if(e.target===lightbox) closeLightbox(); });
 
   /* ── Background rotator ── */
   const bgLayers=document.querySelectorAll('.bg-layer'); let bgIdx=0;
   bgLayers[0].classList.add('active');
-  setInterval(()=>{ bgLayers[bgIdx].classList.remove('active'); bgIdx=(bgIdx+1)%bgLayers.length; bgLayers[bgIdx].classList.add('active'); },7000);
+  setInterval(()=>{ bgLayers[bgIdx].classList.remove('active'); bgIdx=(bgIdx+1)%bgLayers.length; bgLayers[bgIdx].classList.add('active'); },window.matchMedia('(prefers-reduced-motion: reduce)').matches?2147483647:12000);
 
   /* ── Slider ── */
   const slider=document.getElementById('slider'), pills=document.querySelectorAll('.pill-btn'),
         inners=document.querySelectorAll('.slide-inner');
   let current=0, tx=0, ty=0;
   function goTo(idx){
-    current=(idx+3)%3;
+    current=(idx+3)%3;document.querySelectorAll('.slider > .slide').forEach((el,i)=>{el.inert=i!==current;el.setAttribute('aria-hidden',String(i!==current));});
     slider.style.transform=`translateX(-${current*100}vw)`;
     pills.forEach((p,i)=>p.classList.toggle('active',i===current));
     inners.forEach((el,i)=>{ el.classList.remove('visible'); if(i===current) requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('visible'))); });
   }
-  inners[0].classList.add('visible');
-  document.addEventListener('keydown',e=>{ if(lightbox.classList.contains('open')){ if(e.key==='ArrowRight')lbStep(1); else if(e.key==='ArrowLeft')lbStep(-1); else if(e.key==='Escape')closeLightbox(); } else { if(e.key==='ArrowRight')goTo(current+1); else if(e.key==='ArrowLeft')goTo(current-1); } });
+  goTo(0);
+  document.addEventListener('keydown',e=>{ if(e.ctrlKey||e.altKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return; if(lightbox.classList.contains('open')){ if(e.key==='Tab'){const fs=[...lightbox.querySelectorAll('button,a[href]')].filter(x=>x.offsetParent!==null),first=fs[0],last=fs[fs.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}else if(e.key==='ArrowRight')lbStep(1); else if(e.key==='ArrowLeft')lbStep(-1); else if(e.key==='Escape')closeLightbox(); } else { if(e.key==='ArrowRight')goTo(current+1); else if(e.key==='ArrowLeft')goTo(current-1); } });
   slider.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
   slider.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty; if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40) goTo(dx<0?current+1:current-1); },{passive:true});
 </script>

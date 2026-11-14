@@ -19,6 +19,7 @@ img{max-width:100%}
   font-size:14px;line-height:1;margin-right:2px}
 .backlink:hover{background:var(--wash);color:var(--ink)}
 </style>
+<link rel="stylesheet" href="../css/reading.css">
 </head>
 <body><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -349,7 +350,7 @@ window.MathJax={
 <nav class="toc" id="toc" hidden>
   <div class="toc-in">
     <h3>Contents</h3>
-    <p style="color:var(--ink-2);font-size:.9rem;margin:0">Seventeen parts, built in order. Each one only uses ideas from the parts before it.</p>
+    <p style="color:var(--ink-2);font-size:.9rem;margin:0">Twenty short sections, from directional data to a worked example. Start with the geometry, or use the contents to go straight to the mathematics.</p>
     <ol id="toclist"></ol>
   </div>
 </nav>
@@ -359,8 +360,9 @@ window.MathJax={
 <section class="hero">
   <div class="col">
     <div class="meta">A tutorial &middot; directional statistics for compositional data</div>
-    <h1>The Kent distribution, from zero</h1>
-    <p class="sub">A distribution for data that live on a sphere &mdash; and why square roots turn proportions into exactly that kind of data.</p>
+    <div class="reader-breadcrumb"><a href="../index.html">About</a><span>/</span><a href="../visualisations/index.html">Interactive research</a><span>/</span><span>Kent distribution</span></div>
+<h1>The Kent distribution: a visual introduction</h1><aside class="reading-note"><strong>Scope of the approximation.</strong> Standard three-dimensional Kent has five free parameters: two for mean direction, one for orientation, concentration and ovalness. Its full maximum likelihood fit generally requires numerical optimisation. The tangent-normal approximation below is intended for concentrated data. <a href="../visualisations/tn/tn_distribution.html">Continue to the TN model &rarr;</a></aside>
+    <p class="sub">Learn how the Kent distribution models directions and how square roots connect it with compositional data. Explore the geometry first, then work through the parameters and estimation.</p><div class="reader-guide"><a href="#p1"><strong>Start with geometry</strong><small>Directions, compositions and the sphere</small></a><a href="#p6"><strong>Understand the parameters</strong><small>Location, concentration and ovalness</small></a><a href="#p15"><strong>Follow an example</strong><small>From observations to a fitted model</small></a></div>
     <ul class="key">
       <li><i style="background:var(--mu)"></i>\(\mu\) &mdash; mean direction</li>
       <li><i style="background:var(--g2)"></i>\(\gamma_2\) &mdash; long axis</li>
@@ -369,7 +371,7 @@ window.MathJax={
     </ul>
     <div class="note" style="margin-top:26px">
       <span class="tag">How to read this</span>
-      <p>Every figure is live. Drag the 3D pictures to rotate them. Move the sliders and watch the shapes change. All the numbers in Part 15 are computed in your browser from the twelve soil samples shown there, so nothing can disagree with anything else.</p>
+      <p>Drag a 3D figure to rotate it and use the sliders to explore its shape. The worked example uses the twelve soil compositions shown in Part 15. Its figures and parameter estimates are calculated from the same data in your browser.</p>
     </div>
   </div>
 </section>
@@ -378,14 +380,14 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 1</div>
     <h2>What is directional data?</h2>
-    <p class="lede">Some numbers measure <em>how much</em>. Other numbers measure <em>which way</em>. These two kinds of number need different distributions.</p>
+    <p class="lede">Measurements such as height describe an amount. Wind directions describe an angle. Directional models account for the circular or spherical geometry of the observations.</p>
 
     <h3>Ordinary data live on a straight line</h3>
-    <p>Think of the height of a person: 1.62 m, 1.78 m, 1.91 m. These numbers sit on a straight line. The line has no end and no beginning. Big numbers are far from small numbers. This is <strong>Euclidean data</strong>. The normal distribution was built for exactly this.</p>
+    <p>Heights such as 1.62 m, 1.78 m and 1.91 m can be represented on a number line. Their differences have the usual meaning. Many statistical models use these ordinary, real-valued coordinates.</p>
 
     <h3>Directional data live on a circle or a sphere</h3>
-    <p>Now think of wind direction. You measure it as an angle: 0&deg; is north, 90&deg; is east, and so on. After 359&deg; you do not get 360&deg; &mdash; you come back to 0&deg;. The line has been bent into a closed loop. This is <strong>circular data</strong>.</p>
-    <p>Two examples to feel the difference:</p>
+    <p>Wind direction is different: 0&deg; and 360&deg; represent the same direction. Angles lie on a circle, so 350&deg; and 10&deg; are close even though their numerical values look far apart.</p>
+    <p>Compare the two ways of measuring separation:</p>
     <ul>
       <li>On a line, 350 and 10 are very far apart. The distance is 340.</li>
       <li>On a circle, 350&deg; and 10&deg; are very close. The distance is only 20&deg;. Both are almost north.</li>
@@ -395,9 +397,9 @@ window.MathJax={
     <p>Suppose you record two wind directions: 350&deg; and 10&deg;. Both winds come from almost exactly north. The ordinary average is</p>
     \[ \frac{350 + 10}{2} = 180^\circ , \]
     <p>which is <strong>south</strong>. The answer is the exact opposite of the truth. The ordinary average is wrong because it does not know that the scale wraps around.</p>
-    <p>The correct method is to turn each angle into a point on the circle first, average the <em>points</em>, and then read off the direction:</p>
+    <p>Represent each angle as a point on the unit circle. Average those vectors, then calculate the direction of the resulting vector:</p>
     \[ \mathbf u_1=(\cos 350^\circ,\sin 350^\circ)=(0.985,-0.174),\qquad \mathbf u_2=(\cos 10^\circ,\sin 10^\circ)=(0.985,\;0.174). \]
-    <p>The average of these two points is \((0.985,\,0)\). Its direction is \(0^\circ\): north. Correct.</p>
+    <p>The average vector is \((0.985,0)\). Its direction is north, \(0^\circ\), which agrees with the two observations.</p>
   </div>
 
   <figure class="plate">
@@ -408,11 +410,11 @@ window.MathJax={
 
   <div class="col">
     <h3>From the circle to the sphere</h3>
-    <p>A direction in a flat world needs one angle. A direction in a three-dimensional world needs two angles &mdash; think of longitude and latitude on the Earth. Every possible direction in 3D can be drawn as one point on the surface of a ball. That surface is called the <strong>sphere</strong>, and that is where the Kent distribution lives.</p>
+    <p>A direction in a plane is described by one angle. In three dimensions it needs two angles, such as longitude and latitude. A unit vector represents that direction as a point on a sphere. The Kent distribution models these spherical observations.</p>
 
     <div class="note warm">
       <span class="tag">The one sentence to keep</span>
-      <p>Directional data are data whose <em>size</em> carries no information &mdash; only the <em>direction</em> matters. So we force every observation to have length exactly 1, and we model the resulting points on a sphere.</p>
+      <p>For directional data, orientation is the quantity of interest. Represent each observation by a unit vector and model the resulting points on the sphere.</p>
     </div>
 
     <h4>Why not just use the normal distribution?</h4>
@@ -430,11 +432,11 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 2</div>
     <h2>The sphere</h2>
-    <p class="lede">One definition, and then a picture you can turn around with your finger.</p>
+    <p class="lede">A unit sphere is the set of vectors with length one. Rotate the figure to connect this definition with the geometry.</p>
 
     <p>The unit sphere in \(k\) dimensions is written</p>
     \[ S^{k-1}=\bigl\{\mathbf u\in\mathbb R^{k}: \|\mathbf u\|=1\bigr\}. \]
-    <p>Read it slowly:</p>
+    <p>The notation has three parts:</p>
     <div class="words">
       <span class="tag">What the symbols say</span>
       <dl>
@@ -448,7 +450,7 @@ window.MathJax={
     <p>Why \(k-1\)? Take \(k=3\). A point in \(\mathbb R^3\) needs three numbers. But a point on the sphere needs only two &mdash; longitude and latitude &mdash; because the third number is forced by \(\|\mathbf u\|=1\). One constraint removes one dimension. So \(S^{2}\) is a two-dimensional surface living inside three-dimensional space.</p>
 
     <h4>A point <em>is</em> a direction</h4>
-    <p>Stand at the centre of the ball. Point your arm at some point on the surface. Your arm now shows a direction. Every direction hits the surface in exactly one place, and every place on the surface corresponds to exactly one direction. So "point on the sphere" and "direction in space" are two names for the same thing.</p>
+    <p>Every unit vector identifies one direction from the origin. This gives a direct connection between directions in space and points on the unit sphere.</p>
     <p>Three examples with \(k=3\):</p>
     <div class="scroll">
       <table>
@@ -475,12 +477,12 @@ window.MathJax={
   <div class="col">
     <div class="eyebrow">Part 3</div>
     <h2>Compositions become points on a sphere</h2>
-    <p class="lede">This is the bridge. It is one square root, and it is exact &mdash; no approximation anywhere.</p>
+    <p class="lede">Taking a square root of each component maps a composition exactly to the non-negative part of the unit sphere.</p>
 
     <h3>What a composition is</h3>
     <p>A <strong>composition</strong> is a vector of proportions. The parts are never negative, and they add up to one:</p>
     \[ \mathbf z=(z_1,\dots,z_k),\qquad z_j\ge0,\qquad \sum_{j=1}^{k}z_j=1. \]
-    <p>Soil texture is a good example: the fractions of sand, silt and clay in a sample. Another: the market share of three brands. Another: the fraction of a budget spent on three categories.</p>
+    <p>Examples include the proportions of sand, silt and clay in soil, the market shares of three brands, and the shares of a budget assigned to different categories.</p>
     <p>The set of all such vectors is called the <strong>simplex</strong>, written \(\Delta^{k-1}\). For \(k=3\) the simplex is a flat triangle sitting in 3D space, with corners at \((1,0,0)\), \((0,1,0)\) and \((0,0,1)\).</p>
 
     <h3>The square-root transformation</h3>
@@ -498,7 +500,7 @@ window.MathJax={
     </div>
 
     <h3>Which part of the sphere?</h3>
-    <p>Square roots are never negative, so every coordinate of \(\mathbf u\) satisfies \(u_j\ge0\). This means \(\mathbf u\) can only land in the corner of the sphere where all coordinates are positive. That corner is called the <strong>positive orthant</strong> of the sphere. For \(k=3\) it is one eighth of the globe &mdash; the piece between the three positive axes.</p>
+    <p>Each square-root coordinate satisfies \(u_j\ge0\). The transformed observations therefore occupy the <strong>non-negative orthant</strong> of the sphere, including its boundary. For three components this is one eighth of the sphere.</p>
     <p>So the picture is:</p>
     <ul>
       <li>flat triangle (the simplex) &nbsp;&longleftrightarrow;&nbsp; curved eighth of the sphere,</li>
@@ -534,7 +536,7 @@ window.MathJax={
 <section class="part" id="p4" data-title="Why not just use von Mises–Fisher?">
   <div class="col">
     <div class="eyebrow">Part 4</div>
-    <h2>Why not just use von Mises&ndash;Fisher?</h2>
+    <h2>When is von Mises&ndash;Fisher too restrictive?</h2>
     <p class="lede">We need a distribution on the sphere. The simplest good one is von Mises&ndash;Fisher. Let us learn it first, then find out what it cannot do.</p>
 
     <h3>The density</h3>
@@ -752,10 +754,10 @@ window.MathJax={
 </section>
 
 
-<section class="part" id="p7" data-title="The picture that explains everything">
+<section class="part" id="p7" data-title="Understanding the tangent approximation">
   <div class="col">
     <div class="eyebrow">Part 7</div>
-    <h2>The picture that explains everything</h2>
+    <h2>Understanding the tangent approximation</h2>
     <p class="lede">The sphere, the mean direction, the flat plane that touches it, and the ellipse drawn on that plane.</p>
 
     <h3>What is the tangent plane?</h3>
@@ -900,7 +902,7 @@ window.MathJax={
     <p>Both are perpendicular to \((0,0,1)\). &#10003; Notice the order: the construction gives \(\mathbf b_1=\mathbf e_2\) and \(\mathbf b_2=\mathbf e_1\). It does not give them in the order you might have guessed. That is fine, and it is exactly the point of the next section: <em>the rule is arbitrary, and the arbitrariness does not matter.</em></p>
     <p>(One edge case: if \(\hat{\mu}=\mathbf e_1\) exactly, then \(\mathbf h=\mathbf 0\) and the formula divides by zero. Software handles this by reflecting onto \(-\mathbf e_1\) instead, or by using \(\mathbf h=\mathbf e_1+\hat{\mu}\). It never happens with real data.)</p>
 
-    <h3>The distinction you must not blur</h3>
+    <h3>A coordinate basis and principal axes</h3>
     <div class="scroll">
       <table>
         <thead><tr><th></th><th>\(\mathbf B(\hat{\mu})\)</th><th>\(\mathbf K\) (the Kent frame)</th></tr></thead>
@@ -1067,10 +1069,10 @@ window.MathJax={
 </section>
 
 
-<section class="part" id="p13" data-title="Signs and ties">
+<section class="part" id="p13" data-title="Axis signs and repeated eigenvalues">
   <div class="col">
     <div class="eyebrow">Part 13</div>
-    <h2>Signs and ties</h2>
+    <h2>Axis signs and repeated eigenvalues</h2>
     <p class="lede">Two small facts that prevent a lot of confusion when you compare results.</p>
 
     <h3>An eigenvector has no preferred sign</h3>
@@ -1300,10 +1302,10 @@ window.MathJax={
 </section>
 
 
-<section class="part" id="p17" data-title="The whole pipeline">
+<section class="part" id="p17" data-title="From data to fitted parameters">
   <div class="col">
     <div class="eyebrow">Part 17</div>
-    <h2>The whole pipeline</h2>
+    <h2>From data to fitted parameters</h2>
     <p class="lede">Seven arrows from raw proportions to a fitted distribution. Here is what each one does.</p>
   </div>
 
@@ -1345,10 +1347,10 @@ window.MathJax={
 </section>
 
 
-<section class="part" id="p18" data-title="Kent distribution in 10 minutes">
+<section class="part" id="p18" data-title="A concise overview">
   <div class="col">
     <div class="eyebrow">Summary</div>
-    <h2>Kent distribution in 10 minutes</h2>
+    <h2>A concise overview</h2>
 
     <p>Some data are directions, not amounts. A direction is a point on a sphere. Ordinary statistics does not work well there, because the scale wraps around and the average of several points is not itself a direction.</p>
 
@@ -1372,7 +1374,7 @@ window.MathJax={
 <section class="part" id="p19" data-title="The five things to remember">
   <div class="col">
     <div class="eyebrow">Summary</div>
-    <h2>The five most important things to remember</h2>
+    <h2>Key points</h2>
     <ol class="bigfive">
       <li><div><b>The square root is exact, not an approximation.</b> \(\sum_jz_j=1\) becomes \(\sum_ju_j^2=1\). A composition is a point on the positive part of a sphere, and you can always go back by squaring.</div></li>
       <li><div><b>vMF is round; Kent is oval.</b> vMF depends on \(\mathbf u\) only through the angle to \(\mu\), so it must be the same in every sideways direction. Kent adds one squared term that breaks this, and vMF is the \(\beta=0\) case of Kent.</div></li>
@@ -1384,10 +1386,10 @@ window.MathJax={
 </section>
 
 
-<section class="part" id="p20" data-title="Test yourself">
+<section class="part" id="p20" data-title="Check your understanding">
   <div class="col">
     <div class="eyebrow">Exercises</div>
-    <h2>Test yourself</h2>
+    <h2>Check your understanding</h2>
     <p class="lede">No answers here on purpose. Try each one on paper first. If you get stuck, the part in brackets is where to look.</p>
 
     <ol class="q">

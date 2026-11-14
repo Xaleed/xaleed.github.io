@@ -96,6 +96,8 @@
       .tree-diagram { flex-direction: column; align-items: center; }
     }
   </style>
+<link rel="stylesheet" href="../css/site-polish.css">
+<script src="../assets/site.js" defer></script>
 </head>
 <body>
 
@@ -146,15 +148,11 @@
       <li>
         <strong>Why machine learning?</strong>
         When we work with compositional responses, we often have many predictors and very complex
-        non-linear relationships. Traditional models usually cannot capture these patterns well.
-        Machine learning is designed to handle this complexity and discover relationships that classical
-        methods might miss.
+        non-linear relationships. Flexible prediction models can help describe these relationships. Random forests are one useful option, particularly when interactions are difficult to specify in advance.
       </li>
       <li>
         <strong>What is common in the context of compositional data?</strong>
-        Often, machine-learning models are applied <em>without</em> considering the simplex geometry,
-        or the data are transformed to real space before modelling — approaches that may distort
-        distances and introduce bias.
+        Common approaches model the composition directly, use log-ratio coordinates, or map square roots onto a sphere. Each choice represents geometry and dependence differently.
       </li>
       <li>
         <strong>Why Random Forests?</strong>

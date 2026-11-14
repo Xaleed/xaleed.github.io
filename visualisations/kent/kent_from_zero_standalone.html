@@ -9,7 +9,7 @@
 <meta name="author" content="Working notes for the compositional random forest manuscript">
 <meta name="dcterms.date" content="2026-09-30">
 
-<title>The Kent distribution, from zero</title>
+<title>The Kent distribution: a visual introduction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -2338,13 +2338,14 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="../../css/reading.css">
 </head>
 
 <body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
 <div id="quarto-sidebar-toc-left" class="sidebar toc-left">
-  <nav id="TOC" role="doc-toc" class="toc-active">
+  <details class="quarto-contents"><summary>Contents and section guide</summary><nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">Contents</h2>
    
   <ul class="collapse">
@@ -2385,7 +2386,7 @@ window.Quarto = {
   <li><a href="#kappa-concentration-and-beta-ovalness" id="toc-kappa-concentration-and-beta-ovalness" class="nav-link" data-scroll-target="#kappa-concentration-and-beta-ovalness"><span class="header-section-number">6.5</span> <span class="math inline">\(\kappa\)</span> — concentration, and <span class="math inline">\(\beta\)</span> — ovalness</a></li>
   <li><a href="#the-constraint-0le-2betakappa" id="toc-the-constraint-0le-2betakappa" class="nav-link" data-scroll-target="#the-constraint-0le-2betakappa"><span class="header-section-number">6.6</span> The constraint <span class="math inline">\(0\le 2\beta&lt;\kappa\)</span></a></li>
   </ul></li>
-  <li><a href="#sec-tangent" id="toc-sec-tangent" class="nav-link" data-scroll-target="#sec-tangent"><span class="header-section-number">7</span> The picture that explains everything</a>
+  <li><a href="#sec-tangent" id="toc-sec-tangent" class="nav-link" data-scroll-target="#sec-tangent"><span class="header-section-number">7</span> Understanding the tangent approximation</a>
   <ul class="collapse">
   <li><a href="#what-is-the-tangent-plane" id="toc-what-is-the-tangent-plane" class="nav-link" data-scroll-target="#what-is-the-tangent-plane"><span class="header-section-number">7.1</span> What is the tangent plane?</a></li>
   <li><a href="#tangent-coordinates" id="toc-tangent-coordinates" class="nav-link" data-scroll-target="#tangent-coordinates"><span class="header-section-number">7.2</span> Tangent coordinates</a></li>
@@ -2402,7 +2403,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem"><span class="header-section-number">9.1</span> The problem</a></li>
   <li><a href="#the-householder-construction" id="toc-the-householder-construction" class="nav-link" data-scroll-target="#the-householder-construction"><span class="header-section-number">9.2</span> The Householder construction</a></li>
-  <li><a href="#the-distinction-you-must-not-blur" id="toc-the-distinction-you-must-not-blur" class="nav-link" data-scroll-target="#the-distinction-you-must-not-blur"><span class="header-section-number">9.3</span> The distinction you must not blur</a></li>
+  <li><a href="#the-distinction-you-must-not-blur" id="toc-the-distinction-you-must-not-blur" class="nav-link" data-scroll-target="#the-distinction-you-must-not-blur"><span class="header-section-number">9.3</span> A coordinate basis and principal axes</a></li>
   </ul></li>
   <li><a href="#sec-project" id="toc-sec-project" class="nav-link" data-scroll-target="#sec-project"><span class="header-section-number">10</span> Projecting the second moment onto the plane</a>
   <ul class="collapse">
@@ -2447,7 +2448,7 @@ window.Quarto = {
   <li><a href="#sec-quiz" id="toc-sec-quiz" class="nav-link" data-scroll-target="#sec-quiz"><span class="header-section-number">20</span> Test yourself</a></li>
   <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading">Further reading</a></li>
   </ul>
-</nav>
+</nav></details>
 </div>
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
 </div>
@@ -2455,7 +2456,8 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">The Kent distribution, from zero</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><div class="reader-breadcrumb"><a href="../../index.html">About</a><span>/</span><a href="../../visualisations/index.html">Interactive research</a><span>/</span><span>Kent distribution</span></div>
+<h1 class="title">The Kent distribution: a visual introduction</h1><aside class="reading-note"><strong>Scope of the approximation.</strong> Standard three-dimensional Kent has five free parameters: two for mean direction, one for orientation, concentration and ovalness. Its full maximum likelihood fit generally requires numerical optimisation. The tangent-normal approximation below is intended for concentrated data. <a href="../../visualisations/tn/tn_distribution.html">Continue to the TN model &rarr;</a></aside><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
 <p class="subtitle lead">A distribution for data on a sphere — and why square roots turn compositions into exactly that kind of data</p>
 </div>
 
@@ -2508,8 +2510,8 @@ table { font-size: 0.88rem; }
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Seventeen sections, built in order. Each one only uses ideas from the sections before it. Every figure is drawn by the R code shown beside it — click <em>“show the R code that drew this”</em> to see exactly how any picture was made. All the numbers in <a href="#sec-example" class="quarto-xref">Section 15</a> are computed from the twelve soil samples in that section, so nothing in the document can disagree with anything else.</p>
-<p>One colour always means one thing: <span class="sym-mu"><span class="math inline">\(\boldsymbol\mu\)</span>, the mean direction</span>  Â·  <span class="sym-g2"><span class="math inline">\(\boldsymbol\gamma_2\)</span>, the long axis</span>  Â·  <span class="sym-g3"><span class="math inline">\(\boldsymbol\gamma_3\)</span>, the short axis</span>  Â·  <span class="sym-b"><span class="math inline">\(\mathbf B\)</span>, the Householder “rulers”</span></p>
+<p>Begin with the geometry, then follow the estimation steps. Each static figure includes its R code: open the code block to see how it was drawn. The worked example in Section 15 uses the same twelve example compositions throughout.</p>
+<p>One colour always means one thing: <span class="sym-mu"><span class="math inline">\(\boldsymbol\mu\)</span>, the mean direction</span>  &middot;  <span class="sym-g2"><span class="math inline">\(\boldsymbol\gamma_2\)</span>, the long axis</span>  &middot;  <span class="sym-g3"><span class="math inline">\(\boldsymbol\gamma_3\)</span>, the short axis</span>  &middot;  <span class="sym-b"><span class="math inline">\(\mathbf B\)</span>, the Householder “rulers”</span></p>
 </div>
 </div>
 <script>/**
@@ -3074,15 +3076,15 @@ border-radius:2px;cursor:pointer;color:#4D4C48;margin-right:.4rem}
 </div>
 <section id="sec-directional" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> What is directional data?</h1>
-<p>Some numbers measure <em>how much</em>. Other numbers measure <em>which way</em>. These two kinds of number need different distributions.</p>
+<p>Measurements such as height describe an amount. Wind directions describe an angle. Directional models account for the circular or spherical geometry of the observations.</p>
 <section id="ordinary-data-live-on-a-straight-line" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="ordinary-data-live-on-a-straight-line"><span class="header-section-number">1.1</span> Ordinary data live on a straight line</h2>
-<p>Think of the height of a person: 1.62 m, 1.78 m, 1.91 m. These numbers sit on a straight line. The line has no end and no beginning. Big numbers are far from small numbers. This is <strong>Euclidean data</strong>, and the normal distribution was built for exactly this.</p>
+<p>Heights such as 1.62 m, 1.78 m and 1.91 m can be represented on a number line. Their differences have the usual meaning. Many statistical models use these ordinary, real-valued coordinates.</p>
 </section>
 <section id="directional-data-live-on-a-circle-or-a-sphere" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="directional-data-live-on-a-circle-or-a-sphere"><span class="header-section-number">1.2</span> Directional data live on a circle or a sphere</h2>
 <p>Now think of wind direction, measured as an angle. After <span class="math inline">\(359^\circ\)</span> you do not get <span class="math inline">\(360^\circ\)</span> — you come back to <span class="math inline">\(0^\circ\)</span>. The line has been bent into a closed loop. This is <strong>circular data</strong>.</p>
-<p>Two examples to feel the difference:</p>
+<p>Compare the two ways of measuring separation:</p>
 <ul>
 <li>On a line, 350 and 10 are far apart. The distance is 340.</li>
 <li>On a circle, <span class="math inline">\(350^\circ\)</span> and <span class="math inline">\(10^\circ\)</span> are close. The distance is only <span class="math inline">\(20^\circ\)</span>. Both are almost north.</li>
@@ -3156,7 +3158,7 @@ Figure 1: The same two numbers on a line and on a circle. On the line, 350 and 
 </section>
 <section id="from-the-circle-to-the-sphere" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="from-the-circle-to-the-sphere"><span class="header-section-number">1.3</span> From the circle to the sphere</h2>
-<p>A direction in a flat world needs one angle. A direction in three dimensions needs two — think of longitude and latitude. Every possible direction in 3D is one point on the surface of a ball. That surface is where the Kent distribution lives.</p>
+<p>A direction in a plane is described by one angle. In three dimensions it needs two angles, such as longitude and latitude. A unit vector represents that direction as a point on a sphere. The Kent distribution models these spherical observations.</p>
 <div class="callout callout-style-simple callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -3167,7 +3169,7 @@ Figure 1: The same two numbers on a line and on a circle. On the line, 350 and 
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Directional data are data whose <em>size</em> carries no information — only the <em>direction</em> matters. So we force every observation to have length exactly 1, and we model the resulting points on a sphere.</p>
+<p>For directional data, orientation is the quantity of interest. Represent each observation by a unit vector and model the resulting points on the sphere.</p>
 </div>
 </div>
 <section id="why-not-just-use-the-normal-distribution" class="level3">
@@ -3298,7 +3300,7 @@ Figure 2: The unit sphere <span class="math inline">\(S^2\)</span> with the thr
 <p>A <strong>composition</strong> is a vector of proportions. The parts are never negative and they add up to one:</p>
 <p><span id="eq-simplex"><span class="math display">\[\mathbf z=(z_1,\dots,z_k),\qquad z_j\ge0,\qquad \sum_{j=1}^{k}z_j=1.
 \tag{2}\]</span></span></p>
-<p>Soil texture is a good example: the fractions of sand, silt and clay in a sample. The set of all such vectors is the <strong>simplex</strong>, <span class="math inline">\(\Delta^{k-1}\)</span>. For <span class="math inline">\(k=3\)</span> it is a flat triangle in 3D space with corners <span class="math inline">\((1,0,0)\)</span>, <span class="math inline">\((0,1,0)\)</span> and <span class="math inline">\((0,0,1)\)</span>.</p>
+<p>Examples include the proportions of sand, silt and clay in soil, the market shares of three brands, and the shares of a budget assigned to different categories.</p>
 </section>
 <section id="the-square-root-transformation" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="the-square-root-transformation"><span class="header-section-number">3.2</span> The square-root transformation</h2>
@@ -3325,7 +3327,7 @@ Figure 2: The unit sphere <span class="math inline">\(S^2\)</span> with the thr
 </section>
 <section id="which-part-of-the-sphere" class="level2" data-number="3.3">
 <h2 data-number="3.3" class="anchored" data-anchor-id="which-part-of-the-sphere"><span class="header-section-number">3.3</span> Which part of the sphere?</h2>
-<p>Square roots are never negative, so <span class="math inline">\(u_j\ge0\)</span> for every <span class="math inline">\(j\)</span>. The image can only land in the corner of the sphere where all coordinates are positive — the <strong>positive orthant</strong>. For <span class="math inline">\(k=3\)</span> that is one eighth of the globe.</p>
+<p>Each square-root coordinate satisfies \(u_j\ge0\). The transformed observations therefore occupy the <strong>non-negative orthant</strong> of the sphere, including its boundary. For three components this is one eighth of the sphere.</p>
 <div class="cell" data-layout-align="center">
 <details class="code-fold">
 <summary>show the R code that drew this</summary>
@@ -3764,7 +3766,7 @@ window.kentReady(function () {
 </section>
 </section>
 <section id="sec-tangent" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> The picture that explains everything</h1>
+<h1 data-number="7"><span class="header-section-number">7</span> Understanding the tangent approximation</h1>
 <p>The sphere, the mean direction, the flat plane that touches it, and the ellipse drawn on that plane.</p>
 <section id="what-is-the-tangent-plane" class="level2" data-number="7.1">
 <h2 data-number="7.1" class="anchored" data-anchor-id="what-is-the-tangent-plane"><span class="header-section-number">7.1</span> What is the tangent plane?</h2>
@@ -4077,7 +4079,7 @@ Figure 8: The tangent-plane ellipse, fully labelled. We are standing on the tan
 </section>
 </section>
 <section id="the-distinction-you-must-not-blur" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="the-distinction-you-must-not-blur"><span class="header-section-number">9.3</span> The distinction you must not blur</h2>
+<h2 data-number="9.3" class="anchored" data-anchor-id="the-distinction-you-must-not-blur"><span class="header-section-number">9.3</span> A coordinate basis and principal axes</h2>
 <table class="table-striped table">
 <caption><span class="math inline">\(\mathbf B\)</span> is not <span class="math inline">\(\mathbf K\)</span></caption>
 <colgroup>
@@ -6234,7 +6236,7 @@ packages used: base R graphics and stats only</code></pre>
   });
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;The Kent distribution, from zero&quot;</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> &quot;The Kent distribution: a visual introduction&quot;</span></span>
 <span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a><span class="an">subtitle:</span><span class="co"> &quot;A distribution for data on a sphere --- and why square roots turn compositions into exactly that kind of data&quot;</span></span>
 <span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> &quot;Working notes for the compositional random forest manuscript&quot;</span></span>
 <span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> today</span></span>
