@@ -1,0 +1,1908 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dirichlet, Kent and Tangent-Normal Leaves</title>
+<meta name="description" content="Conference talk: the Dirichlet, Kent and tangent-normal (TN) distributions as node models of a compositional random forest, with interactive figures.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
+<style>
+/* ---------------------------------------------------------------------------
+   Design: the tokens of the website pages (Kent on the Sphere, TN), light only
+   for projectors. One colour per distribution, used on every slide:
+   Dirichlet = orange, Kent = violet, TN = blue. Red dashed = outside O.
+   The slide is a 16:9 stage; 1rem = stage width / 80, so everything scales.
+--------------------------------------------------------------------------- */
+:root{
+  --bg:#f8f8f6; --surface:#fcfcfb; --surface-2:#f1f1ec; --ink:#141412; --ink-2:#4d4c48; --muted:#8a8883;
+  --rule:#e2e1da; --rule-2:#cdccc3;
+  --dir:#d9661f; --kent:#6250d6; --tn:#2a78d6; --mln:#8a8883; --drf:#4d4c48;
+  --g2:#1baf7a; --g3:#c98500; --out:#e34948; --sphere:#dedcd2; --hemi:#efeee8; --grat:#b9b7ab; --dot:#5a5955;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#1f1f1d;overflow:hidden}
+body{font-family:"Source Serif 4",Georgia,serif;color:var(--ink);-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--bg);overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.4)}
+.slide{position:absolute;inset:0;padding:2.4rem 3.4rem 3rem;display:none;flex-direction:column}
+.slide.active{display:flex}
+h1,h2,h3{font-family:"Instrument Serif",Georgia,serif;font-weight:400;margin:0;line-height:1.08;text-wrap:balance}
+h2{font-size:2.65rem;margin-bottom:.9rem}
+h2 .eq{font-family:"IBM Plex Mono",monospace;font-size:.9rem;color:var(--muted);letter-spacing:.04em;margin-left:.7rem;vertical-align:middle}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.45rem;display:flex;align-items:center;gap:.7rem}
+.kicker::after{content:"";flex:1;height:1px;background:var(--rule)}
+.k-dir{color:var(--dir)} .k-kent{color:var(--kent)} .k-tn{color:var(--tn)} .k-res{color:var(--ink-2)}
+.c-dir{color:var(--dir)} .c-kent{color:var(--kent)} .c-tn{color:var(--tn)} .c-out{color:var(--out)} .c-muted{color:var(--muted)}
+p,li{font-size:1.3rem;line-height:1.45}
+ul{margin:.2rem 0;padding-left:1.3rem} li{margin:.25rem 0}
+.small{font-size:1.02rem;color:var(--ink-2);line-height:1.4}
+.cols{display:grid;gap:1.6rem;flex:1;min-height:0}
+.c2{grid-template-columns:1fr 1fr} .c-l{grid-template-columns:1.05fr 1.25fr} .c-r{grid-template-columns:1.35fr 1fr}
+.col{display:flex;flex-direction:column;min-height:0}
+.box{border:1px solid var(--rule);background:var(--surface);border-radius:3px;padding:.8rem 1rem}
+.eqbox{border-left:3px solid var(--rule-2);padding:.15rem 0 .15rem .9rem;margin:.3rem 0 .6rem}
+.eqbox.dir{border-color:var(--dir)} .eqbox.kent{border-color:var(--kent)} .eqbox.tn{border-color:var(--tn)}
+.plot{width:100%;flex:1;min-height:0}
+.ctl{display:flex;flex-wrap:wrap;gap:.35rem 1.4rem;margin-top:.4rem;padding:.5rem .8rem;background:var(--surface-2);border-radius:3px}
+.ctl label{display:flex;flex-direction:column;flex:1 1 9rem;min-width:0;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2)}
+.ctl label span{display:flex;justify-content:space-between}
+.ctl label b{color:var(--ink)}
+.ctl.stack{flex-direction:column;flex-wrap:nowrap;gap:.15rem} .ctl.stack label{flex:0 0 auto}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:1.3rem;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--rule-2)}
+input[type=range]::-moz-range-track{height:2px;background:var(--rule-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:1rem;height:1rem;border-radius:50%;background:var(--ink);margin-top:calc(-.5rem + 1px)}
+input[type=range]::-moz-range-thumb{width:1rem;height:1rem;border-radius:50%;background:var(--ink);border:0}
+.btns{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-top:.4rem}
+.btn{font-family:"IBM Plex Mono",monospace;font-size:.76rem;padding:.3rem .7rem;border:1px solid var(--rule-2);background:var(--surface);color:var(--ink-2);border-radius:2px;cursor:pointer}
+.btn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.readout{font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--ink-2);margin-top:.3rem;min-height:1.1rem}
+.readout b{color:var(--ink)}
+.key{display:flex;flex-wrap:wrap;gap:.2rem 1.1rem;font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--ink-2);margin:.1rem 0 .2rem}
+.key i{display:inline-block;width:1.1rem;height:0;border-top:3px solid;vertical-align:middle;margin-right:.35rem}
+.key i.d{border-top-style:dashed}
+.panel3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;flex:1;min-height:0}
+.panel3>div,.panel2>div{display:flex;flex-direction:column;min-height:0}
+.panel2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;flex:1;min-height:0}
+.ptitle{font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--ink-2);text-align:center}
+table.cmp{border-collapse:collapse;width:100%;font-size:1.08rem}
+table.cmp th,table.cmp td{border-bottom:1px solid var(--rule);padding:.5rem .7rem;text-align:left;vertical-align:top;line-height:1.35}
+table.cmp th{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+table.cmp td:first-child{font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--ink-2);white-space:nowrap}
+table.num td{font-family:"IBM Plex Mono",monospace;font-size:.95rem;text-align:right}
+table.num td:first-child{text-align:left}
+table.num tr.hl td{background:rgba(42,120,214,.07)}
+.src{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--muted);margin-top:auto;padding-top:.4rem}
+.big{font-size:1.55rem;line-height:1.4}
+.tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:.75rem;padding:.08rem .5rem;border:1px solid var(--rule-2);border-radius:99px;color:var(--ink-2)}
+/* title and placeholder slides */
+.title-slide{justify-content:center}
+.title-slide h1{font-size:4.2rem;margin-bottom:1rem}
+.title-slide .sub{font-size:1.6rem;color:var(--ink-2);max-width:48rem}
+.title-slide .who{font-family:"IBM Plex Mono",monospace;font-size:.95rem;color:var(--muted);margin-top:2.2rem;line-height:1.7}
+.dots{display:flex;gap:.6rem;margin-top:1.6rem}
+.dots i{width:1rem;height:1rem;border-radius:50%;display:block}
+.placeholder{justify-content:center;align-items:center;text-align:center}
+.placeholder .ph{border:2px dashed var(--rule-2);border-radius:6px;padding:3rem 4rem;max-width:56rem}
+.placeholder h2{font-size:2.4rem;color:var(--ink-2)}
+.summary li{font-size:1.7rem;margin:1rem 0;line-height:1.4}
+.summary li b{font-weight:600}
+/* random forest diagrams: a 160 x 62 stage, boxes positioned in % of it */
+.sdia{position:relative;width:100%;aspect-ratio:160/62;margin:.3rem auto 0}
+.sdia>svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.sdia .nd{position:absolute;transform:translateX(-50%);border:1px solid var(--rule-2);background:var(--surface);border-radius:4px;padding:.4rem .9rem;text-align:center;font-size:1rem;line-height:1.38;white-space:nowrap}
+.sdia .nd b{display:block;font-family:"IBM Plex Mono",monospace;font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin-bottom:.1rem}
+.sdia .lb{position:absolute;transform:translate(-50%,-50%);font-size:1.05rem;background:var(--bg);padding:0 .3rem}
+.sdia .q{position:absolute;transform:translate(-50%,-50%);color:var(--out);font-size:1.05rem;white-space:nowrap}
+.sdia.sm .nd{font-size:.85rem;padding:.3rem .7rem} .sdia.sm .nd b{font-size:.68rem}
+.sdia.sm .lb,.sdia.sm .q{font-size:.9rem}
+svg.fig text{font-family:"Source Serif 4",Georgia,serif}
+svg.fig .mono{font-family:"IBM Plex Mono",monospace}
+table.split{border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:.98rem}
+table.split th,table.split td{padding:.34rem .62rem;text-align:center;border-bottom:1px solid var(--rule)}
+table.split th{font-weight:500;color:var(--ink-2)}
+table.split .vs{border-left:2px solid var(--rule-2)}
+table.split .cand{background:rgba(98,80,214,.08)} table.split .pick{background:rgba(98,80,214,.20);font-weight:600}
+table.split tr.L td:first-child,table.split tr.L td:last-child{background:rgba(27,175,122,.13)}
+table.split tr.R td:first-child,table.split tr.R td:last-child{background:rgba(201,133,0,.16)}
+.c-L{color:#11865c} .c-R{color:#a06a00}
+ol.steps{margin:.2rem 0 .3rem;padding-left:1.4rem} ol.steps li{font-size:1.08rem;line-height:1.38;margin:.15rem 0}
+table.mini{border-collapse:collapse;font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--ink-2);margin-top:.35rem}
+table.mini th,table.mini td{padding:.18rem .6rem;border-bottom:1px solid var(--rule);text-align:right}
+table.mini th:first-child,table.mini td:first-child{text-align:left}
+table.mini th{font-weight:500;color:var(--muted)}
+table.mini td b{color:var(--ink)}
+/* chrome */
+#progress{position:absolute;left:0;bottom:0;height:.28rem;background:var(--ink);transition:width .25s}
+#num{position:absolute;right:1.3rem;bottom:.75rem;font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--muted)}
+#brand{position:absolute;left:3.4rem;bottom:.8rem;font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--muted);letter-spacing:.06em}
+#help{position:fixed;left:50%;top:.5rem;transform:translateX(-50%);font:12px "IBM Plex Mono",monospace;color:#f4f3ef;background:rgba(20,20,18,.8);padding:4px 10px;border-radius:3px;transition:opacity .8s;z-index:9}
+#help.gone{opacity:0;pointer-events:none}
+aside.notes{display:none}
+#ovl{position:absolute;left:3%;right:3%;bottom:2.4rem;max-height:45%;overflow:auto;background:rgba(20,20,18,.92);color:#f4f3ef;padding:1rem 1.3rem;border-radius:4px;font-size:1.05rem;line-height:1.45;display:none;z-index:5}
+#ovl.on{display:block}
+mjx-container{max-width:100%;overflow-x:auto;overflow-y:hidden}
+mjx-container[display="true"]{margin:.35em 0 !important}
+/* print / PDF: one slide per 16:9 page, figures as images */
+body.print{overflow:auto;background:#fff}
+body.print #stage{position:static;transform:none;box-shadow:none;background:none}
+body.print .slide{position:relative;display:flex;width:1280px;height:720px;page-break-after:always;break-after:page;background:var(--bg);border-bottom:1px solid #ddd}
+body.print .slide input,body.print .btns,body.print #help,body.print #progress,body.print #num{display:none}
+body.print .ctl,body.print #brand{display:none}
+body.print img.static{width:100%;flex:1;min-height:0;object-fit:contain}
+@page{size:13.333in 7.5in;margin:0}
+@media print{#help,#progress,#num,#ovl{display:none!important} body{background:#fff}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script>
+if(!window.Plotly){document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"><\/scr'+'ipt>');}
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
+  macros:{bmu:'{\\boldsymbol{\\mu}}',bgamma:'{\\boldsymbol{\\gamma}}',bu:'{\\mathbf u}',bv:'{\\mathbf v}',bz:'{\\mathbf z}',
+    bK:'{\\mathbf K}',bV:'{\\mathbf V}',bU:'{\\mathbf U}',bB:'{\\mathbf B}',bM:'{\\mathbf M}',bW:'{\\mathbf W}',bs:'{\\mathbf s}',R:'{\\mathbb R}',diag:'{\\operatorname{diag}}'}},
+  options:{enableMenu:false},chtml:{scale:1.0}};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="stage">
+
+<!-- ================================ TITLE ================================ -->
+<section class="slide title-slide" data-title="Title" data-time="10">
+  <div class="kicker k-res">Compositional random forest</div>
+  <h1>Dirichlet, Kent and<br>tangent-normal leaves</h1>
+  <p class="sub">Node models for compositional responses: on the simplex, and on the sphere after a square root.</p>
+  <div class="dots"><i style="background:var(--dir)"></i><i style="background:var(--kent)"></i><i style="background:var(--tn)"></i></div>
+  <div class="who">Khaled Masoumifard &middot; Stephan van der Westhuizen &middot; Sugnet Gardner-Lubbe<br>Department of Statistics and Actuarial Science &middot; Stellenbosch University</div>
+  <aside class="notes"><p>Today, I am going to talk about random forests for compositional data. I will focus on our tangent normal model.</p><p><b>Transition:</b> First, compositional data.</p><p><b>Figure:</b> Show the title; no interaction.</p><p><b>Remember:</b> Introduce TN as the proposed node model, not a claim of universal superiority.</p></aside>
+</section>
+
+<!-- arrowheads shared by the inline diagrams -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <marker id="ahI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:#4d4c48"/></marker>
+  <marker id="ahR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:#e34948"/></marker>
+  <marker id="ahD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:#d9661f"/></marker>
+  <marker id="ahM" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0L10,5L0,10z" style="fill:#8a8883"/></marker>
+</defs></svg>
+
+<!-- ============================= COMPOSITIONAL DATA ============================= -->
+<section class="slide" data-title="Compositional data: the simplex" data-time="28">
+  <div class="kicker k-res">Compositional data</div>
+  <h2>Compositional data</h2>
+  <div class="cols c-r">
+    <div class="col" style="justify-content:center">
+      <p>A <b>simplex</b> is the convex set of all vectors with non-negative parts that sum to a constant:</p>
+      <div class="eqbox" style="font-size:1.2rem">\[ \mathcal S^{c}_{k}=\Bigl\{(y_1,\dots,y_k)^{\top}\in\R^{k}\ \Bigm|\ y_i\ge 0,\ \ \sum_{i=1}^{k}y_i=c\Bigr\} \]</div>
+      <p>It is common to set \(c=1\). We refer to data from this space as <b>compositional data</b>.</p>
+    </div>
+    <div class="col" style="justify-content:center;align-items:center">
+      <svg class="fig" viewBox="0 0 400 350" style="width:100%;max-height:30rem">
+        <polygon points="40,315 360,315 200,38" style="fill:#f1f1ec;stroke:#4d4c48;stroke-width:2"/>
+        <g style="stroke:#e2e1da;stroke-width:1">
+          <line x1="72" y1="259.6" x2="328" y2="259.6"/><line x1="104" y1="204.2" x2="296" y2="204.2"/><line x1="136" y1="148.8" x2="264" y2="148.8"/><line x1="168" y1="93.4" x2="232" y2="93.4"/>
+          <line x1="104" y1="315" x2="232" y2="93.4"/><line x1="168" y1="315" x2="264" y2="148.8"/><line x1="232" y1="315" x2="296" y2="204.2"/><line x1="296" y1="315" x2="328" y2="259.6"/>
+          <line x1="296" y1="315" x2="168" y2="93.4"/><line x1="232" y1="315" x2="136" y2="148.8"/><line x1="168" y1="315" x2="104" y2="204.2"/><line x1="104" y1="315" x2="72" y2="259.6"/>
+        </g>
+        <polygon points="40,315 360,315 200,38" style="fill:none;stroke:#4d4c48;stroke-width:2"/>
+        <text x="30" y="338" text-anchor="middle" style="font-size:20px;fill:#141412">y&#8321;</text>
+        <text x="370" y="338" text-anchor="middle" style="font-size:20px;fill:#141412">y&#8322;</text>
+        <text x="200" y="26" text-anchor="middle" style="font-size:20px;fill:#141412">y&#8323;</text>
+        <circle cx="216" cy="176.5" r="7" style="fill:#d9661f;stroke:#fff;stroke-width:2"/>
+        <text x="216" y="208" text-anchor="middle" style="font-size:17px;fill:#4d4c48" class="mono">(0.2, 0.3, 0.5)</text>
+      </svg>
+      <div class="ptitle">k = 3: a triangle; each composition is one point</div>
+    </div>
+  </div>
+  <aside class="notes"><p>Before talking about compositional data, we first need to understand what the simplex space is. The simplex space is a convex set of vectors with non-negative components, where all the components add up to a constant. Usually, we set this constant equal to one. Data that belong to this space are called compositional data.</p><p><b>Transition:</b> How do these data arise?</p><p><b>Figure:</b> Point to the triangle and its example point.</p><p><b>Remember:</b> The closed simplex admits zero parts and has dimension k minus one. Some density models use its interior.</p></aside>
+</section>
+
+<section class="slide" data-title="Compositional data: a practical view" data-time="23">
+  <div class="kicker k-res">Compositional data</div>
+  <h2>Compositional data: a practical view</h2>
+  <div class="cols c2">
+    <div class="col" style="justify-content:center">
+      <p>Let \(\mathbf Y=(Y_1,Y_2,\dots,Y_K)\) be a vector with positive parts. The compositional transformation (closure)</p>
+      <div class="eqbox" style="font-size:1.2rem">\[ \mathbf S=\Bigl(\frac{Y_1}{\sum_{i=1}^{K}Y_i},\ \dots,\ \frac{Y_K}{\sum_{i=1}^{K}Y_i}\Bigr) \]</div>
+      <p>gives a vector that lies in the simplex.</p>
+    </div>
+    <div class="col" style="justify-content:center;gap:1rem">
+      <div class="box"><p style="margin:0"><b>Lost: the absolute scale.</b> \(\mathbf Y\) cannot be recovered from \(\mathbf S\): \(\mathbf Y\) and \(10\,\mathbf Y\) give the same \(\mathbf S\).</p></div>
+      <div class="box"><p style="margin:0"><b>Kept: the relative information.</b> For any two parts \(i\) and \(j\),</p>
+        \[ \frac{Y_i}{Y_j}=\frac{S_i}{S_j}. \]</div>
+    </div>
+  </div>
+  <aside class="notes"><p>We often start with positive amounts. Divide each component by their total to obtain a composition. This removes absolute scale but preserves relative information. In particular, ratios between components remain unchanged.</p><p><b>Transition:</b> Here is an example.</p><p><b>Figure:</b> Point from the closure formula to the two boxes.</p><p><b>Remember:</b> Ratios are preserved for positive components; closure cannot recover the original total.</p></aside>
+</section>
+
+<section class="slide" data-title="Compositional data: an example" data-time="18">
+  <div class="kicker k-res">Compositional data</div>
+  <h2>Compositional data: an example</h2>
+  <p>A job application pool of 50 applicants, classified by academic background:</p>
+  <div class="cols c-r" style="align-items:start">
+    <div class="col">
+      <table class="cmp num">
+        <thead><tr><th>Background</th><th style="text-align:right">Count \(\mathbf Y\)</th><th style="text-align:right">Proportion \(\mathbf s(\mathbf Y)\)</th><th style="text-align:right">Percentage</th></tr></thead>
+        <tbody>
+          <tr><td>Mathematics</td><td>10</td><td>10/50 = 0.2</td><td>20%</td></tr>
+          <tr><td>Statistics</td><td>15</td><td>15/50 = 0.3</td><td>30%</td></tr>
+          <tr><td>Computer science</td><td>25</td><td>25/50 = 0.5</td><td>50%</td></tr>
+          <tr><td class="c-muted">total</td><td>50</td><td>1</td><td>100%</td></tr>
+        </tbody>
+      </table>
+      <div class="eqbox" style="margin-top:1rem">\[ \mathbf Y=(10,15,25)\ \longrightarrow\ \mathbf s(\mathbf Y)=(0.2,\,0.3,\,0.5),\qquad 100\cdot\mathbf s(\mathbf Y)=(20\%,\,30\%,\,50\%) \]</div>
+    </div>
+    <div class="col">
+      <div class="box"><p style="margin:0"><b>Key idea:</b> proportions and percentages carry the same information &mdash; only the scale changes.</p></div>
+    </div>
+  </div>
+  <aside class="notes"><p>Suppose we have fifty job applicants. Twenty percent are mathematicians, thirty percent are statisticians, and fifty percent are computer scientists. These percentages sum to one hundred percent, so they form a composition.</p><p><b>Transition:</b> We now want to predict compositions from other information.</p><p><b>Figure:</b> Point across the three rows and then to the total.</p><p><b>Remember:</b> Counts are 10, 15 and 25; proportions are 0.2, 0.3 and 0.5.</p></aside>
+</section>
+
+<!-- ============================= RANDOM FOREST ============================= -->
+<section class="slide" data-title="Machine learning: random forest" data-time="12">
+  <div class="kicker k-res">Random forests for compositional responses</div>
+  <h2>Machine learning: random forest</h2>
+  <ul style="max-width:66rem">
+    <li><b>Why machine learning?</b> For compositional responses: many predictors with complex non-linear patterns.</li>
+    <li><b>Common approaches:</b> model compositions directly, use log-ratio coordinates, or use square-root coordinates on the sphere.</li>
+    <li><b>Why random forests?</b> They are flexible, and their splitting rules can be easily adapted to respect the simplex structure.</li>
+    <li>The PhD of van der Westhuizen (2024) inspired the idea of using the tree splitting rule to account for compositional data.</li>
+  </ul>
+  <aside class="notes"><p>Random forests can learn complex relationships between predictors and compositional responses. We can adapt their splitting rule to the response distribution.</p><p><b>Transition:</b> Here is the problem.</p><p><b>Figure:</b> Indicate the splitting-rule bullet.</p><p><b>Remember:</b> Log-ratio modelling is a legitimate alternative; do not call it inherently biased.</p></aside>
+</section>
+
+<section class="slide" data-title="Random forests framework" data-time="12">
+  <div class="kicker k-res">Random forests for compositional responses</div>
+  <h2>Random forests framework</h2>
+  <ul style="max-width:66rem">
+    <li>Given a sample of size \(n\) and \(m\) covariates:
+      \[ \mathbf X\in\R^{n\times m}\ \ \text{(covariate matrix)},\qquad \mathbf Y\in\R^{n\times k}\ \ \text{(response matrix)} \]</li>
+    <li>Each row of \(\mathbf Y\) is a compositional vector:
+      \[ Y_{ij}\ge0\ \ \text{for all } i,j,\qquad \sum_{j=1}^{k}Y_{ij}=1 \]</li>
+    <li>Goal: learn a mapping \(\mathbf x\longrightarrow\mathbf y\) that respects the simplex geometry.</li>
+    <li>After training:
+      <ul><li>predict compositional responses for new inputs</li><li>estimate the conditional distribution of the responses</li></ul></li>
+  </ul>
+  <aside class="notes"><p>Each row contains predictors and a compositional response. We want to predict a new composition and its conditional distribution.</p><p><b>Transition:</b> A forest combines trees.</p><p><b>Figure:</b> Point to X, then Y.</p><p><b>Remember:</b> The response has k parts; the predictors need not be compositional.</p></aside>
+</section>
+
+<section class="slide" data-title="Random forest: overview" data-time="22">
+  <div class="kicker k-res">Random forests for compositional responses</div>
+  <h2>Random forest: overview</h2>
+  <p style="max-width:66rem">A <b>random forest</b> is an ensemble of decision trees, usually trained on bootstrap samples of the data. Key tuning parameters:</p>
+  <ul style="max-width:66rem">
+    <li><b>Number of trees</b> (\(B\)): more trees improve stability but increase the cost</li>
+    <li><b>Tree depth</b> (\(d_{\max}\)): controls model complexity and overfitting</li>
+    <li><b>Minimum node size</b> (\(n_{\min}\)): the minimum number of observations required to split a node</li>
+    <li><b>Covariates per split</b> (\(m_{\text{try}}\)): the number of randomly selected covariates considered at each split; chosen for the task and tuned with validation</li>
+  </ul>
+  <aside class="notes"><p>A random forest is an ensemble of decision trees, usually trained on bootstrap samples. Important settings are the number of trees, maximum depth, minimum node size, and covariates considered at each split. Our later comparison uses all training observations.</p><p><b>Transition:</b> Let us examine one tree.</p><p><b>Figure:</b> Point to the four settings; do not read their symbols aloud.</p><p><b>Remember:</b> Bootstrap sampling is common, not mandatory. Minimum parent and child sizes are different settings.</p></aside>
+</section>
+
+<section class="slide" data-title="Random forest: tree" data-time="20">
+  <div class="kicker k-res">Random forests for compositional responses</div>
+  <h2>Random forest: tree</h2>
+  <div class="cols" style="grid-template-columns:0.85fr 1.15fr;align-items:center">
+    <div class="col">
+      <svg class="fig" viewBox="0 0 380 270" style="width:100%">
+        <rect x="45" y="12" width="170" height="58" rx="4" style="fill:#fcfcfb;stroke:#4d4c48;stroke-width:1.5"/>
+        <text x="130" y="38" text-anchor="middle" style="font-size:19px;fill:#141412">S =</text>
+        <text x="130" y="60" text-anchor="middle" style="font-size:18px;fill:#141412">(y&#8321;, y&#8322;, &hellip;, y&#8345;)</text>
+        <line x1="130" y1="70" x2="130" y2="118" style="stroke:#4d4c48;stroke-width:1.8"/>
+        <circle cx="130" cy="120" r="4.5" style="fill:#141412"/>
+        <line x1="130" y1="120" x2="62" y2="198" style="stroke:#4d4c48;stroke-width:1.8"/>
+        <line x1="130" y1="120" x2="198" y2="198" style="stroke:#4d4c48;stroke-width:1.8"/>
+        <rect x="22" y="198" width="80" height="44" rx="4" style="fill:#fcfcfb;stroke:#4d4c48;stroke-width:1.5"/>
+        <text x="62" y="227" text-anchor="middle" style="font-size:19px;fill:#141412">S&#8321;</text>
+        <rect x="158" y="198" width="80" height="44" rx="4" style="fill:#fcfcfb;stroke:#4d4c48;stroke-width:1.5"/>
+        <text x="198" y="227" text-anchor="middle" style="font-size:19px;fill:#141412">S&#8322;</text>
+        <line x1="136" y1="120" x2="196" y2="120" style="stroke:#e34948;stroke-width:1.8" marker-end="url(#ahR)"/>
+        <text x="203" y="126" style="font-size:17px;fill:#e34948" class="mono">criterion = ?</text>
+      </svg>
+      <div class="ptitle">one split: a node S into two children</div>
+    </div>
+    <div class="col">
+      <svg class="fig" viewBox="0 0 500 270" style="width:100%">
+        <g style="stroke:#4d4c48;stroke-width:1.5">
+          <line x1="250" y1="34" x2="130" y2="100"/><line x1="250" y1="34" x2="370" y2="100"/>
+          <line x1="130" y1="100" x2="70" y2="170"/><line x1="130" y1="100" x2="190" y2="170"/>
+          <line x1="370" y1="100" x2="310" y2="170"/><line x1="370" y1="100" x2="430" y2="170"/>
+          <line x1="70" y1="170" x2="45" y2="225"/><line x1="70" y1="170" x2="95" y2="225"/>
+          <line x1="190" y1="170" x2="165" y2="225"/><line x1="190" y1="170" x2="215" y2="225"/>
+          <line x1="310" y1="170" x2="285" y2="225"/><line x1="310" y1="170" x2="335" y2="225"/>
+          <line x1="430" y1="170" x2="405" y2="225"/><line x1="430" y1="170" x2="455" y2="225"/>
+        </g>
+        <g style="fill:#fcfcfb;stroke:#4d4c48;stroke-width:1.5">
+          <circle cx="250" cy="34" r="24"/><circle cx="130" cy="100" r="21"/><circle cx="370" cy="100" r="21"/>
+          <circle cx="70" cy="170" r="19"/><circle cx="190" cy="170" r="19"/><circle cx="310" cy="170" r="19"/><circle cx="430" cy="170" r="19"/>
+        </g>
+        <g text-anchor="middle" style="font-size:15px;fill:#141412" class="mono">
+          <text x="250" y="39">Root</text><text x="130" y="105">L1</text><text x="370" y="105">R1</text>
+          <text x="70" y="175">L2</text><text x="190" y="175">R2</text><text x="310" y="175">L2</text><text x="430" y="175">R2</text>
+        </g>
+        <g text-anchor="middle" style="font-size:22px;fill:#8a8883">
+          <text x="45" y="250">&#8942;</text><text x="95" y="250">&#8942;</text><text x="165" y="250">&#8942;</text><text x="215" y="250">&#8942;</text>
+          <text x="285" y="250">&#8942;</text><text x="335" y="250">&#8942;</text><text x="405" y="250">&#8942;</text><text x="455" y="250">&#8942;</text>
+        </g>
+      </svg>
+      <div class="ptitle">a binary decision tree: the split is repeated in every node</div>
+    </div>
+  </div>
+  <aside class="notes"><p>The root contains the training observations. A rule divides them into left and right children. We split recursively until a stopping rule produces terminal nodes, also called leaves.</p><p><b>Transition:</b> How is a split chosen?</p><p><b>Figure:</b> Trace one path from the root to a terminal node.</p><p><b>Remember:</b> Each observation follows one branch at every split.</p></aside>
+</section>
+
+<section class="slide" data-title="MSE splitting" data-time="12">
+  <div class="kicker k-res">Random forests for compositional responses &middot; splitting</div>
+  <h2>MSE splitting</h2>
+  <div class="sdia" style="max-width:56rem">
+    <svg viewBox="0 0 160 62"><g style="stroke:#4d4c48;stroke-width:.35">
+      <line x1="80" y1="8" x2="40" y2="33.6" marker-end="url(#ahI)"/><line x1="80" y1="8" x2="120" y2="33.6" marker-end="url(#ahI)"/></g>
+      <g style="stroke:#e34948;stroke-width:.3;stroke-dasharray:1.2 .8">
+      <line x1="27" y1="13" x2="38" y2="22" marker-end="url(#ahR)"/><line x1="133" y1="13" x2="122" y2="22" marker-end="url(#ahR)"/></g></svg>
+    <div class="nd" style="left:50%;top:0"><b>Parent node</b>Covariates \(X^{n\times m}\)<br>Response \(Y^{n\times k}\)</div>
+    <div class="nd" style="left:25%;top:55%"><b>Left child</b>Covariates \(X^{n_1\times m}\)<br>Response \(Y^{n_1\times k}\)<br>\(\mathrm{MSE}(Y^{n_1\times k};c,i)\)</div>
+    <div class="nd" style="left:75%;top:55%"><b>Right child</b>Covariates \(X^{n_2\times m}\)<br>Response \(Y^{n_2\times k}\)<br>\(\mathrm{MSE}(Y^{n_2\times k};c,i)\)</div>
+    <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
+    <div class="q" style="left:14%;top:17%">\((c,i)=?\)</div><div class="q" style="left:86%;top:17%">\((c,i)=?\)</div>
+  </div>
+  <aside class="notes"><p>A split consists of a covariate and a threshold. We compare how well the two children describe their observations.</p><p><b>Transition:</b> Consider this rule.</p><p><b>Figure:</b> Point to the two child nodes.</p><p><b>Remember:</b> Candidates must satisfy the minimum child-size constraint.</p></aside>
+</section>
+
+<section class="slide" data-title="Split rule" data-time="18">
+  <div class="kicker k-res">Random forests for compositional responses &middot; splitting</div>
+  <h2>Split rule</h2>
+  <div class="cols" style="grid-template-columns:auto 1fr;gap:2.2rem;align-items:start">
+    <div class="col">
+      <table class="split">
+        <thead><tr><th>obs</th><th>x&#8321;</th><th class="pick">x&#8322;</th><th>x&#8323;</th><th class="cand">x&#8324;</th><th>x&#8325;</th><th class="vs">y&#8321;</th><th>y&#8322;</th><th>y&#8323;</th><th class="vs">child</th></tr></thead>
+        <tbody>
+          <tr class="L"><td>1</td><td>0.8</td><td class="pick">1.2</td><td>3.4</td><td class="cand">0.5</td><td>2.1</td><td class="vs">0.60</td><td>0.25</td><td>0.15</td><td class="vs c-L">&larr; left</td></tr>
+          <tr class="L"><td>2</td><td>2.3</td><td class="pick">2.7</td><td>1.1</td><td class="cand">4.2</td><td>0.9</td><td class="vs">0.10</td><td>0.70</td><td>0.20</td><td class="vs c-L">&larr; left</td></tr>
+          <tr class="L"><td>3</td><td>1.5</td><td class="pick">3.1</td><td>2.9</td><td class="cand">1.8</td><td>3.3</td><td class="vs">0.45</td><td>0.45</td><td>0.10</td><td class="vs c-L">&larr; left</td></tr>
+          <tr class="R"><td>4</td><td>3.9</td><td class="pick">4.4</td><td>0.7</td><td class="cand">3.1</td><td>1.4</td><td class="vs">0.05</td><td>0.15</td><td>0.80</td><td class="vs c-R">right &rarr;</td></tr>
+          <tr class="L"><td>5</td><td>0.4</td><td class="pick">2.0</td><td>4.5</td><td class="cand">2.7</td><td>5.0</td><td class="vs">0.50</td><td>0.30</td><td>0.20</td><td class="vs c-L">&larr; left</td></tr>
+          <tr class="R"><td>6</td><td>2.1</td><td class="pick">5.6</td><td>3.8</td><td class="cand">0.3</td><td>2.2</td><td class="vs">0.02</td><td>0.08</td><td>0.90</td><td class="vs c-R">right &rarr;</td></tr>
+          <tr class="R"><td>7</td><td>3.3</td><td class="pick">3.8</td><td>1.6</td><td class="cand">4.9</td><td>0.6</td><td class="vs">0.03</td><td>0.12</td><td>0.85</td><td class="vs c-R">right &rarr;</td></tr>
+          <tr class="L"><td>8</td><td>1.1</td><td class="pick">1.5</td><td>2.2</td><td class="cand">1.1</td><td>4.4</td><td class="vs">0.55</td><td>0.35</td><td>0.10</td><td class="vs c-L">&larr; left</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <div class="box" style="margin-bottom:1rem"><p style="margin:0 0 .2rem"><b>Partition rule</b></p>
+        <p class="small" style="margin:0">covariate \(i=2\), split value \(c=3.1\)</p>
+        <p class="small c-muted" style="margin:.2rem 0 0">candidates at this node (\(m_{\text{try}}=2\)): \(x_2\), \(x_4\)</p></div>
+      <p style="margin:.2rem 0"><b class="c-L">Left</b> &nbsp;\(x_2\le 3.1\)<br><span class="small">obs 1, 2, 3, 5, 8</span></p>
+      <p style="margin:.6rem 0 0"><b class="c-R">Right</b> &nbsp;\(x_2&gt;3.1\)<br><span class="small">obs 4, 6, 7</span></p>
+    </div>
+  </div>
+  <aside class="notes"><p>Consider X two less than or equal to three point one. Observations satisfying the rule go left. The others go right: five on the left, three on the right.</p><p><b>Transition:</b> We need a comparison score.</p><p><b>Figure:</b> Point to the highlighted X2 column and the child labels.</p><p><b>Remember:</b> The observation exactly at 3.1 goes left.</p></aside>
+</section>
+
+<section class="slide" data-title="MSE splitting: the criterion" data-time="22">
+  <div class="kicker k-res">Random forests for compositional responses &middot; splitting</div>
+  <h2>MSE splitting</h2>
+  <div class="sdia sm" style="max-width:40rem">
+    <svg viewBox="0 0 160 62"><g style="stroke:#4d4c48;stroke-width:.35">
+      <line x1="80" y1="8" x2="40" y2="33.6" marker-end="url(#ahI)"/><line x1="80" y1="8" x2="120" y2="33.6" marker-end="url(#ahI)"/></g>
+      <g style="stroke:#e34948;stroke-width:.3;stroke-dasharray:1.2 .8">
+      <line x1="25" y1="13" x2="37" y2="22" marker-end="url(#ahR)"/><line x1="135" y1="13" x2="123" y2="22" marker-end="url(#ahR)"/></g></svg>
+    <div class="nd" style="left:50%;top:0"><b>Parent node</b>Covariates \(X^{n\times m}\)<br>Response \(Y^{n\times k}\)</div>
+    <div class="nd" style="left:25%;top:55%"><b>Left child</b>Covariates \(X^{n_1\times m}\)<br>Response \(Y^{n_1\times k}\)<br>\(\mathrm{MSE}(Y^{n_1\times k};c,i)\)</div>
+    <div class="nd" style="left:75%;top:55%"><b>Right child</b>Covariates \(X^{n_2\times m}\)<br>Response \(Y^{n_2\times k}\)<br>\(\mathrm{MSE}(Y^{n_2\times k};c,i)\)</div>
+    <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
+    <div class="q" style="left:11%;top:16%">\((c,i)=?\)</div><div class="q" style="left:89%;top:16%">\((c,i)=?\)</div>
+  </div>
+  <div class="eqbox" style="margin-top:.6rem">\[ (c^*,i^*)=\operatorname*{arg\,min}_{c,\,i}\Bigl\{\frac{n_1}{n}\,\mathrm{MSE}_1+\frac{n_2}{n}\,\mathrm{MSE}_2\Bigr\},\qquad \mathrm{MSE}_\ell=\frac{1}{n_\ell}\sum_{t\in\ell}\ \sum_{j=1}^{k}\bigl(y_{tj}-\bar y^{(\ell)}_{j}\bigr)^2 \]</div>
+  <div class="box" style="margin-top:.3rem">
+    <p style="margin:0"><b>MSE focuses on the conditional mean.</b> It does not explicitly account for simplex geometry or model the full conditional distribution. It remains a valid prediction loss.</p>
+  </div>
+  <aside class="notes"><p>With MSE splitting, we calculate the combined within-node squared error. We select the split with the smallest error. MSE focuses on the conditional mean. It does not explicitly account for simplex geometry or model the full conditional distribution.</p><p><b>Transition:</b> We can instead use a distribution-based score.</p><p><b>Figure:</b> Point to the weighted child criterion, then the box.</p><p><b>Remember:</b> MSE is a valid loss. It does not require homoscedasticity, and an average of compositions remains a composition.</p></aside>
+</section>
+
+<section class="slide" data-title="Dirichlet log-likelihood splitting" data-time="25">
+  <div class="kicker k-dir">Random forests for compositional responses &middot; splitting</div>
+  <h2>Likelihood-based splitting</h2>
+  <div class="sdia" style="max-width:52rem">
+    <svg viewBox="0 0 160 62"><g style="stroke:#4d4c48;stroke-width:.35">
+      <line x1="80" y1="8" x2="40" y2="33.6" marker-end="url(#ahI)"/><line x1="80" y1="8" x2="120" y2="33.6" marker-end="url(#ahI)"/></g>
+      <g style="stroke:#e34948;stroke-width:.3;stroke-dasharray:1.2 .8">
+      <line x1="27" y1="13" x2="38" y2="22" marker-end="url(#ahR)"/><line x1="133" y1="13" x2="122" y2="22" marker-end="url(#ahR)"/></g></svg>
+    <div class="nd" style="left:50%;top:0"><b>Parent node</b>Covariates \(X^{n\times m}\)<br>Response \(Y^{n\times k}\)</div>
+    <div class="nd" style="left:25%;top:55%"><b>Left child</b>Covariates \(X^{n_1\times m}\)<br>Response \(Y^{n_1\times k}\)<br>log-lik \(\mathcal L(Y^{n_1\times k};c,i)\)</div>
+    <div class="nd" style="left:75%;top:55%"><b>Right child</b>Covariates \(X^{n_2\times m}\)<br>Response \(Y^{n_2\times k}\)<br>log-lik \(\mathcal L(Y^{n_2\times k};c,i)\)</div>
+    <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
+    <div class="q" style="left:14%;top:17%">\((c,i)=?\)</div><div class="q" style="left:86%;top:17%">\((c,i)=?\)</div>
+  </div>
+  <div class="eqbox dir" style="margin-top:.4rem">\[ (c^*,i^*)=\operatorname*{arg\,max}_{c,\,i}\Bigl\{\max_{\boldsymbol\alpha}\mathcal L(Y^{n_1\times k};c,i)+\max_{\boldsymbol\alpha}\mathcal L(Y^{n_2\times k};c,i)\Bigr\} \]</div>
+  <p class="small" style="margin:0">\(\mathcal L\): the Dirichlet log-likelihood, with \(\boldsymbol\alpha\) fitted separately in each child. The parent score is constant across candidate splits. In the reported experiments, Dir-RF uses moment estimates; TN uses an approximate profiled score.</p>
+  <aside class="notes"><p>For likelihood splitting, fit a distribution in each child and choose the largest combined log-likelihood. Subtracting the fixed parent score gives the same ranking. Our experiments use moment estimates for Dirichlet and an approximate profiled score for TN.</p><p><b>Transition:</b> How does prediction work?</p><p><b>Figure:</b> Trace the parent-to-children diagram. Revisit this diagram during Kent estimation.</p><p><b>Remember:</b> Exact objective: child log-likelihoods minus parent log-likelihood. Do not describe all experimental scores as exact maximised likelihoods.</p></aside>
+</section>
+
+<section class="slide" data-title="Prediction based on DirichletRF" data-time="20">
+  <div class="kicker k-dir">Random forests for compositional responses &middot; prediction</div>
+  <h2>Prediction based on DirichletRF</h2>
+  <div class="cols" style="grid-template-columns:0.8fr 1.2fr;align-items:center">
+    <div class="col">
+      <svg class="fig" viewBox="0 0 330 350" style="width:100%;max-height:31rem">
+        <g style="stroke:#8a8883;stroke-width:1.6;stroke-dasharray:5 4;fill:none">
+          <line x1="206" y1="38" x2="248" y2="92" marker-end="url(#ahM)"/><line x1="96" y1="112" x2="56" y2="150" marker-end="url(#ahM)"/>
+          <line x1="140" y1="188" x2="104" y2="226" marker-end="url(#ahM)"/><line x1="230" y1="264" x2="266" y2="298" marker-end="url(#ahM)"/>
+        </g>
+        <g style="stroke:#d9661f;stroke-width:3.2;fill:none">
+          <line x1="168" y1="40" x2="128" y2="84" marker-end="url(#ahD)"/><line x1="126" y1="114" x2="156" y2="160" marker-end="url(#ahD)"/>
+          <line x1="178" y1="190" x2="204" y2="236" marker-end="url(#ahD)"/><line x1="200" y1="266" x2="166" y2="306" marker-end="url(#ahD)"/>
+        </g>
+        <g style="fill:#fcfcfb;stroke:#4d4c48;stroke-width:1.6">
+          <ellipse cx="185" cy="24" rx="30" ry="18"/><ellipse cx="115" cy="98" rx="30" ry="18"/><ellipse cx="165" cy="174" rx="30" ry="18"/><ellipse cx="210" cy="250" rx="30" ry="18"/>
+          <rect x="70" y="306" width="170" height="36" rx="3"/>
+        </g>
+        <g text-anchor="middle" style="font-size:24px;fill:#8a8883"><text x="258" y="112">&#8942;</text><text x="46" y="170">&#8942;</text><text x="94" y="246">&#8942;</text><text x="276" y="322">&#8942;</text></g>
+        <text x="155" y="330" text-anchor="middle" style="font-size:17px;fill:#141412">{y&#8321;, y&#8322;, &hellip;, y&#8345;&#8242;}</text>
+      </svg>
+    </div>
+    <div class="col">
+      <p style="margin:0 0 .1rem"><b>Process</b></p>
+      <ol style="margin:0 0 .5rem;padding-left:1.6rem;font-size:1.2rem"><li>Start at the root node</li><li>Traverse the tree by the decision rules</li><li>Reach a terminal node with \(n'\) observations</li></ol>
+      <p style="margin:0 0 .1rem"><b>Default approach</b></p>
+      <ul style="margin:0 0 .5rem">
+        <li style="font-size:1.2rem">Mean: \(\hat{\mathbf y}=\frac{1}{n'}\sum_{i=1}^{n'}\mathbf y_i\)</li>
+        <li style="font-size:1.2rem">Expectation: \(\hat E(Y_j)=\hat\alpha_j\big/\sum_{l=1}^{k}\hat\alpha_l\)</li>
+        <li style="font-size:1.2rem">Random forest: average across trees</li>
+      </ul>
+      <p style="margin:0 0 .1rem"><b>Distributional approach</b></p>
+      <ul style="margin:0">
+        <li style="font-size:1.2rem">Collect the terminal nodes from all trees</li>
+        <li style="font-size:1.2rem">Construct an empirical probability function (weights)</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes"><p>New observations follow the rules to a leaf. We can use a parametric distribution or the empirical responses there. Our experiments combine leaf weights and predict a weighted mean of training compositions.</p><p><b>Transition:</b> Now, the distribution models.</p><p><b>Figure:</b> Trace the dashed prediction path and point to the distributional box.</p><p><b>Remember:</b> The splitting distribution and the prediction distribution need not be the same.</p></aside>
+</section>
+
+<!-- ============================== 1. DIRICHLET ============================== -->
+<section class="slide" data-title="Three approaches to modelling compositional data" data-time="20"><div class="kicker k-res">Compositional random forest</div><h2>Three approaches to modelling compositional data</h2>
+<div class="panel3">
+<div class="box"><h3>On the simplex</h3><p>Model the composition directly.</p><div class="eqbox dir">\(\mathbf x\in\mathcal S_k^1\)</div><p class="c-dir">Dirichlet</p></div>
+<div class="box"><h3>Log-ratio coordinates</h3><p>Transform to real space.</p><div class="eqbox">\(y_i=\log(x_i/x_k)\)</div><p>Multivariate logistic normal (MLN)</p></div>
+<div class="box"><h3>Square-root coordinates</h3><p>Transform to the non-negative spherical orthant.</p><div class="eqbox tn">\(u_i=\sqrt{x_i}\)</div><p><span class="c-kent">Kent</span> and <span class="c-tn">tangent normal</span></p></div>
+</div><aside class="notes"><p>Before discussing our proposed distribution, let me briefly introduce three approaches. We can model directly on the simplex. We can use log-ratios and model in real space. Or we can use square roots and model on a sphere.</p><p><b>Transition:</b> Let us start with the Dirichlet distribution.</p><p><b>Figure:</b> Point left to right across the three cards.</p><p><b>Remember:</b> MLN is the log-ratio approach; Kent and TN use spherical coordinates.</p></aside></section>
+
+<section class="slide" data-title="Dirichlet distribution" data-time="32" data-init="initDir">
+  <div class="kicker k-dir">Node model 1 &middot; on the simplex</div>
+  <h2>The Dirichlet distribution <span class="eq">eq. (8)</span></h2>
+  <div class="cols c-l">
+    <div class="col">
+      <div class="eqbox dir">\[ f(\bz;\boldsymbol\alpha)=\frac{\Gamma(\alpha_0)}{\prod_{j=1}^{k}\Gamma(\alpha_j)}\prod_{j=1}^{k}z_j^{\alpha_j-1},\qquad \alpha_0=\sum_{j=1}^{k}\alpha_j \]</div>
+      <p class="small" style="margin:0">\(k\) positive parameters; \(m_i=\alpha_i/\alpha_0\). With \(\boldsymbol\alpha=\alpha_0\mathbf m\): \(E(\mathbf Z)=\mathbf m\), \(\operatorname{Cov}(\mathbf Z)=\dfrac{\diag(\mathbf m)-\mathbf m\mathbf m^{\top}}{\alpha_0+1}\) &nbsp;(9).</p>
+      <div class="box" style="padding:.45rem .8rem;margin:.35rem 0">
+        <p style="margin:0;font-size:1.12rem"><b class="c-dir">A limited covariance matrix</b></p>
+        <ul style="margin:.1rem 0 0">
+          <li class="small">\(k\) parameters for \(k-1\) free means and \(k(k-1)/2\) covariances: once the mean is fixed, <b>one</b> scalar \(\alpha_0\) sets the whole matrix</li>
+          <li class="small">every off-diagonal covariance is negative, \(-m_im_j/(\alpha_0+1)\); the correlations depend on \(\mathbf m\) only: \(\rho_{ij}=-\sqrt{\tfrac{m_im_j}{(1-m_i)(1-m_j)}}\)</li>
+          <li class="small">no independent parameter for orientation or elongation at a fixed mean</li>
+        </ul>
+      </div>
+      <p class="small c-dir" style="margin:0"><b>Support: the open simplex</b>, \(z_j&gt;0\) (2): a composition with a zero part is outside it.</p>
+      <div class="ctl" style="gap:.3rem 1rem">
+        <label style="flex-basis:6rem">&alpha;&#8321;<span><span></span><b id="d-a1-v"></b></span><input type="range" id="d-a1" min="1" max="30" step="0.5" value="10"></label>
+        <label style="flex-basis:6rem">&alpha;&#8322;<span><span></span><b id="d-a2-v"></b></span><input type="range" id="d-a2" min="1" max="30" step="0.5" value="6"></label>
+        <label style="flex-basis:6rem">&alpha;&#8323;<span><span></span><b id="d-a3-v"></b></span><input type="range" id="d-a3" min="1" max="30" step="0.5" value="4"></label>
+        <label style="flex-basis:6rem">n draws<span><span></span><b id="d-n-v"></b></span><input type="range" id="d-n" min="10" max="1500" step="10" value="150"></label>
+      </div>
+      <div class="readout" id="d-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fDir"></div>
+      <div class="ptitle" id="d-cap">150 draws from Dir(&alpha;) &middot; contours at 10, 30, 50, 70, 90% of the peak</div></div>
+  </div>
+  <aside class="notes"><p>The Dirichlet distribution has K positive parameters. Its mean has K minus one free components; the remaining degree of freedom controls concentration. Mean component i is alpha i divided by the sum of the alphas. Once the mean is fixed, one concentration parameter determines the entire covariance matrix.</p><p><b>Transition:</b> Contours illustrate this restriction.</p><p><b>Figure:</b> Point to the mean and covariance formulas. Keep the default slider values.</p><p><b>Remember:</b> Only off-diagonal covariances are negative; variances are positive. Dirichlet can still be a useful model.</p></aside>
+</section>
+
+<!-- ============================== 1b. DIRICHLET: WHAT IT CANNOT CAPTURE ============================== -->
+<section class="slide" data-title="Dirichlet contour sets" data-time="20" data-init="initDirContour">
+  <div class="kicker k-dir">Node model 1 &middot; on the simplex</div>
+  <h2>Dirichlet contour sets</h2>
+  <div class="cols c-l">
+    <div class="col">
+      <div class="eqbox dir">\[ f(\bz;\boldsymbol\alpha)=\frac{\Gamma(\alpha_0)}{\prod_{j=1}^{k}\Gamma(\alpha_j)}\prod_{j=1}^{k}z_j^{\alpha_j-1},\qquad \alpha_0=\sum_{j=1}^{k}\alpha_j \]</div>
+      <p class="small" style="margin:0">\(k\) positive parameters; \(m_i=\alpha_i/\alpha_0\). With \(\boldsymbol\alpha=\alpha_0\mathbf m\): \(E(\mathbf Z)=\mathbf m\), \(\operatorname{Cov}(\mathbf Z)=\dfrac{\diag(\mathbf m)-\mathbf m\mathbf m^{\top}}{\alpha_0+1}\) &nbsp;(9).</p>
+      <div class="eqbox dir"><p style="margin:0"><b>A contour line connects points where the probability density has the same value.</b></p></div><p class="small">The Dirichlet can produce certain families of contour shapes. At a fixed mean, concentration cannot freely rotate or stretch them.</p>
+      <p class="small c-dir" style="margin:0"><b>Support: the open simplex</b>, \(z_j&gt;0\) (2): a composition with a zero part is outside it.</p>
+      <div class="ctl" style="gap:.3rem 1rem">
+        <label style="flex-basis:6rem">&alpha;&#8321;<span><span></span><b id="dc-a1-v"></b></span><input type="range" id="dc-a1" min="1" max="30" step="0.5" value="10"></label>
+        <label style="flex-basis:6rem">&alpha;&#8322;<span><span></span><b id="dc-a2-v"></b></span><input type="range" id="dc-a2" min="1" max="30" step="0.5" value="6"></label>
+        <label style="flex-basis:6rem">&alpha;&#8323;<span><span></span><b id="dc-a3-v"></b></span><input type="range" id="dc-a3" min="1" max="30" step="0.5" value="4"></label>
+        <label style="flex-basis:6rem">n draws<span><span></span><b id="dc-n-v"></b></span><input type="range" id="dc-n" min="10" max="1500" step="10" value="150"></label>
+      </div>
+      <div class="readout" id="dc-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fDirContour"></div>
+      <div class="ptitle" id="dc-cap">150 draws from Dir(&alpha;) &middot; contours at 10, 30, 50, 70, 90% of the peak</div></div>
+  </div>
+  <aside class="notes"><p>A contour line connects points where the probability density has the same value. These lines help us see the shape of a distribution. The Dirichlet can produce different contour shapes, but it cannot freely choose their orientation and elongation at a fixed mean.</p><p><b>Transition:</b> Here is one configuration where that matters.</p><p><b>Figure:</b> Use the reused Dirichlet figure. Optionally change one alpha slightly; avoid a long demonstration.</p><p><b>Remember:</b> The displayed family illustrates restrictions, not every possible Dirichlet shape.</p></aside>
+</section>
+
+<section class="slide" data-title="What the Dirichlet cannot capture" data-time="25" data-init="initDirLim">
+  <div class="kicker k-dir">Node model 1 &middot; its limits</div>
+  <h2>Dirichlet versus tangent normal: an example</h2>
+  <div class="cols" style="grid-template-columns:0.9fr 1fr 1fr;gap:1.1rem">
+    <div class="col">
+      <p class="small" style="margin:0">300 compositions from a <span class="c-tn">TN distribution</span> (later in the talk), mapped to the triangle by \(\bz=\bu^2\): an elongated cloud, turned by \(\psi\). Right: the <span class="c-dir">Dirichlet</span> fitted to the same data by maximum likelihood.</p>
+      <div class="btns"><button class="btn" id="dl-pos" aria-pressed="true">positive correlation</button><button class="btn" id="dl-tilt" aria-pressed="false">tilted ridge</button><button class="btn" id="dl-edge" aria-pressed="false">ridge along an edge</button></div>
+      <div class="ctl">
+        <label>axis turn &psi;<span><span></span><b id="dl-ps-v"></b></span><input type="range" id="dl-ps" min="0" max="180" step="1" value="90"></label>
+        <label>&radic;&lambda;&#8322; (length)<span><span></span><b id="dl-s2-v"></b></span><input type="range" id="dl-s2" min="0.02" max="0.3" step="0.005" value="0.16"></label>
+        <label>&radic;&lambda;&#8323; (width)<span><span></span><b id="dl-s3-v"></b></span><input type="range" id="dl-s3" min="0.01" max="0.3" step="0.005" value="0.03"></label>
+      </div>
+      <div id="dl-tab"></div>
+      <p class="small" style="margin:.5rem 0 0"><span class="c-tn">TN</span>: the direction and both spreads are free parameters. <span class="c-dir">Dirichlet</span>: the spread follows the mean, and every population off-diagonal correlation is negative.</p>
+    </div>
+    <div class="col"><div class="plot" id="fDL1"></div><div class="ptitle">data &middot; <span class="c-tn">TN density on the simplex</span> (10&ndash;90% of peak)</div></div>
+    <div class="col"><div class="plot" id="fDL2"></div><div class="ptitle">same data &middot; <span class="c-dir">fitted Dirichlet</span> (10&ndash;90% of peak)</div></div>
+  </div>
+  <aside class="notes"><p>Both panels show the same example data. The blue tangent normal contours follow this elongated cloud more closely than the fitted orange Dirichlet contours. This illustrates greater TN flexibility for this configuration, rather than better fit in every case.</p><p><b>Transition:</b> How do we reach TN?</p><p><b>Figure:</b> Use the default positive-correlation preset. Point to the blue ridge and orange contours.</p><p><b>Remember:</b> The Dirichlet is fitted by MLE in this demonstration. TN generated the example, so this is an illustration rather than a neutral performance experiment.</p></aside>
+</section>
+
+<!-- ======================= 2. SIMPLEX TO SPHERE ======================= -->
+<section class="slide" data-title="From the simplex to the sphere" data-time="35" data-init="initLift">
+  <div class="kicker k-res">Square-root transformation &middot; Section 2.1</div>
+  <h2>From the simplex to the sphere</h2>
+  <div class="cols c-r">
+    <div class="col"><div class="plot" id="fLift"></div>
+      <div class="btns"><span class="tag">show</span>
+        <button class="btn" id="l-lines" aria-pressed="true">projection lines</button>
+        <button class="btn" id="l-tri" aria-pressed="true">triangle</button>
+        <button class="btn" id="l-sph" aria-pressed="true">sphere</button>
+        <button class="btn" id="l-points" aria-pressed="true">projected observations</button>
+        <button class="btn" id="l-reset">reset view</button></div></div>
+    <div class="col">
+      <div class="eqbox">\[ \bu=\sqrt{\bz}\quad(u_j=\sqrt{z_j}),\qquad \sum_j u_j^2=\sum_j z_j=1 \]</div>
+      <p>Every composition becomes a unit vector in the positive orthant</p>
+      <div class="eqbox">\[ \mathcal O=\{\bu\in S^{k-1}:\ u_j\ge 0\}. \]</div>
+      <p>One-to-one, with inverse \(\bz=\bu^2\).</p>
+      <p><b>Zeros are admissible</b>: \(\sqrt0=0\) lands on an edge of \(\mathcal O\), with no replacement.</p>
+      <p class="small">150 compositions from Dir(10, 6, 4), the Dirichlet slide's default. Drag to rotate.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>For three-component compositional data, all observations lie on a triangle in three-dimensional space: their components are non-negative and sum to one. Take each component&#x27;s square root. The observations now lie on the non-negative part of the unit sphere, because their squared components sum to one. This is one orthant, not the whole sphere. Zeros remain admissible.</p><p><b>Transition:</b> Now consider spherical distributions.</p><p><b>Figure:</b> Hide sphere, projection lines and projected observations to show the original triangle and data. Restore projected observations, sphere and lines to introduce the map.</p><p><b>Remember:</b> Deck notation is u = square root of z; the requested z_i = square root of x_i is the same map with different letters. Keep the triangle visible.</p></aside>
+</section>
+
+<!-- ============================== 3. KENT ============================== -->
+<section class="slide" data-title="Kent distribution: definition" data-time="28">
+  <div class="kicker k-kent">Node model 2 &middot; on the sphere</div>
+  <h2>The Kent distribution <span class="eq">eqs. (11)&ndash;(13)</span></h2>
+  <div class="cols" style="grid-template-columns:1.1fr 1fr;gap:2rem">
+    <div class="col">
+      <p class="small" style="margin:0">For \(\bu=\sqrt{\bz}\) on the sphere \(S^{k-1}\) (Kent 1982; for compositions, Scealy and Welsh 2011):</p>
+      <div class="eqbox kent">\[ f(\bu)=c(\kappa,\boldsymbol\beta)^{-1}\exp\Bigl\{\kappa\,\bmu^{\top}\bu+\sum_{m=2}^{k-1}\beta_m(\bgamma_m^{\top}\bu)^2-\Bigl(\sum_{m=2}^{k-1}\beta_m\Bigr)(\bgamma_k^{\top}\bu)^2\Bigr\} \tag{11}\]</div>
+      <p class="small" style="margin:.3rem 0 0">Three parts (\(k=3\), the sphere \(S^2\)), with \(\beta_2=\beta\), \(\beta_3=-\beta\) (12):</p>
+      <div class="eqbox kent" style="font-size:1.15rem">\[ f(\bu)=c(\kappa,\beta)^{-1}\exp\bigl\{\kappa\,\bmu^{\top}\bu+\beta\bigl[(\bgamma_2^{\top}\bu)^2-(\bgamma_3^{\top}\bu)^2\bigr]\bigr\} \]</div>
+      <p class="small" style="margin:.2rem 0 0">For \(k=3\): five numbers &mdash; \(\bmu\) (two angles), the turn \(\psi\) of the axes around \(\bmu\), \(\kappa\) and \(\beta\).</p>
+    </div>
+    <div class="col">
+      <table class="cmp">
+        <thead><tr><th>parameter</th><th>meaning</th></tr></thead>
+        <tbody>
+          <tr><td>\(\bmu\)</td><td>mean direction: the peak and centre of the cloud</td></tr>
+          <tr><td>\(\kappa&gt;0\)</td><td>concentration: larger \(\kappa\), tighter cloud</td></tr>
+          <tr><td>\(\bgamma_2,\bgamma_3\)</td><td>major and minor axes, orthogonal to \(\bmu\) and to each other</td></tr>
+          <tr><td>\(\beta\ge0\)</td><td>ovalness: stretches the cloud along \(\bgamma_2\), squeezes it along \(\bgamma_3\)</td></tr>
+          <tr><td>\(2\beta&lt;\kappa\) (13)</td><td>keeps \(\bmu\) the single peak</td></tr>
+          <tr><td>\(c(\kappa,\beta)\)</td><td>normalising constant: an integral over the sphere, <b>no closed form</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <aside class="notes"><p>For three components, standard Kent has five free parameters. Two describe mean direction; one describes orientation around that direction. Kappa controls concentration, and beta controls ovalness. Spread and orientation can vary more freely than under a Dirichlet with fixed mean.</p><p><b>Transition:</b> Here are the contours.</p><p><b>Figure:</b> Point to the three-part formula and parameter table.</p><p><b>Remember:</b> The axes are orthonormal, not independent unrestricted vectors. Use 0 &lt;= 2 beta &lt; kappa for the standard unimodal form; orientation is unidentifiable when beta is zero.</p></aside>
+</section>
+
+<section class="slide" data-title="Kent: contours" data-time="22" data-init="initKent">
+  <div class="kicker k-kent">Node model 2 &middot; on the sphere</div>
+  <h2>Kent: &kappa;, &beta; and the axes</h2>
+  <div class="cols" style="grid-template-columns:0.8fr 1.15fr 0.95fr;gap:1rem">
+    <div class="col">
+      <ul style="margin-top:0">
+        <li class="small">\(\kappa\): the size of the contours</li>
+        <li class="small">\(2\beta/\kappa\): how oval they are</li>
+        <li class="small">\(\psi\): the turn of the axes \(\bgamma_2,\bgamma_3\) around \(\bmu\)</li>
+        <li class="small">positive on the <b>whole sphere</b>: for small \(\kappa\) the contours leave \(\mathcal O\) (red dashed)</li>
+        <li class="small">triangle: the part inside \(\mathcal O\), mapped by \(\bz=\bu^2\)</li>
+      </ul>
+      <div class="ctl stack">
+        <label>&kappa; (log scale)<span><span></span><b id="k-k-v"></b></span><input type="range" id="k-k" min="0" max="1000" step="1" value="547"></label>
+        <label>2&beta;/&kappa;<span><span></span><b id="k-r-v"></b></span><input type="range" id="k-r" min="0" max="0.9" step="0.01" value="0.5"></label>
+        <label>axis turn &psi;<span><span></span><b id="k-p-v"></b></span><input type="range" id="k-p" min="0" max="180" step="1" value="30"></label>
+      </div>
+      <div class="readout" id="k-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fKent"></div><div class="ptitle">on the sphere</div></div>
+    <div class="col"><div class="plot" id="fKentT"></div><div class="ptitle">mapped spherical contours: z = u&#178;</div></div>
+  </div>
+  <div class="key"><span><i style="border-color:var(--kent)"></i>Kent contours (10&ndash;90% of peak)</span><span><i class="d" style="border-color:var(--out)"></i>outside \(\mathcal O\): not a composition</span><span><i class="d" style="border-color:var(--muted)"></i>edge of the hemisphere around &mu;</span></div>
+  <p class="small" style="margin:0">Triangle curves are mapped sphere-density levels, not simplex-density contours; a density transformation requires its Jacobian.</p>
+  <aside class="notes"><p>Concentration tightens the cloud. Ovalness stretches it; rotating the axes changes its direction. The triangle shows mapped spherical contours. These are not automatically density contours on the simplex.</p><p><b>Transition:</b> There is a support issue.</p><p><b>Figure:</b> Make one small change to the axis-turn slider. Point to the sphere and mapped curves.</p><p><b>Remember:</b> Changing reference measure requires a Jacobian. Kent is not defined solely on the positive orthant.</p></aside>
+</section>
+
+<section class="slide" data-title="Kent: simulated data" data-time="15" data-init="initKentSim">
+  <div class="kicker k-kent">Node model 2 &middot; on the sphere</div>
+  <h2>Kent: generating data</h2>
+  <div class="cols" style="grid-template-columns:0.8fr 1.15fr 0.95fr;gap:1rem">
+    <div class="col">
+      <ul style="margin-top:0">
+        <li class="small">draws from (11) <span class="c-kent">inside \(\mathcal O\)</span> are compositions; draws <span class="c-out">outside \(\mathcal O\)</span> are not</li>
+        <li class="small">\(\kappa\) sets the spread of the data, \(\beta\) its shape, \(\psi\) its direction</li>
+        <li class="small">small \(\kappa\): the data fall <b>all over the sphere</b>, far outside the triangle</li>
+      </ul>
+      <div class="ctl stack">
+        <label>&kappa; (log scale)<span><span></span><b id="ks-k-v"></b></span><input type="range" id="ks-k" min="0" max="1000" step="1" value="288"></label>
+        <label>2&beta;/&kappa;<span><span></span><b id="ks-r-v"></b></span><input type="range" id="ks-r" min="0" max="0.9" step="0.01" value="0.5"></label>
+        <label>axis turn &psi;<span><span></span><b id="ks-p-v"></b></span><input type="range" id="ks-p" min="0" max="180" step="1" value="30"></label>
+        <label>n draws<span><span></span><b id="ks-n-v"></b></span><input type="range" id="ks-n" min="50" max="2000" step="50" value="400"></label>
+      </div>
+      <div class="btns"><button class="btn" id="ks-new">resample</button><button class="btn" id="ks-small">&kappa; = 3</button><button class="btn" id="ks-mid">&kappa; = 12</button><button class="btn" id="ks-big">&kappa; = 150</button></div>
+      <div class="readout" id="ks-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fKS1"></div><div class="ptitle">draws on the sphere (drag to rotate)</div></div>
+    <div class="col"><div class="plot" id="fKS2"></div><div class="ptitle">the draws inside O, as compositions z = u&#178;</div></div>
+  </div>
+  <aside class="notes"><p>Kent is defined on the entire sphere. Our square-root observations occupy only the non-negative orthant. An unrestricted Kent model can therefore put probability outside the admissible region. The amount depends on its parameters.</p><p><b>Transition:</b> Repeated estimation creates another difficulty.</p><p><b>Figure:</b> Point to the red simulated observations and the outside-mass readout.</p><p><b>Remember:</b> Do not claim every draw is valid at high concentration. Squaring negative coordinates gives a composition but is not the inverse of the non-negative square-root map.</p></aside>
+</section>
+
+<section class="slide" data-title="Kent: estimation cost" data-time="30" data-init="initKentCost">
+  <div class="kicker k-kent">Node model 2 &middot; estimation</div>
+  <h2>Why Kent is hard to use in a forest</h2>
+  <div class="cols" style="grid-template-columns:1.05fr 1fr;gap:1.8rem">
+    <div class="col">
+      <ul style="margin-top:0">
+        <li style="font-size:1.15rem"><b>No closed-form constant.</b> For \(k=3\), \(\;c(\kappa,\beta)=2\pi\displaystyle\int_{-1}^{1}e^{\kappa t}\,I_0\{\beta(1-t^2)\}\,dt\); for \(k\) parts a \((k-1)\)-dimensional integral.</li>
+        <li style="font-size:1.15rem"><b>No closed-form MLE.</b> Numerical optimisation over \(\bmu\), the axes, \(\kappa\) and \(\beta\); every step re-computes \(c(\kappa,\beta)\).</li>
+        <li style="font-size:1.15rem"><b>Moment estimators</b> (Kent 1982) are approximations that need a large \(\kappa\).</li>
+        <li style="font-size:1.15rem"><b>A forest fits the node model to both children of every candidate split</b>: \(B\) trees \(\times\) levels \(\times\ m_{\text{try}}\times n\) cut points &mdash; millions of fits.</li>
+      </ul>
+<div class="sdia sm" style="max-width:23rem;aspect-ratio:160/75">
+    <svg viewBox="0 0 160 62"><g style="stroke:#4d4c48;stroke-width:.35">
+      <line x1="80" y1="8" x2="40" y2="33.6" marker-end="url(#ahI)"/><line x1="80" y1="8" x2="120" y2="33.6" marker-end="url(#ahI)"/></g>
+      <g style="stroke:#e34948;stroke-width:.3;stroke-dasharray:1.2 .8">
+      <line x1="27" y1="13" x2="38" y2="22" marker-end="url(#ahR)"/><line x1="133" y1="13" x2="122" y2="22" marker-end="url(#ahR)"/></g></svg>
+    <div class="nd" style="left:50%;top:0"><b>Parent node</b>Covariates \(X^{n\times m}\)<br>Response \(Y^{n\times k}\)</div>
+    <div class="nd" style="left:25%;top:55%"><b>Left child</b>Covariates \(X^{n_1\times m}\)<br>Response \(Y^{n_1\times k}\)<br>log-lik \(\mathcal L(Y^{n_1\times k};c,i)\)</div>
+    <div class="nd" style="left:75%;top:55%"><b>Right child</b>Covariates \(X^{n_2\times m}\)<br>Response \(Y^{n_2\times k}\)<br>log-lik \(\mathcal L(Y^{n_2\times k};c,i)\)</div>
+    <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
+    <div class="q" style="left:14%;top:17%">\((c,i)=?\)</div><div class="q" style="left:86%;top:17%">\((c,i)=?\)</div>
+  </div>
+    </div>
+    <div class="col">
+      <div class="box">
+        <p style="margin:0 0 .2rem"><b>Measured in this browser</b> <span class="small">&middot; one node with \(n=500\) Kent draws, \(k=3\)</span></p>
+        <table class="mini" style="width:100%;font-size:.92rem">
+          <thead><tr><th></th><th class="c-kent">Kent: numerical MLE</th><th class="c-tn">TN: Gaussian profile</th></tr></thead>
+          <tbody>
+            <tr><td>method</td><td>Nelder&ndash;Mead, 5 parameters</td><td>(22), (33), (23)</td></tr>
+            <tr><td>likelihood evaluations</td><td id="kc-ev">&ndash;</td><td>no optimiser iterations</td></tr>
+            <tr><td>time per fit</td><td id="kc-tk">&ndash;</td><td id="kc-tt">&ndash;</td></tr>
+            <tr><td>illustrative extrapolation&#185;</td><td id="kc-fk">&ndash;</td><td id="kc-ft">&ndash;</td></tr>
+          </tbody>
+        </table>
+        <div class="btns"><button class="btn" id="kc-run">run again</button><span class="readout" id="kc-out" style="margin:0"></span></div>
+      </div>
+      <p class="small" style="margin:.5rem 0 0">&#185; \(B=500\) trees, \(n=1000\), \(m_{\text{try}}=3\), about 7 levels: \(2\times3\times1000\times7\times500\approx2.1\times10^{7}\) fits. This is a browser demonstration, not a forest benchmark. TN timing excludes the Jacobian and truncation term. Both fits use the same summaries (21); the Kent fit starts from the TN estimate. Order of magnitude only.</p>
+    </div>
+  </div>
+  <aside class="notes"><p>At each node, we evaluate many splits and fit both children. This browser example uses Nelder-Mead optimisation over five Kent parameters, with numerical integration for its normalising constant. Repeating this can be expensive. The timing is an illustration, not an entire-forest benchmark.</p><p><b>Transition:</b> We wanted simpler estimation.</p><p><b>Figure:</b> Point to the reused split diagram and timing table. Do not wait for a second run during the timed talk.</p><p><b>Remember:</b> TN timing measures the Gaussian profile only, excluding its Jacobian and truncation term. Do not interpret extrapolated forest times as measured results.</p></aside>
+</section>
+
+<!-- ============================== 4. TN DEFINITION ============================== -->
+<section class="slide" data-title="TN: definition" data-time="50" data-init="initTNdef">
+  <div class="kicker k-tn">Node model 3 &middot; the tangent-normal (TN) distribution</div>
+  <h2>A normal distribution on the tangent plane <span class="eq">Def. 1, eqs. (14)&ndash;(16)</span></h2>
+  <div class="cols c-l">
+    <div class="col">
+      <p class="small" style="margin:0">Mean direction \(\bmu\); tangent plane \(T_{\bmu}=\{\mathbf x:\bmu^{\top}\mathbf x=0\}\) with orthonormal basis \(\bK\) (\(\bK^{\top}\bK=\mathbf I\)). Construction:</p>
+      <ol class="steps">
+        <li><b>Down to the tangent plane:</b> \(\bv=\bK^{\top}\bu\), the tangent coordinates (move each point parallel to \(\bmu\)).</li>
+        <li><b>A normal distribution on the plane:</b> \(\bV_0\sim N_{k-1}(\mathbf 0,\Lambda)\), \(\Lambda=\diag(\lambda_2,\dots,\lambda_k)\), kept inside the unit ball: \(\bV=\bV_0\mid\|\bV_0\|&lt;1\).</li>
+        <li><b>Back to the hemisphere:</b> \(\bU=\psi(\bV)\sim\mathrm{TN}(\bmu,\bK,\Lambda)\), with</li>
+      </ol>
+      <div class="eqbox tn">\[ \psi(\bv)=\bigl(1-\|\bv\|^2\bigr)^{1/2}\bmu+\bK\bv \tag{14}\]</div>
+      <div class="eqbox tn">\[ g(\bu)=\frac{\varphi_{\Lambda}(\bK^{\top}\bu)\;\bmu^{\top}\bu}{\pi_{\Lambda}},\quad \bu\in H_{\bmu} \tag{15}\]</div>
+      <p class="small" style="margin:0">\(\bmu^{\top}\bu\) is the Jacobian of step 3: \(d\bv=(\bmu^{\top}\bu)\,\sigma(d\bu)\) (16). Support: \(H_{\bmu}=\{\bu:\bmu^{\top}\bu&gt;0\}\), not just \(\mathcal O\). Back to the triangle: \(\bz=\bu^2\).</p>
+      <div class="btns"><span class="tag">step</span>
+        <button class="btn" id="t-s1" aria-pressed="true">1 &middot; data on the sphere</button>
+        <button class="btn" id="t-s2" aria-pressed="false">2 &middot; to the plane</button>
+        <button class="btn" id="t-s3" aria-pressed="false">3 &middot; normal on the plane</button>
+        <button class="btn" id="t-s4" aria-pressed="false">4 &middot; back to the hemisphere</button></div>
+      <div class="readout" id="t-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fTNdef"></div>
+      <div class="key"><span><i style="border-color:var(--tn)"></i>on the sphere: u, TN contours</span><span><i style="border-color:#0d366b"></i>on the tangent plane: v, normal contours</span><span><i class="d" style="border-color:var(--ink-2)"></i>parallel to &mu;</span></div></div>
+  </div>
+  <aside class="notes"><p>We wanted flexible shapes, similar to Kent, with simpler estimation. Start with square-root observations on the sphere. Their tangent coordinates are K transpose u. In these coordinates, use a zero-mean normal distribution conditioned to lie inside the open unit ball. Map back using the formula: the tangent component plus the positive square-root component along mu. This gives a distribution on the hemisphere centred at mu. Its spherical density includes the Jacobian, mu transpose u. We call it tangent normal because we use a normal distribution in tangent coordinates.</p><p><b>Transition:</b> The variances control its shape.</p><p><b>Figure:</b> Click steps 1 through 4 in order, pausing briefly as the points move.</p><p><b>Remember:</b> This is the paper&#x27;s orthogonal tangent-coordinate construction, not the exponential or gnomonic map. Density is zero outside the open hemisphere; divide by pi_Lambda for exact normalisation.</p></aside>
+</section>
+
+<!-- ============================== 4b. TN: KAPPA AND BETA ============================== -->
+<section class="slide" data-title="TN: size and shape" data-time="28" data-init="initTNkb">
+  <div class="kicker k-tn">Tangent-normal &middot; the parameters</div>
+  <h2>&kappa; sets the size, &beta; the shape <span class="eq">eqs. (13), (17)</span></h2>
+  <div class="cols" style="grid-template-columns:0.95fr 1fr 1fr;gap:1.2rem">
+    <div class="col">
+      <div class="eqbox tn">\[ \lambda_2=\frac{1}{\kappa-2\beta},\qquad \lambda_3=\frac{1}{\kappa+2\beta} \tag{17}\]</div>
+      <ul style="margin-top:0">
+        <li class="small">axis ratio \(\sqrt{\lambda_2/\lambda_3}=\sqrt{\tfrac{\kappa+2\beta}{\kappa-2\beta}}\): depends on \(\beta/\kappa\) only</li>
+        <li class="small">\(0\le2\beta&lt;\kappa\) (13) exactly when \(\lambda_2\ge\lambda_3&gt;0\)</li>
+        <li class="small">the support ends at \(\|\bv\|=1\), the edge of \(H_{\bmu}\); the Jacobian \(\bmu^{\top}\bu\) rounds the contours when the spread is large</li>
+      </ul>
+      <div class="ctl">
+        <label>&kappa; &mdash; concentration<span><span></span><b id="kb-k-v"></b></span><input type="range" id="kb-k" min="4" max="300" step="1" value="60"></label>
+        <label>&beta; as a fraction of &kappa;/2<span><span></span><b id="kb-b-v"></b></span><input type="range" id="kb-b" min="0" max="0.94" step="0.01" value="0.8"></label>
+      </div>
+      <div class="readout" id="kb-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fKBa"></div><div class="ptitle">tangent plane, v = K&#7488;u (fixed scale)</div></div>
+    <div class="col"><div class="plot" id="fKBb"></div><div class="ptitle">on the sphere, u = &psi;(v) (14)</div></div>
+  </div>
+  <div class="key" style="margin-top:.3rem"><span><i style="border-color:var(--tn)"></i>contours of g (15), 10&ndash;90% of peak</span><span><i style="border-color:var(--dot)"></i>260 draws (Definition 1)</span><span><i class="d" style="border-color:var(--muted)"></i>&Vert;v&Vert; = 1 / edge of H<sub>&mu;</sub></span></div>
+  <aside class="notes"><p>For three components, we express the tangent variances using kappa and beta. Kappa mainly controls size; beta changes the relative spreads. Rotating the axes changes orientation. This gives useful flexibility, although TN and Kent remain different distributions.</p><p><b>Transition:</b> Examine one contour.</p><p><b>Figure:</b> Point to the two variance formulas and the plane and sphere panels. Use one small slider change if time allows.</p><p><b>Remember:</b> lambda2 = 1/(kappa - 2 beta), lambda3 = 1/(kappa + 2 beta). The variances parameterise the underlying normal before conditioning.</p></aside>
+</section>
+
+<!-- ============================== 4c. TN: THE LEVEL-SET SURFACE ============================== -->
+<section class="slide" data-title="TN: contour" data-time="20" data-init="initTNlev">
+  <div class="kicker k-tn">Tangent-normal &middot; contour sets</div>
+  <h2>Contour <span class="eq">eq. (15)</span></h2>
+  <div class="cols c-l">
+    <div class="col">
+      <p style="margin:0 0 .2rem">A contour of the TN density \(g\) (15) is a set where the density is constant:</p>
+      <div class="eqbox tn" style="font-size:1.2rem">\[ \bigl\{\bu\in H_{\bmu}:\ g(\bu)=c\bigr\},\qquad c=f\,g(\bmu),\quad 0&lt;f&lt;1 \]</div>
+      <p style="margin:.3rem 0 .1rem">It can take <b>different shapes</b>:</p>
+      <ul style="margin-top:0">
+        <li class="small">\(\beta=0\): a circle around \(\bmu\); \(\beta&gt;0\): an oval, stretched along \(\bgamma_2\)</li>
+        <li class="small">\(\kappa\) sets its size; the level \(f\) picks which contour (small \(f\): a wide one)</li>
+        <li class="small">it always stays on the upper hemisphere \(H_{\bmu}\)</li>
+      </ul>
+      <div class="ctl">
+        <label>&kappa;<span><span></span><b id="L-k-v"></b></span><input type="range" id="L-k" min="10" max="150" step="1" value="50"></label>
+        <label>&beta; (&lt; &kappa;/2)<span><span></span><b id="L-b-v"></b></span><input type="range" id="L-b" min="0" max="70" step="1" value="18"></label>
+        <label>level f<span><span></span><b id="L-f-v"></b></span><input type="range" id="L-f" min="0.02" max="0.9" step="0.01" value="0.1"></label>
+      </div>
+      <div class="btns"><button class="btn" id="L-sheet" aria-pressed="false">level-set surface</button></div>
+      <div class="readout" id="L-out"></div>
+    </div>
+    <div class="col"><div class="plot" id="fLev"></div>
+      <div class="key"><span><i style="border-color:#0d366b"></i>the contour g(u) = c</span><span><i class="d" style="border-color:var(--muted)"></i>edge of H<sub>&mu;</sub></span><span><i style="border-color:#8fbaf0"></i>level-set surface (optional)</span></div></div>
+  </div>
+  <aside class="notes"><p>A TN contour connects points with equal spherical density. Both the tangent normal contribution and the Jacobian affect it. A mapped normal ellipse is therefore not simply a TN density contour.</p><p><b>Transition:</b> Now connect the coordinate systems.</p><p><b>Figure:</b> Point to a contour; leave the optional level-set surface off for the short talk.</p><p><b>Remember:</b> Distinguish a mapped Gaussian ellipse from a level set of the spherical density.</p></aside>
+</section>
+
+<!-- ============================== 5. TN CONTOURS ============================== -->
+<section class="slide" data-title="TN: contour sets" data-time="25" data-init="initTNcont">
+  <div class="kicker k-tn">Tangent-normal &middot; contour sets</div>
+  <h2>One contour, three spaces</h2>
+  <div class="panel3">
+    <div><div class="plot" id="fC1"></div><div class="ptitle">(a) tangent plane, v = K&#7488;u</div></div>
+    <div><div class="plot" id="fC2"></div><div class="ptitle">(b) sphere, u = &psi;(v) (14)</div></div>
+    <div><div class="plot" id="fC3"></div><div class="ptitle">(c) triangle, z = u&#178;</div></div>
+  </div>
+  <div class="ctl">
+    <label>&theta; (&mu; from x&#8323;)<span><span></span><b id="c-th-v"></b></span><input type="range" id="c-th" min="2" max="88" step="0.1" value="63.4"></label>
+    <label>&phi; (around x&#8323;)<span><span></span><b id="c-ph-v"></b></span><input type="range" id="c-ph" min="2" max="88" step="0.1" value="37.8"></label>
+    <label>axis turn &psi;<span><span></span><b id="c-ps-v"></b></span><input type="range" id="c-ps" min="0" max="180" step="1" value="30"></label>
+    <label>&radic;&lambda;&#8322;<span><span></span><b id="c-s2-v"></b></span><input type="range" id="c-s2" min="0.02" max="0.6" step="0.005" value="0.14"></label>
+    <label>&radic;&lambda;&#8323; (&le; &radic;&lambda;&#8322;)<span><span></span><b id="c-s3-v"></b></span><input type="range" id="c-s3" min="0.02" max="0.6" step="0.005" value="0.06"></label>
+    <div class="btns" style="flex:0 0 auto"><button class="btn" id="c-def">default</button><button class="btn" id="c-edge">near the edge x&#8323; = 0</button></div>
+  </div>
+  <div class="readout" id="c-out"></div>
+  <p class="small" style="margin:0">The hemisphere contains the full non-negative orthant when every part of \(\bmu\) is positive. TN can still put mass outside that orthant. Mapped contours do not generally remain density contours in a new space.</p><aside class="notes"><p>These panels connect the tangent plane, sphere and triangle. Compositions occupy the non-negative orthant. With a strictly positive mean direction, this orthant lies inside the TN hemisphere. However, the larger hemisphere still allows mass outside the compositional region.</p><p><b>Transition:</b> Simple summaries make computation fast.</p><p><b>Figure:</b> Use the default view and point across the three panels; point to the outside-mass readout.</p><p><b>Remember:</b> Mapped density contours are not interchangeable between spaces. TN is not an orthant-truncated model, and outside mass need not be small in every setting.</p></aside>
+</section>
+
+<!-- ============================== 6. ESTIMATION ============================== -->
+<section class="slide" data-title="TN: additive sufficient statistics" data-time="55"><div class="kicker k-res">Tangent normal ? computation</div><h2>Additive statistics make split searches fast</h2>
+<div class="cols c2"><div class="col"><div class="eqbox tn">\[T(A)=\left(n_A,\ \mathbf s_1(A)=\sum_{t\in A}\bu^{(t)},\ S_2(A)=\sum_{t\in A}\bu^{(t)}\bu^{(t)\top}\right)\]</div>
+<p>For disjoint groups:</p><div class="eqbox tn">\[T(A\cup B)=T(A)+T(B).\]</div><p>These summaries determine the moment direction, Gaussian profile score and implemented Jacobian approximation.</p></div>
+<div class="col"><div class="box"><p><b>Sort a covariate once.</b></p><p>Move a candidate threshold through its ordered values.</p><p>Add each observation to the left summaries.</p><p>Subtract from the parent summaries to get the right summaries.</p></div><div class="eqbox">\[T(R)=T(\Omega)-T(L).\]</div></div></div>
+<p class="small">The exact Jacobian \(\sum\log(\hat\bmu^{\top}\bu^{(t)})\) is not determined by these summaries. They are not sufficient statistics for the complete TN likelihood with unknown direction.</p><aside class="notes"><p>The important point is that these statistics are additive. We keep the observation count, sum of square-root vectors, and sum of their outer products. For disjoint groups, we combine them simply by adding. We do not need to recalculate everything from the original observations. Sort a covariate and move its threshold through the ordered values. Update the left summaries, then subtract from the parent to obtain the right summaries. This is useful when evaluating many splits. These summaries support our approximate score; the exact Jacobian still needs the individual observations.</p><p><b>Transition:</b> How do we obtain the score?</p><p><b>Figure:</b> Point to T(A union B), then trace the four steps in the right box.</p><p><b>Remember:</b> Sums are in square-root coordinates u, not changing tangent coordinates. The score is nonlinear in T; scores themselves are not additive. Exact full-likelihood sufficiency is not claimed.</p></aside></section>
+
+<section class="slide" data-title="Why TN is easy to use" data-time="60">
+  <div class="kicker k-tn">Tangent-normal &middot; estimation and simulation &middot; Section 3.2.3</div>
+  <h2>Why TN is easy to use</h2>
+  <div class="cols c2"><div class="col">
+<p><b>1. Location by moments</b></p><div class="eqbox tn">\[\hat\bmu=\bs_1/\|\bs_1\|,\qquad \hat\bM=S_2/n_A.\]</div>
+<p><b>2. Profile out the Gaussian shape</b></p><div class="eqbox tn">\[\hat\ell_G=-\frac{n_A(k-1)}2(1+\log 2\pi)-\frac{n_A}2\log|S_T|,\quad S_T=\bB^\top\hat\bM\bB.\]</div>
+<p class="small">Axes and tangent variances follow from the eigenvectors and eigenvalues of \(S_T\), if needed.</p><div class="eqbox tn">\[|S_T|=|\hat\bM|\,\hat\bmu^\top\hat\bM^{-1}\hat\bmu.\]</div></div>
+<div class="col"><div class="box"><p style="margin:0"><b>Implemented score:</b> \(\hat\ell_G+\widetilde J\). One Cholesky factor computes the log-determinant; the shape parameters need not be fitted explicitly at each threshold.</p></div>
+<p class="small">With \(R=\|\bs_1\|\), \(\bar c=R/n_A\), the implementation uses the delta2 approximation:</p>
+<div class="eqbox tn">\[\widetilde J=n_A\log\bar c-\frac{\hat\bmu^\top S_2\hat\bmu-n_A\bar c^2}{2\bar c^2}.\]</div>
+<p class="small">No iterative parameter estimation in this split score. The moment direction is not its full MLE. Exact location MLE generally needs numerical optimisation.</p>
+<p class="small">The term \(-n_A\log\pi_\Lambda\) is omitted; the concentration bound controls this approximation. Full truncated TN shape MLE is not the Gaussian covariance estimate.</p></div></div><aside class="notes"><p>First, normalise the sum of square-root observations to estimate mean direction. This is a moment estimate, not maximum likelihood. Given this direction, we maximise the Gaussian part over shape analytically. We avoid numerical optimisation over the full parameter vector. One Cholesky factor gives the required log-determinant, without calculating every axis and variance. Then add the second-order Jacobian approximation from the same summaries. We omit the truncation term under sufficient concentration. This implemented score needs no iterative parameter estimation. Full TN maximum likelihood differs: location generally needs numerical optimisation, and retaining truncation changes shape estimation.</p><p><b>Transition:</b> This distinction matters for the comparison.</p><p><b>Figure:</b> Point in order to location, Gaussian profile, implemented score and approximation note. Do not read the full determinant formula aloud.</p><p><b>Remember:</b> Positive definiteness is required; code uses ridge safeguards. Profiling Gaussian shape conditional on a moment direction is not full truncated TN MLE. delta2 expands about the mean cosine.</p></aside>
+</section>
+
+<!-- ============================== 7. KENT VS TN ============================== -->
+<section class="slide" data-title="Kent vs TN" data-time="25">
+  <div class="kicker k-res">Side by side</div>
+  <h2><span class="c-kent">Kent</span> versus <span class="c-tn">tangent-normal</span></h2>
+  <table class="cmp">
+    <thead><tr><th></th><th class="c-kent">Kent (11)</th><th class="c-tn">TN (15)</th></tr></thead>
+    <tbody>
+      <tr><td>parameters</td><td colspan="2" style="text-align:center">the same: \(\bmu\), axes \(\bK\), and \(\lambda_m=(\kappa-2\beta_m)^{-1}\) (17); same normal limit as \(\kappa\to\infty\)</td></tr>
+      <tr><td>normalising constant</td><td>\(c(\kappa,\boldsymbol\beta)\): a \((k-1)\)-dimensional integral, no closed form</td><td>\(\pi_\Lambda\): depends on \(\Lambda\) only, close to 1 under sufficient concentration (19)</td></tr>
+      <tr><td>estimation</td><td>no closed-form MLE: numerical, or large-concentration moment approximations</td><td>moment direction; Gaussian shape profiled analytically; approximate Jacobian; truncation term omitted</td></tr>
+      <tr><td>cost per candidate split</td><td>numerical work for every candidate child</td><td>additive summaries and one Cholesky factor for the approximate score</td></tr>
+      <tr><td>omitted constant (App. B)</td><td>&gt; \(10^{-3}\) nats up to \(\kappa=330\) (\(k=3\), \(d_2=0.2\))</td><td>&gt; \(10^{-3}\) nats only when \(\kappa(1-2d_2)\le15\)</td></tr>
+      <tr><td>support &amp; zeros</td><td>whole sphere \(S^{k-1}\); zeros admissible</td><td>hemisphere \(H_{\bmu}\supset\mathcal O\); zeros admissible, potential mass outside \(\mathcal O\)</td></tr>
+    </tbody>
+  </table>
+  <aside class="notes"><p>Both models represent oriented, elongated shapes. Kent lives on the whole sphere; TN on a hemisphere. Neither is automatically restricted to the compositional orthant. Here, the practical difference is that our approximate TN score avoids repeated iterative parameter fitting.</p><p><b>Transition:</b> One more model enters the comparison.</p><p><b>Figure:</b> Move across the estimation, cost and support rows.</p><p><b>Remember:</b> A small truncation correction is concentration-dependent. Do not claim equal flexibility or predictive superiority for every parameter regime.</p></aside>
+</section>
+
+<!-- ============================== 8. RESULTS (chart) ============================== -->
+<section class="slide" data-title="Multivariate logistic normal distribution" data-time="23"><div class="kicker k-res">Log-ratio approach</div><h2>Multivariate logistic normal (MLN)</h2><div class="cols c2"><div class="col"><p>Additive log-ratio coordinates:</p><div class="eqbox">\[Y_i=\log\!\left(\frac{X_i}{X_K}\right),\qquad i=1,\ldots,K-1.\]</div><div class="eqbox">\[\boldsymbol Y\sim N_{K-1}(\boldsymbol\mu,\boldsymbol\Sigma).\]</div><p>Flexible covariance in real space.</p></div><div class="col"><p>Inverse transformation:</p><div class="eqbox">\[X_i=\frac{\exp(Y_i)}{1+\sum_{j=1}^{K-1}\exp(Y_j)},\quad i&lt;K,\]</div><div class="eqbox">\[X_K=\frac1{1+\sum_{j=1}^{K-1}\exp(Y_j)}.\]</div><div class="box"><p style="margin:0">Standard log-ratios require <b>strictly positive</b> components.</p></div></div></div><aside class="notes"><p>Another common approach is the multivariate logistic normal distribution. Transform the composition using log-ratios, then assume a multivariate normal distribution. The inverse formulas return a composition. Standard log-ratios require strictly positive components.</p><p><b>Transition:</b> We include MLN in the comparison.</p><p><b>Figure:</b> Point to the forward transformation, normal model and inverse formulas.</p><p><b>Remember:</b> X and Y here denote compositions and ALR coordinates, not the earlier predictor matrix. For a nonsingular sample covariance, Gaussian ML estimates are closed form.</p></aside></section>
+
+<section class="slide" data-title="Results: test error" data-time="35" data-init="initRes">
+  <div class="kicker k-res">Simulation study &middot; matched local experiment</div>
+  <h2>Dir-RF, MLN-RF and TN-RF: test error</h2>
+  <p class="small" style="margin:0 0 .2rem">Designs: <b>D</b> Dirichlet data &middot; <b>L</b> logistic-normal, correlation &asymp; &minus;0.9 &middot; <b>K</b> exact Kent, one part near zero (30% of draws have a part below 0.01). 40 paired replications; 1000 trees.</p>
+  <div class="btns"><button class="btn" id="r-ad" aria-pressed="true">Aitchison distance (42)</button><button class="btn" id="r-rm" aria-pressed="false">RMSE-averaged &times;100 (43)</button></div>
+  <div class="plot" id="fRes"></div>
+  <div class="src">Matched local results: tab_sample_size_m10.tex; m = 10, depth 10, mtry = 3; shared 80/20 splits, no resampling, 1000 trees. Fixed settings, not separately tuned. Lower is better. This table preserves the original deck values; manuscript drafts differ.</div>
+  <aside class="notes"><p>These matched local results use the same data and eighty-twenty train-test splits, forty paired replications, and common forest settings. Lower error is better. TN improves on Dirichlet in most displayed cells. MLN is competitive and often best in the logistic-normal design. Performance depends on data structure and metric.</p><p><b>Transition:</b> Here are the TN-Dirichlet differences.</p><p><b>Figure:</b> Show Aitchison first, then click RMSE. Identify the grey MLN line using the legend.</p><p><b>Remember:</b> These are tab_sample_size_m10.tex results, preserving original deck values. They differ from some manuscript drafts; do not call them arXiv Table 1 without checking. No new significance claim from means alone.</p></aside>
+</section>
+
+<!-- ============================== 9. RESULTS (relative) ============================== -->
+<section class="slide" data-title="Results: relative difference" data-time="12" data-init="initRel">
+  <div class="kicker k-res">Simulation study &middot; the matched local experiment</div>
+  <h2>TN-RF relative to Dir-RF</h2>
+  <div class="plot" id="fRel"></div>
+  <div class="src">Relative difference (TN-RF &minus; Dir-RF) / Dir-RF, computed from the means in the matched local experiment. Negative: TN-RF lower error. Pairwise comparison only; MLN-RF is shown on the preceding slide. These mean differences alone do not establish statistical significance.</div>
+  <aside class="notes"><p>Negative bars mean lower TN error than Dirichlet. Many differences are small, so practical size also matters.</p><p><b>Transition:</b> What about zeros?</p><p><b>Figure:</b> Point to zero and the positive RMSE exception.</p><p><b>Remember:</b> The denominator is the Dirichlet error. This plot excludes MLN and does not display uncertainty.</p></aside>
+</section>
+
+<!-- ============================== 10. ZEROS: ARGUMENT ============================== -->
+<section class="slide" data-title="Zeros: why the square root" data-time="18" data-init="initZero">
+  <div class="kicker k-res">Zero components</div>
+  <h2>Why zeros favour the square root</h2>
+  <div class="cols c-l">
+    <div class="col">
+      <p><span class="c-dir"><b>Dirichlet</b></span>: support is the open simplex (2); a zero part lies outside it, so zeros must be replaced first.</p>
+      <p><span class="c-muted"><b>Log-ratios</b></span>: undefined at zero, and highly variable near zero.</p>
+      <p><span class="c-tn"><b>Square root</b></span>: \(\sqrt0=0\) is an ordinary point on the edge of \(\mathcal O\). If \(\bmu\) has positive parts, \(\bmu^{\top}\bu&gt;0\) on \(\mathcal O\), so <b>every composition, zeros included, has positive TN density</b>; the square root stays bounded.</p>
+      <p class="small">Design K (matched local experiment): a part near zero in 30% of draws &mdash; TN-RF had the lowest Aitchison distance at every n.</p>
+    </div>
+    <div class="col"><div class="plot" id="fZero"></div>
+      <div class="ptitle">Sphere density g(&radic;z), displayed on the triangle; not a simplex density or an atom at zero</div></div>
+  </div>
+  <aside class="notes"><p>Square roots are defined at zero, while standard log-ratios are not. With a positive mean direction, zero-containing compositions remain admissible under the spherical TN model. This does not mean a continuous model assigns positive probability to an exact structural zero.</p><p><b>Transition:</b> An earlier experiment explored exact zeros.</p><p><b>Figure:</b> Point to the boundary of the triangle.</p><p><b>Remember:</b> Positive spherical density at an edge does not create a boundary probability atom. This figure displays spherical density over triangle coordinates.</p></aside>
+</section>
+
+<!-- ============================== 11. ZEROS: OLD TABLE ============================== -->
+<section class="slide" data-title="Zeros: earlier experiment" data-time="12">
+  <div class="kicker k-res">Exact zeros &middot; earlier experiment (manuscript draft of 10 Oct 2026, Table &ldquo;Exact zeros&rdquo;)</div>
+  <h2>With exact zeros</h2>
+  <table class="cmp num">
+    <thead><tr><th>Zero prevalence</th><th style="text-align:right">0</th><th style="text-align:right">0.05</th><th style="text-align:right">0.15</th><th style="text-align:right">0.30</th><th style="text-align:right">0.50</th></tr></thead>
+    <tbody>
+      <tr><td><span class="c-dir">&#9679;</span> Dirichlet (zeros replaced)</td><td><b>0.0914</b></td><td><b>0.1072</b></td><td>0.1421</td><td>0.1916</td><td>0.2375</td></tr>
+      <tr><td><span class="c-muted">&#9679;</span> MLN (zeros replaced)</td><td>0.1024</td><td>0.1174</td><td>0.1453</td><td>0.1836</td><td>0.2247</td></tr>
+      <tr><td><span class="c-tn">&#9679;</span> square-root node (zeros replaced)</td><td>0.1017</td><td>0.1140</td><td>0.1397</td><td>0.1771</td><td>0.2189</td></tr>
+      <tr class="hl"><td><span class="c-tn">&#9679;</span> square-root node (native zeros)</td><td>0.1017</td><td>0.1139</td><td>0.1400</td><td>0.1774</td><td>0.2195</td></tr>
+      <tr><td><span class="c-muted">&#9679;</span> drf (native)</td><td>0.0948</td><td>0.1073</td><td><b>0.1335</b></td><td><b>0.1724</b></td><td><b>0.2157</b></td></tr>
+      <tr><td class="c-muted">mass displaced by replacement</td><td>0</td><td>0.0001</td><td>0.0004</td><td>0.0009</td><td>0.0015</td></tr>
+    </tbody>
+  </table>
+  <ul style="margin-top:.6rem">
+    <li>No zeros: Dirichlet best. As zeros accumulate the ordering reverses: at 0.5 the square-root node is the best parametric model, Dirichlet the worst.</li>
+    <li>Native and replaced zeros give very similar errors: this comparison alone does not identify the mechanism behind the gain. drf is best from 0.15.</li>
+  </ul>
+  <div class="src">Energy score against the raw held-out observation (lower is better), 20 replications at n = 500. The square-root node there was the Gaussian tangent surrogate: the TN Gaussian part without the Jacobian term, a precursor of TN-RF. Not in the current manuscript.</div>
+  <aside class="notes"><p>This earlier study used a TN precursor. It is separate from the main comparison.</p><p><b>Transition:</b> Here are the main messages.</p><p><b>Figure:</b> Indicate the earlier-experiment label; do not read the table values.</p><p><b>Remember:</b> Energy score, 20 replications, n = 500; no Jacobian in the precursor. Similar errors after replacement do not establish a causal mechanism.</p></aside>
+</section>
+
+<!-- ============================== 12. SUMMARY ============================== -->
+<section class="slide summary" data-title="Summary" data-time="22">
+  <div class="kicker k-res">Summary</div>
+  <h2>Four messages</h2>
+  <ol>
+<li><b class="c-dir">Dirichlet</b>: a useful simplex model with covariance tied to its mean and one concentration parameter.</li>
+<li>The <b>square root</b> maps compositions, including zeros, to the non-negative spherical orthant.</li>
+<li><b class="c-tn">TN</b>: flexible tangent covariance and a fast approximate split score, using a moment direction and additive summaries.</li>
+<li><b>Prediction depends on the data structure.</b> MLN and TN offer different coordinates; no method wins universally.</li>
+</ol>
+  <aside class="notes"><p>The Dirichlet is useful, but its covariance is restricted. Square roots provide spherical coordinates that admit zeros. TN gives flexible tangent covariance and an efficient approximate split score. Finally, the simulations favour different models under different data structures. There is no universal winner.</p><p><b>Transition:</b> The work is available as a preprint.</p><p><b>Figure:</b> Point briefly to the four messages.</p><p><b>Remember:</b> The main contribution is the TN construction and fast split criterion, with its approximations stated explicitly.</p></aside>
+</section>
+
+<section class="slide title-slide" data-title="Thank you" data-time="8">
+  <h1>Thank you</h1>
+  <p class="sub" style="font-size:1.25rem"><b>Compositional random forest</b><br>Khaled Masoumifard, Stephan van der Westhuizen and Sugnet Gardner-Lubbe<br><a href="https://arxiv.org/abs/2611.14275">arXiv:2611.14275</a> &middot; preprint, 10 November 2026<br>Not yet published in a peer-reviewed journal.</p><p class="small">Interactive pages: xaleed.github.io/visualisations</p>
+  <div class="dots"><i style="background:var(--dir)"></i><i style="background:var(--kent)"></i><i style="background:var(--tn)"></i></div>
+  <aside class="notes"><p>The research is an arXiv preprint, not yet published in a peer-reviewed journal. Thank you.</p><p><b>Transition:</b> I welcome your questions.</p><p><b>Figure:</b> Leave the paper citation visible.</p><p><b>Remember:</b> Compositional random forest; Masoumifard, van der Westhuizen and Gardner-Lubbe; arXiv:2611.14275, submitted 10 November 2026.</p></aside>
+</section>
+
+<div id="ovl"></div>
+<div id="progress"></div>
+<div id="brand">Dirichlet, Kent and TN leaves</div>
+<div id="num"></div>
+</div>
+<div id="help">&larr; &rarr; navigate &middot; F full screen &middot; S speaker notes &middot; N notes here &middot; P print / PDF</div>
+
+<script id="tn-math">
+window.TN = (function(){
+"use strict";
+const TAU = 2*Math.PI;
+const DEG = Math.PI/180;
+
+/* ---------------------------- 3-vectors ---------------------------- */
+const dot   = (a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2];
+const norm  = a=>Math.sqrt(dot(a,a));
+const scale = (a,s)=>[a[0]*s,a[1]*s,a[2]*s];
+const lin2  = (s,a,t,b)=>[s*a[0]+t*b[0], s*a[1]+t*b[1], s*a[2]+t*b[2]];
+const lin3  = (r,a,s,b,t,c)=>[r*a[0]+s*b[0]+t*c[0], r*a[1]+s*b[1]+t*c[1], r*a[2]+s*b[2]+t*c[2]];
+const cross = (a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+const unit  = a=>{const n=norm(a); return n>0?scale(a,1/n):a.slice();};
+
+/* ------------------- Section 2.1: the square-root map -------------------
+   u = sqrt(z) part by part maps the simplex S^k (eq. 2, c = 1) one-to-one onto
+   the positive orthant O = {u in S^{k-1}: u_j >= 0}. Exact zeros are
+   admissible: sqrt(0) = 0 lies on an edge of O. The closure (eq. 1) is
+   re-applied first so that rounding cannot push u off the sphere.        */
+function sqrtMap(z){
+  const a=Math.max(z[0],0), b=Math.max(z[1],0), c=Math.max(z[2],0), s=a+b+c;
+  return [Math.sqrt(a/s), Math.sqrt(b/s), Math.sqrt(c/s)];
+}
+/* Membership of O. A tolerance of 1e-12 absorbs rounding on the faces. */
+const TOL_O = 1e-12;
+const inO = u => !!u && u[0]>=-TOL_O && u[1]>=-TOL_O && u[2]>=-TOL_O;
+/* Inverse on O: z = u^2. A point of the sphere with a negative coordinate is
+   not in O and is the square root of no composition: return null.        */
+function squareMap(u){
+  if(!inO(u)) return null;
+  const z=[u[0]*u[0], u[1]*u[1], u[2]*u[2]], s=z[0]+z[1]+z[2];
+  return [z[0]/s, z[1]/s, z[2]/s];
+}
+
+/* ---------------------------- parameters ----------------------------
+   Slider parametrisation (a convenience of this page, not of the paper):
+   mu from two angles, theta from the x3-axis and phi around it.          */
+function muFromAngles(thDeg, phDeg){
+  const t=thDeg*DEG, p=phDeg*DEG;
+  return [Math.sin(t)*Math.cos(p), Math.sin(t)*Math.sin(p), Math.cos(t)];
+}
+/* Reference frame in T_mu: the frame of design K (Appendix A, above eq. A.4),
+   s(mu) = (I - mu mu^T) e3 / ||(I - mu mu^T) e3||,  l(mu) = s(mu) x mu.
+   s points from mu towards the x3 corner; l keeps u3 fixed to first order,
+   i.e. it runs parallel to the x1-x2 edge of the triangle.               */
+function frameLS(mu){
+  let s = [-mu[2]*mu[0], -mu[2]*mu[1], 1-mu[2]*mu[2]];
+  if(norm(s) < 1e-9) s = [1-mu[0]*mu[0], -mu[0]*mu[1], -mu[0]*mu[2]];  // mu = e3: use e1
+  s = unit(s);
+  return {l: cross(s, mu), s};
+}
+/* The axes K = (gamma2, gamma3) of Definition 1: the frame (l, s) turned by
+   psi inside T_mu. K^T K = I_2 and K^T mu = 0, as Lemma 1 requires.       */
+function axesK(mu, psiDeg){
+  const f=frameLS(mu), c=Math.cos(psiDeg*DEG), s=Math.sin(psiDeg*DEG);
+  return [lin2(c,f.l, s,f.s), lin2(-s,f.l, c,f.s)];
+}
+
+/* pi_Lambda = P(||V0|| < 1), V0 ~ N_2(0, Lambda) (Lemma 2).
+   With V0 = (sqrt(l2) X, sqrt(l3) Y), (X, Y) = R (cos b, sin b), R^2 ~ chi^2_2
+   independent of b ~ U(0, 2pi), and ||V0||^2 = R^2 (l2 cos^2 b + l3 sin^2 b):
+     1 - pi = (2 pi)^{-1} int_0^{2pi} exp{-1/(2 l2 cos^2 b + 2 l3 sin^2 b)} db.
+   Exact; the integrand is smooth and periodic, so the midpoint rule converges
+   geometrically. 1 - pi is computed directly so that tiny values keep their
+   relative accuracy (cf. the bound 19). The manuscript computes pi_Lambda by
+   Ruben's (1962) series; the two agree (checked against CompQuadForm::ruben). */
+function piLambda(l2, l3){
+  const N=2048; let acc=0;
+  for(let i=0;i<N;i++){
+    const b=TAU*(i+0.5)/N, c=Math.cos(b), s=Math.sin(b);
+    acc += Math.exp(-1/(2*(l2*c*c + l3*s*s)));
+  }
+  const out = acc/N;
+  return {pi:1-out, out, logPi:Math.log1p(-out)};
+}
+
+/* A TN(mu, K, Lambda) parameter set (Definition 1) with what the density needs. */
+function makeTN(mu, psiDeg, l2, l3){
+  const K=axesK(mu, psiDeg), pl=piLambda(l2,l3);
+  return {mu, K, psi:psiDeg, l2, l3, pi:pl.pi, piOut:pl.out, logPi:pl.logPi,
+          /* log g(mu) = log phi_Lambda(0) - log pi_Lambda: the peak of eq. (15) */
+          logPeak: -Math.log(TAU) - 0.5*Math.log(l2*l3) - pl.logPi};
+}
+
+/* ------------------------- Lemma 1 / eq. (14) ------------------------- */
+/* inverse of psi: the tangent coordinates v = K^T u */
+const tangentCoords = (u, K)=>[dot(K[0],u), dot(K[1],u)];
+/* eq. (14): psi(v) = (1 - ||v||^2)^{1/2} mu + K v, a bijection from the open
+   unit ball B^{k-1} onto the open hemisphere H_mu. Outside the ball: null. */
+function psiMap(v, mu, K){
+  const r2=v[0]*v[0]+v[1]*v[1];
+  if(!(r2 < 1)) return null;
+  return lin3(Math.sqrt(1-r2), mu, v[0], K[0], v[1], K[1]);
+}
+
+/* --------------------- Lemma 2 / eqs. (15) and (16) --------------------- */
+/* log phi_Lambda(v), the N_2(0, Lambda) log-density */
+function logPhi(v, l2, l3){
+  return -Math.log(TAU) - 0.5*Math.log(l2*l3) - 0.5*(v[0]*v[0]/l2 + v[1]*v[1]/l3);
+}
+/* eq. (15): g(u) = phi_Lambda(K^T u) mu^T u / pi_Lambda for u in H_mu, and 0
+   outside H_mu. The factor mu^T u is the Jacobian (16): dv = (mu^T u) sigma(du). */
+function logDensity(u, P){
+  const c=dot(P.mu,u);
+  if(!(c > 0)) return -Infinity;                 // outside the hemisphere H_mu
+  return logPhi(tangentCoords(u,P.K), P.l2, P.l3) + Math.log(c) - P.logPi;
+}
+const density = (u,P)=>Math.exp(logDensity(u,P));
+/* Density of the composition Z = U^2 with respect to dz1 dz2 on the triangle.
+   NOT IN THE MANUSCRIPT: it adds the Jacobian of the square-root map,
+   sigma(du) = 2^{-(k-1)} prod_j z_j^{-1/2} dz_1...dz_{k-1} (k = 3: 1/(4 sqrt(z1 z2 z3))),
+   and integrates over the triangle to P(U in O).                         */
+function logDensityZ(z, P){
+  return logDensity(sqrtMap(z),P) - Math.log(4) - 0.5*(Math.log(z[0])+Math.log(z[1])+Math.log(z[2]));
+}
+
+/* ------------------------------ contours ------------------------------
+   Level f of the peak: by (14)-(16), at v = r (cos a, sin a),
+     g{psi(v)} / g(mu) = exp(-r^2 q(a)/2) (1 - r^2)^{1/2},  q(a) = cos^2 a/l2 + sin^2 a/l3,
+   which falls strictly from 1 (r = 0) to 0 (r -> 1): one radius per direction.
+   Solve F(t) = t q/2 - ln(1 - t)/2 + ln f = 0 for t = r^2 by Newton's method,
+   kept inside a bisection bracket (F is increasing and convex on [0, 1)). */
+function levelRadius(a, f, l2, l3){
+  const c=Math.cos(a), s=Math.sin(a), q=c*c/l2+s*s/l3, L=Math.log(f);
+  let lo=0, hi=1, t=Math.min(-2*L/q, 0.999999);
+  for(let it=0; it<100; it++){
+    const F=0.5*t*q - 0.5*Math.log1p(-t) + L;
+    if(F>0) hi=t; else lo=t;
+    let tn = t - F/(0.5*q + 0.5/(1-t));
+    if(!(tn>lo && tn<hi)) tn=0.5*(lo+hi);
+    if(Math.abs(tn-t) <= 1e-15) { t=tn; break; }
+    t=tn;
+  }
+  return Math.sqrt(t);
+}
+/* the Gaussian part alone: the ellipse v^T Lambda^{-1} v = -2 ln f */
+function gaussRadius(a, f, l2, l3){
+  const c=Math.cos(a), s=Math.sin(a);
+  return Math.sqrt(-2*Math.log(f)/(c*c/l2+s*s/l3));
+}
+/* n levels f = (2i - 1)/(2n): 0.1, 0.3, ..., 0.9 for n = 5, as on the Kent pages */
+function levelFractions(n){ const out=[]; for(let i=1;i<=n;i++) out.push((2*i-1)/(2*n)); return out; }
+
+/* A closed curve on the sphere, u(a) for a in [0, 2 pi], sampled at M + 1
+   points and marked inside / outside O. Where it crosses an edge of O the
+   crossing is located by bisection in a and inserted, on the face u_j = 0,
+   so that its image on the triangle ends exactly on the edge.            */
+function traceCurve(uOf, M){
+  M = M || 360;
+  const raw=[];
+  for(let i=0;i<=M;i++){ const a=TAU*i/M, u=uOf(a); raw.push({a, u, inO:inO(u)}); }
+  const pts=[];
+  for(let i=0;i<raw.length;i++){
+    const p=raw[i];
+    if(i>0){
+      const q=raw[i-1];
+      if(q.u && p.u && q.inO!==p.inO){
+        let lo=q.a, hi=p.a; const loIn=q.inO;
+        for(let k=0;k<44;k++){ const m=0.5*(lo+hi), u=uOf(m); if(!u) break; if(inO(u)===loIn) lo=m; else hi=m; }
+        const ac=loIn?lo:hi, u=uOf(ac);
+        if(u) pts.push({a:ac, u:[Math.max(u[0],0),Math.max(u[1],0),Math.max(u[2],0)], inO:true, cross:true});
+      }
+    }
+    pts.push(p);
+  }
+  return pts;
+}
+/* contour of g at level f, as a curve on the sphere (via eq. 14) */
+function tnLevelCurve(P, f, M){
+  return traceCurve(a=>{ const r=levelRadius(a,f,P.l2,P.l3);
+    return psiMap([r*Math.cos(a), r*Math.sin(a)], P.mu, P.K); }, M);
+}
+
+/* ----------------------- the orthant O, seen from mu ----------------------- */
+/* The edges of O: the quarter circles u_j = 0 (images of the triangle's edges),
+   e1 -> e2 -> e3 -> e1, as one closed list of points.                     */
+function orthantLoop(n){
+  const E=[[0,1],[1,2],[2,0]], pts=[];
+  E.forEach(([i,j])=>{ for(let k=0;k<n;k++){ const t=Math.PI/2*k/n, u=[0,0,0]; u[i]=Math.cos(t); u[j]=Math.sin(t); pts.push(u);} });
+  pts.push([1,0,0]);
+  return pts;
+}
+/* Along the great-circle arc from mu in the tangent direction e = K(cos a, sin a),
+   u(theta) = cos(theta) mu + sin(theta) e, part j changes sign where
+   tan(theta) = mu_j/(-e_j) (only if e_j < 0). O is convex on the sphere, so the
+   arc leaves O once, at theta* = min_j of these. In tangent coordinates the
+   exit is at radius sin(theta*) <= 1.                                     */
+function exitAngle(a, mu, K){
+  const e=lin2(Math.cos(a),K[0],Math.sin(a),K[1]);
+  let th=Math.PI/2;
+  for(let j=0;j<3;j++) if(e[j]<0){ const tj=Math.atan2(mu[j],-e[j]); if(tj<th) th=tj; }
+  return th;
+}
+/* P(U not in O) for U ~ TN: with the parametrisation of piLambda,
+     P(V0 in ball, psi(V0) not in O) = (2 pi)^{-1} int [exp(-R*^2/(2 qt)) - exp(-1/(2 qt))] db,
+   R*(a) = sin(theta*(a)) for the direction a of V0, qt = l2 cos^2 b + l3 sin^2 b;
+   dividing by pi_Lambda conditions on the ball (Definition 1).           */
+function probOutsideO(P, N){
+  N=N||4096; const s2=Math.sqrt(P.l2), s3=Math.sqrt(P.l3); let acc=0;
+  for(let i=0;i<N;i++){
+    const b=TAU*(i+0.5)/N, cb=Math.cos(b), sb=Math.sin(b);
+    const qt=P.l2*cb*cb + P.l3*sb*sb;
+    const R=Math.sin(exitAngle(Math.atan2(s3*sb, s2*cb), P.mu, P.K));
+    acc += Math.exp(-R*R/(2*qt)) - Math.exp(-1/(2*qt));
+  }
+  return Math.max(0, acc/N)/P.pi;
+}
+
+/* ------------------------- simulation (Definition 1) -------------------------
+   Draw V0 ~ N_2(0, Lambda), reject ||V0|| >= 1 (so V = V0 | ||V0|| < 1), map
+   U = psi(V) by eq. (14). A seeded generator makes every figure reproducible. */
+function rng32(seed){ let a=seed|0; return function(){ a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+function normalPair(rnd){   // Marsaglia's polar method
+  let x,y,s; do{ x=2*rnd()-1; y=2*rnd()-1; s=x*x+y*y; }while(s>=1 || s===0);
+  const m=Math.sqrt(-2*Math.log(s)/s); return [x*m, y*m];
+}
+function simulate(P, n, seed){
+  const rnd=rng32(seed), s2=Math.sqrt(P.l2), s3=Math.sqrt(P.l3), out=[];
+  let tries=0;
+  while(out.length<n && tries<1000*n+1000){
+    tries++;
+    const g=normalPair(rnd), v=[s2*g[0], s3*g[1]];
+    if(v[0]*v[0]+v[1]*v[1] >= 1) continue;                 // V = V0 | ||V0|| < 1
+    const u=psiMap(v, P.mu, P.K);                           // eq. (14)
+    out.push({u, v, inO:inO(u)});
+  }
+  return out;
+}
+
+/* ------------------------- estimation (Section 3.2.3) ------------------------- */
+/* eq. (26): Householder reflector H = I - 2 h h^T/(h^T h), h = e1 - mu, with
+   H e1 = mu; its last two columns are the orthonormal basis B of T_mu.   */
+function householderB(mu){
+  const h=[1-mu[0], -mu[1], -mu[2]], hh=dot(h,h);
+  if(hh < 1e-24) return [[0,1,0],[0,0,1]];                  // mu = e1: H = I
+  const col=j=>{ const e=[0,0,0]; e[j]=1; const c=2*h[j]/hh; return [e[0]-c*h[0], e[1]-c*h[1], e[2]-c*h[2]]; };
+  return [col(1), col(2)];
+}
+/* eigen-decomposition of a symmetric 2x2 matrix, eigenvalues descending */
+function eig2(S){
+  const a=S[0][0], b=S[0][1], c=S[1][1], m=(a+c)/2, d=Math.hypot((a-c)/2, b);
+  const t=0.5*Math.atan2(2*b, a-c);
+  return {l:[m+d, m-d], W:[[Math.cos(t),Math.sin(t)], [-Math.sin(t),Math.cos(t)]]};
+}
+function estimate(U){
+  const n=U.length; if(n<3) return null;
+  const s1=[0,0,0], S2=[[0,0,0],[0,0,0],[0,0,0]];
+  for(const u of U) for(let j=0;j<3;j++){ s1[j]+=u[j]; for(let l=0;l<3;l++) S2[j][l]+=u[j]*u[l]; }   // eq. (21)
+  const R=norm(s1); if(!(R>0)) return null;
+  const mu=scale(s1,1/R);                                    // eq. (22)
+  const M=S2.map(r=>r.map(x=>x/n));                          // M_hat = S2/n
+  const B=householderB(mu);                                  // eq. (26)
+  const q=(x,y)=>{ let s=0; for(let j=0;j<3;j++) for(let l=0;l<3;l++) s+=x[j]*M[j][l]*y[l]; return s; };
+  const ST=[[q(B[0],B[0]), q(B[0],B[1])], [q(B[1],B[0]), q(B[1],B[1])]];   // S_T = B^T M B
+  const E=eig2(ST);                                          // eq. (33)
+  const K=[lin2(E.W[0][0],B[0],E.W[0][1],B[1]), lin2(E.W[1][0],B[0],E.W[1][1],B[1])];   // K_hat = B W
+  const l2=E.l[0], l3=E.l[1];
+  const kappa=0.5*(1/l2+1/l3), beta=0.5*(kappa-1/l2);        // eq. (34), k = 3
+  const f=frameLS(mu);                                       // angle of gamma2_hat in (l, s), mod 180
+  let psi=Math.atan2(dot(K[0],f.s), dot(K[0],f.l))/DEG; psi=((psi%180)+180)%180;
+  let J=0; for(const u of U) J+=Math.log(dot(mu,u));         // Jacobian term J(A), eq. (30)
+  const ellTN = -n*(1+Math.log(TAU)) - 0.5*n*(Math.log(l2)+Math.log(l3));   // eq. (23) via (25)/(31)
+  return {n, mu, K, l2, l3, kappa, beta, psi, ST, J, ellTN};
+}
+
+/* ------------------------- Kent, eqs. (11)-(13) and (17) ------------------------- */
+/* matched parameters (17): lambda_m = (kappa - 2 beta_m)^{-1}, k = 3: beta_2 = beta, beta_3 = -beta (12) */
+const kentToTN = (kappa, beta)=>({l2:1/(kappa-2*beta), l3:1/(kappa+2*beta)});
+const tnToKent = (l2, l3)=>{ const kappa=0.5*(1/l2+1/l3); return {kappa, beta:0.5*(kappa-1/l2)}; };
+/* Kent level set, eq. (11) for k = 3 in the frame (mu, gamma2, gamma3): at angle
+   theta from mu in direction a, log f - log f(mu) = kappa(x - 1) + beta(1 - x^2) cos 2a,
+   x = cos theta, which increases with x when 2 beta < kappa (13): one root.     */
+function kentLevelCos(a, f, kappa, beta){
+  const c2=Math.cos(2*a), L=Math.log(f);
+  const G=x=>kappa*(x-1)+beta*(1-x*x)*c2-L;
+  if(G(-1) >= 0) return null;                                 // level below the minimum
+  let lo=-1, hi=1, x=Math.max(-0.999, 1+L/kappa);
+  for(let it=0; it<100; it++){
+    const g=G(x); if(g>0) hi=x; else lo=x;
+    let xn=x - g/(kappa-2*beta*c2*x);
+    if(!(xn>lo && xn<hi)) xn=0.5*(lo+hi);
+    if(Math.abs(xn-x) <= 1e-15) { x=xn; break; }
+    x=xn;
+  }
+  return x;
+}
+function kentLevelCurve(Kp, f, M){
+  return traceCurve(a=>{ const x=kentLevelCos(a,f,Kp.kappa,Kp.beta); if(x===null) return null;
+    const s=Math.sqrt(Math.max(0,1-x*x));
+    return lin3(x,Kp.mu, s*Math.cos(a),Kp.K[0], s*Math.sin(a),Kp.K[1]); }, M);
+}
+/* exp(-x) I0(x), x >= 0 (Abramowitz and Stegun 9.8.1-9.8.2, relative error < 2e-7) */
+function i0e(x){
+  if(x<3.75){ const y=(x/3.75)*(x/3.75);
+    return Math.exp(-x)*(1+y*(3.5156229+y*(3.0899424+y*(1.2067492+y*(0.2659732+y*(0.0360768+y*0.0045813)))))); }
+  const y=3.75/x;
+  return (0.39894228+y*(0.01328592+y*(0.00225319+y*(-0.00157565+y*(0.00916281+y*(-0.02057706+y*(0.02635537+y*(-0.01647633+y*0.00392377))))))))/Math.sqrt(x);
+}
+/* 16-point Gauss-Legendre rule on [-1, 1] (nodes by Newton's method on P_16) */
+const GL=(function(n){
+  const x=new Array(n), w=new Array(n);
+  for(let i=0;i<Math.ceil(n/2);i++){
+    let z=Math.cos(Math.PI*(i+0.75)/(n+0.5)), z1, pp;
+    do{ let p1=1, p2=0; for(let j=1;j<=n;j++){ const p3=p2; p2=p1; p1=((2*j-1)*z*p2-(j-1)*p3)/j; }
+        pp=n*(z*p1-p2)/(z*z-1); z1=z; z=z1-p1/pp; }while(Math.abs(z-z1)>1e-15);
+    x[i]=-z; x[n-1-i]=z; w[i]=w[n-1-i]=2/((1-z*z)*pp*pp);
+  }
+  return {x,w};
+})(16);
+function glInt(f,a,b){ const c=(a+b)/2, h=(b-a)/2; let s=0; for(let i=0;i<16;i++) s+=GL.w[i]*f(c+h*GL.x[i]); return s*h; }
+/* int_lo^hi f for an f that is largest at hi and decays to the left at least like
+   exp(-rate (hi - x)): Gauss-Legendre on panels that double in width away from hi.
+   Bounded work (at most ~45 panels), whatever the parameters.             */
+function intDecayLeft(f, lo, hi, rate){
+  let total=0, w=Math.min(hi-lo, 0.25/Math.max(rate,1e-9)), right=hi;
+  while(right>lo){
+    const left=Math.max(lo,right-w), part=glInt(f,left,right);
+    total+=part; right=left; w*=2;
+    if(part<=1e-17*total) break;
+  }
+  return total;
+}
+/* Integrating eq. (11) around mu: c(kappa, beta) = 2 pi int_{-1}^{1} e^{kappa t} I0{beta(1 - t^2)} dt.
+   Returned relative to e^kappa; the part over t < 0 is the far-hemisphere mass.
+   The integrand increases with t when 2 beta < kappa (13).               */
+function kentMass(kappa, beta){
+  const f=t=>{ const x=beta*(1-t*t); return Math.exp(kappa*(t-1)+x)*i0e(x); };
+  const rate=kappa-2*beta, near=intDecayLeft(f,0,1,rate), far=intDecayLeft(f,-1,0,rate);
+  return {cRel: TAU*(near+far), far: far/(near+far)};
+}
+/* Kent P(U not in O): for each direction a around mu, integrate eq. (11) over the
+   part of the great circle beyond the exit angle theta*(a) (x = cos theta from -1
+   to cos theta*); sigma(du) = dx da in these coordinates.                 */
+function kentProbOutsideO(Kp, cRel, Na){
+  Na=Na||360; let acc=0; const rate=Kp.kappa-2*Kp.beta;
+  for(let i=0;i<Na;i++){
+    const a=TAU*(i+0.5)/Na, c2=Math.cos(2*a), xs=Math.cos(exitAngle(a,Kp.mu,Kp.K));
+    acc += intDecayLeft(x=>Math.exp(Kp.kappa*(x-1)+Kp.beta*(1-x*x)*c2), -1, xs, rate);
+  }
+  return Math.min(1, acc*(TAU/Na)/cRel);
+}
+
+return {
+  vec:{dot, norm, scale, lin2, lin3, cross, unit},
+  sqrtMap, squareMap, inO, muFromAngles, frameLS, axesK, piLambda, makeTN,
+  tangentCoords, psiMap, logPhi, logDensity, density, logDensityZ,
+  levelRadius, gaussRadius, levelFractions, traceCurve, tnLevelCurve,
+  orthantLoop, exitAngle, probOutsideO,
+  rng32, normalPair, simulate, householderB, eig2, estimate,
+  kentToTN, tnToKent, kentLevelCos, kentLevelCurve, i0e, glInt, intDecayLeft, kentMass, kentProbOutsideO
+};
+})();
+</script>
+
+<script id="extra-math">
+window.EX = (function(){
+"use strict";
+const TN=window.TN, {dot,norm,scale,lin2,lin3}=TN.vec, TAU=2*Math.PI, DEG=Math.PI/180;
+
+/* ------------------------- Dirichlet MLE (Minka 2000, fixed point) ------------------------- */
+function digamma(x){ let r=0; while(x<6){ r-=1/x; x+=1; }
+  const f=1/(x*x); return r+Math.log(x)-0.5/x-f*(1/12-f*(1/120-f*(1/252-f*(1/240-f/132)))); }
+function trigamma(x){ let r=0; while(x<6){ r+=1/(x*x); x+=1; }
+  const f=1/(x*x); return r+1/x+f/2+f/x*(1/6-f*(1/30-f*(1/42-f/30))); }
+function invDigamma(y){ let x=y>=-2.22?Math.exp(y)+0.5:-1/(y+0.5772156649015329);
+  for(let i=0;i<6;i++) x-=(digamma(x)-y)/trigamma(x); return x; }
+/* Z: array of compositions (all parts > 0). Returns alpha. */
+function dirichletMLE(Z){
+  const n=Z.length, k=Z[0].length, lb=new Array(k).fill(0), m=new Array(k).fill(0), m2=new Array(k).fill(0);
+  Z.forEach(z=>z.forEach((v,j)=>{ lb[j]+=Math.log(v)/n; m[j]+=v/n; m2[j]+=v*v/n; }));
+  const v1=m2[0]-m[0]*m[0]; let a0=v1>0?m[0]*(1-m[0])/v1-1:10; if(!(a0>0.1)) a0=1;     /* moment start */
+  let a=m.map(x=>x*a0);
+  for(let it=0;it<1000;it++){ const s=digamma(a.reduce((p,q)=>p+q,0)), an=lb.map(l=>invDigamma(s+l));
+    const d=Math.max(...an.map((x,j)=>Math.abs(x-a[j])/a[j])); a=an; if(d<1e-10) break; }
+  return a;
+}
+/* Dirichlet correlations depend on the mean only (eq. 9): rho_ij = -sqrt(m_i m_j / ((1-m_i)(1-m_j))) */
+const dirCorr=(m,i,j)=>-Math.sqrt(m[i]*m[j]/((1-m[i])*(1-m[j])));
+function sampleCorr(Z,i,j){ const n=Z.length; let a=0,b=0,aa=0,bb=0,ab=0;
+  Z.forEach(z=>{a+=z[i];b+=z[j];aa+=z[i]*z[i];bb+=z[j]*z[j];ab+=z[i]*z[j];});
+  a/=n;b/=n; return (ab/n-a*b)/Math.sqrt((aa/n-a*a)*(bb/n-b*b)); }
+
+/* ------------------------- Kent simulation, eq. (11), k = 3 -------------------------
+   In the frame (mu, gamma2, gamma3), u = cos(t) mu + sin(t){cos(a) gamma2 + sin(a) gamma3}, and
+   f(u) sigma(du) is proportional to exp{kappa cos t + beta sin^2 t cos 2a} sin t dt da.
+   Proposal: t from q(t) proportional to exp{kappa cos t + beta sin^2 t} sin t (inverse CDF on a fine
+   grid), a uniform; accept with probability exp{beta sin^2 t (cos 2a - 1)} <= 1. Exact up to the grid. */
+function kentSample(Kp, n, seed){
+  const rnd=TN.rng32(seed), M=6000, T=new Float64Array(M+1), F=new Float64Array(M+1);
+  const lq=t=>Kp.kappa*(Math.cos(t)-1)+Kp.beta*Math.sin(t)*Math.sin(t);
+  let mx=-Infinity; for(let i=0;i<=M;i++){ T[i]=Math.PI*i/M; const v=lq(T[i]); if(v>mx) mx=v; }
+  F[0]=0; let prev=0;
+  for(let i=1;i<=M;i++){ const w=Math.exp(lq(T[i])-mx)*Math.sin(T[i]); F[i]=F[i-1]+0.5*(prev+w)*(T[i]-T[i-1]); prev=w; }
+  const tot=F[M], out=[]; let tries=0;
+  while(out.length<n && tries<200*n+1000){ tries++;
+    const r=rnd()*tot; let lo=0, hi=M; while(hi-lo>1){ const mid=(lo+hi)>>1; if(F[mid]<r) lo=mid; else hi=mid; }
+    const fr=F[hi]>F[lo]?(r-F[lo])/(F[hi]-F[lo]):0.5, t=T[lo]+fr*(T[hi]-T[lo]), a=TAU*rnd(), st=Math.sin(t);
+    if(rnd() > Math.exp(Kp.beta*st*st*(Math.cos(2*a)-1))) continue;
+    const u=lin3(Math.cos(t),Kp.mu, st*Math.cos(a),Kp.K[0], st*Math.sin(a),Kp.K[1]);
+    out.push({u, inO:TN.inO(u)});
+  }
+  return out;
+}
+
+/* ------------------------- Nelder-Mead (standard coefficients) ------------------------- */
+function nelderMead(f, x0, step, tol, maxEval){
+  const d=x0.length; let S=[x0.slice()]; for(let i=0;i<d;i++){ const x=x0.slice(); x[i]+=step[i]; S.push(x); }
+  let V=S.map(f), ev=d+1;
+  while(ev<maxEval){
+    const idx=V.map((v,i)=>i).sort((a,b)=>V[a]-V[b]); S=idx.map(i=>S[i]); V=idx.map(i=>V[i]);
+    if(Math.abs(V[d]-V[0])<=tol*(Math.abs(V[0])+tol)) break;
+    const c=new Array(d).fill(0); for(let i=0;i<d;i++) for(let j=0;j<d;j++) c[j]+=S[i][j]/d;
+    const at=(t)=>c.map((cj,j)=>cj+t*(S[d][j]-cj));
+    const xr=at(-1), fr=f(xr); ev++;
+    if(fr<V[0]){ const xe=at(-2), fe=f(xe); ev++; if(fe<fr){S[d]=xe;V[d]=fe;} else {S[d]=xr;V[d]=fr;} }
+    else if(fr<V[d-1]){ S[d]=xr; V[d]=fr; }
+    else { const xc=fr<V[d]?at(-0.5):at(0.5), fc=f(xc); ev++;
+      if(fc<Math.min(fr,V[d])){ S[d]=xc; V[d]=fc; }
+      else { for(let i=1;i<=d;i++){ S[i]=S[i].map((x,j)=>S[0][j]+0.5*(x-S[0][j])); V[i]=f(S[i]); ev++; } } }
+  }
+  let b=0; for(let i=1;i<V.length;i++) if(V[i]<V[b]) b=i;
+  return {x:S[b], f:V[b], evals:ev};
+}
+
+/* sufficient statistics (21) */
+function stats(U){ const s1=[0,0,0], S2=[[0,0,0],[0,0,0],[0,0,0]];
+  for(const u of U) for(let j=0;j<3;j++){ s1[j]+=u[j]; for(let l=0;l<3;l++) S2[j][l]+=u[j]*u[l]; }
+  return {n:U.length, s1, S2}; }
+const quad=(x,A,y)=>{ let s=0; for(let j=0;j<3;j++) for(let l=0;l<3;l++) s+=x[j]*A[j][l]*y[l]; return s; };
+
+/* Kent maximum likelihood from (n, s1, S2): 5 parameters for k = 3 (mu: 2 angles, axis turn psi,
+   kappa, beta), every likelihood evaluation needs c(kappa, beta) by quadrature (TN.kentMass). */
+function kentPar(p){ const th=p[0], ph=p[1], mu=[Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)];
+  const kappa=Math.exp(p[3]), beta=0.5*kappa/(1+Math.exp(-p[4]));
+  return {mu, K:TN.axesK(mu,p[2]/DEG), kappa, beta}; }
+function kentNLL(p, st){ const Kp=kentPar(p), m=TN.kentMass(Kp.kappa,Kp.beta);
+  return -(Kp.kappa*(dot(Kp.mu,st.s1)-st.n) + Kp.beta*(quad(Kp.K[0],st.S2,Kp.K[0])-quad(Kp.K[1],st.S2,Kp.K[1]))) + st.n*Math.log(m.cRel); }
+function kentFit(st){
+  /* start from the closed-form TN fit (moment-type start, as a careful user would) */
+  const e=tnFromStats(st), mu=e.mu, th=Math.acos(Math.max(-1,Math.min(1,mu[2]))), ph=Math.atan2(mu[1],mu[0]);
+  const kap=Math.max(e.kappa,0.5), r=Math.min(Math.max(2*e.beta/kap,0.02),0.98);
+  const x0=[th,ph,e.psi*DEG,Math.log(kap),Math.log(r/(1-r))];
+  const res=nelderMead(p=>kentNLL(p,st), x0, [0.05,0.05,0.2,0.3,0.5], 1e-10, 4000);
+  return Object.assign(kentPar(res.x), {nll:res.f, evals:res.evals});
+}
+/* TN closed form from (n, s1, S2): eqs. (22), (26), (33), (23) */
+function tnFromStats(st){
+  const R=norm(st.s1), mu=scale(st.s1,1/R), n=st.n, M=st.S2.map(r=>r.map(x=>x/n)), B=TN.householderB(mu);
+  const ST=[[quad(B[0],M,B[0]),quad(B[0],M,B[1])],[quad(B[1],M,B[0]),quad(B[1],M,B[1])]], E=TN.eig2(ST);
+  const K=[lin2(E.W[0][0],B[0],E.W[0][1],B[1]), lin2(E.W[1][0],B[0],E.W[1][1],B[1])], l2=E.l[0], l3=E.l[1];
+  const kappa=0.5*(1/l2+1/l3), beta=0.5*(kappa-1/l2), f=TN.frameLS(mu);
+  let psi=Math.atan2(dot(K[0],f.s),dot(K[0],f.l))/DEG; psi=((psi%180)+180)%180;
+  return {mu, K, l2, l3, kappa, beta, psi, ell:-n*(1+Math.log(TAU))-0.5*n*(Math.log(l2)+Math.log(l3))};
+}
+
+return {digamma, trigamma, invDigamma, dirichletMLE, dirCorr, sampleCorr, kentSample, nelderMead, stats, kentNLL, kentFit, kentPar, tnFromStats};
+})();
+</script>
+
+<script id="deck">
+(function(){
+"use strict";
+const TN=window.TN, EX=window.EX, {dot,scale,lin2,lin3}=TN.vec;
+const $=id=>document.getElementById(id);
+const TAU=2*Math.PI, H3=Math.sqrt(3)/2, DEG=Math.PI/180;
+const C={ink:'#141412',ink2:'#4d4c48',muted:'#8a8883',rule:'#e2e1da',rule2:'#cdccc3',surface:'#fcfcfb',
+  dir:'#d9661f',kent:'#6250d6',tn:'#2a78d6',tnLight:'#7fb2ea',g2:'#1baf7a',g3:'#c98500',out:'#e34948',
+  sphere:'#dedcd2',hemi:'#efeee8',grat:'#b9b7ab',dot:'#5a5955',tint:'rgba(42,120,214,0.08)'};
+
+/* ============================ stage and scaling ============================ */
+const stage=$('stage'); let SW=1280;
+function fit(){
+  if(document.body.classList.contains('print')) return;
+  const w=Math.min(innerWidth, innerHeight*16/9); SW=w;
+  stage.style.width=w+'px'; stage.style.height=(w*9/16)+'px';
+  document.documentElement.style.fontSize=(w/80)+'px';
+}
+const FS=()=>SW/1280;                         /* Plotly fonts follow the stage */
+
+/* ============================ plotting helpers ============================ */
+const CFG={displayModeBar:false,responsive:true,scrollZoom:false};
+function draw(id,data,layout){ if(window.Plotly&&$(id)) Plotly.react($(id),data,layout,CFG); }
+function base(extra){ return Object.assign({paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:'rgba(0,0,0,0)',
+  margin:{l:0,r:0,t:0,b:0},showlegend:false,font:{family:'IBM Plex Mono, monospace',size:12*FS(),color:C.ink2},
+  hoverlabel:{font:{family:'IBM Plex Mono, monospace',size:12*FS()}}},extra||{}); }
+function scene(eye,range){ const ax=()=>({visible:false,range:range.slice(),autorange:false});
+  return {xaxis:ax(),yaxis:ax(),zaxis:ax(),aspectmode:'cube',bgcolor:'rgba(0,0,0,0)',dragmode:'orbit',
+    camera:{eye:Object.assign({},eye),up:{x:0,y:0,z:1},center:{x:0,y:0,z:0}},uirevision:'cam'}; }
+const surfFlat=(X,Y,Z,color,opacity)=>({type:'surface',x:X,y:Y,z:Z,showscale:false,opacity,colorscale:[[0,color],[1,color]],
+  surfacecolor:Z.map(r=>r.map(()=>0)),cmin:0,cmax:1,hoverinfo:'skip',lighting:{ambient:1,diffuse:0,specular:0,roughness:1,fresnel:0},
+  contours:{x:{highlight:false},y:{highlight:false},z:{highlight:false}}});
+function octant(opacity){ const n=28,X=[],Y=[],Z=[];
+  for(let i=0;i<=n;i++){const th=Math.PI/2*i/n,xr=[],yr=[],zr=[]; for(let j=0;j<=n;j++){const ph=Math.PI/2*j/n;
+    xr.push(Math.sin(th)*Math.cos(ph));yr.push(Math.sin(th)*Math.sin(ph));zr.push(Math.cos(th));} X.push(xr);Y.push(yr);Z.push(zr);}
+  return surfFlat(X,Y,Z,C.sphere,opacity); }
+function hemiMesh(mu,K,nT,nA,fn){ const X=[],Y=[],Z=[],V=[];
+  for(let i=0;i<=nT;i++){const th=Math.PI/2*Math.pow(i/nT,1.45),ct=Math.cos(th),st=Math.sin(th),xr=[],yr=[],zr=[],vr=[];
+    for(let j=0;j<=nA;j++){const al=TAU*j/nA,u=lin3(ct,mu,st*Math.cos(al),K[0],st*Math.sin(al),K[1]); xr.push(u[0]);yr.push(u[1]);zr.push(u[2]);vr.push(fn?fn(u):0);}
+    X.push(xr);Y.push(yr);Z.push(zr);V.push(vr);} return {X,Y,Z,V}; }
+function hemiTwoTone(P,opacity){ const m=hemiMesh(P.mu,P.K,32,96,u=>TN.inO(u)?1:0);
+  return {type:'surface',x:m.X,y:m.Y,z:m.Z,surfacecolor:m.V,cmin:0,cmax:1,showscale:false,opacity,
+    colorscale:[[0,C.hemi],[0.5,C.hemi],[0.5,C.sphere],[1,C.sphere]],hoverinfo:'skip',lighting:{ambient:1,diffuse:0,specular:0,roughness:1,fresnel:0},
+    contours:{x:{highlight:false},y:{highlight:false},z:{highlight:false}}}; }
+function graticule(full){ const xs=[],ys=[],zs=[],r=1.003, push=p=>{xs.push(p[0]*r);ys.push(p[1]*r);zs.push(p[2]*r);}, brk=()=>{xs.push(null);ys.push(null);zs.push(null);};
+  const nm=full?12:4,thM=full?Math.PI:Math.PI/2,phM=full?TAU:Math.PI/2;
+  for(let k=0;k<=nm;k++){ if(full&&k===nm)break; const ph=phM*k/nm; for(let j=0;j<=60;j++){const th=thM*j/60;push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);} brk(); }
+  const nl=full?6:4; for(let k=1;k<nl;k++){const th=thM*k/nl; for(let i=0;i<=96;i++){const ph=phM*i/96;push([Math.sin(th)*Math.cos(ph),Math.sin(th)*Math.sin(ph),Math.cos(th)]);} brk();}
+  return {type:'scatter3d',mode:'lines',x:xs,y:ys,z:zs,line:{color:C.grat,width:1},hoverinfo:'skip'}; }
+function poly3(P,color,width,dash,text){ const t={type:'scatter3d',mode:'lines',x:P.map(p=>p?p[0]:null),y:P.map(p=>p?p[1]:null),z:P.map(p=>p?p[2]:null),
+  line:{color,width:width||3,dash:dash||'solid'}}; if(text){t.text=text;t.hovertemplate='%{text}<extra></extra>';} else t.hoverinfo='skip'; return t; }
+const seg3=(a,b,c,w,d)=>poly3([a,b],c,w,d);
+const lab3=(p,s,c,sz)=>({type:'scatter3d',mode:'text',x:[p[0]],y:[p[1]],z:[p[2]],text:[s],textfont:{color:c,size:(sz||14)*FS(),family:'IBM Plex Mono, monospace'},hoverinfo:'skip'});
+const pts3=(P,c,sz,tmpl,sym)=>({type:'scatter3d',mode:'markers',x:P.map(p=>p[0]),y:P.map(p=>p[1]),z:P.map(p=>p[2]),
+  marker:{size:sz,color:c,symbol:sym||'circle',opacity:.95},hovertemplate:tmpl||'(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'});
+function axes3(len){ const d=[],L=['x\u2081','x\u2082','x\u2083']; [0,1,2].forEach(i=>{const e=[0,0,0];e[i]=len;d.push(seg3([0,0,0],e,C.rule2,3));const p=[0,0,0];p[i]=len+0.09;d.push(lab3(p,L[i],C.ink2,13));}); return d; }
+const axisLabels=()=>['x\u2081','x\u2082','x\u2083'].map((s,i)=>{const e=[0,0,0];e[i]=1.1;return lab3(e,s,C.ink2,13);});
+const triMesh=op=>({type:'mesh3d',x:[1,0,0],y:[0,1,0],z:[0,0,1],i:[0],j:[1],k:[2],color:C.dir,opacity:op,hoverinfo:'skip',flatshading:true,lighting:{ambient:1,diffuse:0,specular:0}});
+function triGrid3(){ const P=[]; [0.2,0.4,0.6,0.8].forEach(c=>{P.push([c,1-c,0],[c,0,1-c],null,[1-c,c,0],[0,c,1-c],null,[1-c,0,c],[0,1-c,c],null);});
+  return [poly3(P,C.rule2,1.5),poly3([[1,0,0],[0,1,0],[0,0,1],[1,0,0]],C.ink2,3)]; }
+const orthEdges=()=>poly3(TN.orthantLoop(30).map(u=>scale(u,1.004)),C.ink2,3.5);
+function hemiEdge(P){ const c=[]; for(let i=0;i<=180;i++){const a=TAU*i/180; c.push(scale(lin2(Math.cos(a),P.K[0],Math.sin(a),P.K[1]),1.004));} return poly3(c,C.muted,3,'dash'); }
+
+/* ternary (x1 bottom-left, x2 bottom-right, x3 top: the triangle seen from (1,1,1)) */
+const TX=z=>z[1]+0.5*z[2], TY=z=>H3*z[2];
+function ternLayout(opt){ opt=opt||{}; const ann=[],shapes=[], f=FS();
+  const lab=(x,y,t,xa,ya,dx,dy)=>ann.push({x,y,text:t,showarrow:false,xanchor:xa,yanchor:ya,xshift:dx*f,yshift:dy*f,font:{size:10*f,color:C.muted}});
+  [0.2,0.4,0.6,0.8].forEach(c=>{ lab(c/2,H3*c,c.toFixed(1),'right','middle',-4,0); lab(1-c,0,c.toFixed(1),'center','top',0,-3); lab((1+c)/2,H3*(1-c),c.toFixed(1),'left','middle',4,0); });
+  const vl=(x,y,t,xa,ya,dx,dy)=>ann.push({x,y,text:t,showarrow:false,xanchor:xa,yanchor:ya,xshift:dx*f,yshift:dy*f,font:{size:14*f,color:C.ink}});
+  vl(0,0,'x\u2081','right','top',-6,-4); vl(1,0,'x\u2082','left','top',6,-4); vl(0.5,H3,'x\u2083','center','bottom',0,5);
+  if(opt.mask) shapes.push({type:'path',layer:'above',fillrule:'evenodd',fillcolor:'#f8f8f6',line:{width:0},path:'M -0.4 -0.4 L 1.4 -0.4 L 1.4 1.3 L -0.4 1.3 Z M 0 0 L 0.5 '+H3+' L 1 0 Z'});
+  return base({margin:{l:14*f,r:(opt.mr||14)*f,t:14*f,b:20*f},annotations:ann,shapes,xaxis:{range:[-0.1,1.1],visible:false},yaxis:{range:[-0.07,H3+0.06],visible:false,scaleanchor:'x',scaleratio:1}}); }
+function ternGrid(){ const x=[],y=[],L=(a,b)=>{x.push(TX(a),TX(b),null);y.push(TY(a),TY(b),null);};
+  for(let i=1;i<10;i++){const c=i/10; L([c,1-c,0],[c,0,1-c]); L([1-c,c,0],[0,c,1-c]); L([1-c,0,c],[0,1-c,c]);}
+  return {type:'scatter',mode:'lines',x,y,line:{color:C.rule,width:1},hoverinfo:'skip'}; }
+const ternEdge=()=>({type:'scatter',mode:'lines',x:[0,1,0.5,0],y:[0,0,H3,0],line:{color:C.ink2,width:1.4},hoverinfo:'skip'});
+const ternPts=(Z,c,sz,name)=>({type:'scatter',mode:'markers',x:Z.map(TX),y:Z.map(TY),customdata:Z,marker:{size:sz*FS(),color:c,line:{color:'#fff',width:1}},
+  hovertemplate:'x\u2081 %{customdata[0]:.3f}<br>x\u2082 %{customdata[1]:.3f}<br>x\u2083 %{customdata[2]:.3f}<extra>'+(name||'')+'</extra>'});
+const ternMu=mu=>({type:'scatter',mode:'markers',x:[TX(mu.map(m=>m*m))],y:[TY(mu.map(m=>m*m))],marker:{size:13*FS(),color:C.ink,symbol:'x-thin',line:{color:C.ink,width:2.5}},hoverinfo:'skip'});
+
+/* contour curve (TN.traceCurve output) -> runs inside / outside O */
+function curveTraces(curves,map,name){ const IN={x:[],y:[],z:[],t:[]},OUT={x:[],y:[],z:[],t:[]};
+  const put=(S,c,l)=>{ if(c){S.x.push(c[0]);S.y.push(c[1]);S.z.push(c[2]===undefined?null:c[2]);S.t.push(l);} else {S.x.push(null);S.y.push(null);S.z.push(null);S.t.push('');} };
+  curves.forEach(cv=>{ const l=name+' '+Math.round(cv.f*100)+'% of peak';
+    cv.pts.forEach(p=>{ const c=p.u?map(p.u):null; if(!c){put(IN,null);put(OUT,null);return;}
+      if(p.cross){put(IN,c,l);put(OUT,c,l);} else if(p.inO){put(IN,c,l);put(OUT,null);} else {put(IN,null);put(OUT,c,l);} });
+    put(IN,null); put(OUT,null); });
+  return {IN,OUT}; }
+function lineTr(S,color,w,dash,is3d){ const t={type:is3d?'scatter3d':'scatter',mode:'lines',x:S.x,y:S.y,line:{color,width:w,dash:dash||'solid'},text:S.t,hovertemplate:'%{text}<extra></extra>'}; if(is3d)t.z=S.z; return t; }
+const mapSph=u=>scale(u,1.006), mapTern=u=>{const z=TN.squareMap(u); return z?[TX(z),TY(z)]:null;}, mapTan=P=>u=>(dot(P.mu,u)>0?[dot(P.K[0],u),dot(P.K[1],u)]:null);
+
+/* slider plumbing: value read-outs; release focus after a drag so arrow keys navigate again */
+function slider(id,fmt,fn){ const el=$(id),o=$(id+'-v'); const show=()=>{if(o)o.textContent=fmt(+el.value);};
+  el.addEventListener('input',()=>{show();fn();}); el.addEventListener('change',()=>el.blur()); show(); return el; }
+function toggle(id,S,k,fn){ const b=$(id); b.addEventListener('click',()=>{S[k]=!S[k]; b.setAttribute('aria-pressed',S[k]?'true':'false'); b.blur(); fn();}); }
+let raf={}; function later(key,fn){ if(raf[key]) return; raf[key]=requestAnimationFrame(()=>{raf[key]=0; fn();}); }
+const f2=x=>x.toFixed(2), f3=x=>x.toFixed(3);
+function prob(p){ if(!(p>0)) return '0'; if(p<1e-4) return p.toExponential(1); return (100*p).toFixed(2)+'%'; }
+
+/* ============================ 1. Dirichlet ============================ */
+/* log Gamma (Lanczos, g = 7) for eq. (8) */
+function lgamma(x){ const g=7,c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);
+  x-=1; let a=c[0]; const t=x+g+0.5; for(let i=1;i<9;i++) a+=c[i]/(x+i); return 0.5*Math.log(TAU)+(x+0.5)*Math.log(t)-t+Math.log(a); }
+const dirLogDens=(z,a)=>lgamma(a[0]+a[1]+a[2])-lgamma(a[0])-lgamma(a[1])-lgamma(a[2])+(a[0]-1)*Math.log(z[0])+(a[1]-1)*Math.log(z[1])+(a[2]-1)*Math.log(z[2]);  /* eq. (8) */
+/* Gamma(shape >= 1) by Marsaglia and Tsang; Dirichlet draw = normalised gammas */
+function rgamma(a,rnd){ const d=a-1/3,c=1/Math.sqrt(9*d); for(;;){ let x,v; do{ x=TN.normalPair(rnd)[0]; v=1+c*x; }while(v<=0); v=v*v*v; const u=rnd();
+  if(u<1-0.0331*x*x*x*x||Math.log(u)<0.5*x*x+d*(1-v+Math.log(v))) return d*v; } }
+function rdir(n,a,seed){ const rnd=TN.rng32(seed),out=[]; for(let i=0;i<n;i++){ const g=a.map(ai=>rgamma(ai,rnd)),s=g[0]+g[1]+g[2]; out.push(g.map(x=>x/s)); } return out; }
+function triGrid(nx){ const ny=Math.round(nx*H3),xs=[],ys=[],Z=[];
+  for(let i=0;i<nx;i++) xs.push((i+0.5)/nx); for(let j=0;j<ny;j++) ys.push((j+0.5)/ny*H3);
+  for(let j=0;j<ny;j++){ const r=[]; for(let i=0;i<nx;i++){ let z3=ys[j]/H3,z2=xs[i]-0.5*z3,z1=1-z2-z3; const m=Math.min(z1,z2,z3);
+    z1=Math.max(z1,1e-4);z2=Math.max(z2,1e-4);z3=Math.max(z3,1e-4); const s=z1+z2+z3; r.push(m>-0.02?[z1/s,z2/s,z3/s]:null);} Z.push(r);} return {xs,ys,Z}; }
+const DGRID=triGrid(140), DGRID2=triGrid(220);
+const ALPHA0=[10,6,4], ZDIR=rdir(150,ALPHA0,11);       /* the data set used on the "simplex to sphere" slide */
+const CS_DIR=[[0,'#f8f8f6'],[0.25,'#fde6d4'],[0.5,'#f7bd92'],[0.75,'#ec8b4c'],[1,'#b5501a']],
+      CS_TN=[[0,'#f8f8f6'],[0.25,'#d6e7fb'],[0.5,'#9cc3ef'],[0.75,'#4a90e0'],[1,'#0d366b']];
+/* filled contours of a log-density on a triangle grid, at 10, 30, ..., 90% of its maximum on the grid */
+function gridContour(G,logf,line,cs){ let mx=-Infinity;
+  const L=G.Z.map(r=>r.map(z=>{ if(!z) return null; const v=logf(z); if(v>mx) mx=v; return v; }));
+  const rel=L.map(r=>r.map(v=>v===null?null:(isFinite(v)?Math.exp(v-mx):0)));
+  return {type:'contour',x:G.xs,y:G.ys,z:rel,zmin:0,zmax:1,showscale:false,hoverinfo:'skip',
+    contours:{start:0.1,end:0.9,size:0.2,coloring:'fill'},line:{color:line,width:1.4},colorscale:cs}; }
+function renderDir(){
+  const a=[+$('d-a1').value,+$('d-a2').value,+$('d-a3').value], a0=a[0]+a[1]+a[2], n=+$('d-n').value, m=a.map(x=>x/a0);
+  const tr=[gridContour(DGRID,z=>dirLogDens(z,a),C.dir,CS_DIR), ternGrid(), ternEdge(), ternPts(rdir(n,a,11),C.ink,n>500?3.5:(n>200?4.5:6),'Dir draw')];
+  draw('fDir',tr,ternLayout({mask:true}));
+  const r=(i,j)=>EX.dirCorr(m,i,j).toFixed(2);
+  $('d-out').innerHTML='&alpha;&#8320; = <b>'+a0.toFixed(1)+'</b> &nbsp; m = &alpha;/&alpha;&#8320; = (<b>'+m.map(x=>x.toFixed(3)).join(', ')+'</b>)<br>'+
+    'correlations: &rho;&#8321;&#8322; = <b>'+r(0,1)+'</b> &nbsp; &rho;&#8321;&#8323; = <b>'+r(0,2)+'</b> &nbsp; &rho;&#8322;&#8323; = <b>'+r(1,2)+'</b>';
+  $('d-cap').textContent=n+' draws from Dir(α) · contours at 10, 30, 50, 70, 90% of the peak';
+}
+window.initDir=function(){ ['d-a1','d-a2','d-a3'].forEach(id=>slider(id,v=>v.toFixed(1),()=>later('dir',renderDir)));
+  slider('d-n',v=>v.toFixed(0),()=>later('dir',renderDir)); renderDir(); };
+
+function renderDirContour(){
+  const a=[+$('dc-a1').value,+$('dc-a2').value,+$('dc-a3').value], a0=a[0]+a[1]+a[2], n=+$('dc-n').value, m=a.map(x=>x/a0);
+  const tr=[gridContour(DGRID,z=>dirLogDens(z,a),C.dir,CS_DIR), ternGrid(), ternEdge(), ternPts(rdir(n,a,11),C.ink,n>500?3.5:(n>200?4.5:6),'Dir draw')];
+  draw('fDirContour',tr,ternLayout({mask:true}));
+  const r=(i,j)=>EX.dirCorr(m,i,j).toFixed(2);
+  $('dc-out').innerHTML='&alpha;&#8320; = <b>'+a0.toFixed(1)+'</b> &nbsp; m = &alpha;/&alpha;&#8320; = (<b>'+m.map(x=>x.toFixed(3)).join(', ')+'</b>)<br>'+
+    'correlations: &rho;&#8321;&#8322; = <b>'+r(0,1)+'</b> &nbsp; &rho;&#8321;&#8323; = <b>'+r(0,2)+'</b> &nbsp; &rho;&#8322;&#8323; = <b>'+r(1,2)+'</b>';
+  $('dc-cap').textContent=n+' draws from Dir(α) · contours at 10, 30, 50, 70, 90% of the peak';
+}
+window.initDirContour=function(){ ['dc-a1','dc-a2','dc-a3'].forEach(id=>slider(id,v=>v.toFixed(1),()=>later('dirContour',renderDirContour)));
+  slider('dc-n',v=>v.toFixed(0),()=>later('dirContour',renderDirContour)); renderDirContour(); };
+
+
+/* ============================ 1b. what the Dirichlet cannot capture ============================
+   Data: TN(mu, K, Lambda) draws inside O, as z = u^2 (Definition 1). Left: the TN density of z
+   (TN.logDensityZ: eq. 15 with the Jacobian of the square-root map). Right: the Dirichlet fitted to
+   the same z by maximum likelihood (EX.dirichletMLE). */
+const DLPRE={pos:{m:[0.36,0.36,0.28],ps:90,s2:0.16,s3:0.03}, tilt:{m:[0.45,0.30,0.25],ps:35,s2:0.18,s3:0.025}, edge:{m:[0.47,0.45,0.08],ps:0,s2:0.2,s3:0.02}};
+let DLM=DLPRE.pos.m;
+function renderDirLim(){
+  const s2=+$('dl-s2').value, s3=Math.min(+$('dl-s3').value,s2), P=TN.makeTN(TN.sqrtMap(DLM),+$('dl-ps').value,s2*s2,s3*s3);
+  const Z=TN.simulate(P,1500,2024).filter(d=>d.inO).map(d=>TN.squareMap(d.u)).filter(z=>z[0]>1e-9&&z[1]>1e-9&&z[2]>1e-9).slice(0,300);
+  const al=EX.dirichletMLE(Z), a0=al[0]+al[1]+al[2], mD=al.map(x=>x/a0), sz=4.2;
+  draw('fDL1',[gridContour(DGRID2,z=>TN.logDensityZ(z,P),C.tn,CS_TN),ternGrid(),ternEdge(),ternPts(Z,C.ink,sz,'data')],ternLayout({mask:true}));
+  draw('fDL2',[gridContour(DGRID2,z=>dirLogDens(z,al),C.dir,CS_DIR),ternGrid(),ternEdge(),ternPts(Z,C.ink,sz,'data')],ternLayout({mask:true}));
+  const row=(i,j,lab)=>{ const r=EX.sampleCorr(Z,i,j), d=EX.dirCorr(mD,i,j);
+    return '<tr><td>'+lab+'</td><td><b'+(r>0?' class="c-tn"':'')+'>'+(r>0?'+':'')+r.toFixed(2)+'</b></td><td><b class="c-dir">'+d.toFixed(2)+'</b></td></tr>'; };
+  $('dl-tab').innerHTML='<table class="mini"><thead><tr><th>correlation</th><th>data</th><th>Dirichlet fit</th></tr></thead><tbody>'+
+    row(0,1,'x&#8321;, x&#8322;')+row(0,2,'x&#8321;, x&#8323;')+row(1,2,'x&#8322;, x&#8323;')+'</tbody></table>'+
+    '<div class="readout">fitted &alpha; = (<b>'+al.map(x=>x.toFixed(1)).join(', ')+'</b>)</div>';
+}
+window.initDirLim=function(){ const go=()=>later('dl',renderDirLim);
+  slider('dl-ps',v=>v.toFixed(0)+'°',go); slider('dl-s2',v=>v.toFixed(3),go); slider('dl-s3',v=>v.toFixed(3),go);
+  Object.keys(DLPRE).forEach(k=>{ const b=$('dl-'+k); b.addEventListener('click',()=>{ b.blur(); const p=DLPRE[k]; DLM=p.m;
+    Object.keys(DLPRE).forEach(q=>$('dl-'+q).setAttribute('aria-pressed',q===k?'true':'false'));
+    [['ps',p.ps],['s2',p.s2],['s3',p.s3]].forEach(([id,v])=>{ $('dl-'+id).value=v; $('dl-'+id+'-v').textContent=id==='ps'?v+'°':(+v).toFixed(3); });
+    renderDirLim(); }); });
+  renderDirLim(); };
+
+/* ============================ 2. lift to the sphere ============================ */
+const UDIR=ZDIR.map(TN.sqrtMap), EYEL={x:0.48,y:1.35,z:0.42}, SL={lines:true,tri:true,sph:true,points:true};
+function sphereGrid(){ const P=[]; [0.2,0.4,0.6,0.8].forEach(c=>{ for(let j=0;j<3;j++){ const k=(j+1)%3,l=(j+2)%3,r=Math.sqrt(1-c);
+  for(let i=0;i<=40;i++){const a=Math.PI/2*i/40,u=[0,0,0];u[j]=Math.sqrt(c);u[k]=r*Math.cos(a);u[l]=r*Math.sin(a);P.push(scale(u,1.003));} P.push(null);} }); return poly3(P,C.grat,1.5); }
+function renderLift(){ const d=[...axes3(1.25)];
+  if(SL.sph) d.push(octant(0.42), graticule(false), sphereGrid(), orthEdges());
+  if(SL.tri) d.push(triMesh(0.12), ...triGrid3());
+  if(SL.lines){ const P=[]; ZDIR.forEach((z,i)=>P.push(z,UDIR[i],null)); d.push(poly3(P,C.dir,2)); }
+  d.push(pts3(ZDIR,C.dot,3.4,'composition z<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+  if(SL.points) d.push(pts3(UDIR.map(u=>scale(u,1.004)),C.tn,3.8,'u = \u221az<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+  draw('fLift',d,base({scene:scene(EYEL,[-0.12,1.36])})); }
+window.initLift=function(){ toggle('l-points',SL,'points',renderLift); toggle('l-lines',SL,'lines',renderLift); toggle('l-tri',SL,'tri',renderLift); toggle('l-sph',SL,'sph',renderLift);
+  $('l-reset').addEventListener('click',()=>{ $('l-reset').blur(); Plotly.relayout($('fLift'),{'scene.camera':{eye:Object.assign({},EYEL),up:{x:0,y:0,z:1},center:{x:0,y:0,z:0}}}); });
+  renderLift(); };
+
+/* ============================ 3. Kent ============================ */
+const MU0=TN.muFromAngles(63.4,37.8), EYES={x:0.95,y:0.85,z:0.68}, kapOf=w=>2*Math.pow(500,w/1000);
+function renderKent(){
+  const kappa=kapOf(+$('k-k').value), beta=0.5*(+$('k-r').value)*kappa, psi=+$('k-p').value;
+  const K=TN.axesK(MU0,psi), Kp={mu:MU0,K,kappa,beta}, P={mu:MU0,K};
+  const cs=TN.levelFractions(5).map(f=>({f,pts:TN.kentLevelCurve(Kp,f,360)})), c=curveTraces(cs,mapSph,'Kent');
+  const d=[octant(0.42), graticule(true), orthEdges(), hemiEdge(P),
+    seg3([0,0,0],scale(MU0,1.16),C.ink,5), lab3(scale(MU0,1.25),'\u03bc',C.ink,15),
+    seg3(MU0,lin2(1,MU0,0.3,K[0]),C.g2,5), lab3(lin2(1,MU0,0.37,K[0]),'\u03b3\u2082',C.g2), seg3(MU0,lin2(1,MU0,0.3,K[1]),C.g3,5), lab3(lin2(1,MU0,0.37,K[1]),'\u03b3\u2083',C.g3),
+    lineTr(c.IN,C.kent,4,'solid',true), lineTr(c.OUT,C.out,4,'dash',true), ...axisLabels()];
+  draw('fKent',d,base({scene:scene(EYES,[-1.06,1.2])}));
+  const ct=curveTraces(cs,mapTern,'Kent');
+  draw('fKentT',[ternGrid(),ternEdge(),lineTr(ct.IN,C.kent,2.2),ternMu(MU0)],ternLayout());
+  const km=TN.kentMass(kappa,beta), po=TN.kentProbOutsideO(Kp,km.cRel);
+  $('k-out').innerHTML='&kappa; = <b>'+kappa.toPrecision(3)+'</b> &nbsp; &beta; = <b>'+beta.toPrecision(3)+'</b><br>'+
+    '<span'+(po>1e-3?' class="c-out"':'')+'>P(U &notin; O) = <b>'+prob(po)+'</b></span><br>far hemisphere (&mu;&#7488;u &lt; 0): <b>'+prob(km.far)+'</b>';
+}
+window.initKent=function(){ slider('k-k',w=>kapOf(w).toPrecision(3),()=>later('kent',renderKent)); slider('k-r',f2,()=>later('kent',renderKent));
+  slider('k-p',v=>v.toFixed(0)+'\u00b0',()=>later('kent',renderKent)); renderKent(); };
+
+/* ============================ 3b. Kent: simulated data (EX.kentSample, eq. 11) ============================ */
+let KSEED=7;
+function renderKentSim(){
+  const kappa=kapOf(+$('ks-k').value), beta=0.5*(+$('ks-r').value)*kappa, psi=+$('ks-p').value, n=+$('ks-n').value;
+  const K=TN.axesK(MU0,psi), Kp={mu:MU0,K,kappa,beta}, S=EX.kentSample(Kp,n,KSEED);
+  const IN=S.filter(s=>s.inO).map(s=>s.u), OUT=S.filter(s=>!s.inO).map(s=>s.u), far=S.filter(s=>dot(MU0,s.u)<0).length, sz=n>800?2:2.8;
+  const d=[sphereFull(0.3),graticule(true),orthEdges(),seg3([0,0,0],scale(MU0,1.16),C.ink,5),lab3(scale(MU0,1.25),'\u03bc',C.ink,15),...axisLabels()];
+  if(IN.length) d.push(pts3(IN.map(u=>scale(u,1.006)),C.kent,sz,'composition<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'));
+  if(OUT.length) d.push(pts3(OUT.map(u=>scale(u,1.006)),C.out,sz,'outside O: not a composition<extra></extra>'));
+  draw('fKS1',d,base({scene:scene(EYES,[-1.06,1.2])}));
+  draw('fKS2',[ternGrid(),ternEdge(),ternPts(IN.map(TN.squareMap),C.kent,n>800?3.5:4.5,'composition'),ternMu(MU0)],ternLayout());
+  const pc=x=>(100*x/S.length).toFixed(1)+'%';
+  $('ks-out').innerHTML='&kappa; = <b>'+kappa.toPrecision(3)+'</b> &nbsp; &beta; = <b>'+beta.toPrecision(3)+'</b><br>'+
+    '<span class="c-kent">inside O: <b>'+IN.length+'</b> ('+pc(IN.length)+')</span><br><span class="c-out">outside O: <b>'+OUT.length+'</b> ('+pc(OUT.length)+')</span><br>'+
+    'far hemisphere (&mu;&#7488;u &lt; 0): <b>'+far+'</b>';
+}
+window.initKentSim=function(){ const go=()=>later('ks',renderKentSim);
+  slider('ks-k',w=>kapOf(w).toPrecision(3),go); slider('ks-r',f2,go); slider('ks-p',v=>v.toFixed(0)+'\u00b0',go); slider('ks-n',v=>v.toFixed(0),go);
+  $('ks-new').addEventListener('click',()=>{ $('ks-new').blur(); KSEED++; renderKentSim(); });
+  /* kappa presets: slider position w with kapOf(w) = kappa */
+  [['ks-small',3],['ks-mid',12],['ks-big',150]].forEach(([id,k])=>$(id).addEventListener('click',()=>{ $(id).blur();
+    const el=$('ks-k'); el.value=Math.round(1000*Math.log(k/2)/Math.log(500)); el.dispatchEvent(new Event('input')); }));
+  renderKentSim(); };
+
+/* ============================ 3c. Kent: estimation cost, measured live ============================
+   One node: n = 500 Kent draws. Kent: Nelder-Mead MLE over 5 parameters, c(kappa, beta) by quadrature at
+   every evaluation (EX.kentFit). TN: the closed form (22), (26), (33), (23) from the same statistics. */
+let KCSEED=31;
+function fmtDur(ms){ if(ms<1e-3) return (ms*1e6).toFixed(0)+' ns'; if(ms<1) return (ms*1e3).toFixed(ms<0.01?2:1)+' \u00b5s'; if(ms<1e3) return ms.toFixed(ms<10?2:0)+' ms';
+  const s=ms/1e3; if(s<120) return s.toFixed(0)+' s'; if(s<7200) return (s/60).toFixed(0)+' min'; if(s<172800) return (s/3600).toFixed(1)+' hours'; return (s/86400).toFixed(1)+' days'; }
+function runKentCost(){
+  const Kp={mu:MU0,K:TN.axesK(MU0,30),kappa:40,beta:12}, st=EX.stats(EX.kentSample(Kp,500,KCSEED++).map(s=>s.u));
+  let t0=performance.now(), fit=null, R=0; do{ fit=EX.kentFit(st); R++; }while(performance.now()-t0<200 && R<40); const tK=(performance.now()-t0)/R;
+  t0=performance.now(); let R2=0; do{ for(let i=0;i<2000;i++) EX.tnFromStats(st); R2+=2000; }while(performance.now()-t0<80 && R2<400000); const tT=(performance.now()-t0)/R2;
+  const FITS=2*3*1000*7*500;
+  if(!(tK>0&&tT>0)){ $('kc-ev').textContent=fit.evals; $('kc-out').textContent='the browser timer is too coarse here; press "run again"'; return; }
+  $('kc-ev').textContent=fit.evals; $('kc-tk').textContent=fmtDur(tK); $('kc-tt').textContent=fmtDur(tT);
+  $('kc-fk').textContent=fmtDur(tK*FITS); $('kc-ft').textContent=fmtDur(tT*FITS);
+  $('kc-out').innerHTML='ratio &asymp; <b>'+Math.round(tK/tT).toLocaleString('en')+'&times;</b> &nbsp; (Kent fit: &kappa; = '+fit.kappa.toFixed(1)+', &beta; = '+fit.beta.toFixed(1)+'; true values 40, 12)';
+}
+window.initKentCost=function(){ $('kc-run').addEventListener('click',()=>{ $('kc-run').blur(); $('kc-out').textContent='running\u2026'; setTimeout(runKentCost,30); }); runKentCost(); };
+
+/* ============================ 4. TN definition ============================ */
+/* The three steps of Definition 1 on one TN(mu, K, Lambda): data u on the sphere -> v = K^T u on the
+   tangent plane (drawn at mu + Kv, i.e. moved parallel to mu) -> N(0, Lambda) contours on the plane ->
+   back to the hemisphere by psi (14): the contours of g (15), which include the Jacobian mu^T u. */
+const PD=TN.makeTN(MU0,30,0.26*0.26,0.13*0.13), SD=TN.simulate(PD,200,99).filter(d=>d.inO).slice(0,45), EYET={x:0.15,y:1.1,z:0.2};
+const NAVY='#0d366b'; let TSTEP=1;
+const TSTEPTXT=['','<b>1</b> &middot; 45 compositions as points u = &radic;z on the sphere; the blue square is the tangent plane at &mu;',
+  '<b>2</b> &middot; each u moved to the plane parallel to &mu;: tangent coordinates v = K&#7488;u',
+  '<b>3</b> &middot; on the plane: a normal distribution N(0, &Lambda;), contours at 10&ndash;90% of its peak',
+  '<b>4</b> &middot; mapped back by &psi; (14): the TN contours on the hemisphere, density g (15)'];
+function renderTNdef(){ const P=PD, step=document.body.classList.contains('print')?4:TSTEP, d=[...axes3(1.2), octant(0.38), graticule(false), orthEdges()];
+  const Lp=0.72, onPl=(a,b)=>lin3(1,P.mu,a,P.K[0],b,P.K[1]);
+  const X=[[],[]],Y=[[],[]],Z=[[],[]]; [-Lp,Lp].forEach((s,i)=>[-Lp,Lp].forEach(q=>{const p=onPl(s,q);X[i].push(p[0]);Y[i].push(p[1]);Z[i].push(p[2]);}));
+  d.push(surfFlat(X,Y,Z,C.tn,0.2));
+  const G=[]; for(let i=-2;i<=2;i++){ const t=Lp*i/3; G.push(onPl(t,-Lp),onPl(t,Lp),null,onPl(-Lp,t),onPl(Lp,t),null); }
+  d.push(poly3(G,'#7fb2ea',1.5), poly3([onPl(-Lp,-Lp),onPl(Lp,-Lp),onPl(Lp,Lp),onPl(-Lp,Lp),onPl(-Lp,-Lp)],C.tn,4));
+  d.push(seg3(P.mu,onPl(0.36,0),C.g2,6),lab3(onPl(0.47,0),'\u03b3\u2082',C.g2),seg3(P.mu,onPl(0,0.36),C.g3,6),lab3(onPl(0,0.47),'\u03b3\u2083',C.g3));
+  d.push(seg3([0,0,0],scale(P.mu,1.2),C.ink,6),lab3(scale(P.mu,1.29),'\u03bc',C.ink,16));
+  const F=SD.map(s=>onPl(s.v[0],s.v[1]));
+  if(step>=2){ const S=[]; SD.forEach((s,i)=>S.push(s.u,F[i],null)); d.push(poly3(S,step===2?C.ink2:'#b9b7ab',step===2?2:1.2,'dash'));
+    d.push(pts3(F,NAVY,step===2?4.2:3.2,'v on the plane<extra></extra>')); }
+  if(step>=3){ const E=[]; TN.levelFractions(5).forEach(f=>{ for(let i=0;i<=180;i++){ const a=TAU*i/180, r=TN.gaussRadius(a,f,P.l2,P.l3); E.push(onPl(r*Math.cos(a),r*Math.sin(a))); } E.push(null); });
+    d.push(poly3(E,NAVY,step===3?5:3.5)); }
+  if(step>=4){ const cs=TN.levelFractions(5).map(f=>({f,pts:TN.tnLevelCurve(P,f,240)})), c=curveTraces(cs,mapSph,'g');
+    d.push(lineTr(c.IN,C.tn,6,'solid',true), lineTr(c.OUT,C.out,5,'dash',true)); }
+  d.push(pts3(SD.map(s=>scale(s.u,1.006)),C.tn,step===1?5:4,'u on the sphere<extra></extra>'));
+  draw('fTNdef',d,base({scene:scene(EYET,[-1.05,1.5])}));
+  $('t-out').innerHTML=TSTEPTXT[step];
+}
+window.initTNdef=function(){ [1,2,3,4].forEach(k=>{ const b=$('t-s'+k); b.addEventListener('click',()=>{ b.blur(); TSTEP=k;
+    [1,2,3,4].forEach(j=>$('t-s'+j).setAttribute('aria-pressed',j===k?'true':'false')); renderTNdef(); }); });
+  renderTNdef(); };
+
+/* ============================ 5. TN contours ============================ */
+function paramsC(){ return TN.makeTN(TN.muFromAngles(+$('c-th').value,+$('c-ph').value),+$('c-ps').value,Math.pow(+$('c-s2').value,2),Math.pow(+$('c-s3').value,2)); }
+function renderCont(){ const P=paramsC(), fr=TN.levelFractions(5), cv=fr.map(f=>({f,pts:TN.tnLevelCurve(P,f,360)})), f=FS();
+  /* (a) tangent plane */
+  const R=Math.min(1.08,Math.max(0.12,3.6*Math.sqrt(P.l2))), D=TN.orthantLoop(60).map(u=>[dot(P.K[0],u),dot(P.K[1],u)]);
+  const a=[{type:'scatter',mode:'lines',x:D.map(p=>p[0]),y:D.map(p=>p[1]),fill:'toself',fillcolor:C.tint,line:{color:C.tn,width:1},hoverinfo:'skip'}];
+  const cx=[],cy=[]; for(let i=0;i<=200;i++){cx.push(Math.cos(TAU*i/200));cy.push(Math.sin(TAU*i/200));}
+  a.push({type:'scatter',mode:'lines',x:cx,y:cy,line:{color:C.muted,width:1.2,dash:'dot'},hoverinfo:'skip'});
+  const gx=[],gy=[]; fr.forEach(fv=>{ for(let i=0;i<=240;i++){const t=TAU*i/240,r=TN.gaussRadius(t,fv,P.l2,P.l3); if(r<1){gx.push(r*Math.cos(t));gy.push(r*Math.sin(t));}else{gx.push(null);gy.push(null);}} gx.push(null);gy.push(null); });
+  a.push({type:'scatter',mode:'lines',x:gx,y:gy,line:{color:C.muted,width:1.1,dash:'dash'},hoverinfo:'skip'});
+  const ca=curveTraces(cv,mapTan(P),'g'); a.push(lineTr(ca.IN,C.tn,2.2),lineTr(ca.OUT,C.out,2,'dash'));
+  const la=base({margin:{l:34*f,r:6*f,t:6*f,b:28*f},xaxis:{range:[-R,R],zeroline:false,showgrid:false,nticks:5,tickfont:{size:9*f,color:C.muted},showline:true,linecolor:C.rule2,mirror:true,constrain:'domain',title:{text:'v\u2082',font:{size:11*f,color:C.g2},standoff:2}},
+    yaxis:{range:[-R,R],zeroline:false,showgrid:false,nticks:5,tickfont:{size:9*f,color:C.muted},showline:true,linecolor:C.rule2,mirror:true,scaleanchor:'x',scaleratio:1,title:{text:'v\u2083',font:{size:11*f,color:C.g3},standoff:2}},
+    annotations:[{x:0,y:0,text:'\u03bc',showarrow:false,font:{size:13*f,color:C.ink},xshift:-9*f,yshift:-9*f},{x:0,y:0,text:'\u25cf',showarrow:false,font:{size:9*f,color:C.ink}}]});
+  draw('fC1',a,la);
+  /* (b) sphere */
+  const cb=curveTraces(cv,mapSph,'g');
+  draw('fC2',[hemiTwoTone(P,0.55),graticule(true),orthEdges(),hemiEdge(P),seg3([0,0,0],scale(P.mu,1.16),C.ink,5),lab3(scale(P.mu,1.25),'\u03bc',C.ink,14),
+    lineTr(cb.IN,C.tn,4,'solid',true),lineTr(cb.OUT,C.out,4,'dash',true),...axisLabels()],base({scene:scene(EYES,[-1.06,1.2])}));
+  /* (c) triangle */
+  const cc=curveTraces(cv,mapTern,'g');
+  draw('fC3',[ternGrid(),ternEdge(),lineTr(cc.IN,C.tn,2.2),ternMu(P.mu)],ternLayout());
+  const po=TN.probOutsideO(P);
+  $('c-out').innerHTML='&mu;&#178; = (<b>'+P.mu.map(m=>(m*m).toFixed(3)).join(', ')+'</b>) &nbsp; &lambda;&#8322; = <b>'+P.l2.toPrecision(3)+'</b>, &lambda;&#8323; = <b>'+P.l3.toPrecision(3)+'</b> &nbsp; 1&minus;&pi;<sub>&Lambda;</sub> = <b>'+prob(P.piOut)+'</b> &nbsp; '+
+    '<span'+(po>1e-3?' class="c-out"':'')+'>P(U &notin; O) = <b>'+prob(po)+'</b></span>';
+}
+const CPRE={def:{th:63.4,ph:37.8,ps:30,s2:0.14,s3:0.06},edge:{th:77.1,ph:40.5,ps:70,s2:0.16,s3:0.07}};
+window.initTNcont=function(){ const s2=$('c-s2'),s3=$('c-s3'),go=()=>later('cont',renderCont);
+  slider('c-th',v=>v.toFixed(1)+'\u00b0',go); slider('c-ph',v=>v.toFixed(1)+'\u00b0',go); slider('c-ps',v=>v.toFixed(0)+'\u00b0',go);
+  const keep=()=>{ if(+s3.value>+s2.value){ s3.value=s2.value; $('c-s3-v').textContent=(+s3.value).toFixed(3);} go(); };   /* lambda2 >= lambda3 */
+  slider('c-s2',v=>v.toFixed(3),keep); slider('c-s3',v=>v.toFixed(3),keep);
+  const pre=p=>{ Object.keys(p).forEach(k=>{ $('c-'+k).value=p[k]; $('c-'+k).dispatchEvent(new Event('input')); }); };
+  $('c-def').addEventListener('click',()=>{$('c-def').blur();pre(CPRE.def);}); $('c-edge').addEventListener('click',()=>{$('c-edge').blur();pre(CPRE.edge);});
+  renderCont(); };
+
+/* ============================ 8-9. results (Table 1, Dir-RF and TN-RF rows) ============================ */
+const NS=[200,500,1000,2000];
+const T1={ AD:{ D:{dir:[0.5078,0.4710,0.4497,0.4368],tn:[0.5049,0.4699,0.4471,0.4358]},
+               L:{dir:[1.1576,1.2331,1.1856,1.1970],tn:[1.1480,1.2256,1.1806,1.1922]},
+               K:{dir:[0.7919,0.6902,0.7200,0.7072],tn:[0.7894,0.6832,0.7128,0.6994]} },
+           RM:{ D:{dir:[9.811,9.213,8.822,8.561],tn:[9.736,9.190,8.771,8.539]},
+               L:{dir:[19.453,20.098,19.590,19.638],tn:[19.181,19.847,19.412,19.472]},
+               K:{dir:[5.584,5.389,5.460,5.444],tn:[5.598,5.379,5.441,5.430]} } };
+T1["AD"]["D"]["mln"]=[0.5062, 0.4711, 0.4483, 0.4369];
+T1["AD"]["L"]["mln"]=[1.1488, 1.2237, 1.1785, 1.1905];
+T1["AD"]["K"]["mln"]=[0.7969, 0.6899, 0.7196, 0.7051];
+T1["RM"]["D"]["mln"]=[9.774, 9.215, 8.799, 8.559];
+T1["RM"]["L"]["mln"]=[19.162, 19.762, 19.344, 19.421];
+T1["RM"]["K"]["mln"]=[5.607, 5.381, 5.443, 5.435];
+let RES='AD';
+function renderRes(){ const f=FS(), d=[], L=base({margin:{l:58*f,r:16*f,t:34*f,b:46*f},annotations:[],showlegend:true,legend:{orientation:'h',x:0,y:1.22,font:{size:12*f}}}), des=['D','L','K'];
+  des.forEach((g,i)=>{ const xa='x'+(i?i+1:''), ya='y'+(i?i+1:''), s=T1[RES][g];
+    [['dir',C.dir,'Dir-RF'],['tn',C.tn,'TN-RF'],['mln',C.muted,'MLN-RF']].forEach(([k,col,nm])=>d.push({type:'scatter',mode:'lines+markers',x:NS,y:s[k],xaxis:xa,yaxis:ya,
+      line:{color:col,width:3*f},marker:{size:9*f,color:col,line:{color:'#fff',width:1.5}},name:nm,legendgroup:k,showlegend:i===0,hovertemplate:nm+' &nbsp;n = %{x}: %{y}<extra></extra>'}));
+    const dom=[i/3+0.04,(i+1)/3-0.04];
+    L['xaxis'+(i?i+1:'')]={domain:dom,type:'log',tickvals:NS,ticktext:NS.map(String),showgrid:false,showline:true,linecolor:C.rule2,tickfont:{size:12*f,color:C.ink2},title:{text:'n',font:{size:12*f}},anchor:ya};
+    L['yaxis'+(i?i+1:'')]={anchor:xa,showgrid:true,gridcolor:C.rule,zeroline:false,tickfont:{size:11*f,color:C.ink2},title:i===0?{text:RES==='AD'?'Aitchison distance':'RMSE-averaged \u00d7100',font:{size:12*f}}:undefined};
+    L.annotations.push({text:'<b>Design '+g+'</b>',xref:'paper',yref:'paper',x:(dom[0]+dom[1])/2,y:1.08,showarrow:false,font:{size:15*f,color:C.ink}});
+    const last=s.tn.length-1;
+    L.annotations.push({text:'TN',x:Math.log10(2000),y:s.tn[last],xref:xa,yref:ya,showarrow:false,xanchor:'left',xshift:8*f,font:{size:12*f,color:C.tn}},
+                       {text:'Dir',x:Math.log10(2000),y:s.dir[last],xref:xa,yref:ya,showarrow:false,xanchor:'left',xshift:8*f,font:{size:12*f,color:C.dir}});
+  });
+  draw('fRes',d,L); }
+window.initRes=function(){ const a=$('r-ad'),b=$('r-rm');
+  a.addEventListener('click',()=>{RES='AD';a.setAttribute('aria-pressed','true');b.setAttribute('aria-pressed','false');a.blur();renderRes();});
+  b.addEventListener('click',()=>{RES='RM';b.setAttribute('aria-pressed','true');a.setAttribute('aria-pressed','false');b.blur();renderRes();});
+  renderRes(); };
+function renderRel(){ const f=FS(), d=[], cats=[];
+  ['D','L','K'].forEach(g=>NS.forEach(n=>cats.push(g+' \u00b7 '+n)));
+  [['AD','Aitchison distance',C.tn],['RM','RMSE-averaged','#7fb2ea']].forEach(([m,nm,col])=>{ const y=[];
+    ['D','L','K'].forEach(g=>{ const s=T1[m][g]; s.dir.forEach((v,i)=>y.push(100*(s.tn[i]-v)/v)); });
+    d.push({type:'bar',x:cats,y,name:nm,marker:{color:col,line:{color:'#f8f8f6',width:1}},text:y.map(v=>v.toFixed(2)+'%'),textposition:'outside',textfont:{size:10*f,color:C.ink2},cliponaxis:false,
+      hovertemplate:nm+'<br>%{x}: %{y:.2f}%<extra></extra>'}); });
+  draw('fRel',d,base({barmode:'group',bargap:0.25,showlegend:true,legend:{orientation:'h',x:0,y:1.12,font:{size:13*f}},margin:{l:62*f,r:10*f,t:40*f,b:60*f},
+    xaxis:{tickfont:{size:11*f,color:C.ink2},showline:true,linecolor:C.rule2},
+    yaxis:{title:{text:'(TN \u2212 Dir) / Dir, %',font:{size:13*f}},zeroline:true,zerolinecolor:C.ink2,zerolinewidth:1.5,gridcolor:C.rule,tickfont:{size:11*f}},
+    shapes:[{type:'line',xref:'x',yref:'paper',x0:3.5,x1:3.5,y0:0,y1:1,line:{color:C.rule2,width:1}},{type:'line',xref:'x',yref:'paper',x0:7.5,x1:7.5,y0:0,y1:1,line:{color:C.rule2,width:1}}]})); }
+window.initRel=renderRel;
+
+/* ============================ 10. zeros: density on the edge ============================ */
+function renderZero(){ const P=TN.makeTN(TN.muFromAngles(77.1,40.5),70,0.16*0.16,0.07*0.07), g=Math.exp(P.logPeak);
+  const Z=DGRID.Z.map(r=>r.map(z=>z?TN.density(TN.sqrtMap(z),P):null));
+  const cv=TN.levelFractions(5).map(f=>({f,pts:TN.tnLevelCurve(P,f,360)})), cc=curveTraces(cv,mapTern,'g');
+  draw('fZero',[{type:'heatmap',x:DGRID.xs,y:DGRID.ys,z:Z,zmin:0,zmax:g,zsmooth:'best',showscale:false,hoverinfo:'skip',
+      colorscale:[[0,'#f8f8f6'],[0.08,'#cde2fb'],[0.3,'#86b6ef'],[0.6,'#3987e5'],[1,'#0d366b']]},
+    ternGrid(),ternEdge(),lineTr(cc.IN,C.ink,1.4),ternMu(P.mu)],ternLayout({mask:true})); }
+window.initZero=renderZero;
+
+/* ============ 4b-4c. TN in the standard frame: kappa and beta, and the level-set surface ============
+   mu = e3, gamma2 = e1, gamma3 = e2 (as on the Kent pages), so v = K^T u = (x, y) and mu^T u = z;
+   Lambda from (kappa, beta) by (17). */
+const E3=[0,0,1], KSTD=[[1,0,0],[0,1,0]];
+function stdTN(l2,l3){ const pl=TN.piLambda(l2,l3);
+  return {mu:E3,K:KSTD,psi:0,l2,l3,pi:pl.pi,piOut:pl.out,logPi:pl.logPi,logPeak:-Math.log(TAU)-0.5*Math.log(l2*l3)-pl.logPi}; }
+/* contour of g at level f: one radius per direction (TN.levelRadius, exact), then (14) */
+function stdContour(P,f,M){ M=M||240; const V=[],U=[];
+  for(let i=0;i<=M;i++){ const a=TAU*i/M, r=TN.levelRadius(a,f,P.l2,P.l3), v=[r*Math.cos(a),r*Math.sin(a)]; V.push(v); U.push(TN.psiMap(v,P.mu,P.K)); }
+  return {V,U}; }
+function sphereFull(op){ const nu=48,nv=26,X=[],Y=[],Z=[];
+  for(let j=0;j<=nv;j++){ const th=Math.PI*j/nv,xr=[],yr=[],zr=[]; for(let i=0;i<=nu;i++){ const ph=TAU*i/nu; xr.push(Math.sin(th)*Math.cos(ph)); yr.push(Math.sin(th)*Math.sin(ph)); zr.push(Math.cos(th)); }
+    X.push(xr);Y.push(yr);Z.push(zr); }
+  return surfFlat(X,Y,Z,C.sphere,op); }
+function equator(){ const c=[]; for(let i=0;i<=180;i++){ const a=TAU*i/180; c.push([1.004*Math.cos(a),1.004*Math.sin(a),0]); } return poly3(c,C.muted,2.5,'dash'); }
+const EYEKB={x:0.75,y:1.5,z:1.1};
+function renderKB(){ const f=FS(), k=+$('kb-k').value, fr=+$('kb-b').value, b=fr*k/2, l2=1/(k-2*b), l3=1/(k+2*b), P=stdTN(l2,l3), S=TN.simulate(P,260,4545);
+  const R=1.06, cx=[], cy=[]; for(let i=0;i<=200;i++){ cx.push(Math.cos(TAU*i/200)); cy.push(Math.sin(TAU*i/200)); }
+  const d=[{type:'scatter',mode:'lines',x:cx,y:cy,line:{color:C.muted,width:1.3,dash:'dash'},hoverinfo:'skip'},
+    {type:'scatter',mode:'markers',x:S.map(s=>s.v[0]),y:S.map(s=>s.v[1]),marker:{size:4.5*f,color:C.dot,opacity:.5},hovertemplate:'v = (%{x:.3f}, %{y:.3f})<extra></extra>'}];
+  const x=[],y=[]; TN.levelFractions(5).forEach(fv=>{ stdContour(P,fv).V.forEach(v=>{x.push(v[0]);y.push(v[1]);}); x.push(null); y.push(null); });
+  d.push({type:'scatter',mode:'lines',x,y,line:{color:C.tn,width:2.2},hoverinfo:'skip'});
+  const a=R*0.8, ax={range:[-R,R],constrain:'domain',zeroline:false,showgrid:false,showticklabels:false,ticks:'',showline:true,linecolor:C.rule2,mirror:true};
+  draw('fKBa',d,base({margin:{l:4*f,r:4*f,t:4*f,b:4*f},xaxis:ax,yaxis:Object.assign({scaleanchor:'x',scaleratio:1},ax),
+    annotations:[{x:a,y:0,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,arrowhead:3,arrowwidth:2.2,arrowcolor:C.g2,standoff:0},
+      {x:0,y:a,ax:0,ay:0,xref:'x',yref:'y',axref:'x',ayref:'y',showarrow:true,arrowhead:3,arrowwidth:2.2,arrowcolor:C.g3,standoff:0},
+      {x:a,y:0,text:'γ₂',showarrow:false,xanchor:'left',yanchor:'top',font:{color:C.g2,size:15*f},xshift:3*f,yshift:-3*f},
+      {x:0,y:a,text:'γ₃',showarrow:false,xanchor:'left',yanchor:'bottom',font:{color:C.g3,size:15*f},xshift:4*f},
+      {x:0,y:0,text:'●',showarrow:false,font:{color:C.ink,size:10*f}},
+      {x:0,y:0,text:'μ',showarrow:false,font:{color:C.ink,size:14*f},xshift:-11*f,yshift:-11*f}]}));
+  draw('fKBb',[sphereFull(0.45),graticule(true),equator(),pts3(S.map(s=>scale(s.u,1.006)),C.dot,2.6,'draw<br>(%{x:.3f}, %{y:.3f}, %{z:.3f})<extra></extra>'),
+    seg3([0,0,0],[0,0,1.16],C.ink,4),lab3([0,0,1.26],'μ',C.ink,15)],base({scene:scene(EYEKB,[-1.06,1.2])}));
+  const r2=TN.levelRadius(0,0.1,l2,l3), r3=TN.levelRadius(Math.PI/2,0.1,l2,l3);
+  $('kb-out').innerHTML='&beta; = <b>'+b.toFixed(1)+'</b> &nbsp; &lambda;&#8322; = <b>'+l2.toPrecision(3)+'</b> &nbsp; &lambda;&#8323; = <b>'+l3.toPrecision(3)+'</b><br>'+
+    '&radic;(&lambda;&#8322;/&lambda;&#8323;) = <b>'+Math.sqrt(l2/l3).toFixed(2)+'</b> &nbsp; 10% contour ratio <b>'+(r2/r3).toFixed(2)+'</b> &nbsp; 1&minus;&pi;<sub>&Lambda;</sub> = <b>'+prob(P.piOut)+'</b>';
+}
+window.initTNkb=function(){ slider('kb-k',v=>v.toFixed(0),()=>later('kb',renderKB)); slider('kb-b',f2,()=>later('kb',renderKB)); renderKB(); };
+
+const EYELV={x:1.0,y:0.72,z:1.1};
+/* The level-set sheet. With (17) and x^2 + y^2 = 1 - z^2 on the sphere, the contour at level f is
+   (kappa/2) z^2 + ln z + beta (x^2 - y^2) = C, C = kappa/2 + ln f  (Kent: kappa z + beta (x^2 - y^2) = C).
+   The left side increases with z: one height per (x, y), solved for w = ln z; null above z = 1.25. */
+function sheetZ(s,a){ const wmax=Math.log(1.25); if(a*Math.exp(2*wmax)+wmax<s) return null;
+  let lo=Math.min(0,s-a)-1, hi=wmax, w=hi;
+  for(let i=0;i<80;i++){ const e=a*Math.exp(2*w), F=e+w-s; if(F>0) hi=w; else lo=w; let wn=w-F/(2*e+1); if(!(wn>lo&&wn<hi)) wn=0.5*(lo+hi);
+    if(Math.abs(wn-w)<1e-13){ w=wn; break; } w=wn; }
+  return Math.exp(w); }
+function sheet(k,b,fl){ const a=k/2, Cc=a+Math.log(fl), n=60, R=1.05, xs=[], Z=[];
+  for(let i=0;i<=n;i++) xs.push(-R+2*R*i/n);
+  for(let j=0;j<=n;j++){ const y=xs[j], r=[]; for(let i=0;i<=n;i++){ const x=xs[i]; r.push(sheetZ(Cc-b*(x*x-y*y),a)); } Z.push(r); }
+  const tr=surfFlat(xs,xs,Z,C.tn,0.3); delete tr.hoverinfo; tr.hovertemplate='level-set surface<br>z = %{z:.3f}<extra></extra>'; return tr; }
+const SLV={sheet:false};
+function renderLev(){ const k=+$('L-k').value, b=+$('L-b').value, fl=+$('L-f').value, l2=1/(k-2*b), l3=1/(k+2*b), P=stdTN(l2,l3), c=stdContour(P,fl,480);
+  draw('fLev',[sphereFull(0.22),graticule(true),equator(),...(SLV.sheet?[sheet(k,b,fl)]:[]),poly3(c.U.map(u=>scale(u,1.006)),'#0d366b',8),
+    seg3([0,0,0],[0,0,1.25],C.ink,6),lab3([0,0,1.34],'μ',C.ink,16),
+    seg3([0,0,1],[0.75,0,1],C.g2,5),lab3([0.92,0,1],'x = γ₂',C.g2,14),seg3([0,0,1],[0,0.75,1],C.g3,5),lab3([0,0.92,1],'y = γ₃',C.g3,14)],
+    base({scene:scene(EYELV,[-1.1,1.35])}));
+  const r2=TN.levelRadius(0,fl,l2,l3), r3=TN.levelRadius(Math.PI/2,fl,l2,l3);
+  $('L-out').innerHTML='c = <b>'+fl.toFixed(2)+'</b> &times; g(&mu;) &nbsp; (17): &lambda;&#8322; = <b>'+l2.toPrecision(3)+'</b>, &lambda;&#8323; = <b>'+l3.toPrecision(3)+'</b><br>the contour reaches <b>'+f3(r2)+'</b> along &gamma;&#8322;, <b>'+f3(r3)+'</b> along &gamma;&#8323; '+
+    '(ratio <b>'+(r2/r3).toFixed(2)+'</b>)'+(b===0?' &nbsp; &beta; = 0: a circle':'');
+}
+window.initTNlev=function(){ const keep=()=>{ const k=+$('L-k').value, sb=$('L-b'), bm=Math.ceil(k/2)-1;   /* (17) needs 2 beta < kappa */
+    if(+sb.value>bm){ sb.value=bm; $('L-b-v').textContent=sb.value; } later('lev',renderLev); };
+  slider('L-k',v=>v.toFixed(0),keep); slider('L-b',v=>v.toFixed(0),keep); slider('L-f',f2,()=>later('lev',renderLev));
+  toggle('L-sheet',SLV,'sheet',renderLev); renderLev(); };
+
+const RENDER={initDirContour:renderDirContour,initDir:renderDir,initDirLim:renderDirLim,initLift:renderLift,initKent:renderKent,initKentSim:renderKentSim,initKentCost:()=>{},
+  initTNdef:renderTNdef,initTNkb:renderKB,initTNlev:renderLev,initTNcont:renderCont,initRes:renderRes,initRel:renderRel,initZero:renderZero};
+
+/* ============================ navigation ============================ */
+const slides=[...document.querySelectorAll('.slide')], N=slides.length; let cur=0;
+const inited=new Set(), started=Date.now(); let notesWin=null;
+function plotsOf(s){ return [...s.querySelectorAll('.plot')]; }
+function activate(i){
+  i=Math.max(0,Math.min(N-1,i)); slides[cur].classList.remove('active'); cur=i; const s=slides[i]; s.classList.add('active');
+  $('progress').style.width=(100*i/(N-1))+'%'; $('num').textContent=(i+1)+' / '+N;
+  if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
+  const fn=s.dataset.init;
+  if(fn&&window.Plotly&&!inited.has(i)){ inited.add(i); try{ window[fn](); }catch(e){ console.error(e); } }
+  else plotsOf(s).forEach(p=>{ if(p.data) Plotly.Plots.resize(p); });   /* initialise on first view, resize afterwards */
+  updateNotes();
+}
+function rerenderVisible(){ const s=slides[cur], fn=s.dataset.init;     /* fonts follow the stage size */
+  if(!fn||!inited.has(cur)) return;
+  RENDER[fn]();
+  plotsOf(s).forEach(p=>{ if(p.data) Plotly.Plots.resize(p); }); }
+window.deckGo=d=>activate(cur+d); window.deckTo=i=>activate(i);
+document.addEventListener('keydown',e=>{
+  if(e.target&&e.target.tagName==='INPUT') return;
+  const k=e.key;
+  if(['ArrowRight','PageDown',' ','Enter'].includes(k)){ e.preventDefault(); activate(cur+1); }
+  else if(['ArrowLeft','PageUp','Backspace'].includes(k)){ e.preventDefault(); activate(cur-1); }
+  else if(k==='Home') activate(0); else if(k==='End') activate(N-1);
+  else if(k==='f'||k==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  else if(k==='s'||k==='S') openNotes();
+  else if(k==='n'||k==='N') $('ovl').classList.toggle('on'), updateNotes();
+  else if(k==='p'||k==='P') printMode();
+});
+let rt=0; addEventListener('resize',()=>{ fit(); clearTimeout(rt); rt=setTimeout(rerenderVisible,150); });
+
+/* ============================ speaker notes ============================ */
+const planned=slides.map(s=>+s.dataset.time||0), TOTAL=planned.reduce((a,b)=>a+b,0);
+const mmss=s=>{ s=Math.max(0,Math.round(s)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+function notesHTML(i){ const s=slides[i], n=s.querySelector('aside.notes'); return n?n.innerHTML:''; }
+function updateNotes(){
+  if($('ovl').classList.contains('on')) $('ovl').innerHTML='<b>'+(cur+1)+'. '+slides[cur].dataset.title+'</b> &middot; '+mmss(planned[cur])+'<br>'+notesHTML(cur);
+  if(!notesWin||notesWin.closed) return;
+  const d=notesWin.document, upto=planned.slice(0,cur).reduce((a,b)=>a+b,0);
+  d.getElementById('t').textContent=(cur+1)+' / '+N+' \u00b7 '+slides[cur].dataset.title;
+  d.getElementById('p').textContent='planned '+mmss(planned[cur])+' for this slide \u00b7 '+mmss(upto)+' \u2192 '+mmss(upto+planned[cur])+' of '+mmss(TOTAL);
+  d.getElementById('n').innerHTML=notesHTML(cur);
+  d.getElementById('x').textContent=cur+1<N?'Next: '+slides[cur+1].dataset.title:'(last slide)';
+}
+function openNotes(){
+  notesWin=window.open('','deck-notes','width=900,height=680');
+  if(!notesWin){ $('ovl').classList.add('on'); updateNotes(); return; }      /* pop-ups blocked: notes on the slide */
+  const d=notesWin.document; d.open();
+  d.write('<!doctype html><title>Speaker notes</title><style>body{font:19px/1.5 Georgia,serif;margin:22px;background:#fcfcfb;color:#141412}'+
+    '#t{font:600 22px Georgia,serif}#p,#c,#x{font:14px monospace;color:#4d4c48}#c{font-size:30px;color:#141412;margin:6px 0}#n{margin-top:10px}#x{margin-top:16px;border-top:1px solid #ddd;padding-top:8px}</style>'+
+    '<div id="c">0:00</div><div id="t"></div><div id="p"></div><div id="n"></div><div id="x"></div>');
+  d.close();
+  notesWin.document.addEventListener('keydown',e=>{ if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();activate(cur+1);} else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();activate(cur-1);} });
+  updateNotes();
+}
+setInterval(()=>{ if(notesWin&&!notesWin.closed){ const el=notesWin.document.getElementById('c'); if(el) el.textContent='elapsed '+mmss((Date.now()-started)/1000); } },1000);
+
+/* ============================ print / PDF ============================ */
+async function printMode(){
+  if(document.body.classList.contains('print')){ window.print(); return; }
+  document.body.classList.add('print'); SW=1280; document.documentElement.style.fontSize='16px'; stage.style.width=''; stage.style.height='';
+  /* initialise every figure once, re-render it at print size, then freeze it as an image */
+  for(let i=0;i<N;i++){ const s=slides[i], fn=s.dataset.init; if(!fn||!window.Plotly) continue; cur=i;
+    if(!inited.has(i)){ inited.add(i); window[fn](); }
+    else RENDER[fn]();
+    for(const p of plotsOf(s)){ Plotly.Plots.resize(p); await new Promise(z=>setTimeout(z,250));
+      try{ const url=await Plotly.toImage(p,{format:'png',width:p.clientWidth,height:p.clientHeight,scale:2});
+        const img=new Image(); img.className='static'; img.src=url; img.style.height=p.clientHeight+'px'; p.style.display='none'; p.after(img); }catch(e){ console.error(e); } }
+  }
+  setTimeout(()=>window.print(),400);
+}
+
+/* ============================ start ============================ */
+fit();
+setTimeout(()=>$('help').classList.add('gone'),7000);
+const h=parseInt(location.hash.slice(1),10);
+slides.forEach(s=>s.classList.remove('active')); slides[0].classList.add('active');
+if(/[?&]print/.test(location.search)) addEventListener('load',()=>setTimeout(printMode,1500));
+function start(){ activate(h>=1&&h<=N?h-1:0); }
+if(window.MathJax&&window.MathJax.startup&&window.MathJax.startup.promise) window.MathJax.startup.promise.then(start); else addEventListener('load',start);
+setTimeout(()=>{ if(!inited.size) start(); },3000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Three Spaces Hints</title>
+<meta name="description" content="Click-to-reveal explanations for the slide 'One contour, three spaces' (tangent plane, sphere, triangle) in tn_talk.html.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+:root{--bg:#f8f8f6;--surface:#fcfcfb;--surface-2:#f1f1ec;--ink:#141412;--ink-2:#4d4c48;--muted:#8a8883;--rule:#e2e1da;--rule-2:#cdccc3;
+  --tn:#2a78d6;--g2:#1baf7a;--g3:#c98500;--out:#e34948;--kent:#6250d6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1b1b19;--surface:#232321;--surface-2:#2a2a27;--ink:#efeee8;--ink-2:#c4c2bb;--muted:#8f8d86;--rule:#3a3935;--rule-2:#4a4944;--tn:#6aa6ec;--g2:#3cc995;--g3:#e0a43a;--out:#f07474;--kent:#9a8cf0}}
+:root[data-theme="dark"]{--bg:#1b1b19;--surface:#232321;--surface-2:#2a2a27;--ink:#efeee8;--ink-2:#c4c2bb;--muted:#8f8d86;--rule:#3a3935;--rule-2:#4a4944;--tn:#6aa6ec;--g2:#3cc995;--g3:#e0a43a;--out:#f07474;--kent:#9a8cf0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Serif 4",Georgia,serif;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased}
+main{max-width:52rem;margin:0 auto;padding:2.5rem 16px 4rem}
+h1{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:2.6rem;line-height:1.1;margin:.2rem 0 .6rem}
+h2{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:1.7rem;margin:2.2rem 0 .6rem;padding-top:.6rem;border-top:1px solid var(--rule)}
+.kicker{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tn)}
+p{margin:.5rem 0}
+.lead{color:var(--ink-2)}
+code,.mono{font-family:"IBM Plex Mono",monospace;font-size:.86em}
+details{border:1px solid var(--rule);background:var(--surface);border-radius:4px;margin:.55rem 0}
+summary{cursor:pointer;padding:.65rem 1rem;font-weight:600;list-style:none;display:flex;gap:.7rem;align-items:baseline}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"+";font-family:"IBM Plex Mono",monospace;color:var(--muted);width:.8rem;flex:none}
+details[open] summary::before{content:"\2212"}
+details[open] summary{border-bottom:1px solid var(--rule)}
+details>div{padding:.4rem 1rem .8rem}
+.try summary{font-weight:400;font-style:italic}
+.key{display:grid;grid-template-columns:auto 1fr;gap:.35rem 1rem;margin:.6rem 0;font-size:.95rem}
+.key span:nth-child(odd){font-family:"IBM Plex Mono",monospace;font-size:.82rem;color:var(--ink-2);white-space:nowrap}
+.c-tn{color:var(--tn)} .c-g2{color:var(--g2)} .c-g3{color:var(--g3)} .c-out{color:var(--out)} .c-muted{color:var(--muted)}
+.note{border-left:3px solid var(--rule-2);padding:.2rem 0 .2rem .9rem;color:var(--ink-2);font-size:.95rem}
+</style>
+</head>
+<body>
+<main>
+<div class="kicker">Slide 24 of tn_talk.html &middot; &ldquo;One contour, three spaces&rdquo;</div>
+<h1>One contour, three spaces: hints</h1>
+<p class="lead">Each question opens when you click it. Read the question, think, then open it. The &ldquo;try this&rdquo; items are things to do with the sliders on the slide.</p>
+
+<h2>What is on the slide</h2>
+<div class="key">
+  <span>(a) tangent plane</span><span>the flat picture: coordinates \(v = K^{\top}u\) measured along the axes \(\gamma_2\) (horizontal, green) and \(\gamma_3\) (vertical, amber). \(\mu\) is always at the centre.</span>
+  <span>(b) sphere</span><span>the same contours on the sphere, \(u=\psi(v)\) (eq. 14). Fixed axes \(x_1,x_2,x_3\); drag to rotate.</span>
+  <span>(c) triangle</span><span>the same contours as compositions, \(z=u^2\). The &times; is \(\mu^2\).</span>
+  <span>sliders</span><span>\(\theta,\varphi\) place \(\mu\); \(\psi\) turns the axes \(\gamma_2,\gamma_3\) around \(\mu\); \(\sqrt{\lambda_2},\sqrt{\lambda_3}\) are the two spreads.</span>
+</div>
+
+<details><summary>Is it really the same contour in all three panels?</summary><div>
+<p>Yes. A contour is the set of points where the TN density takes one value: \(\{u: g(u)=c\}\). Each panel shows that one set in a different coordinate system. Panel (a) uses the tangent coordinates \(v\), panel (b) the point \(u\) itself, panel (c) the composition \(z=u^2\). The maps between them are one-to-one (on the part inside the orthant \(\mathcal O\)), so a point on a curve in one panel is a point on the matching curve in the others.</p>
+<p>The five curves are the levels 10, 30, 50, 70 and 90% of the peak \(g(\mu)\): the innermost curve is 90%.</p>
+</div></details>
+
+<h2>Panel (a): the tangent plane</h2>
+
+<details><summary>Why does the triangle turn in (a) when I move &psi;, but in (b) and (c) the contours turn?</summary><div>
+<p>Because the axes of panel (a) <b>are</b> \(\gamma_2\) and \(\gamma_3\). The horizontal axis is \(v_2=\gamma_2^{\top}u\) and the vertical axis is \(v_3=\gamma_3^{\top}u\). When you move \(\psi\), \(\gamma_2\) and \(\gamma_3\) turn around \(\mu\), and the axes of the picture turn with them.</p>
+<p>The contours are ellipses lined up with \(\gamma_2\) and \(\gamma_3\), because \(\Lambda\) is diagonal in that basis. So in (a) the contours never turn: they always lie along the axes of the picture. What does not turn with \(\psi\) is the orthant \(\mathcal O\) (the shaded curved triangle). Seen from the turning axes, it turns the other way.</p>
+<p>Panels (b) and (c) use the fixed axes \(x_1,x_2,x_3\). There the triangle stays still and the contours turn.</p>
+<p class="note">Compare: inside a car that turns left, the road looks as if it turns right. Panel (a) is the view from inside the car (the frame of \(\gamma_2,\gamma_3\)). Panels (b) and (c) are the view from the road.</p>
+</div></details>
+
+<details class="try"><summary>Try this: set &psi; = 0. What does the triangle in (a) look like?</summary><div>
+<p>It stands upright, like the triangle in (c): the bottom edge (\(x_3=0\)) is level below \(\mu\), the \(x_3\) corner is at the top and \(x_2\) is on the right. At the default zoom you only see the parts of the edges near \(\mu\). Raise \(\sqrt{\lambda_2}\) to about 0.3 to zoom out and see the whole curved triangle. At \(\psi=0\), \(\gamma_3\) points from \(\mu\) towards the \(x_3\) corner, and \(\gamma_2\) runs parallel to the \(x_1\)&ndash;\(x_2\) edge, towards \(x_2\). (This is the frame of design K in Appendix A.) At \(\psi=30^\circ\), the default, the triangle in (a) is turned \(30^\circ\) clockwise, and in (b) and (c) the ovals are turned \(30^\circ\) counter-clockwise.</p>
+</div></details>
+
+<details><summary>Why is the triangle in (a) curved, and why does it not fill the circle?</summary><div>
+<p>The dotted circle is \(\|v\|=1\). It is the image of the edge of the hemisphere \(H_\mu\), the great circle \(\mu^{\top}u=0\). The whole disc is the whole hemisphere around \(\mu\): everything where the TN density can be positive.</p>
+<p>Only part of that hemisphere is made of compositions: the orthant \(\mathcal O\), where every \(u_j\ge0\). That part is the shaded region. Its three edges are the arcs \(u_j=0\) on the sphere (the edges of the triangle). Each arc lies on a great circle. Looking straight down at the plane, a great circle looks like an ellipse centred at \(\mu\), so each edge in (a) is part of an ellipse.</p>
+<p class="note">One useful fact: the nearest point of the edge \(u_j=0\) is exactly \(\mu_j=\sqrt{z_j}\) from the centre, where \(z=\mu^2\) is the composition at \(\mu\). So when \(\mu^2\) has a small part, that edge comes close to the centre, and the contours start to cross it.</p>
+</div></details>
+
+<details><summary>What are the grey dashed ellipses, and why do they differ from the blue curves?</summary><div>
+<p>The grey dashed ellipses are the contours of the Gaussian part alone, \(\varphi_\Lambda(v)\): exact ellipses \(v^{\top}\Lambda^{-1}v=\text{const}\). The blue curves are the true contours of \(g\). These also include the Jacobian factor \(\mu^{\top}u=\sqrt{1-\|v\|^2}\) from eq. (15).</p>
+<p>That factor is almost 1 near the centre and goes to 0 at the rim \(\|v\|=1\). For a small spread the two sets of curves coincide. For a large spread the factor pulls the outer contours inwards, so they become rounder and smaller than the ellipses.</p>
+</div></details>
+
+<details class="try"><summary>Try this: drag &radic;&lambda;&#8322; to 0.6. What happens to the dashed and the solid curves?</summary><div>
+<p>The solid blue curves separate from the dashed ellipses and stay inside the dotted circle. The dashed ellipses would run past \(\|v\|=1\), and they are cut off there. Also watch the tick labels: the axis range of (a) grows with \(\sqrt{\lambda_2}\), so the figure zooms out.</p>
+</div></details>
+
+<details><summary>Why does the triangle in (a) get bigger or smaller when I move &radic;&lambda;&#8322;?</summary><div>
+<p>It does not change. The axis range of panel (a) follows the spread (about \(3.6\sqrt{\lambda_2}\)), so the contours always fill the picture. A small \(\sqrt{\lambda_2}\) zooms in, so the triangle looks large. A large \(\sqrt{\lambda_2}\) zooms out. Read the tick labels to see the true scale.</p>
+</div></details>
+
+<details><summary>Why can &radic;&lambda;&#8323; not be larger than &radic;&lambda;&#8322;?</summary><div>
+<p>This is a naming convention, not a restriction on the model. \(\gamma_2\) is called the major axis, so \(\lambda_2\ge\lambda_3\). If you want the long side the other way, turn \(\psi\) by \(90^\circ\). In Kent terms, \(\lambda_2\ge\lambda_3\) is \(\beta\ge0\) through eq. (17).</p>
+</div></details>
+
+<h2>Panel (b): the sphere</h2>
+
+<details><summary>What are the two shades on the sphere and the dashed circle?</summary><div>
+<p>The coloured cap is the hemisphere \(H_\mu\), where the TN density lives. The darker part of it is the orthant \(\mathcal O\) (compositions). The lighter part is the rest of the hemisphere: points with a negative coordinate, which are the square root of no composition. The grey dashed circle is the edge of \(H_\mu\), the same as the dotted circle in (a). The thick dark curves are the edges of \(\mathcal O\), the same as the edges of the shaded triangle in (a) and of the triangle in (c).</p>
+</div></details>
+
+<details><summary>Why are the contours on the sphere ovals around &mu;, and what do &theta; and &phi; do?</summary><div>
+<p>\(\psi\) (eq. 14) wraps the flat plane onto the hemisphere around \(\mu\). Near \(\mu\) it hardly changes distances, so a small ellipse in (a) becomes an oval cap of almost the same shape in (b).</p>
+<p>\(\theta\) is the angle between \(\mu\) and the \(x_3\) axis, and \(\varphi\) is the angle around that axis, measured from \(x_1\). Small \(\theta\) puts \(\mu\) near the \(x_3\) corner. \(\theta\) near \(90^\circ\) puts it near the \(x_1\)&ndash;\(x_2\) edge (\(x_3\to0\)). \(\varphi\) moves it between the \(x_1\) side (\(0^\circ\)) and the \(x_2\) side (\(90^\circ\)). In (b) and (c), \(\mu\) moves. In (a), \(\mu\) stays at the centre and the triangle moves instead, for the same reason as with \(\psi\).</p>
+</div></details>
+
+<details><summary>Why are some parts of the curves red and dashed?</summary><div>
+<p>Those parts of the contour are on the hemisphere but outside \(\mathcal O\): one coordinate of \(u\) is negative. The TN density is positive there, but no composition lives there. They appear in (a) and (b) and are missing from (c), because \(z=u^2\) is only used for points that really come from a composition.</p>
+</div></details>
+
+<h2>Panel (c): the triangle</h2>
+
+<details><summary>Why are the contours in the triangle not ellipses?</summary><div>
+<p>Because \(z=u^2\) is not linear. Squaring changes small numbers much more than large ones. Near an edge, where one part \(u_j\) is small, \(z_j=u_j^2\) is smaller still, so the contours are pressed against that edge and look flattened or pointed. Near the middle of the triangle the map is close to linear, and the contours stay close to ovals.</p>
+<p class="note">These are the contours of \(g\) (the density on the sphere), drawn in the triangle. The density of \(z\) itself has an extra factor \(1/\{4\sqrt{z_1z_2z_3}\}\) (the Jacobian of the square root). Its contours would be a little different, especially near the edges.</p>
+</div></details>
+
+<details><summary>Is the &times; the mean composition?</summary><div>
+<p>It is \(\mu^2\): the composition at the mean direction, where the density on the sphere is highest. It is close to the mean of \(Z\) when the spread is small, but not equal to it. The read-out on the slide shows the same \(\mu^2\).</p>
+</div></details>
+
+<h2>The read-out and the &ldquo;near the edge&rdquo; button</h2>
+
+<details><summary>What do 1&minus;&pi;<sub>&Lambda;</sub> and P(U &notin; O) mean?</summary><div>
+<p>\(1-\pi_\Lambda\) is the probability that the Gaussian part \(V_0\sim N(0,\Lambda)\) falls outside the unit disc, so the draw is rejected in Definition 1. It depends only on \(\Lambda\), and it is tiny unless the spread is huge (bound 19). That is why the constant can be dropped.</p>
+<p>\(P(U\notin\mathcal O)\) is the probability that a TN draw lands on the hemisphere but outside the orthant: a point that is not a composition. This is the cost of the hemisphere support. It is turned red when it exceeds 0.1%.</p>
+</div></details>
+
+<details class="try"><summary>Try this: press &ldquo;near the edge x&#8323; = 0&rdquo;. What changes in each panel?</summary><div>
+<p>\(\mu^2\) now has \(x_3\approx0.05\), so \(\mu_3\approx0.22\). In (a) the bottom edge of the shaded triangle comes within 0.22 of the centre (see the &ldquo;useful fact&rdquo; above). With \(\sqrt{\lambda_2}=0.16\) and the axes turned by \(70^\circ\), the outer contour crosses it. The crossing part is red and dashed in (a) and (b). In (c) the curve stops at the edge \(x_3=0\). The read-out shows a visible \(P(U\notin\mathcal O)\).</p>
+</div></details>
+
+<details><summary>How does this slide connect to the earlier TN slides?</summary><div>
+<p>Panel (a) is step 3 of the slide &ldquo;A normal distribution on the tangent plane&rdquo;, seen from straight above: the normal contours on the plane. Panel (b) is step 4: the same contours carried back to the hemisphere by \(\psi\). Panel (c) adds the last step, back to the triangle by \(z=u^2\). The slide &ldquo;Contour&rdquo; showed one such curve as \(\{g(u)=c\}\) with \(\mu\) at the north pole. Here \(\mu\) can sit anywhere in the orthant.</p>
+</div></details>
+
+</main>
+<script>
+window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']]},options:{enableMenu:false}};
+</script>
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
