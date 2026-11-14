@@ -2,7 +2,7 @@
   "source": "C:\\Users\\29827094\\OneDrive - Stellenbosch University\\Documents\\GitHub\\CompositionalRF\\dev\\28072026_2\\final_experiments\\tables_paper\\tab_sample_size.tex",
   "settings_source": "../CompositionalRF/dev/28072026_2/final_experiments/R/00_common.R",
   "implementation": "../CoDARF/core/include/codarf/leaf_kent.hpp",
-  "status": "All 72 plotted means match the latest committed three-forest paper table (03d0e52, 1 November 2026), unchanged at HEAD 633a540. Main_new.tex is an older 20 October draft. Numerical equivalence to a particular arXiv version has not been established here.",
+  "status": "All 72 plotted means verified against arXiv:2611.14275v1, Table 1, and the latest committed local three-forest paper table. Historical exact-zero results independently verified against the archived experiment-25 table.",
   "replications": 40,
   "train_fraction": 0.8,
   "trees": 1000,
@@ -159,5 +159,89 @@
     "older_manuscript_commit": "062ae00b33abd0a5225402eaed4a06029b373424",
     "older_manuscript_date": "2026-10-20",
     "checked_source": "Committed HEAD, not uncommitted manuscript edits"
+  },
+  "public_verification": {
+    "url": "https://arxiv.org/html/2611.14275v1#S4.T1",
+    "version": "v1",
+    "table": 1,
+    "checked_on": "2026-11-14",
+    "matched_means": 72,
+    "html_sha256": "051b1112416be6790cf24ba2d1fb77f25029a38d32495f1a66f6e791a0d6de6f",
+    "comparison": "All means identical to the plotted data; no results changed."
+  },
+  "historical_zero_experiment": {
+    "source": "C:\\Users\\29827094\\OneDrive - Stellenbosch University\\Documents\\GitHub\\CompositionalRF\\dev\\28072026_2\\paper\\results\\tables\\25_zeros.tex",
+    "source_commit": "8b9e7814c708f198b4143943323e3bd0fa6c71ff",
+    "manuscript": "Main_old.tex, section Exact zeros",
+    "experiment": "paper/experiments/25_geometry_zeros.R",
+    "score": "Energy score against raw held-out compositions",
+    "replications": 20,
+    "training_rows": 500,
+    "test_rows": 300,
+    "trees": 200,
+    "mtry": 2,
+    "max_depth": 30,
+    "comparison_draws_per_test_observation": 150,
+    "node_model": "Archived Gaussian tangent surrogate, called kent in the older scripts; not the current delta2 TN-RF score.",
+    "prevalence": [
+      0,
+      0.05,
+      0.15,
+      0.3,
+      0.5
+    ],
+    "row_order": [
+      "dirichlet_replaced",
+      "mln_replaced",
+      "square_root_replaced",
+      "square_root_native",
+      "drf_native",
+      "mass_displaced"
+    ],
+    "data": [
+      [
+        0.0914,
+        0.1072,
+        0.1421,
+        0.1916,
+        0.2375
+      ],
+      [
+        0.1024,
+        0.1174,
+        0.1453,
+        0.1836,
+        0.2247
+      ],
+      [
+        0.1017,
+        0.114,
+        0.1397,
+        0.1771,
+        0.2189
+      ],
+      [
+        0.1017,
+        0.1139,
+        0.14,
+        0.1774,
+        0.2195
+      ],
+      [
+        0.0948,
+        0.1073,
+        0.1335,
+        0.1724,
+        0.2157
+      ],
+      [
+        0.0,
+        0.0001,
+        0.0004,
+        0.0009,
+        0.0015
+      ]
+    ],
+    "matched_values": 30
   }
 }

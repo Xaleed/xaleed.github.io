@@ -38,6 +38,10 @@ The existing `presentation/tn_talk.html` deck now contains 36 slides, preserving
 
 The deck is buildless and runs locally. All 36 slides, all 19 figures, math rendering, layout, navigation, speaker controls, all eight visibility combinations and both metric views passed browser checks. All 72 plotted means match the recorded source table. Print preparation exports all 19 figures as static images.
 
-Remaining presenter decisions are in `presentation_todo.md`: check the specific arXiv table version if needed, confirm historical-study provenance, and rehearse at your comfortable pace. The subsequent main-project Git audit confirmed that all 72 plotted means match the latest committed paper table (`03d0e52`, 1 November; HEAD `633a540`, 8 November), while `Main_new.tex` is an older 20 October draft. No new simulation results were invented or generated. Original research documents and earlier presentations were preserved.
+Remaining presenter decisions are in `presentation_todo.md`: rehearse at your comfortable pace. Public-table and historical-study provenance checks have now both been completed. The subsequent main-project Git audit confirmed that all 72 plotted means match the latest committed paper table (`03d0e52`, 1 November; HEAD `633a540`, 8 November), while `Main_new.tex` is an older 20 October draft. No new simulation results were invented or generated. Original research documents and earlier presentations were preserved.
 
 Initial preparation was local-only. The presenter subsequently authorized a GitHub commit and push.
+
+## Completion of remaining source checks
+
+Compared all 72 means directly with arXiv v1, Table 1, and all 30 historical zero-study values with the archived experiment-25 table. Updated slide citations, separate and private notes, provenance and the TODO. The old zero study uses 500 training and 300 test observations and a Gaussian tangent surrogate; it is retained as historical context. No numerical result or slide count changed. Optional future research and offline enhancements are now clearly distinguished from unfinished deliverables. Personal timed rehearsal remains the presenter's task.

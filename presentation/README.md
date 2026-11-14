@@ -61,3 +61,7 @@ The complete spoken script is in [presentation_speaker_notes.md](../presentation
 The TN construction and score were checked against local `Main_new.tex`, the experiment settings, and CoDARF's `leaf_kent.hpp`. The public preprint is [Compositional random forest](https://arxiv.org/abs/2611.14275). Some local draft text is stale: the implemented Jacobian approximation is `delta2`, not the Taylor-at-one variant mentioned in an unfinished paragraph.
 
 The original research documents, older presentation, additional `three_spaces_hints.html` explainer, interactive animations, and original results are preserved. Initial preparation was local-only. The presenter subsequently authorized a GitHub commit and push.
+
+## Completed public and historical source checks
+
+All 72 plotted means also match [arXiv v1, Table 1](https://arxiv.org/html/2611.14275v1#S4.T1), verified against the downloaded HTML. All 30 values in the retained historical exact-zero table match archived experiment 25; its settings and separate Gaussian tangent score are now documented. Research verification is complete; only a personal timed rehearsal remains.

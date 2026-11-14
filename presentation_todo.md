@@ -33,11 +33,11 @@
 - [Compositional random forest, arXiv:2611.14275](https://arxiv.org/abs/2611.14275), submitted 10 November 2026: public title, authors and preprint record; Section 3.2.3 agrees with the delta2 formulation.
 - [Kent (1982), The Fisher-Bingham Distribution on the Sphere](https://doi.org/10.1111/j.2517-6161.1982.tb01189.x): standard five-parameter spherical model; the three-dimensional formula and count also appear in the local manuscript and code.
 
-## Confirmation or follow-up for the presenter
+## Remaining verification completed; personal rehearsal
 
 - [x] Reconciled the deck with the latest committed main-project paper table: all 72 means match `final_experiments/tables_paper/tab_sample_size.tex`, committed as `03d0e52` on 1 November 2026 and unchanged at HEAD `633a540` (8 November). `Main_new.tex` was committed as `062ae00` on 20 October and is an older draft.
-- [ ] If presenting the results specifically as arXiv Table 1, check the chosen public version separately. The local Git source is now verified; the deck retains its explicit source label.
-- [ ] Confirm whether to include the historical exact-zero slide in a later shorter version. It remains in this deck, is explicitly a precursor study, and has a short script. Its original draft provenance has not been independently reconstructed here.
+- [x] Retrieved the versioned public arXiv HTML and compared every mean in Table 1: all 72 plotted values match v1 exactly. The result slides now cite arXiv v1, Table 1 directly; the HTML SHA-256 and verification date are recorded in results_provenance.json.
+- [x] Retained the historical exact-zero slide, as required by the instruction to preserve existing slides. Located its source table, manuscript and experiment script; all 30 table values match. Corrected the study description to 500 training and 300 test observations, 20 replications and 200 trees, and labelled its Gaussian tangent surrogate separately from current TN-RF. No presenter confirmation is required to retain this verified slide.
 - [ ] Rehearse the 14:22 plan at your comfortable pace. Full interactive exploration will take longer; only the short specified interactions fit the plan.
 
 ## Missing results, figures and mathematical limits
@@ -48,11 +48,11 @@
 - No universal prediction ranking, exact orthant support, structural-zero probability atom or causal explanation for the earlier zero experiment is claimed.
 - The shown mapped spherical level curves are labelled separately from simplex-density contours; transformation Jacobians are necessary when interpreting densities.
 
-## Suggested improvements not implemented
+## Optional future work outside the requested deliverables
 
-- Add an orthant-truncated or folded model only as separate research: it changes normalisation and estimation.
-- Add uncertainty intervals after selecting a single approved simulation version. Existing means alone do not establish significance.
-- Provide an offline bundle of CDN dependencies if the conference venue lacks reliable internet.
+- Research extension, not unfinished presentation work: an orthant-truncated or folded model changes normalisation and estimation and requires a separate study.
+- Optional enhancement, not a blocker: uncertainty displays using the source-table standard deviations. No new significance claims have been added.
+- Optional enhancement, not a blocker: an offline bundle if the venue lacks reliable internet. The currently requested online presentation has passed browser checks.
 
 ## Validation
 
@@ -81,3 +81,10 @@ Checked the repository at `../CompositionalRF/dev/28072026_2` following the pres
 - The main research checkout contains existing modified and untracked files, particularly in `lucas_zeros`. They were left unchanged. Commit identifiers refer to local Git history; no fetch, pull, commit or push was performed.
 
 The presentation's numerical results and executable HTML did not need to change after this audit. Only provenance and documentation were updated; the previous browser validation remains applicable.
+
+## Final closure of the research checks
+
+- Public source: https://arxiv.org/html/2611.14275v1#S4.T1. Programmatically compared all 72 displayed means against the actual versioned HTML, not only a local manuscript.
+- Archived source: `paper/results/tables/25_zeros.tex`, also reproduced in `Main_old.tex`; generation script `paper/experiments/25_geometry_zeros.R`. Programmatically compared all 30 displayed values. Its source commit and verified settings are recorded in `presentation/results_provenance.json`.
+- Retaining the archived slide follows the original requirement to preserve existing slides; it is a short historical illustration with a 12-second script, not a current TN-RF result.
+- The only remaining original-deliverable checklist item is a personal timed rehearsal. A browser or code test cannot verify the presenter's speaking pace or pronunciation.

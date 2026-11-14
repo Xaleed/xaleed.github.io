@@ -835,13 +835,13 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
 <section class="slide" data-title="Multivariate logistic normal distribution" data-time="23"><div class="kicker k-res">Log-ratio approach</div><h2>Multivariate logistic normal (MLN)</h2><div class="cols c2"><div class="col"><p>Additive log-ratio coordinates:</p><div class="eqbox">\[Y_i=\log\!\left(\frac{X_i}{X_K}\right),\qquad i=1,\ldots,K-1.\]</div><div class="eqbox">\[\boldsymbol Y\sim N_{K-1}(\boldsymbol\mu,\boldsymbol\Sigma).\]</div><p>Flexible covariance in real space.</p></div><div class="col"><p>Inverse transformation:</p><div class="eqbox">\[X_i=\frac{\exp(Y_i)}{1+\sum_{j=1}^{K-1}\exp(Y_j)},\quad i&lt;K,\]</div><div class="eqbox">\[X_K=\frac1{1+\sum_{j=1}^{K-1}\exp(Y_j)}.\]</div><div class="box"><p style="margin:0">Standard log-ratios require <b>strictly positive</b> components.</p></div></div></div><aside class="notes"><p>Another common approach is the multivariate logistic normal distribution. Transform the composition using log-ratios, then assume a multivariate normal distribution. The inverse formulas return a composition. Standard log-ratios require strictly positive components.</p><p><b>Transition:</b> We include MLN in the comparison.</p><p><b>Figure:</b> Point to the forward transformation, normal model and inverse formulas.</p><p><b>Remember:</b> X and Y here denote compositions and ALR coordinates, not the earlier predictor matrix. For a nonsingular sample covariance, Gaussian ML estimates are closed form.</p></aside></section>
 
 <section class="slide" data-title="Results: test error" data-time="35" data-init="initRes">
-  <div class="kicker k-res">Simulation study &middot; matched local experiment</div>
+  <div class="kicker k-res">Simulation study &middot; arXiv v1, Table 1</div>
   <h2>Dir-RF, MLN-RF and TN-RF: test error</h2>
   <p class="small" style="margin:0 0 .2rem">Designs: <b>D</b> Dirichlet data &middot; <b>L</b> logistic-normal, correlation &asymp; &minus;0.9 &middot; <b>K</b> exact Kent, one part near zero (30% of draws have a part below 0.01). 40 paired replications; 1000 trees.</p>
   <div class="btns"><button class="btn" id="r-ad" aria-pressed="true">Aitchison distance (42)</button><button class="btn" id="r-rm" aria-pressed="false">RMSE-averaged &times;100 (43)</button></div>
   <div class="plot" id="fRes"></div>
-  <div class="src">Matched local results: tab_sample_size_m10.tex; m = 10, depth 10, mtry = 3; shared 80/20 splits, no resampling, 1000 trees. Fixed settings, not separately tuned. Lower is better. This table preserves the original deck values; manuscript drafts differ.</div>
-  <aside class="notes"><p>These matched local results use the same data and eighty-twenty train-test splits, forty paired replications, and common forest settings. Lower error is better. TN improves on Dirichlet in most displayed cells. MLN is competitive and often best in the logistic-normal design. Performance depends on data structure and metric.</p><p><b>Transition:</b> Here are the TN-Dirichlet differences.</p><p><b>Figure:</b> Show Aitchison first, then click RMSE. Identify the grey MLN line using the legend.</p><p><b>Remember:</b> These are tab_sample_size_m10.tex results, preserving original deck values. They differ from some manuscript drafts; do not call them arXiv Table 1 without checking. No new significance claim from means alone.</p></aside>
+  <div class="src"><a href="https://arxiv.org/html/2611.14275v1#S4.T1">arXiv:2611.14275v1, Table 1</a> &middot; 40 paired replications; m = 10, depth 10, mtry = 3, 1000 trees; shared 80/20 splits, no resampling. Fixed common settings; lower is better.</div>
+  <aside class="notes"><p>These results from Table One of our arXiv preprint use the same data and eighty-twenty train-test splits, forty paired replications, and common forest settings. Lower error is better. TN improves on Dirichlet in most displayed cells. MLN is competitive and often best in the logistic-normal design. Performance depends on data structure and metric.</p><p><b>Transition:</b> Here are the TN-Dirichlet differences.</p><p><b>Figure:</b> Show Aitchison first, then click RMSE. Identify the grey MLN line using the legend.</p><p><b>Remember:</b> All 72 means match arXiv:2611.14275v1, Table 1 and the latest committed local paper table. No new significance claim is inferred from means alone.</p></aside>
 </section>
 
 <!-- ============================== 9. RESULTS (relative) ============================== -->
@@ -849,7 +849,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
   <div class="kicker k-res">Simulation study &middot; the matched local experiment</div>
   <h2>TN-RF relative to Dir-RF</h2>
   <div class="plot" id="fRel"></div>
-  <div class="src">Relative difference (TN-RF &minus; Dir-RF) / Dir-RF, computed from the means in the matched local experiment. Negative: TN-RF lower error. Pairwise comparison only; MLN-RF is shown on the preceding slide. These mean differences alone do not establish statistical significance.</div>
+  <div class="src">Relative difference (TN-RF &minus; Dir-RF) / Dir-RF, computed from the means in arXiv v1, Table 1. Negative: TN-RF lower error. Pairwise comparison only; MLN-RF is shown on the preceding slide. These mean differences alone do not establish statistical significance.</div>
   <aside class="notes"><p>Negative bars mean lower TN error than Dirichlet. Many differences are small, so practical size also matters.</p><p><b>Transition:</b> What about zeros?</p><p><b>Figure:</b> Point to zero and the positive RMSE exception.</p><p><b>Remember:</b> The denominator is the Dirichlet error. This plot excludes MLN and does not display uncertainty.</p></aside>
 </section>
 
@@ -862,7 +862,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       <p><span class="c-dir"><b>Dirichlet</b></span>: support is the open simplex (2); a zero part lies outside it, so zeros must be replaced first.</p>
       <p><span class="c-muted"><b>Log-ratios</b></span>: undefined at zero, and highly variable near zero.</p>
       <p><span class="c-tn"><b>Square root</b></span>: \(\sqrt0=0\) is an ordinary point on the edge of \(\mathcal O\). If \(\bmu\) has positive parts, \(\bmu^{\top}\bu&gt;0\) on \(\mathcal O\), so <b>every composition, zeros included, has positive TN density</b>; the square root stays bounded.</p>
-      <p class="small">Design K (matched local experiment): a part near zero in 30% of draws &mdash; TN-RF had the lowest Aitchison distance at every n.</p>
+      <p class="small">Design K (arXiv v1, Table 1): a part near zero in 30% of draws &mdash; TN-RF had the lowest Aitchison distance at every n.</p>
     </div>
     <div class="col"><div class="plot" id="fZero"></div>
       <div class="ptitle">Sphere density g(&radic;z), displayed on the triangle; not a simplex density or an atom at zero</div></div>
@@ -872,7 +872,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
 
 <!-- ============================== 11. ZEROS: OLD TABLE ============================== -->
 <section class="slide" data-title="Zeros: earlier experiment" data-time="12">
-  <div class="kicker k-res">Exact zeros &middot; earlier experiment (manuscript draft of 10 Oct 2026, Table &ldquo;Exact zeros&rdquo;)</div>
+  <div class="kicker k-res">Exact zeros &middot; archived experiment 25 &middot; Gaussian tangent surrogate</div>
   <h2>With exact zeros</h2>
   <table class="cmp num">
     <thead><tr><th>Zero prevalence</th><th style="text-align:right">0</th><th style="text-align:right">0.05</th><th style="text-align:right">0.15</th><th style="text-align:right">0.30</th><th style="text-align:right">0.50</th></tr></thead>
@@ -889,8 +889,8 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <li>No zeros: Dirichlet best. As zeros accumulate the ordering reverses: at 0.5 the square-root node is the best parametric model, Dirichlet the worst.</li>
     <li>Native and replaced zeros give very similar errors: this comparison alone does not identify the mechanism behind the gain. drf is best from 0.15.</li>
   </ul>
-  <div class="src">Energy score against the raw held-out observation (lower is better), 20 replications at n = 500. The square-root node there was the Gaussian tangent surrogate: the TN Gaussian part without the Jacobian term, a precursor of TN-RF. Not in the current manuscript.</div>
-  <aside class="notes"><p>This earlier study used a TN precursor. It is separate from the main comparison.</p><p><b>Transition:</b> Here are the main messages.</p><p><b>Figure:</b> Indicate the earlier-experiment label; do not read the table values.</p><p><b>Remember:</b> Energy score, 20 replications, n = 500; no Jacobian in the precursor. Similar errors after replacement do not establish a causal mechanism.</p></aside>
+  <div class="src">Energy score against the raw held-out observation (lower is better), Archived experiment 25: 20 replications; 500 training and 300 test observations; 200 trees. The square-root node used the Gaussian tangent surrogate without the TN Jacobian. Source: 25_zeros.tex / Main_old.tex; separate from arXiv Table 1.</div>
+  <aside class="notes"><p>This earlier study used a TN precursor. It is separate from the main comparison.</p><p><b>Transition:</b> Here are the main messages.</p><p><b>Figure:</b> Indicate the earlier-experiment label; do not read the table values.</p><p><b>Remember:</b> Verified against archived experiment 25 and 25_zeros.tex: all 30 values match. Energy score, 20 replications, 500 training and 300 test observations, 200 trees; Gaussian tangent surrogate without the TN Jacobian. This is not current TN-RF. Similar replacement errors do not establish a causal mechanism.</p></aside>
 </section>
 
 <!-- ============================== 12. SUMMARY ============================== -->

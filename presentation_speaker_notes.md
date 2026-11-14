@@ -432,13 +432,13 @@ Another common approach is the multivariate logistic normal distribution. Transf
 
 **Say:**
 
-These matched local results use the same data and eighty-twenty train-test splits, forty paired replications, and common forest settings. Lower error is better. TN improves on Dirichlet in most displayed cells. MLN is competitive and often best in the logistic-normal design. Performance depends on data structure and metric.
+These results from Table One of our arXiv preprint use the same data and eighty-twenty train-test splits, forty paired replications, and common forest settings. Lower error is better. TN improves on Dirichlet in most displayed cells. MLN is competitive and often best in the logistic-normal design. Performance depends on data structure and metric.
 
 **Transition:** Here are the TN-Dirichlet differences.
 
 **Figure / interaction:** Show Aitchison first, then click RMSE. Identify the grey MLN line using the legend.
 
-**Remember:** These are tab_sample_size_m10.tex results, preserving original deck values. They differ from some manuscript drafts; do not call them arXiv Table 1 without checking. No new significance claim from means alone.
+**Remember:** All 72 means match arXiv:2611.14275v1, Table 1 and the latest committed local paper table. No new significance claim is inferred from means alone.
 
 ## Slide 32: Results: relative difference
 
@@ -480,7 +480,7 @@ This earlier study used a TN precursor. It is separate from the main comparison.
 
 **Figure / interaction:** Indicate the earlier-experiment label; do not read the table values.
 
-**Remember:** Energy score, 20 replications, n = 500; no Jacobian in the precursor. Similar errors after replacement do not establish a causal mechanism.
+**Remember:** Verified against archived experiment 25 and 25_zeros.tex: all 30 values match. Energy score, 20 replications, 500 training and 300 test observations, 200 trees; Gaussian tangent surrogate without the TN Jacobian. This is not current TN-RF. Similar replacement errors do not establish a causal mechanism.
 
 ## Slide 35: Summary
 
