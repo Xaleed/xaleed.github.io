@@ -1,0 +1,273 @@
+
+
+
+\begin{frame}{Why Ambiguous!}
+   \only<1>{
+
+   \frametitle{Principles of CODA}
+      \begin{itemize}
+       \item 
+   \textbf{scale invariance},
+   \item
+   \textbf{permutation invariance}, and 
+   \item \textbf{subcompositional coherence}
+   If \( \Delta_p(\mathbf{x}, \mathbf{y}) \) denotes a distance measure between compositions with \( p \) parts, then
+    \begin{equation*}
+    \Delta_k(\mathbf{x}, \mathbf{y}) \geq \Delta_d(\mathbf{x}_d, \mathbf{y}_d),
+    \end{equation*}
+    where \( \mathbf{x}, \mathbf{y} \) are compositions with \( k \) parts, and \( \mathbf{x}_d, \mathbf{y}_d \) are corresponding subcompositions with \( d < k \) parts.
+    \end{itemize}}
+\only<2>{
+\textbf{\textcolor{blue}{Question 1:}} Are these principles designed to achieve consistent results with the original data $\mathbf{Y}$?  
+
+The arguments supporting $\mathbf{a}(\mathbf{Y})$ are rarely evaluated for consistency with the original vector $\mathbf{Y}$, even though Aitchison himself criticized standard statistical approaches for inconsistency with the original data.
+}
+
+\only<3>{
+As an illustration, consider
+\[
+\mathbf{S}(\mathbf{Y}) = \Big( \frac{Y_1}{Y_1 + Y_2}, \frac{Y_2}{Y_1 + Y_2} \Big) = (U, 1-U).
+\]
+\textbf{\textcolor{blue}{Can we assume that \(U\) follows a Beta distribution?}}
+
+\textbf{\textcolor{red}{Aitchison's critique:}} For \(U\) to follow a Beta distribution,
+\[
+Y_i \sim^{\text{iid}} \text{Gamma}(\alpha_i, \lambda), \quad i=1,2.
+\]
+This generalizes naturally to the Dirichlet distribution.
+
+His proposal instead:
+\[
+\left(\frac{1}{2}\ln\frac{Y_1}{Y_2}, \frac{1}{2}\ln\frac{Y_2}{Y_1}\right)
+\]
+}
+
+\only<4>{
+\textbf{\textcolor{blue}{Question 2:}} Are these principles designed to provide non-spurious correlations?
+
+Correlations among components of $\mathbf{a}(\mathbf{Y})$ are themselves spurious.
+}
+
+\only<5>{
+\textbf{Spurious correlation example:}
+
+Even if  
+\[
+\operatorname{corr}(Y_1, Y_2)=0,
+\]
+we usually observe
+\[
+\boxed{
+\operatorname{corr}\Big(\frac{Y_1}{S}, \frac{Y_2}{S}\Big) \neq 0, \quad S=\sum_{j=1}^{D} Y_j
+}
+\]
+\textbf{Reason:} shared denominator induces dependency.
+}
+
+\only<6>{
+\[
+\boxed{
+\operatorname{corr}\Big(\frac{Y_1}{S}, \frac{Y_2}{S}\Big)
+=
+\frac{
+\mathbb{E}\Big(\frac{Y_1 Y_2}{S^2}\Big) - \mathbb{E}\Big(\frac{Y_1}{S}\Big)\mathbb{E}\Big(\frac{Y_2}{S}\Big)
+}{
+\sqrt{\operatorname{Var}\Big(\frac{Y_1}{S}\Big)} \sqrt{\operatorname{Var}\Big(\frac{Y_2}{S}\Big)}
+}
+}
+\]
+
+\textbf{Key point:} The formula is mathematically valid; the issue is interpretation:
+\[
+\operatorname{corr}\Big(\frac{Y_1}{S}, \frac{Y_2}{S}\Big) \not\Rightarrow \operatorname{corr}(Y_1,Y_2)
+\]
+}
+
+\only<7>{
+\textbf{Frequently emphasized in CODA:}
+
+\begin{block}{Different denominators}
+\[
+\left(\frac{Y_1}{S_4},\frac{Y_2}{S_4},\frac{Y_3}{S_4},\frac{Y_4}{S_4}\right),\quad
+\left(\frac{Y_1}{S_3},\frac{Y_2}{S_3},\frac{Y_3}{S_3}\right)
+\]
+\end{block}
+
+\begin{alertblock}{Claimed problem}
+\[
+\operatorname{corr}\Big(\frac{Y_1}{S_4}, \frac{Y_2}{S_4}\Big) \neq \operatorname{corr}\Big(\frac{Y_1}{S_3}, \frac{Y_2}{S_3}\Big)
+\]
+
+\textbf{Both correlations are spurious.}  
+It is unclear why equality between two spurious correlations should matter.
+\end{alertblock}
+}
+
+\only<8>{
+\begin{block}{ILR (or Other) Transformed Coordinates}
+
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{} \\[2mm]
+\scalebox{0.75}{$
+\mathbf{T}_4 = T\Big(\frac{Y_1}{S_4},\frac{Y_2}{S_4},\frac{Y_3}{S_4},\frac{Y_4}{S_4}\Big):(T_1,T_2,T_3,T_4)
+$} \\[2mm]
+\scalebox{0.75}{$
+\mathbf{T}_3 = T\Big(\frac{Y_1}{S_4},\frac{Y_2}{S_4},\frac{Y_3}{S_4}\Big):(T_1,T_2,T_3)
+$}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\centering
+\textbf{} \\[2mm]
+\scalebox{0.75}{$
+\mathbf{T}'_4 = T\Big(\frac{Y'_1}{S'_4},\frac{Y'_2}{S'_4},\frac{Y'_3}{S'_4},\frac{Y'_4}{S'_4}\Big):(T'_1,T'_2,T'_3,T'_4)
+$} \\[2mm]
+\scalebox{0.75}{$
+\mathbf{T}'_3 = T\Big(\frac{Y'_1}{S'_4},\frac{Y'_2}{S'_4},\frac{Y'_3}{S'_4}\Big):(T'_1,T'_2,T'_3)
+$}
+\end{minipage}
+
+\end{block}
+
+
+\begin{alertblock}{Subcompositional Coherence}
+\scalebox{0.85}{\[
+D_3(\mathbf{T}_3,\mathbf{T}'_3) \le D_4(\mathbf{T}_4,\mathbf{T}'_4)
+\]}
+\begin{center}
+\textbf{\large Surprisingly, the correlations between components remain \textcolor{red}{spurious}, 
+but we cannot work in the simplex space accordingly.}
+\end{center}
+\end{alertblock}
+}
+
+\only<9>{
+\textbf{\textcolor{blue}{Question 2:}} Are these principles designed to provide non-spurious correlations?  The answer is no.
+}
+
+\only<10>{
+\textbf{\textcolor{blue}{Question 3:}} Are these principles designed to satisfy theoretical requirements?
+
+It is important to note that \(\mathbf{s}(\cdot)\)  is subset of real space and therefore inherit its standard geometric structure, rendering all conventional mathematical operations well-defined.
+}
+
+\only<11>{
+\textbf{\textcolor{blue}{Question 4:}} Are these principles widely accepted?  The answer is no.
+}
+
+\end{frame}
+
+
+
+\begin{frame}{Critics of CoDA: Early and Ongoing}
+A number of authors have questioned the strict log-ratio framework
+promoted by the “CoDa School.” Major groups include:
+\scriptsize   % shrinks everything but remains readable
+
+
+\begin{itemize}\itemsep1pt
+    \item \textbf{Watson}: objections to distance measures and geometry
+    \item \textbf{Zier \& Rehder}: challenges to mathematical definitions
+    \item \textbf{Butler \& Glasbey}: alternative approaches for zeros
+    \item \textbf{Stewart \& Field}: practical issues in real applications
+    \item \textbf{Tsagris et al.}: limits for highly variable data
+    \item \textbf{Scealy \& Welsh}: critique of the Principles themselves
+\end{itemize}
+
+
+
+\end{frame}
+
+
+
+
+\begin{frame}{Key Critics: D.F. Watson}
+\scriptsize   % shrinks everything but remains readable
+
+    \begin{itemize}
+        \item \textbf{D.F. Watson} was a central figure in early debates against Aitchison's log-ratio methods.
+        \item **Main Criticism Focus:**
+        \begin{itemize}
+            \item Questioned the fundamental need for "scale invariance," a core principle of the CoDa School.
+            \item His exchanges with Aitchison in \textit{Mathematical Geology} (1989-1992) were instrumental in the development of the CoDa Principles, though from a critical stance.
+            \item The text notes that "Watson \& Philip (1989) ... did not see the need for scale invariance."
+        \end{itemize}
+        \item Tragically, his contributions were cut short due to a contentious exchange where Aitchison used derogatory language.
+    \end{itemize}
+\end{frame}
+\begin{frame}{Key Critics: Zier \& Rehder}
+\scriptsize   % shrinks everything but remains readable
+
+    \begin{itemize}
+        \item \textbf{Zier \& Rehder} (1998, 2001) continued to raise points against the CoDa School's established views.
+        \item **Main Criticism Focus:**
+        \begin{itemize}
+            \item Challenged technical issues, particularly related to the mathematical definition of a metric within compositional data analysis.
+            \item Like Watson, they "did not see the need for scale invariance," arguing it problematic if compositions are strictly defined as summing to one.
+            \item Their arguments highlighted that even Aitchison's own earlier work might not have strictly adhered to the current CoDa definition of compositions and scale invariance.
+        \end{itemize}
+        \item Despite making "some good points," their criticisms were "dismissed relatively easily" by the CoDa School, partly due to perceived technical mistakes on their part.
+    \end{itemize}
+\end{frame}
+\begin{frame}{Key Critics: Butler \& Glasbey}
+\scriptsize   % shrinks everything but remains readable
+
+    \begin{itemize}
+        \item \textbf{Butler \& Glasbey} (2008) represent a more recent wave of critics whose methods were deemed "unapproved" by the CoDa School.
+        \item **Main Criticism Focus:**
+        \begin{itemize}
+            \item Developed "otherwise sensible analysis" methods that did not conform to the CoDa Principles.
+            \item Were compelled to "list and explain their 'failings' relative to the Principles."
+            \item Their work highlighted that theoretical difficulties with the Principles meant their methods could only be used as "diagnostic tool or for exploratory analysis" according to CoDa proponents.
+            \item This illustrates how the Principles act as a barrier to new methodological developments.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+\begin{frame}{Key Critics: Stewart \& Field, Tsagris et al., Scealy \& Welsh}
+\scriptsize   % shrinks everything but remains readable
+
+    \begin{itemize}
+        \item \textbf{Stewart \& Field (2010), Tsagris, Preston \& Wood (2011), and Scealy \& Welsh (2011a, 2011b)} also demonstrate the practical limitations of the CoDa School's exclusive approach.
+        \item **Main Criticism Focus:**
+        \begin{itemize}
+            \item Provided "interesting real examples where important practical differences produced by a variety of methods are highlighted."
+            \item Showed that the differences between various methods become particularly important for \textbf{highly variable data near or on the boundary of the simplex}.
+            \item \textbf{Scealy & Welsh (2011a, 2014, the source text)} specifically critique the **motivation, justification, and relevance of the Principles themselves**, particularly subcompositional coherence.
+            \item They argue against the logical basis for scale invariance and subcompositional dominance, proposing alternatives like "amalgamations" as more suitable 'marginals'.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+\begin{frame}{Conclusion on Criticisms}
+\scriptsize   % shrinks everything but remains readable
+
+    \begin{itemize}
+        \item These critics collectively highlight significant issues:
+        \begin{itemize}
+            \item The contested definition of a "composition."
+            \item The rigid and sometimes illogical foundations of the CoDa Principles (e.g., scale invariance, subcompositional coherence).
+            \item The active dismissal of valid alternative methods simply for not conforming to these Principles.
+            \item The practical limitations of the CoDa approach, especially with challenging data.
+        \end{itemize}
+        \item The text emphasizes that the existence and application of these Principles in such a restrictive way is "unusual, perhaps even unique, in statistical data analysis."
+    \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}{The Aitchison-Watson Debate: A Contentious Beginning}
+\scriptsize   % shrinks everything but remains readable
+
+    \begin{itemize}
+        \item The foundational "Principles of Compositional Data Analysis" largely evolved from a series of intense exchanges.
+        \item Primarily, this involved papers and letters between \textbf{J. Aitchison} (as the defender/proponent of log-ratio methods) and \textbf{D.F. Watson} (as a critic of the nascent CoDa School's approach).
+        \item These debates, published in \textit{Mathematical Geology} from 1989-1992, set the stage for much of the field's development and controversies.
+        \item However, the intellectual exchange took a negative turn:
+        \begin{itemize}
+            \item Aitchison is noted to have used the word "stupid" in reference to Watson's arguments.
+            \item This pejorative remark led to \textbf{Watson discontinuing his contributions} to the debate, effectively silencing a critical voice.
+        \end{itemize}
+        \item This event highlights how personal attacks can impede scientific discourse and shape the trajectory of a research field.
+        \item Scealy & Welsh (2014) emphasize that "the exchange between Watson and Aitchison had a negative impact on both sides and contributed directly to the situation in modelling and analysing compositional data that we have today."
+    \end{itemize}
+\end{frame}

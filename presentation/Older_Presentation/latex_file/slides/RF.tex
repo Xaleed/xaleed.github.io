@@ -1,0 +1,811 @@
+
+\begin{frame}{Machine learning: Random Forest}
+\note{
+\begin{itemize}
+
+\item \textbf{Why machine learning?}  
+
+When we work with compositional responses, we often have many predictors and very complex non-linear relationships. Traditional models usually cannot capture these patterns well. Machine learning, however, is designed to handle this complexity and discover relationships that classical methods might miss.
+
+\item \textbf{What is common in the context of compositional data?}  
+Often, machine-learning models are applied \emph{without} considering the simplex geometry,  
+or the data are transformed to real space before modelling — approaches that may distort distances and introduce bias.
+
+\item \textbf{Why Random Forests?}  
+Random Forests provide a flexible framework with splitting rules can be adapted to respect the simplex structure.
+
+\end{itemize}
+}
+\begin{itemize}
+
+\item \textbf{Why machine learning?}  
+For responses that are compositional: many predictors with complex non-linear patterns that traditional models cannot capture.
+
+\item \textbf{Common approaches}:  
+Apply ML models without considering the simplex geometry, or transform data (with log-ratio transformations) to real space (risking distortion and bias).
+
+\item \textbf{Why Random Forests?}  
+RFs are flexible and their splitting rules can be easily adapted to respect the simplex structure.
+
+\end{itemize}
+
+    
+\end{frame}
+
+
+
+\begin{frame}{Machine learning framework}
+    \note{In a standard machine learning framework, we typically start with a dataset containing covariates and responses.
+
+In our setting, we have n observations. For each observation, we observe a set of covariates, and the response is compositional, meaning it has k components that lie in the simplex.
+
+
+The main goal is to build a model that can learn the relationship between these covariates and compositional responses.
+
+More specifically, we want to fit a random forest model in a way that respects the geometry of the simplex, so that the predicted outputs remain valid compositions.
+
+Once the model is trained, for a new set of covariates, we can directly predict a compositional response.
+
+Beyond point prediction, another interesting direction in modern random forests is that we can also estimate the conditional distribution of the response, not only the mean. This allows us to study uncertainty and variability in a more complete way.
+
+To explain how this works in our context, we first need to briefly review the basic idea of random forests. Then I will move to the next slide.}
+\begin{itemize}
+   \item[\textcolor{blue}{\large$\blacktriangleright$}]  Given a sample size $n$ and $m$ covariates:
+    \[
+        \mathbf{X} \in \mathbb{R}^{n \times m} \quad \text{(covariate matrix)}, \qquad
+        \mathbf{Y} \in \mathbb{R}^{n \times k} \quad \text{(response matrix)}
+    \]
+    
+  \item[\textcolor{blue}{\large$\blacktriangleright$}]  Each row of \( \mathbf{Y} \) is a compositional vector:
+    \[
+        Y_{i,j} > 0 \quad \text{for all } i, j, \qquad \sum_{j=1}^k Y_{i,j} = 1
+    \]
+        
+  
+     \item[\textcolor{blue}{\large$\blacktriangleright$}] Goal: learn a mapping
+    \[
+    \mathbf{x} \;\longrightarrow\; \mathbf{y}
+    \]
+    respecting the simplex geometry
+    \vspace{0.8em}
+
+    % \item[\textcolor{blue}{\large$\blacktriangleright$}] Approach: adapt \textbf{random forests} for compositional outputs
+    % \vspace{0.8em}
+
+     \item[\textcolor{blue}{\large$\blacktriangleright$}] After training:
+    \begin{itemize}
+        \item Predict compositional responses for new inputs
+        \item Estimate conditional distribution of responses
+    \end{itemize}
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Random Forest: Overview}
+
+A \textbf{Random Forest} is an ensemble of decision trees, each trained on a
+bootstrap sample of the data. Key tuning parameters include:
+
+\vspace{0.5em}
+
+\begin{itemize}
+    \item \textbf{Number of trees} ($B$): more trees improve stability but increase cost
+    \item \textbf{Tree depth} ($d_{\max}$): controls model complexity and overfitting
+    \item \textbf{Minimum node size} ($n_{\min}$): minimum observations required to split a node
+    \item \textbf{Features per split} ($m_{\text{try}}$): number of randomly selected covariates
+    considered at each split; typically set to $\sqrt{p}$
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Random forest: tree}
+
+\centering
+\only<1>{
+\note{
+
+\vspace{1em}
+A random forest model is a collection of decision trees. In a binary decision tree, we start by placing all the data in a single node. Then we split this node into two subnodes. We repeat the same process for each subnode and continue splitting until we reach a predefined stopping criterion. A node that is no longer split is called a terminal node or a leaf.
+
+The first thing we need to decide is how to split each node. Actually, we need a criterion.
+
+
+
+
+}
+\begin{columns}
+    \begin{column}{0.4\linewidth}
+    
+        \begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    box/.style={rectangle, draw, minimum width=1.8cm, minimum height=0.8cm, text centered, font=\small},
+    dot/.style={circle, fill=black, minimum size=2pt, inner sep=0pt},
+    arrow/.style={->, thick}
+]
+% Main parent node
+\node[box] (parent) {$S$=\\$(y_1, y_2, ..., y_n)$};
+% Split point (dot in the middle)
+\node[dot, below=0.6cm of parent] (split) {};
+% Two child nodes
+\node[box, below left=0.8cm and 1.2cm of split] (left) {$S_1$};
+\node[box, below right=0.8cm and 1.2cm of split] (right) {$S_2$};
+% Connections
+\draw (parent) -- (split);
+\draw (split) -- (left);
+\draw (split) -- (right);
+% Loss function arrow and equation
+\node[right=1.5cm of split, font=\small] (loss) {$\texttt{criteria} = $ ?};
+\draw[arrow] (split) -- (loss);
+\end{tikzpicture}
+
+\label{fig:decision_tree_split}
+\end{figure}
+
+
+
+    \end{column}
+\begin{column}{0.6\linewidth}
+\vspace{1cm}
+$\qquad \qquad$A binary decision tree
+\vspace
+
+\resizebox{1\linewidth}{!}{%
+        \begin{tikzpicture}[
+  level/.style={sibling distance=60mm/#1},
+  every node/.style={circle, draw, minimum size=8mm, font=\tiny},
+  dots/.style={draw=none, font=\large}
+]
+\node {Root}
+  child {
+    node {L1}
+    child {
+      node {L2}
+      child {
+        node[dots] {$\vdots$}
+      }
+      child {
+        node[dots] {$\vdots$}
+      }
+    }
+    child {
+      node {L2}
+      child {
+        node[dots] {$\vdots$}
+      }
+      child {
+        node[dots] {$\vdots$}
+      }
+    }
+  }
+  child {
+    node {R1}
+    child {
+      node {L2}
+      child {
+        node[dots] {$\vdots$}
+      }
+      child {
+        node[dots] {$\vdots$}
+      }
+    }
+    child {
+      node {L2}
+      child {
+        node[dots] {$\vdots$}
+      }
+      child {
+        node[dots] {$\vdots$}
+      }
+    }
+  };
+\end{tikzpicture}}
+    \end{column}
+
+    
+\end{columns}
+
+
+}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{}\only<1>{\frametitle{MSE splitting}
+\note{Just for a very brief explanation: Let’s consider a node of a decision tree with \( n \) observations and \( m \) covariates. When we  want to split the data, we need a partition rule:
+
+\begin{itemize}
+  \item \textbf{First}, we need to decide which covariate, among the \( m \), should be used for the split.
+  \item \textbf{Second}, we need to determine a split value, let’s call it \( c \).
+\end{itemize}
+
+
+}
+\begin{tikzpicture}[
+  node distance=1cm and 1cm,
+  every node/.style={font=\small},
+  data/.style={rectangle, draw, align=center, fill=blue!5, rounded corners, inner sep=5pt},
+  split/.style={->, thick},
+  highlight/.style={->, red, thick, dashed}
+  ]
+  % Parent node
+  \node[data] (parent) {
+    \textbf{Parent Node} \\[0.15cm]
+    Covariate: $X^{n \times m}$ \\ 
+    Response: $Y^{n \times k}$
+  };
+  % Left child
+  \node[data, below left=of parent] (left) {
+    \textbf{Left Child} \\[0.1cm]
+    Covariate: $X^{n_1 \times m}$ \\
+    Response: $Y^{n_1 \times k}$ \\[0.1cm]
+    MSE = $\text{MSE}(Y^{n_1 \times k},c,i)$
+  };
+  % Right child
+  \node[data, below right=of parent] (right) {
+    \textbf{Right Child} \\[0.1cm]
+    Covariate: $X^{n_2 \times m}$ \\
+    Response: $Y^{n_2 \times k}$ \\[0.1cm]
+    MSE = $\text{MSE}(Y^{n_2 \times k},c,i)$
+  };
+  % Arrows
+  \draw[split] (parent) -- node[midway, left] (leftlabel) {$x_{ij} \leq c$} (left);
+  \draw[split] (parent) -- node[midway, right] (rightlabel) {$x_{ij} > c$} (right);
+  
+  % Optimize labels
+  \node[red, left] (opt_i) at ([xshift=-1.5cm, yshift=1.2cm]leftlabel) {\textbf{ } $(c,i)=?$};
+  \node[red, right] (opt_c) at ([xshift=1.5cm, yshift=1.2cm]rightlabel) {\textbf{} $(c,i)=?$};
+  
+  % Short highlight arrows from labels to split conditions
+  \draw[highlight] (opt_i) -- (leftlabel.west);
+  \draw[highlight] (opt_c) -- (rightlabel.east);
+\end{tikzpicture}
+
+
+}
+\only<2>{
+\note{For example, assume we choose a splitting rule based on covariate 2, and the split value is 3.1.
+
+What we do is very simple. We go to the second column of the table, and for each observation:
+
+if the value is less than 3.1, we assign it to the left node,
+if the value is greater than or equal to 3.1, we assign it to the right node.
+
+
+Now the main question is: how do we choose the best split? or what is the optimal partition rule?
+
+
+
+And more importantly, what does “best” actually mean in this context?
+
+This is exactly where the learning criterion comes in, and it defines how the tree grows.}
+\frametitle{Split rule}
+\begin{columns}[T]
+
+  \column{0.8\textwidth}
+ \begin{center}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{c|c>{\columncolor{purple!20}}cc>{\columncolor{purple!20}}cc|ccc|c}
+\textbf{obs} & $x_1$ & \cellcolor{purple!50}$x_2$ & $x_3$ & \cellcolor{purple!20}$x_4$ & $x_5$ & $y_1$ & $y_2$ & $y_3$ & \textbf{child} \\
+\hline
+\rowcolor{blue!15}
+1 & 0.8 & \textbf{1.2} & 3.4 & 0.5 & 2.1 & 0.60 & 0.25 & 0.15 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+\rowcolor{blue!15}
+2 & 2.3 & \textbf{2.7} & 1.1 & 4.2 & 0.9 & 0.10 & 0.70 & 0.20 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+\rowcolor{blue!15}
+3 & 1.5 & \textbf{3.1} & 2.9 & 1.8 & 3.3 & 0.45 & 0.45 & 0.10 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+\rowcolor{red!15}
+4 & 3.9 & \textbf{4.4} & 0.7 & 3.1 & 1.4 & 0.05 & 0.15 & 0.80 & \textcolor{red!80!black}{right $\rightarrow$} \\
+\rowcolor{blue!15}
+5 & 0.4 & \textbf{2.0} & 4.5 & 2.7 & 5.0 & 0.50 & 0.30 & 0.20 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+\rowcolor{red!15}
+6 & 2.1 & \textbf{5.6} & 3.8 & 0.3 & 2.2 & 0.02 & 0.08 & 0.90 & \textcolor{red!80!black}{right $\rightarrow$} \\
+\rowcolor{red!15}
+7 & 3.3 & \textbf{3.8} & 1.6 & 4.9 & 0.6 & 0.03 & 0.12 & 0.85 & \textcolor{red!80!black}{right $\rightarrow$} \\
+\rowcolor{blue!15}
+8 & 1.1 & \textbf{1.5} & 2.2 & 1.1 & 4.4 & 0.55 & 0.35 & 0.10 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+\end{tabular}
+\end{center}
+
+  \column{0.22\textwidth}
+  \vspace{1em}
+  \begin{block}{Partition rule}
+    Covariate 2: $i=2$ \\ Split value: $c =3.1$\\
+    
+  \end{block}
+  \vspace{0.8em}
+  \textcolor{blue!80!black}{\textbf{Left}} \\
+  \hspace{0.5em} $x_2 \leq 3.1$ \\[0.2em]
+  \hspace{0.5em} obs: 1, 2, 3, 5, 8 \\[0.6em]
+  \textcolor{red!80!black}{\textbf{Right}} \\
+   \hspace{0.5em} $x_2 > 3.1$ \\
+  \hspace{0.5em} obs: 4, 6, 7
+
+
+\end{columns}
+}
+
+
+\end{frame}
+
+
+
+
+% %--- SLIDE 1: The data ---
+% \begin{frame}{Growing a Tree: The Data}
+% \begin{columns}[T]
+
+%   \column{0.65\textwidth}
+%   \begin{center}
+%   \renewcommand{\arraystretch}{1.6}
+%   \begin{tabular}{c|ccccc|ccc}
+%   \textbf{obs} & $x_1$ & $x_2$ & $x_3$ & $x_4$ & $x_5$ & $y_1$ & $y_2$ & $y_3$ \\
+%   \hline
+%   1 & 0.8 & 1.2 & 3.4 & 0.5 & 2.1 & 0.60 & 0.25 & 0.15 \\
+%   2 & 2.3 & 2.7 & 1.1 & 4.2 & 0.9 & 0.10 & 0.70 & 0.20 \\
+%   3 & 1.5 & 3.1 & 2.9 & 1.8 & 3.3 & 0.45 & 0.45 & 0.10 \\
+%   4 & 3.9 & 4.4 & 0.7 & 3.1 & 1.4 & 0.05 & 0.15 & 0.80 \\
+%   5 & 0.4 & 2.0 & 4.5 & 2.7 & 5.0 & 0.50 & 0.30 & 0.20 \\
+%   6 & 2.1 & 5.6 & 3.8 & 0.3 & 2.2 & 0.02 & 0.08 & 0.90 \\
+%   7 & 3.3 & 3.8 & 1.6 & 4.9 & 0.6 & 0.03 & 0.12 & 0.85 \\
+%   8 & 1.1 & 1.5 & 2.2 & 1.1 & 4.4 & 0.55 & 0.35 & 0.10 \\
+%   \end{tabular}
+%   \end{center}
+
+%   \column{0.32\textwidth}
+%   \vspace{1em}
+%   \begin{block}{Setup}
+%     Each node holds $n$ observations with $p$ covariates.
+%   \end{block}
+%   \vspace{0.8em}
+%   \textbf{Response} $\mathbf{y}$ is compositional:
+%   \[
+%     \mathbf{y} = (y_1, y_2, y_3)
+%   \]
+%   \[
+%     y_k \geq 0, \quad \textstyle\sum_k y_k = 1
+%   \]
+%   \vspace{0.4em}
+%   Lives on the simplex $\mathcal{S}^2$.
+
+% \end{columns}
+% \end{frame}
+
+
+% %--- SLIDE 2: Select covariates ---
+% \begin{frame}{Step 1 — Select Covariates}
+% \begin{columns}[T]
+
+%   \column{0.65\textwidth}
+%   \begin{center}
+%   \renewcommand{\arraystretch}{1.6}
+%   \begin{tabular}{c|c>{\columncolor{purple!20}}cc>{\columncolor{purple!20}}cc|ccc}
+%   \textbf{obs} & $x_1$ & \cellcolor{purple!50}$x_2$ & $x_3$ & \cellcolor{purple!50}$x_4$ & $x_5$ & $y_1$ & $y_2$ & $y_3$ \\
+%   \hline
+%   1 & 0.8 & 1.2 & 3.4 & 0.5 & 2.1 & 0.60 & 0.25 & 0.15 \\
+%   2 & 2.3 & 2.7 & 1.1 & 4.2 & 0.9 & 0.10 & 0.70 & 0.20 \\
+%   3 & 1.5 & 3.1 & 2.9 & 1.8 & 3.3 & 0.45 & 0.45 & 0.10 \\
+%   4 & 3.9 & 4.4 & 0.7 & 3.1 & 1.4 & 0.05 & 0.15 & 0.80 \\
+%   5 & 0.4 & 2.0 & 4.5 & 2.7 & 5.0 & 0.50 & 0.30 & 0.20 \\
+%   6 & 2.1 & 5.6 & 3.8 & 0.3 & 2.2 & 0.02 & 0.08 & 0.90 \\
+%   7 & 3.3 & 3.8 & 1.6 & 4.9 & 0.6 & 0.03 & 0.12 & 0.85 \\
+%   8 & 1.1 & 1.5 & 2.2 & 1.1 & 4.4 & 0.55 & 0.35 & 0.10 \\
+%   \end{tabular}
+%   \end{center}
+
+%   \column{0.32\textwidth}
+%   \vspace{1em}
+%   \begin{block}{Random subspace}
+%     At each node, draw $m \leq p$ covariates at random.
+%   \end{block}
+%   \vspace{0.8em}
+%   \textcolor{purple!80!black}{\textbf{Selected:}} $x_2,\, x_4$
+%   \vspace{0.6em}
+
+%   \begin{itemize}[label={\ding{226}}]
+%     \item Reduces correlation between trees
+%     \item Only \textcolor{purple!80!black}{highlighted columns} are split candidates
+%     \item Other columns are ignored at this node
+%   \end{itemize}
+
+% \end{columns}
+% \end{frame}
+
+
+% %--- SLIDE 3: Find the best split ---
+% \begin{frame}{Step 2 — Find the Best Split}
+% \begin{columns}[T]
+
+%   \column{0.72\textwidth}
+%   \begin{center}
+%   \renewcommand{\arraystretch}{1.6}
+%   \begin{tabular}{c|c>{\columncolor{purple!20}}cc>{\columncolor{purple!20}}cc|ccc|c}
+%   \textbf{obs} & $x_1$ & \cellcolor{purple!50}$x_2$ & $x_3$ & \cellcolor{purple!20}$x_4$ & $x_5$ & $y_1$ & $y_2$ & $y_3$ & \\
+%   \hline
+%   \rowcolor{leftblue}
+%   1 & 0.8 & \textbf{1.2} & 3.4 & 0.5 & 2.1 & 0.60 & 0.25 & 0.15 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+%   \rowcolor{leftblue}
+%   2 & 2.3 & \textbf{2.7} & 1.1 & 4.2 & 0.9 & 0.10 & 0.70 & 0.20 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+%   \rowcolor{leftblue}
+%   3 & 1.5 & \textbf{3.1} & 2.9 & 1.8 & 3.3 & 0.45 & 0.45 & 0.10 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+%   \rowcolor{rightred}
+%   4 & 3.9 & \textbf{4.4} & 0.7 & 3.1 & 1.4 & 0.05 & 0.15 & 0.80 & \textcolor{red!80!black}{right $\rightarrow$} \\
+%   \rowcolor{leftblue}
+%   5 & 0.4 & \textbf{2.0} & 4.5 & 2.7 & 5.0 & 0.50 & 0.30 & 0.20 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+%   \rowcolor{rightred}
+%   6 & 2.1 & \textbf{5.6} & 3.8 & 0.3 & 2.2 & 0.02 & 0.08 & 0.90 & \textcolor{red!80!black}{right $\rightarrow$} \\
+%   \rowcolor{rightred}
+%   7 & 3.3 & \textbf{3.8} & 1.6 & 4.9 & 0.6 & 0.03 & 0.12 & 0.85 & \textcolor{red!80!black}{right $\rightarrow$} \\
+%   \rowcolor{leftblue}
+%   8 & 1.1 & \textbf{1.5} & 2.2 & 1.1 & 4.4 & 0.55 & 0.35 & 0.10 & \textcolor{blue!80!black}{$\leftarrow$ left} \\
+%   \end{tabular}
+%   \end{center}
+
+%   \column{0.25\textwidth}
+%   \vspace{1em}
+%   \begin{block}{Partition rule}
+%     \textcolor{purple!80!black}{Best:} $x_2 \leq 3.5$
+%   \end{block}
+%   \vspace{0.8em}
+%   \textcolor{blue!80!black}{\textbf{Left}} \hfill $x_2 \leq 3.5$\\[0.2em]
+%   \hspace{0.5em} obs: 1,2,3,5,8 \\[0.6em]
+%   \textcolor{red!80!black}{\textbf{Right}} \hfill $x_2 > 3.5$ \\[0.2em]
+%   \hspace{0.5em} obs: 4,6,7
+%   \vspace{0.6em}
+
+
+
+% \end{columns}
+% \end{frame}
+
+
+
+
+
+\begin{frame}{}\only<1>{\frametitle{MSE splitting}
+\note{Just for a very brief explanation: Let’s consider a node of a decision tree with \( n \) observations and \( m \) covariates. When we  want to split the data, we face two key decisions:
+
+\begin{itemize}
+  \item \textbf{First}, we need to decide which covariate, among the \( m \), should be used for the split.
+  \item \textbf{Second}, we need to determine a split value, let’s call it \( c \).
+\end{itemize}
+
+
+So, the problem is to find the optimal pair \( (i, c) \).  For regression trees, the usual splitting criterion is the mean squared error (MSE). 
+
+The mean squared error (MSE) does not account for the simplex constraint.
+}
+\begin{tikzpicture}[
+  node distance=1cm and 1cm,
+  every node/.style={font=\small},
+  data/.style={rectangle, draw, align=center, fill=blue!5, rounded corners, inner sep=5pt},
+  split/.style={->, thick},
+  highlight/.style={->, red, thick, dashed}
+  ]
+  % Parent node
+  \node[data] (parent) {
+    \textbf{Parent Node} \\[0.15cm]
+    Covariate: $X^{n \times m}$ \\ 
+    Response: $Y^{n \times k}$
+  };
+  % Left child
+  \node[data, below left=of parent] (left) {
+    \textbf{Left Child} \\[0.1cm]
+    Covariate: $X^{n_1 \times m}$ \\
+    Response: $Y^{n_1 \times k}$ \\[0.1cm]
+    MSE = $\text{MSE}(Y^{n_1 \times k},c,i)$
+  };
+  % Right child
+  \node[data, below right=of parent] (right) {
+    \textbf{Right Child} \\[0.1cm]
+    Covariate: $X^{n_2 \times m}$ \\
+    Response: $Y^{n_2 \times k}$ \\[0.1cm]
+    MSE = $\text{MSE}(Y^{n_2 \times k},c,i)$
+  };
+  % Arrows
+  \draw[split] (parent) -- node[midway, left] (leftlabel) {$x_{ij} \leq c$} (left);
+  \draw[split] (parent) -- node[midway, right] (rightlabel) {$x_{ij} > c$} (right);
+  
+  % Optimize labels
+  \node[red, left] (opt_i) at ([xshift=-1.5cm, yshift=1.2cm]leftlabel) {\textbf{ } $(c,i)=?$};
+  \node[red, right] (opt_c) at ([xshift=1.5cm, yshift=1.2cm]rightlabel) {\textbf{} $(c,i)=?$};
+  
+  % Short highlight arrows from labels to split conditions
+  \draw[highlight] (opt_i) -- (leftlabel.west);
+  \draw[highlight] (opt_c) -- (rightlabel.east);
+\end{tikzpicture}
+
+\begin{equation*}
+    
+(c^*, i^*) 
+&=& \operatorname{argmin}_{i,c} \left( \text{MSE}(Y^{n_1 \times k},c,i) + \text{MSE}(Y^{n_2 \times k},c,i) \right)
+\\
+&=& \arg\min_{c,j} 
+\left\{\frac{n_1(c,j)}{n}
+\sum_{m=1}^k \sum_{i=1}^{n_1(c,j)} (y_{im}-\bar{y}_{m}^{n_1(c,j)})^2
++
+\frac{n_2(c,j)}{n}
+\sum_{m=1}^k \sum_{i=1}^{n_2(c,j)} (y_{im}-\bar{y}_{m}^{n_2(c,j)})^2
+\right\}.
+\end{equation*}
+
+}
+
+
+
+\only<2>{ \frametitle{MSE splitting}
+\note{ But using mse has a problem, which is that in simplex space, the component variance usually depends on E. for example, if the outcome variable follows a Dirichlet distribution, obviously the variance depends on the mean parameter \(\mu\). This is a violation of the homoscedasticity assumption.
+
+One possible idea is to use maximum likelihood instead of distance measures. In this approach, each node is split into two child nodes in a way that gives the best overall likelihood.
+
+To solve this, we use the total \textbf{log-likelihood} under the Dirichlet distribution.
+
+
+}
+\begin{tikzpicture}[
+  node distance=1cm and 1cm,
+  every node/.style={font=\small},
+  data/.style={rectangle, draw, align=center, fill=blue!5, rounded corners, inner sep=5pt},
+  split/.style={->, thick},
+  highlight/.style={->, red, thick, dashed}
+  ]
+  % Parent node
+  \node[data] (parent) {
+    \textbf{Parent Node} \\[0.15cm]
+    Covariate: $X^{n \times m}$ \\ 
+    Response: $Y^{n \times k}$
+  };
+  % Left child
+  \node[data, below left=of parent] (left) {
+    \textbf{Left Child} \\[0.1cm]
+    Covariate: $X^{n_1 \times m}$ \\
+    Response: $Y^{n_1 \times k}$ \\[0.1cm]
+    MSE = $\text{MSE}(Y^{n_1 \times k},c,i)$
+  };
+  % Right child
+  \node[data, below right=of parent] (right) {
+    \textbf{Right Child} \\[0.1cm]
+    Covariate: $X^{n_2 \times m}$ \\
+    Response: $Y^{n_2 \times k}$ \\[0.1cm]
+    MSE = $\text{MSE}(Y^{n_2 \times k},c,i)$
+  };
+  % Arrows
+  \draw[split] (parent) -- node[midway, left] (leftlabel) {$x_{ij} \leq c$} (left);
+  \draw[split] (parent) -- node[midway, right] (rightlabel) {$x_{ij} > c$} (right);
+  
+  % Optimize labels
+  \node[red, left] (opt_i) at ([xshift=-1.5cm, yshift=1.2cm]leftlabel) {\textbf{ } $(c,i)=?$};
+  \node[red, right] (opt_c) at ([xshift=1.5cm, yshift=1.2cm]rightlabel) {\textbf{} $(c,i)=?$};
+  
+  % Short highlight arrows from labels to split conditions
+  \draw[highlight] (opt_i) -- (leftlabel.west);
+  \draw[highlight] (opt_c) -- (rightlabel.east);
+\end{tikzpicture}
+\begin{itemize}
+    \item 
+MSE does not account for the simplex constraint.
+
+\item 
+\[V(X_i)=\frac{E(X_i)\left(1-E(X_i)\right)}{\alpha_0+1}\]
+\end{itemize}
+
+}
+
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+\only<1>{
+\frametitle{Dirichlet distribution}
+\note{The only familiar class of distributions on simplex space is dirichlet distribution. This model operates directly on the simplex without requiring the data to be transformed into another space.
+
+Other distributions have also been developed for compositional data, but most of them are based on transformations. In this work, we use the Dirichlet distribution.
+}
+
+
+\vspace{1em}
+
+\begin{center}
+\colorbox{green!10}{\parbox{0.95\textwidth}{
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\[
+    f_{\mathbf{Z}}((z_1,\ldots,z_k); \boldsymbol{\alpha}) = \frac{\Gamma( \alpha_0)}{\prod_{i=1}^k \Gamma(\alpha_i)} \prod_{i=1}^k z_i^{\alpha_i - 1},
+\quad  z_i \in [0, 1], \quad \sum_{i=1}^k z_i = 1,
+\]
+}
+\end{center}
+}}
+\end{center}
+
+\vspace{1.5em}
+
+\begin{itemize}[itemsep=0.8em]
+
+
+\item[\textcolor{blue}{\large$\blacktriangleright$}] The sum-constant requirement of the simplex is satisfied under the Dirichlet distribution.
+
+\item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{Extensions available:} Zero-inflated Dirichlet and Kummer–Dirichlet
+\end{itemize}
+}
+
+\end{frame}
+
+
+\begin{frame}
+\only<1>{\frametitle{Dirichlet log-likelihood splitting}
+\note{
+
+
+
+\vspace{1em}
+We approach this optimization by maximizing the total log-likelihood. Specifically, for each candidate split \( (i, c) \), we compute the log-likelihoods of the two resulting sub-nodes, sum them, and identify the pair \( (i, c) \) that yields the highest total log-likelihood.
+
+\vspace{1em}
+The remaining steps follow the standard decision tree procedure.
+
+\vspace{1em}
+With this modification, we obtain a random forest—referred to as the \textbf{Dirichlet Random Forest}—which can be applied directly to compositional data, without requiring transformation.
+
+
+}
+\begin{tikzpicture}[
+  node distance=1cm and 1cm,
+  every node/.style={font=\small},
+  data/.style={rectangle, draw, align=center, fill=blue!5, rounded corners, inner sep=5pt},
+  split/.style={->, thick},
+  highlight/.style={->, red, thick, dashed}
+  ]
+  % Parent node
+  \node[data] (parent) {
+    \textbf{Parent Node} \\[0.15cm]
+    Covariate: $X^{n \times m}$ \\ 
+    Response: $Y^{n \times k}$
+  };
+  % Left child
+  \node[data, below left=of parent] (left) {
+    \textbf{Left Child} \\[0.1cm]
+    Covariate: $X^{n_1 \times m}$ \\
+    Response: $Y^{n_1 \times k}$ \\[0.1cm]
+     log-like = $\mathcal{L}(Y^{n_1 \times k},c,i)$
+  };
+  % Right child
+  \node[data, below right=of parent] (right) {
+    \textbf{Right Child} \\[0.1cm]
+    Covariate: $X^{n_2 \times m}$ \\
+    Response: $Y^{n_2 \times k}$ \\[0.1cm]
+     log-like = $\mathcal{L}(Y^{n_2 \times k},c,i)$
+  };
+  % Arrows
+  \draw[split] (parent) -- node[midway, left] (leftlabel) {$X_{i} \leq c$} (left);
+  \draw[split] (parent) -- node[midway, right] (rightlabel) {$X_{i} > c$} (right);
+  
+  % Optimize labels
+  \node[red, left] (opt_i) at ([xshift=-1.5cm, yshift=1.2cm]leftlabel) {\textbf{ } $(c,i)=?$};
+  \node[red, right] (opt_c) at ([xshift=1.5cm, yshift=1.2cm]rightlabel) {\textbf{} $(c,i)=?$};
+  
+  % Short highlight arrows from labels to split conditions
+  \draw[highlight] (opt_i) -- (leftlabel.west);
+  \draw[highlight] (opt_c) -- (rightlabel.east);
+\end{tikzpicture}
+\[
+(c^*, i^*) = \operatorname{argmax}_{i,c} \left( \max_{\boldsymbol{\alpha}} \mathcal{L}(Y^{n_1 \times k},c,i) + \max_{\boldsymbol{\alpha}} \mathcal{L}(Y^{n_2 \times k},c,i) \right)
+\]
+}
+\end{frame}
+
+\begin{frame}{Prediction based on DirichletRF}
+\note{
+    By considering the Dirichlet distribution, we eventually obtain several terminal nodes, each containing a set of observations. For a new observation, we traverse the decision tree to identify the corresponding terminal node. 
+
+    default: 
+    
+    In a regression decision tree, we then have two options for prediction: either use the mean of the observations in that node, or use the estimated parameters of the Dirichlet distribution as the prediction.
+
+    In a random forest, we repeat this process for many trees and finally take the mean of the predictions from all the trees.
+
+    another idea:
+    
+Then, in that terminal node, we have a set of observations.
+
+In a random forest, we repeat this process for many trees, and in the end we obtain several terminal nodes, each one associated with a different tree. We use these observations to construct an empirical probability function.
+
+    }
+    
+\begin{columns}[T]
+
+% Left column - Graph
+\begin{column}{0.45\textwidth}
+\centering
+\begin{tikzpicture}[
+    node/.style={ellipse, draw, minimum width=1.2cm, minimum height=0.8cm, thick},
+    leaf/.style={rectangle, draw, minimum width=1.8cm, minimum height=0.6cm, thick},
+    arrow/.style={->, thick, blue},
+    scale=0.75,
+    every node/.style={transform shape}
+]
+
+% Root node
+\node[node] (root) at (0,0) {};
+
+% Level 1
+\node[node] (n1) at (-2,-2) {};
+\node (dots1) at (1,-2) {\vdots};
+
+% Level 2
+\node (dots2) at (-3,-3.5) {\vdots};
+\node[node] (n2) at (-1,-4) {};
+
+% Level 3
+\node (dots3) at (-2.5,-5.5) {\vdots};
+\node[node] (n3) at (0,-6) {};
+
+% Level 4
+\node (dots4) at (1,-7.5) {\vdots};
+\node[leaf] (leaf) at (-1,-8) {$\{y_1, y_2, \ldots, y_n\}$};
+
+% Arrows - traversal path highlighted
+\draw[arrow, line width=1.5pt] (root) -- (n1);
+\draw[arrow, dashed] (root) -- (dots1);
+\draw[arrow, dashed] (n1) -- (dots2);
+\draw[arrow, line width=1.5pt] (n1) -- (n2);
+\draw[arrow, dashed] (n2) -- (dots3);
+\draw[arrow, line width=1.5pt] (n2) -- (n3);
+\draw[arrow, line width=1.5pt] (n3) -- (leaf);
+\draw[arrow, dashed] (n3) -- (dots4);
+
+\end{tikzpicture}
+\end{column}
+
+% Right column - Explanation
+\begin{column}{0.52\textwidth}
+\small
+
+\textbf{Process:}
+\begin{itemize}[label=\arabic*.]
+    \item Start at root node
+    \item Traverse tree based on decision rules
+    \item Reach terminal node with observations
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Default Approach:}
+\begin{itemize}
+    \item Mean: $\hat{y} = \frac{1}{n}\sum_{i=1}^{n} y_i$
+    \item Expectation: $\text{E}(Y_i) = \frac{\hat{\alpha}_i}{\sum_{j+1}^k\hat{\alpha}_i}$
+    \item Random Forest: average across trees
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Distributional Approach:}
+\begin{itemize}
+    \item Collect terminal nodes from all trees
+    \item Construct empirical probability function
+\end{itemize}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+

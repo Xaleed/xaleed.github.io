@@ -1,0 +1,252 @@
+
+
+\begin{frame}{Compositional data}
+\only<1>{
+\note{
+IFirst of all we should know what simplex space is, I will frequently refer to simplex space. 
+A simplex space is  collection of vectors with non-negative values that always sum to a constant.
+This space is known as the \emph{simplex} and it is common to set \( k = 1 \).
+We refer to data from this space as \emph{compositional data}.
+
+The problem I'm going to talk about is how can we apply a random forest to this space and why is this important?
+}
+
+
+\vspace{1em}
+
+A simplex is a convex space of all vectors with non-negative components that sum to a constant. 
+
+
+
+\begin{center}
+\colorbox{blue!10}{\parbox{0.8\textwidth}{
+\begin{center}
+\[
+S^c_k = \left\{ (y_1, \dots, y_k)^\top \in \mathbb{R}^k \,\middle|\, y_i \geq 0, \ \sum_{i=1}^k y_i = \textcolor{blue}{c} \right\}
+\]
+\end{center}
+}}
+\end{center}
+
+
+
+ It is common to set \(  \textcolor{blue}{c = 1} \). We refer to data from this space as \emph{compositional data}.
+ 
+
+}
+
+
+
+\only<2>{
+
+\textbf{A practical view of compositional data}
+
+\vspace{0.3cm}
+
+Let $\mathbf{Y} = (Y_1, Y_2, \dots, Y_K)$ be a vector with positive components.
+
+\vspace{0.3cm}
+
+The compositional transformation is defined as:
+\[
+\mathbf{S} =
+\left(
+\frac{Y_1}{\sum_{i=1}^K Y_i}, \dots,
+\frac{Y_K}{\sum_{i=1}^K Y_i}
+\right)
+\]
+
+\vspace{0.3cm}
+
+This vector lies in the simplex space.
+
+\vspace{0.5cm}
+
+However, in this transformation we lose information about the \textbf{absolute scale}, and we cannot uniquely recover the original vector.
+
+But we preserve the \textbf{relative information}.
+In particular, for any two components $i$ and $j$:
+\[
+\frac{Y_i}{Y_j} = \frac{S_i}{S_j}
+\]
+
+
+\note{
+Improved spoken version
+
+We can also define compositional data in a more practical way.
+
+Suppose we have a vector with non-negative components and no other restrictions.
+
+If we divide each component by the total sum, we obtain a new vector that belongs to the simplex space.
+
+This new vector is a compositional representation of the original data.
+
+An important point is that we cannot recover the original vector uniquely from its compositional form.
+
+In this transformation, we lose information about the absolute scale of the data.
+
+However, what we can fully preserve is the relative information.
+
+In particular, the ratios between components remain exactly the same after normalization.
+
+So for any two components, the ratio is identical in both representations.
+
+It is commonly assumed in this field that absolute values are not important.
+
+The only meaningful information in compositional data is the relative information between components.
+}
+
+
+}
+
+% \only<3>{
+% \vspace{.2cm}
+%    \textbf{Example}: consider 
+% \(
+% \mathbf{Y} = (2000, 3000, 5000),
+% \)
+% which represents the amount of money (in dollars) allocated to \textit{stocks}, \textit{bonds}, and \textit{cash} in an investment portfolio.  
+
+% Then the following vector is a compositional data:
+% \begin{align*}
+% \scalebox{1.2}{$\left(\frac{2000}{2000+3000+5000},\;\frac{3000}{2000+3000+5000},\;\frac{5000}{2000+3000+5000}\right)$} = (0.2, 0.3, 0.5)
+% \end{align*}
+
+% \medskip
+
+% Multiply by 100:
+% \[
+% 100 \cdot \mathbf{s}(\mathbf{Y}) = (20, 30, 50)
+% \]
+
+% \medskip
+
+% Same proportions, different scale (percentages).
+% \note{
+% Here we see a portfolio allocation example.
+
+% After normalization, we obtain proportions of total investment.
+
+% Multiplying by 100 expresses them as percentages, which are more intuitive in finance.
+
+% The relative allocation (20\%, 30\%, 50\%) remains unchanged regardless of the total invested amount.
+% }
+% }
+
+
+\only<3>{
+\note{Confirm:In this slide, consider a job application pool of 50 applicants. Among them, 10 have a mathematics background, 15 have a statistics background, and 25 have a computer science background.
+
+If we normalize this vector by dividing each component by the total sum, we obtain a compositional vector.
+
+Each component corresponds to the proportion of applicants with a different academic background.
+
+By multiplying this vector by 100, we obtain percentages. For example, 20% of the applicants have a mathematics background.
+
+The important point is that the information remains the same, but the scale changes—from proportions to percentages.
+
+In general, multiplying a compositional vector by any positive constant does not change the relative information; it only changes the scale.
+
+Now, this simple normalization step looks simple, but it has a very important statistical consequence.
+}
+
+Consider a job application pool of $50$ applicants classified by academic background.
+\vspace{0.3cm}
+
+\begin{columns}
+    \begin{column}{0.4\textwidth}
+        \[
+        \mathbf{Y} = (10, 15, 25)
+        \]
+    \end{column}
+    \begin{column}{0.5\textwidth}
+        \begin{tabular}{lr}
+            Mathematics & 10 \\
+            Statistics  & 15 \\
+            Computer Science & 25 \\
+        \end{tabular}
+    \end{column}
+\end{columns}
+
+\vspace{0.3cm}
+We normalize this vector to obtain a compositional representation:
+\vspace{0.2cm}
+
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \[
+        \mathbf{s}(\mathbf{Y}) = \left(\frac{10}{50}, \frac{15}{50}, \frac{25}{50}\right)
+        \]
+    \end{column}
+    \begin{column}{0.4\textwidth}
+        \[
+        = (0.2, 0.3, 0.5)
+        \]
+        Interpreted as proportions.
+    \end{column}
+\end{columns}
+
+\vspace{0.2cm}
+Multiplying by $100$ gives percentages:
+\vspace{0.2cm}
+
+\begin{columns}
+    \begin{column}{0.5\textwidth}
+        \[
+        100 \cdot \mathbf{s}(\mathbf{Y}) = (20, 30, 50)
+        \]
+    \end{column}
+    \begin{column}{0.4\textwidth}
+        \textbf{Key idea:} The information is identical — only the scale changes.
+    \end{column}
+\end{columns}
+
+
+}
+
+\end{frame}
+
+
+% \begin{frame}{Statistical problems with compositional data}
+% 1)spurouis corelation
+% 2)The (sample) covariance matrix of the data is singular with rank equal to $D - 1$, since
+% \[
+% \sum_{i=1}^{D} \operatorname{cov}(y_1, y_i)
+% = \operatorname{cov}\left(y_1, \sum_{i=1}^{D} y_i \right)
+% = \operatorname{cov}(y_1, 1)
+% = 0,
+% \]
+% or equivalently,
+% \[
+% \sum_{i=2}^{D} \operatorname{cov}(y_1, y_i)
+% = -\operatorname{var}(y_1),
+% \]
+% where each $y_i$ is a component of the composition $\mathbf{y}$.
+% 3) Evidently, the problems and issues associated
+% with compositional data are too numerous to list here and this is beyond the scope of
+% this review paper.
+
+    
+% \end{frame}
+
+% \begin{frame}{What methodology is more approperiate?}
+% Aitchison suugest to tranfer data...
+
+% dicson had another idea...
+
+% a long argue staeted between them ... and finally Aitchison used stupid word and dicson lift the discussion for evere...
+% Aitchison keep continue work on his idea and bring a lot of attention this his idea so many researcher for a while tried to his idea ... 
+% aclsy and .. belive this made bad effect on the the field ... and for a while many researcher tried to say you have to use transformation methods...
+
+% They belived 
+% \end{frame}
+
+
+
+
+
+
+
+
+

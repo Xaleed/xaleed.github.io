@@ -1,0 +1,465 @@
+[
+  {
+    "n": 1,
+    "title": "Title",
+    "number": "1 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 2,
+    "title": "Compositional data: the simplex",
+    "number": "2 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 3,
+    "title": "Closure transformation",
+    "number": "3 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 4,
+    "title": "An example of compositional data",
+    "number": "4 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 5,
+    "title": "Title",
+    "number": "1 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 6,
+    "title": "The prediction problem",
+    "number": "6 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 7,
+    "title": "Random forest overview",
+    "number": "7 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 8,
+    "title": "How a decision tree works",
+    "number": "8 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 9,
+    "title": "Splitting a node",
+    "number": "9 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 10,
+    "title": "A simple split example",
+    "number": "10 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 11,
+    "title": "MSE splitting",
+    "number": "11 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 12,
+    "title": "Likelihood-based splitting",
+    "number": "12 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 13,
+    "title": "Prediction using forest weights",
+    "number": "13 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 14,
+    "title": "Three approaches to compositional modelling",
+    "number": "14 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 15,
+    "title": "Dirichlet distribution",
+    "number": "15 / 42",
+    "plots": [
+      {
+        "id": "fDir",
+        "drawn": true,
+        "width": 623,
+        "height": 532
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 16,
+    "title": "Dirichlet contour sets",
+    "number": "16 / 42",
+    "plots": [
+      {
+        "id": "fDirContour",
+        "drawn": true,
+        "width": 623,
+        "height": 532
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 17,
+    "title": "Limitation of Dirichlet covariance",
+    "number": "17 / 42",
+    "plots": [
+      {
+        "id": "fDL1",
+        "drawn": true,
+        "width": 392,
+        "height": 532
+      },
+      {
+        "id": "fDL2",
+        "drawn": true,
+        "width": 392,
+        "height": 532
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 18,
+    "title": "Square-root transformation",
+    "number": "18 / 42",
+    "plots": [
+      {
+        "id": "fLift",
+        "drawn": true,
+        "width": 658,
+        "height": 516
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 19,
+    "title": "Kent distribution",
+    "number": "19 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 20,
+    "title": "Kent contours",
+    "number": "20 / 42",
+    "plots": [
+      {
+        "id": "fKent",
+        "drawn": true,
+        "width": 452,
+        "height": 489
+      },
+      {
+        "id": "fKentT",
+        "drawn": true,
+        "width": 373,
+        "height": 489
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 21,
+    "title": "Kent simulated data",
+    "number": "21 / 42",
+    "plots": [
+      {
+        "id": "fKS1",
+        "drawn": true,
+        "width": 452,
+        "height": 509
+      },
+      {
+        "id": "fKS2",
+        "drawn": true,
+        "width": 373,
+        "height": 509
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 22,
+    "title": "Why Kent fitting is expensive",
+    "number": "22 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 23,
+    "title": "Tangent-normal construction",
+    "number": "23 / 42",
+    "plots": [
+      {
+        "id": "fTNdef",
+        "drawn": true,
+        "width": 623,
+        "height": 509
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 24,
+    "title": "Tangent-normal size and shape",
+    "number": "24 / 42",
+    "plots": [
+      {
+        "id": "fKBa",
+        "drawn": true,
+        "width": 384,
+        "height": 505
+      },
+      {
+        "id": "fKBb",
+        "drawn": true,
+        "width": 384,
+        "height": 505
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 25,
+    "title": "TN contours",
+    "number": "25 / 42",
+    "plots": [
+      {
+        "id": "fLev",
+        "drawn": true,
+        "width": 623,
+        "height": 525
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 26,
+    "title": "Three connected spaces",
+    "number": "26 / 42",
+    "plots": [
+      {
+        "id": "fC1",
+        "drawn": true,
+        "width": 382,
+        "height": 387
+      },
+      {
+        "id": "fC2",
+        "drawn": true,
+        "width": 382,
+        "height": 387
+      },
+      {
+        "id": "fC3",
+        "drawn": true,
+        "width": 382,
+        "height": 387
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 27,
+    "title": "Additive summaries",
+    "number": "27 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 28,
+    "title": "Efficient approximate TN splitting",
+    "number": "28 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 29,
+    "title": "Jacobian approximation validation",
+    "number": "29 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 30,
+    "title": "Kent versus TN",
+    "number": "30 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 31,
+    "title": "Multivariate logistic-normal",
+    "number": "31 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 32,
+    "title": "Simulation prediction accuracy",
+    "number": "32 / 42",
+    "plots": [
+      {
+        "id": "fRes",
+        "drawn": true,
+        "width": 1171,
+        "height": 446
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 33,
+    "title": "Relative prediction errors",
+    "number": "33 / 42",
+    "plots": [
+      {
+        "id": "fRel",
+        "drawn": true,
+        "width": 1171,
+        "height": 513
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 34,
+    "title": "LUCAS soil-texture prediction",
+    "number": "34 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 35,
+    "title": "Why zeros matter",
+    "number": "35 / 42",
+    "plots": [
+      {
+        "id": "fZero",
+        "drawn": true,
+        "width": 623,
+        "height": 515
+      }
+    ],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 36,
+    "title": "Earlier exploratory experiment",
+    "number": "36 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 37,
+    "title": "Structural-zero simulation",
+    "number": "37 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 38,
+    "title": "Predicting zero probability",
+    "number": "38 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 39,
+    "title": "Recovering the true probability",
+    "number": "39 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 40,
+    "title": "Zero-probability prediction errors",
+    "number": "40 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 41,
+    "title": "Main conclusions",
+    "number": "41 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  },
+  {
+    "n": 42,
+    "title": "Thank you",
+    "number": "42 / 42",
+    "plots": [],
+    "overflow": [],
+    "imageOK": true
+  }
+]

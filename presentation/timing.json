@@ -1,0 +1,296 @@
+[
+  {
+    "slide": 1,
+    "title": "Title",
+    "seconds": 25,
+    "say_words": 30,
+    "transition_words": 6
+  },
+  {
+    "slide": 2,
+    "title": "Compositional data: the simplex",
+    "seconds": 35,
+    "say_words": 56,
+    "transition_words": 11
+  },
+  {
+    "slide": 3,
+    "title": "Closure transformation",
+    "seconds": 28,
+    "say_words": 42,
+    "transition_words": 5
+  },
+  {
+    "slide": 4,
+    "title": "An example of compositional data",
+    "seconds": 24,
+    "say_words": 38,
+    "transition_words": 6
+  },
+  {
+    "slide": 5,
+    "title": "Why random forests?",
+    "seconds": 20,
+    "say_words": 23,
+    "transition_words": 5
+  },
+  {
+    "slide": 6,
+    "title": "The prediction problem",
+    "seconds": 20,
+    "say_words": 22,
+    "transition_words": 5
+  },
+  {
+    "slide": 7,
+    "title": "Random forest overview",
+    "seconds": 25,
+    "say_words": 38,
+    "transition_words": 7
+  },
+  {
+    "slide": 8,
+    "title": "How a decision tree works",
+    "seconds": 28,
+    "say_words": 46,
+    "transition_words": 10
+  },
+  {
+    "slide": 9,
+    "title": "Splitting a node",
+    "seconds": 25,
+    "say_words": 37,
+    "transition_words": 6
+  },
+  {
+    "slide": 10,
+    "title": "A simple split example",
+    "seconds": 26,
+    "say_words": 45,
+    "transition_words": 6
+  },
+  {
+    "slide": 11,
+    "title": "MSE splitting",
+    "seconds": 30,
+    "say_words": 42,
+    "transition_words": 6
+  },
+  {
+    "slide": 12,
+    "title": "Likelihood-based splitting",
+    "seconds": 35,
+    "say_words": 50,
+    "transition_words": 12
+  },
+  {
+    "slide": 13,
+    "title": "Prediction using forest weights",
+    "seconds": 28,
+    "say_words": 46,
+    "transition_words": 9
+  },
+  {
+    "slide": 14,
+    "title": "Three approaches to compositional modelling",
+    "seconds": 30,
+    "say_words": 46,
+    "transition_words": 7
+  },
+  {
+    "slide": 15,
+    "title": "Dirichlet distribution",
+    "seconds": 40,
+    "say_words": 61,
+    "transition_words": 9
+  },
+  {
+    "slide": 16,
+    "title": "Dirichlet contour sets",
+    "seconds": 30,
+    "say_words": 42,
+    "transition_words": 9
+  },
+  {
+    "slide": 17,
+    "title": "Limitation of Dirichlet covariance",
+    "seconds": 42,
+    "say_words": 59,
+    "transition_words": 11
+  },
+  {
+    "slide": 18,
+    "title": "Square-root transformation",
+    "seconds": 50,
+    "say_words": 72,
+    "transition_words": 8
+  },
+  {
+    "slide": 19,
+    "title": "Kent distribution",
+    "seconds": 40,
+    "say_words": 51,
+    "transition_words": 9
+  },
+  {
+    "slide": 20,
+    "title": "Kent contours",
+    "seconds": 30,
+    "say_words": 46,
+    "transition_words": 8
+  },
+  {
+    "slide": 21,
+    "title": "Kent simulated data",
+    "seconds": 22,
+    "say_words": 32,
+    "transition_words": 5
+  },
+  {
+    "slide": 22,
+    "title": "Why Kent fitting is expensive",
+    "seconds": 43,
+    "say_words": 60,
+    "transition_words": 8
+  },
+  {
+    "slide": 23,
+    "title": "Tangent-normal construction",
+    "seconds": 65,
+    "say_words": 93,
+    "transition_words": 8
+  },
+  {
+    "slide": 24,
+    "title": "Tangent-normal size and shape",
+    "seconds": 32,
+    "say_words": 46,
+    "transition_words": 9
+  },
+  {
+    "slide": 25,
+    "title": "TN contours",
+    "seconds": 25,
+    "say_words": 40,
+    "transition_words": 10
+  },
+  {
+    "slide": 26,
+    "title": "Three connected spaces",
+    "seconds": 40,
+    "say_words": 54,
+    "transition_words": 10
+  },
+  {
+    "slide": 27,
+    "title": "Additive summaries",
+    "seconds": 48,
+    "say_words": 74,
+    "transition_words": 13
+  },
+  {
+    "slide": 28,
+    "title": "Efficient approximate TN splitting",
+    "seconds": 58,
+    "say_words": 69,
+    "transition_words": 11
+  },
+  {
+    "slide": 29,
+    "title": "Jacobian approximation validation",
+    "seconds": 45,
+    "say_words": 72,
+    "transition_words": 10
+  },
+  {
+    "slide": 30,
+    "title": "Kent versus TN",
+    "seconds": 28,
+    "say_words": 34,
+    "transition_words": 5
+  },
+  {
+    "slide": 31,
+    "title": "Multivariate logistic-normal",
+    "seconds": 30,
+    "say_words": 48,
+    "transition_words": 7
+  },
+  {
+    "slide": 32,
+    "title": "Simulation prediction accuracy",
+    "seconds": 50,
+    "say_words": 73,
+    "transition_words": 8
+  },
+  {
+    "slide": 33,
+    "title": "Relative prediction errors",
+    "seconds": 25,
+    "say_words": 41,
+    "transition_words": 8
+  },
+  {
+    "slide": 34,
+    "title": "LUCAS soil-texture prediction",
+    "seconds": 55,
+    "say_words": 78,
+    "transition_words": 15
+  },
+  {
+    "slide": 35,
+    "title": "Why zeros matter",
+    "seconds": 22,
+    "say_words": 33,
+    "transition_words": 8
+  },
+  {
+    "slide": 36,
+    "title": "Earlier exploratory experiment",
+    "seconds": 24,
+    "say_words": 40,
+    "transition_words": 7
+  },
+  {
+    "slide": 37,
+    "title": "Structural-zero simulation",
+    "seconds": 45,
+    "say_words": 67,
+    "transition_words": 8
+  },
+  {
+    "slide": 38,
+    "title": "Predicting zero probability",
+    "seconds": 45,
+    "say_words": 70,
+    "transition_words": 10
+  },
+  {
+    "slide": 39,
+    "title": "Recovering the true probability",
+    "seconds": 45,
+    "say_words": 66,
+    "transition_words": 5
+  },
+  {
+    "slide": 40,
+    "title": "Zero-probability prediction errors",
+    "seconds": 50,
+    "say_words": 80,
+    "transition_words": 7
+  },
+  {
+    "slide": 41,
+    "title": "Main conclusions",
+    "seconds": 35,
+    "say_words": 43,
+    "transition_words": 8
+  },
+  {
+    "slide": 42,
+    "title": "Thank you",
+    "seconds": 15,
+    "say_words": 15,
+    "transition_words": 4
+  }
+]

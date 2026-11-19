@@ -1,0 +1,810 @@
+\documentclass[aspectratio=169]{beamer}
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{booktabs}
+
+% Custom colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Code listing style
+\lstdefinestyle{Rstyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codepurple},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codegreen},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=Rstyle}
+
+\title{DirichletForestParallel}
+\subtitle{High-Performance Compositional Data Regression}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+% ============================================================================
+% SLIDE 1: Overview
+% ============================================================================
+\begin{frame}{What is DirichletForestParallel?}
+
+\begin{block}{Purpose}
+Random forest regression for \textbf{compositional data} (e.g., proportions that sum to 1)
+\end{block}
+
+\vspace{0.3cm}
+
+\textbf{Key Features:}
+\begin{itemize}
+\item Dirichlet distribution-based splits (likelihood maximization)
+\item Parallel processing (Unix/Mac fork, Windows cluster)
+\item Two prediction modes: Fast vs. Distributional
+\item Multiple parameter estimation methods (MoM, MLE)
+\item Weight-based interpretability
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Applications:}
+\begin{itemize}
+\item Microbiome composition analysis
+\item Market share prediction
+\item Budget allocation forecasting
+\item Any data where components sum to 1
+\end{itemize}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 2: Input Data Structure
+% ============================================================================
+\begin{frame}[fragile]{Input Data Structure}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\textbf{Predictor Matrix (X)}
+
+\begin{itemize}
+\item Numeric matrix: $n \times p$
+\item $n$ = observations
+\item $p$ = features/predictors
+\item Can be any real numbers
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Example: 100 samples, 4 features
+X <- matrix(rnorm(100 * 4), 
+            nrow = 100, 
+            ncol = 4)
+\end{lstlisting}
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\textbf{Response Matrix (Y)}
+
+\begin{itemize}
+\item Numeric matrix: $n \times k$
+\item $k$ = number of components
+\item \textbf{Constraint:} Each row sums to 1
+\item All values in $(0, 1)$
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Example: 3 components (k=3)
+library(MCMCpack)
+Y <- rdirichlet(100, 
+                alpha = c(2, 3, 4))
+
+# Verify constraint
+rowSums(Y)  # All equal to 1
+\end{lstlisting}
+
+\end{column}
+
+\end{columns}
+
+\vspace{0.4cm}
+
+\begin{alertblock}{Important}
+Y must be compositional: $\sum_{j=1}^{k} Y_{ij} = 1$ for all $i$, and $0 < Y_{ij} < 1$
+\end{alertblock}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 3: Key Parameters
+% ============================================================================
+\begin{frame}[fragile]{Key Function Parameters}
+
+\begin{table}
+\small
+\begin{tabular}{lp{3cm}p{5cm}}
+\toprule
+\textbf{Parameter} & \textbf{Default} & \textbf{Description} \\
+\midrule
+\texttt{B} & 100 & Number of trees in forest \\
+\texttt{d\_max} & 10 & Maximum tree depth \\
+\texttt{n\_min} & 5 & Min samples per leaf node \\
+\texttt{m\_try} & $\sqrt{p}$ & Features to try at each split \\
+\texttt{method} & "mom" & Parameter estimation: "mom" or "mle" \\
+\texttt{store\_samples} & FALSE & Storage mode (affects memory) \\
+\texttt{n\_cores} & -1 & Parallel cores (-1 = all available) \\
+\texttt{use\_leaf\_predictions} & TRUE & Use pre-computed vs. weight-based \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Example call
+model <- DirichletForest_distributed(
+  X, Y, 
+  B = 100,           # 100 trees
+  d_max = 10,        # Max depth 10
+  n_min = 5,         # Min 5 samples per leaf
+  method = "mom",    # Method of moments
+  store_samples = TRUE,  # Enable weight analysis
+  n_cores = 4        # Use 4 cores
+)
+\end{lstlisting}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 4: Storage Modes
+% ============================================================================
+\begin{frame}{Storage Modes: Fast vs. Distributional}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Fast Mode}
+\texttt{store\_samples = FALSE}
+\end{block}
+
+\textbf{What's Stored:}
+\begin{itemize}
+\item Pre-computed $\alpha$ parameters
+\item Pre-computed mean predictions
+\item NO sample indices
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Pros:}
+\begin{itemize}
+\item 10-50× less memory
+\item Instant predictions
+\item Production-ready
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Cons:}
+\begin{itemize}
+\item Cannot analyze sample weights
+\item Limited interpretability
+\end{itemize}
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Distributional Mode}
+\texttt{store\_samples = TRUE}
+\end{block}
+
+\textbf{What's Stored:}
+\begin{itemize}
+\item $\alpha$ parameters + means
+\item Sample indices in each leaf
+\item Full training data (X, Y)
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Pros:}
+\begin{itemize}
+\item Weight-based predictions
+\item Full interpretability
+\item Uncertainty quantification
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Cons:}
+\begin{itemize}
+\item Higher memory usage
+\item Slightly slower predictions
+\end{itemize}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 5: Parameter Estimation Methods
+% ============================================================================
+\begin{frame}{Parameter Estimation Methods}
+
+\textbf{Goal:} Estimate Dirichlet parameters $\boldsymbol{\alpha} = (\alpha_1, \ldots, \alpha_k)$
+
+\vspace{0.3cm}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Method of Moments (MoM)}
+\texttt{method = "mom"}
+\end{block}
+
+\textbf{How it works:}
+\begin{enumerate}
+\item Calculate sample mean $\bar{y}_j$ and variance $s_j^2$
+\item Estimate concentration: 
+$$v = \frac{\bar{y}_1(1-\bar{y}_1)}{s_1^2} - 1$$
+\item Set $\alpha_j = v \cdot \bar{y}_j$
+\end{enumerate}
+
+\vspace{0.2cm}
+
+\textbf{Characteristics:}
+\begin{itemize}
+\item Very fast (closed-form)
+\item Good for large datasets
+\item May be less accurate
+\end{itemize}
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Maximum Likelihood (MLE)}
+\texttt{method = "mle"}
+\end{block}
+
+\textbf{How it works:}
+\begin{enumerate}
+\item Initialize with MoM
+\item Newton-Raphson optimization
+\item Maximize log-likelihood:
+$$\mathcal{L}(\boldsymbol{\alpha}) = \sum_i \log p(Y_i | \boldsymbol{\alpha})$$
+\end{enumerate}
+
+\vspace{0.2cm}
+
+\textbf{Characteristics:}
+\begin{itemize}
+\item More accurate
+\item Computationally expensive
+\item Better for small datasets
+\end{itemize}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 6: Parallel Processing
+% ============================================================================
+\begin{frame}[fragile]{Parallel Processing Architecture}
+
+\textbf{Automatic platform detection:}
+
+\vspace{0.3cm}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Unix/Mac: Fork-based}
+\end{block}
+
+\begin{itemize}
+\item Uses \texttt{mclapply}
+\item Memory-efficient (copy-on-write)
+\item Automatic setup
+\item No cleanup needed
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Unix/Mac automatically uses fork
+model <- DirichletForest_distributed(
+  X, Y, 
+  B = 100,
+  n_cores = 4  # Fork workers
+)
+\end{lstlisting}
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Windows: PSOCK Cluster}
+\end{block}
+
+\begin{itemize}
+\item Uses persistent cluster
+\item Explicit worker setup
+\item Higher overhead
+\item Requires cleanup
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Windows uses PSOCK cluster
+model <- DirichletForest_distributed(
+  X, Y, 
+  B = 100,
+  n_cores = 4
+)
+
+# IMPORTANT: Always cleanup!
+cleanup_distributed_forest(model)
+\end{lstlisting}
+
+\end{column}
+
+\end{columns}
+
+\vspace{0.3cm}
+
+\begin{alertblock}{Best Practice}
+Set \texttt{n\_cores = -1} to auto-detect: uses \texttt{detectCores() - 1}
+\end{alertblock}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 7: Model Output Structure
+% ============================================================================
+\begin{frame}[fragile]{Model Output Structure}
+
+\textbf{What you get after fitting:}
+
+\vspace{0.3cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+model <- DirichletForest_distributed(X, Y, B = 100, store_samples = TRUE)
+\end{lstlisting}
+
+\vspace{0.3cm}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\textbf{Model Components:}
+\begin{itemize}
+\item \texttt{\$type} - "fork", "cluster", or "sequential"
+\item \texttt{\$n\_cores} - Number of workers
+\item \texttt{\$total\_trees} - Total trees in forest
+\item \texttt{\$store\_samples} - Storage mode
+\item \texttt{\$worker\_forests} - Individual worker forests (fork)
+\item \texttt{\$cluster} - Cluster object (Windows)
+\end{itemize}
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\textbf{Fitted Values (\texttt{\$fitted}):}
+\begin{itemize}
+\item \texttt{\$alpha\_hat} - Estimated $\alpha$ parameters
+\item \texttt{\$mean\_based} - Direct mean predictions
+\item \texttt{\$param\_based} - Normalized $\alpha$ predictions
+\end{itemize}
+
+\vspace{0.2cm}
+
+\textbf{Residuals (\texttt{\$residuals}):}
+\begin{itemize}
+\item \texttt{\$mean\_based} - $Y - \hat{Y}_{\text{mean}}$
+\item \texttt{\$param\_based} - $Y - \hat{Y}_{\text{param}}$
+\end{itemize}
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 8: Three Types of Predictions
+% ============================================================================
+\begin{frame}[fragile]{Three Types of Predictions}
+
+\begin{block}{1. Alpha Parameters (\texttt{alpha\_predictions})}
+Estimated Dirichlet parameters $\hat{\boldsymbol{\alpha}} = (\hat{\alpha}_1, \ldots, \hat{\alpha}_k)$
+\end{block}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+pred <- predict_distributed_forest(model, X_test)
+alpha_hat <- pred$alpha_predictions  # n_test x k matrix
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\begin{block}{2. Mean-Based Predictions (\texttt{mean\_predictions})}
+Direct average of compositional values: $\hat{Y}_{\text{mean}} = \frac{1}{B}\sum_{b=1}^{B} \bar{Y}_b$
+\end{block}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+mean_pred <- pred$mean_predictions  # Sum to 1 by construction
+\end{lstlisting}
+
+\vspace{0.2cm}
+
+\begin{block}{3. Parameter-Based Predictions}
+Normalized alpha parameters: $\hat{Y}_{\text{param}} = \frac{\hat{\boldsymbol{\alpha}}}{\sum_j \hat{\alpha}_j}$
+\end{block}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+param_pred <- pred$alpha_predictions / rowSums(pred$alpha_predictions)
+\end{lstlisting}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 9: Prediction Modes
+% ============================================================================
+\begin{frame}[fragile]{Prediction Modes (when store\_samples = TRUE)}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Pre-computed Leaf Predictions}
+\texttt{use\_leaf\_predictions = TRUE}
+\end{block}
+
+\textbf{How it works:}
+\begin{enumerate}
+\item Traverse tree to leaf
+\item Return pre-computed $\alpha$ and mean
+\item Average across all trees
+\end{enumerate}
+
+\vspace{0.2cm}
+
+\textbf{Characteristics:}
+\begin{itemize}
+\item Very fast
+\item Uses stored leaf values
+\item Same as \texttt{store\_samples = FALSE}
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+pred <- predict_distributed_forest(
+  model, X_test,
+  use_leaf_predictions = TRUE
+)
+\end{lstlisting}
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\begin{block}{Weight-Based Predictions}
+\texttt{use\_leaf\_predictions = FALSE}
+\end{block}
+
+\textbf{How it works:}
+\begin{enumerate}
+\item Find all training samples in same leafs
+\item Calculate normalized weights
+\item Weighted average of training Y
+\item Re-estimate $\alpha$ from weighted samples
+\end{enumerate}
+
+\vspace{0.2cm}
+
+\textbf{Characteristics:}
+\begin{itemize}
+\item More accurate (full distribution)
+\item Enables interpretability
+\item Computationally expensive
+\end{itemize}
+
+\vspace{0.2cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+pred <- predict_distributed_forest(
+  model, X_test,
+  use_leaf_predictions = FALSE
+)
+\end{lstlisting}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 10: Weight Matrix Analysis
+% ============================================================================
+\begin{frame}[fragile]{Weight Matrix: Interpretability Tool}
+
+\textbf{Only available with \texttt{store\_samples = TRUE}}
+
+\vspace{0.3cm}
+
+\begin{block}{What is the Weight Matrix?}
+For $m$ test samples and $n$ training samples: $W_{m \times n}$ where $W_{ij}$ = influence of training sample $j$ on test sample $i$
+\end{block}
+
+\vspace{0.3cm}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Get weight matrix for multiple test samples
+weights <- get_weight_matrix_distributed(model, X_test)
+
+dim(weights$weight_matrix)  # m x n (test x train)
+weights$sample_indices      # 1:n (all training indices)
+weights$Y_values            # n x k (training Y values)
+\end{lstlisting}
+
+\vspace{0.3cm}
+
+\textbf{Properties:}
+\begin{itemize}
+\item Each row sums to 1: $\sum_j W_{ij} = 1$
+\item Sparse matrix (most weights are 0)
+\item Prediction verification: $\hat{Y} = W \cdot Y_{\text{train}}$
+\end{itemize}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 11: Use Cases
+% ============================================================================
+\begin{frame}[fragile]{Practical Use Cases}
+
+\begin{block}{Use Case 1: Find Influential Training Samples}
+\end{block}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+weights <- get_weight_matrix_distributed(model, X_test)
+
+# For first test sample, find top 5 influential training samples
+top_5 <- order(weights$weight_matrix[1, ], decreasing = TRUE)[1:5]
+cat("Most influential training samples:", top_5, "\n")
+cat("Their weights:", weights$weight_matrix[1, top_5], "\n")
+\end{lstlisting}
+
+\vspace{0.3cm}
+
+\begin{block}{Use Case 2: Compare Prediction Methods}
+\end{block}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+# Mean-based RMSE
+rmse_mean <- sqrt(mean((model$residuals$mean_based)^2))
+
+# Parameter-based RMSE
+rmse_param <- sqrt(mean((model$residuals$param_based)^2))
+
+cat("RMSE (mean-based):", rmse_mean, "\n")
+cat("RMSE (param-based):", rmse_param, "\n")
+\end{lstlisting}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 12: Performance Considerations
+% ============================================================================
+\begin{frame}{Performance & Scalability}
+
+\begin{columns}[T]
+
+\begin{column}{0.48\textwidth}
+\textbf{Memory Usage:}
+
+\begin{table}
+\tiny
+\begin{tabular}{lrr}
+\toprule
+\textbf{Mode} & \textbf{Memory} & \textbf{Factor} \\
+\midrule
+\texttt{store\_samples = FALSE} & 400 KB & 1× \\
+\texttt{store\_samples = TRUE} & 20 MB & 50× \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.1cm}
+\tiny{(1K samples, 100 trees, 5 components)}
+
+\vspace{0.3cm}
+
+\textbf{Prediction Speed:}
+
+\begin{table}
+\tiny
+\begin{tabular}{lc}
+\toprule
+\textbf{Method} & \textbf{Speed} \\
+\midrule
+Pre-computed leaf & $\sim$1ms \\
+Weight-based & $\sim$10ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{column}
+
+\begin{column}{0.48\textwidth}
+\textbf{Parallelization Speedup:}
+
+\begin{itemize}
+\item Sequential (1 core): baseline
+\item 4 cores: $\sim$3.5× faster
+\item 8 cores: $\sim$6-7× faster
+\item Efficiency: 85-90\%
+\end{itemize}
+
+\vspace{0.3cm}
+
+\textbf{Recommendations:}
+
+\begin{itemize}
+\item \textbf{Production:} \\
+\texttt{store\_samples = FALSE}, many cores
+\item \textbf{Research/Analysis:} \\
+\texttt{store\_samples = TRUE}, weight analysis
+\item \textbf{Large $n$ ($>$10K):} \\
+Consider MoM over MLE
+\item \textbf{Many trees ($>$200):} \\
+Always use parallelization
+\end{itemize}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 13: Complete Workflow
+% ============================================================================
+\begin{frame}[fragile]{Complete Workflow Example}
+
+\begin{lstlisting}[language=R, basicstyle=\tiny\ttfamily]
+library(DirichletForestParallel)
+library(MCMCpack)
+
+# 1. PREPARE DATA
+n <- 500; p <- 4; k <- 3
+X <- matrix(rnorm(n * p), n, p)
+Y <- rdirichlet(n, alpha = c(2, 3, 4))
+X_test <- matrix(rnorm(10 * p), 10, p)
+
+# 2. BUILD MODEL (with interpretability enabled)
+model <- DirichletForest_distributed(
+  X, Y, 
+  B = 100,                   # 100 trees
+  d_max = 10,                # Max depth 10
+  method = "mom",            # Method of moments
+  store_samples = TRUE,      # Enable weight analysis
+  n_cores = 4                # 4 parallel workers
+)
+
+# 3. EXAMINE FITTED VALUES
+print(head(model$fitted$mean_based))      # In-sample predictions
+print(head(model$residuals$mean_based))   # Residuals
+
+# 4. MAKE PREDICTIONS (two modes)
+pred_fast <- predict_distributed_forest(model, X_test, use_leaf_predictions = TRUE)
+pred_weight <- predict_distributed_forest(model, X_test, use_leaf_predictions = FALSE)
+
+# 5. ANALYZE SAMPLE WEIGHTS
+weights <- get_weight_matrix_distributed(model, X_test)
+top_influential <- order(weights$weight_matrix[1, ], decreasing = TRUE)[1:5]
+print(top_influential)
+
+# 6. CLEANUP (especially important on Windows)
+cleanup_distributed_forest(model)
+\end{lstlisting}
+
+\end{frame}
+
+% ============================================================================
+% SLIDE 14: Summary
+% ============================================================================
+\begin{frame}{Summary: When to Use What}
+
+\begin{table}
+\small
+\begin{tabular}{lp{5cm}p{4cm}}
+\toprule
+\textbf{Scenario} & \textbf{Recommended Settings} & \textbf{Why} \\
+\midrule
+Production deployment & 
+\texttt{store\_samples = FALSE}, \newline \texttt{n\_cores = -1} & 
+Fast, memory-efficient \\
+\midrule
+Research \& analysis & 
+\texttt{store\_samples = TRUE}, \newline \texttt{use\_leaf\_predictions = FALSE} & 
+Full interpretability \\
+\midrule
+Large dataset ($n > 10K$) & 
+\texttt{method = "mom"}, \newline many cores & 
+Computational efficiency \\
+\midrule
+Small dataset ($n < 500$) & 
+\texttt{method = "mle"}, \newline \texttt{n\_cores = 1} & 
+Better accuracy \\
+\midrule
+Uncertainty quantification & 
+\texttt{store\_samples = TRUE}, \newline weight analysis & 
+Access to distribution \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vspace{0.3cm}
+
+\begin{alertblock}{Key Takeaway}
+\textbf{Trade-off:} Memory/Speed $\leftrightarrow$ Interpretability/Accuracy
+\end{alertblock}
+
+\end{frame}
+
+% ============================================================================
+% FINAL SLIDE
+% ============================================================================
+\begin{frame}{Thank You!}
+
+\centering
+\Large
+
+\textbf{DirichletForestParallel}
+
+\vspace{0.5cm}
+
+\normalsize
+High-performance compositional data regression with:
+\begin{itemize}
+\item Flexible storage modes
+\item Parallel processing
+\item Multiple prediction types
+\item Full interpretability (optional)
+\end{itemize}
+
+\vspace{1cm}
+
+Questions?
+
+\end{frame}
+
+\end{document}

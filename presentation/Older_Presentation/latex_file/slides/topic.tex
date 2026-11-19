@@ -1,0 +1,60 @@
+
+{
+  \setbeamercolor{page number in head/foot}{fg=background canvas.bg}
+  \begin{frame}
+    \begin{tikzpicture}[remember picture, overlay]
+      \node[anchor=north west, xshift=1em, yshift=-1em] at (current page.north west) {
+        \includegraphics[width=3cm]{logo.png}
+      };
+    \end{tikzpicture}
+
+    \titlepage
+
+
+      \begin{center}
+    %    \includegraphics[width=0.15\linewidth]{slides/DirichletRF.jpg}
+    \qrcode[height=2.8cm]{https://github.com/Xaleed/DirichletRF.git}
+
+    \vspace{0.1cm}
+
+    {\small GitHub repository}
+
+  \end{center}
+  \end{frame}
+}
+
+
+\begin{frame}{What is This Talk About?}
+% \note{
+% Good morning, and thank you for joining this talk. It is about developing DDRF, which is part of my postdoc project at Stellenbosch University, in collaboration with Stephan and Professor Lubbe.
+
+
+% In a nutshell, I’ll shortly refer what composistional data is? I will explain why is it reasonable to develop a random forest model for composiational data?
+% I will some comparison result?}
+
+\vspace{2em}
+
+\nocite{In a nutshell, I will first talk about what compositional data are. Then, I will give a short literature review, including a brief history of compositional data and how this field developed. After that, I will move to the machine learning part, with a particular focus on Random Forests, and explain the model that we developed. I will also present some comparative results, where I compare our model with existing approaches. Finally, I will briefly introduce the R package that we developed.}
+
+\vspace{1.5em}
+\begin{itemize}
+ 
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{Compositional data} -- Key characteristics and modeling challenges
+    \vspace{1em}
+
+    
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{Machine learning: Random Forest} Modeling complex relationships
+    \vspace{1em}
+     \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{ Dirichlet Random Forest model} -- Introduction and motivation
+  \vspace{1em}
+
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{Comparison results} -- Evaluating model performance
+    \vspace{1em}
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{
+  DirichletRF R package}
+\end{itemize}
+
+
+\vspace{2em}
+
+\end{frame}

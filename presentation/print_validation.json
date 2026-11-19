@@ -1,0 +1,35 @@
+{
+  "env": {
+    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+    "plotly": "2.35.2",
+    "mathjax": "3.2.2",
+    "slides": 42,
+    "mathErrors": []
+  },
+  "simplexInteractive": true,
+  "treeInteractive": true,
+  "toggles": [
+    "false",
+    "false",
+    "false"
+  ],
+  "metric": "true",
+  "notes": {
+    "visible": true,
+    "say": true,
+    "target": true
+  },
+  "popupOpened": true,
+  "speakerSync": true,
+  "navigation": "#39",
+  "fullscreen": true,
+  "sliderCount": 0,
+  "print": {
+    "ready": true,
+    "staticImages": 19,
+    "slides": 42,
+    "broken": 0,
+    "pdfPages": 42
+  },
+  "errors": []
+}

@@ -3,8 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dirichlet, Kent and Tangent-Normal Leaves</title>
-<meta name="description" content="Conference talk: the Dirichlet, Kent and tangent-normal (TN) distributions as node models of a compositional random forest, with interactive figures.">
+<title>Random Forests for Compositional Data</title>
+<link rel="icon" href="data:,">
+<meta name="description" content="A 25-minute academic talk on Dirichlet, logistic-normal and tangent-normal random forests, with interactive geometry, soil-texture prediction and structural-zero probabilities.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap">
@@ -133,8 +134,13 @@ body.print .ctl,body.print #brand{display:none}
 body.print img.static{width:100%;flex:1;min-height:0;object-fit:contain}
 @page{size:13.333in 7.5in;margin:0}
 @media print{#help,#progress,#num,#ovl{display:none!important} body{background:#fff}}
+.hero-stat{font-size:6rem;line-height:1.1;text-align:center;margin:.4rem 0}.results-table td{font-size:1.3rem!important;padding:.8rem!important}.research-figure{width:100%;flex:1;min-height:0;object-fit:contain}.weight-flow{display:flex;align-items:center;gap:.65rem;justify-content:space-between}.weight-flow .box{flex:1;text-align:center;font-size:1.35rem}.note-say,.note-point,.note-transition,.note-remember{border-top:1px solid #aaa;padding-top:.6em;margin-top:.8em}.note-remember{color:#777}.slide{animation:slide-in .18s ease-out}@keyframes slide-in{from{opacity:.7}to{opacity:1}}@media(prefers-reduced-motion:reduce){.slide{animation:none}}
+@media print{body.print #stage{width:1280px!important;height:auto!important}body.print .slide{border:0}body.print aside.notes{display:none!important}}
+.panel3[style*="flex:0"],.cols[style*="flex:0"]{flex:0 0 auto!important;min-height:auto}.panel3[style*="flex:0"]>div{min-height:auto}.panel3[style*="flex:0"] h3{font-size:1.5rem}.panel3[style*="flex:0"] p{font-size:1.15rem;margin:.6rem 0 0}
+#help{pointer-events:none}
+@media print{html,body{height:auto!important;overflow:visible!important}body.print #stage{overflow:visible!important}body.print .slide{flex-shrink:0}body.print .slide:last-of-type{page-break-after:auto;break-after:auto}}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<script src="assets/plotly-2.35.2.min.js"></script>
 <script>
 if(!window.Plotly){document.write('<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"><\/scr'+'ipt>');}
 window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
@@ -148,13 +154,13 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
 <div id="stage">
 
 <!-- ================================ TITLE ================================ -->
-<section class="slide title-slide" data-title="Title" data-time="10">
+<section class="slide title-slide" data-title="Title" data-time="25">
   <div class="kicker k-res">Compositional random forest</div>
-  <h1>Dirichlet, Kent and<br>tangent-normal leaves</h1>
-  <p class="sub">Node models for compositional responses: on the simplex, and on the sphere after a square root.</p>
+  <h1>Random Forests for<br>Compositional Data</h1>
+  <p class="sub">Dirichlet, Logistic-Normal, and Tangent-Normal Approaches</p>
   <div class="dots"><i style="background:var(--dir)"></i><i style="background:var(--kent)"></i><i style="background:var(--tn)"></i></div>
   <div class="who">Khaled Masoumifard &middot; Stephan van der Westhuizen &middot; Sugnet Gardner-Lubbe<br>Department of Statistics and Actuarial Science &middot; Stellenbosch University</div>
-  <aside class="notes"><p>Today, I am going to talk about random forests for compositional data. I will focus on our tangent normal model.</p><p><b>Transition:</b> First, compositional data.</p><p><b>Figure:</b> Show the title; no interaction.</p><p><b>Remember:</b> Introduce TN as the proposed node model, not a claim of universal superiority.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 25 seconds</p><div class="note-say"><b>SAY:</b><p>Good morning, everyone. Today, I will discuss random forests for compositional data. We compare three distributional approaches.</p><p>Our main contribution is a tangent-normal model with an efficient approximate splitting score.</p></div><div class="note-point"><b>POINT TO:</b><p>Face the audience; pause after the title.</p></div><div class="note-transition"><b>TRANSITION:</b><p>First, what exactly are compositional data?</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
 <!-- arrowheads shared by the inline diagrams -->
@@ -166,17 +172,17 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
 </defs></svg>
 
 <!-- ============================= COMPOSITIONAL DATA ============================= -->
-<section class="slide" data-title="Compositional data: the simplex" data-time="28">
+<section class="slide" data-title="Compositional data: the simplex" data-time="35">
   <div class="kicker k-res">Compositional data</div>
   <h2>Compositional data</h2>
   <div class="cols c-r">
     <div class="col" style="justify-content:center">
       <p>A <b>simplex</b> is the convex set of all vectors with non-negative parts that sum to a constant:</p>
-      <div class="eqbox" style="font-size:1.2rem">\[ \mathcal S^{c}_{k}=\Bigl\{(y_1,\dots,y_k)^{\top}\in\R^{k}\ \Bigm|\ y_i\ge 0,\ \ \sum_{i=1}^{k}y_i=c\Bigr\} \]</div>
+      <div class="eqbox" style="font-size:1.2rem">\[ \mathcal S^{c}_{k}=\Bigl\{(z_1,\dots,z_k)^{\top}\in\R^{k}\ \Bigm|\ z_i\ge 0,\ \ \sum_{i=1}^{k}z_i=c\Bigr\} \]</div>
       <p>It is common to set \(c=1\). We refer to data from this space as <b>compositional data</b>.</p>
     </div>
     <div class="col" style="justify-content:center;align-items:center">
-      <svg class="fig" viewBox="0 0 400 350" style="width:100%;max-height:30rem">
+      <svg id="simplex-demo" class="fig" viewBox="0 0 400 350" style="width:100%;max-height:30rem">
         <polygon points="40,315 360,315 200,38" style="fill:#f1f1ec;stroke:#4d4c48;stroke-width:2"/>
         <g style="stroke:#e2e1da;stroke-width:1">
           <line x1="72" y1="259.6" x2="328" y2="259.6"/><line x1="104" y1="204.2" x2="296" y2="204.2"/><line x1="136" y1="148.8" x2="264" y2="148.8"/><line x1="168" y1="93.4" x2="232" y2="93.4"/>
@@ -184,19 +190,19 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
           <line x1="296" y1="315" x2="168" y2="93.4"/><line x1="232" y1="315" x2="136" y2="148.8"/><line x1="168" y1="315" x2="104" y2="204.2"/><line x1="104" y1="315" x2="72" y2="259.6"/>
         </g>
         <polygon points="40,315 360,315 200,38" style="fill:none;stroke:#4d4c48;stroke-width:2"/>
-        <text x="30" y="338" text-anchor="middle" style="font-size:20px;fill:#141412">y&#8321;</text>
-        <text x="370" y="338" text-anchor="middle" style="font-size:20px;fill:#141412">y&#8322;</text>
-        <text x="200" y="26" text-anchor="middle" style="font-size:20px;fill:#141412">y&#8323;</text>
-        <circle cx="216" cy="176.5" r="7" style="fill:#d9661f;stroke:#fff;stroke-width:2"/>
-        <text x="216" y="208" text-anchor="middle" style="font-size:17px;fill:#4d4c48" class="mono">(0.2, 0.3, 0.5)</text>
+        <text x="30" y="338" text-anchor="middle" style="font-size:20px;fill:#141412">z&#8321;</text>
+        <text x="370" y="338" text-anchor="middle" style="font-size:20px;fill:#141412">z&#8322;</text>
+        <text x="200" y="26" text-anchor="middle" style="font-size:20px;fill:#141412">z&#8323;</text>
+        <circle id="simplex-point" cx="216" cy="176.5" r="7" style="fill:#d9661f;stroke:#fff;stroke-width:2"/>
+        <text id="simplex-label" x="216" y="208" text-anchor="middle" style="font-size:17px;fill:#4d4c48" class="mono">(0.2, 0.3, 0.5)</text>
       </svg>
-      <div class="ptitle">k = 3: a triangle; each composition is one point</div>
+      <div class="ptitle">Click inside the triangle to move the composition</div>
     </div>
   </div>
-  <aside class="notes"><p>Before talking about compositional data, we first need to understand what the simplex space is. The simplex space is a convex set of vectors with non-negative components, where all the components add up to a constant. Usually, we set this constant equal to one. Data that belong to this space are called compositional data.</p><p><b>Transition:</b> How do these data arise?</p><p><b>Figure:</b> Point to the triangle and its example point.</p><p><b>Remember:</b> The closed simplex admits zero parts and has dimension k minus one. Some density models use its interior.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 35 seconds</p><div class="note-say"><b>SAY:</b><p>Compositional data are non-negative vectors whose components sum to a fixed total, usually one. Their space is called the simplex. For three components, it is a triangle.</p><p>Each point represents a composition. Interior points have three positive components. On an edge, at least one component is zero.</p><p>The corners represent compositions with only one positive component.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the triangle, then to an edge.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let me show how we obtain a composition from ordinary measurements.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Compositional data: a practical view" data-time="23">
+<section class="slide" data-title="Closure transformation" data-time="28">
   <div class="kicker k-res">Compositional data</div>
   <h2>Compositional data: a practical view</h2>
   <div class="cols c2">
@@ -211,10 +217,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
         \[ \frac{Y_i}{Y_j}=\frac{S_i}{S_j}. \]</div>
     </div>
   </div>
-  <aside class="notes"><p>We often start with positive amounts. Divide each component by their total to obtain a composition. This removes absolute scale but preserves relative information. In particular, ratios between components remain unchanged.</p><p><b>Transition:</b> Here is an example.</p><p><b>Figure:</b> Point from the closure formula to the two boxes.</p><p><b>Remember:</b> Ratios are preserved for positive components; closure cannot recover the original total.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 28 seconds</p><div class="note-say"><b>SAY:</b><p>Suppose we observe several positive quantities. We divide each quantity by their total. This operation is called closure.</p><p>The resulting proportions sum to one. We lose the original scale: two vectors with the same proportions but different totals give the same composition.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the total and the two proportional vectors.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Here is a simple example.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Compositional data: an example" data-time="18">
+<section class="slide" data-title="An example of compositional data" data-time="24">
   <div class="kicker k-res">Compositional data</div>
   <h2>Compositional data: an example</h2>
   <p>A job application pool of 50 applicants, classified by academic background:</p>
@@ -235,38 +241,16 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       <div class="box"><p style="margin:0"><b>Key idea:</b> proportions and percentages carry the same information &mdash; only the scale changes.</p></div>
     </div>
   </div>
-  <aside class="notes"><p>Suppose we have fifty job applicants. Twenty percent are mathematicians, thirty percent are statisticians, and fifty percent are computer scientists. These percentages sum to one hundred percent, so they form a composition.</p><p><b>Transition:</b> We now want to predict compositions from other information.</p><p><b>Figure:</b> Point across the three rows and then to the total.</p><p><b>Remember:</b> Counts are 10, 15 and 25; proportions are 0.2, 0.3 and 0.5.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 24 seconds</p><div class="note-say"><b>SAY:</b><p>Suppose fifty applicants come from three fields. Ten studied mathematics, fifteen statistics, and twenty-five computer science. Their proportions are twenty, thirty, and fifty percent.</p><p>These proportions form a composition. We may want to predict them from other information.</p></div><div class="note-point"><b>POINT TO:</b><p>Point across counts 10, 15, 25 and proportions 0.2, 0.3, 0.5.</p></div><div class="note-transition"><b>TRANSITION:</b><p>This leads us to machine learning.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<!-- ============================= RANDOM FOREST ============================= -->
-<section class="slide" data-title="Machine learning: random forest" data-time="12">
-  <div class="kicker k-res">Random forests for compositional responses</div>
-  <h2>Machine learning: random forest</h2>
-  <ul style="max-width:66rem">
-    <li><b>Why machine learning?</b> For compositional responses: many predictors with complex non-linear patterns.</li>
-    <li><b>Common approaches:</b> model compositions directly, use log-ratio coordinates, or use square-root coordinates on the sphere.</li>
-    <li><b>Why random forests?</b> They are flexible, and their splitting rules can be easily adapted to respect the simplex structure.</li>
-    <li>The PhD of van der Westhuizen (2024) inspired the idea of using the tree splitting rule to account for compositional data.</li>
-  </ul>
-  <aside class="notes"><p>Random forests can learn complex relationships between predictors and compositional responses. We can adapt their splitting rule to the response distribution.</p><p><b>Transition:</b> Here is the problem.</p><p><b>Figure:</b> Indicate the splitting-rule bullet.</p><p><b>Remember:</b> Log-ratio modelling is a legitimate alternative; do not call it inherently biased.</p></aside>
+<section class="slide" data-title="Why random forests?" data-time="20"><div class="kicker k-res">Motivation</div><h2>Why random forests?</h2><div class="cols c2" style="align-items:center"><div class="col"><ul class="big"><li>Nonlinear relationships</li><li>Complex interactions</li><li>Flexible prediction</li></ul></div><div class="box"><p class="big" style="margin:0"><b>Our focus</b></p><p>Splitting rules adapted to the distributional structure of compositional responses.</p></div></div><aside class="notes"><p class="note-time"><b>TARGET:</b> 20 seconds</p><div class="note-say"><b>SAY:</b><p>Random forests learn nonlinear relationships and interactions. Our focus is the splitting rule: we adapt it to the distributional structure of compositional responses.</p></div><div class="note-point"><b>POINT TO:</b><p>Indicate the final bullet on adapted splitting.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Here is our prediction problem.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Random forests framework" data-time="12">
-  <div class="kicker k-res">Random forests for compositional responses</div>
-  <h2>Random forests framework</h2>
-  <ul style="max-width:66rem">
-    <li>Given a sample of size \(n\) and \(m\) covariates:
-      \[ \mathbf X\in\R^{n\times m}\ \ \text{(covariate matrix)},\qquad \mathbf Y\in\R^{n\times k}\ \ \text{(response matrix)} \]</li>
-    <li>Each row of \(\mathbf Y\) is a compositional vector:
-      \[ Y_{ij}\ge0\ \ \text{for all } i,j,\qquad \sum_{j=1}^{k}Y_{ij}=1 \]</li>
-    <li>Goal: learn a mapping \(\mathbf x\longrightarrow\mathbf y\) that respects the simplex geometry.</li>
-    <li>After training:
-      <ul><li>predict compositional responses for new inputs</li><li>estimate the conditional distribution of the responses</li></ul></li>
-  </ul>
-  <aside class="notes"><p>Each row contains predictors and a compositional response. We want to predict a new composition and its conditional distribution.</p><p><b>Transition:</b> A forest combines trees.</p><p><b>Figure:</b> Point to X, then Y.</p><p><b>Remember:</b> The response has k parts; the predictors need not be compositional.</p></aside>
+<section class="slide" data-title="The prediction problem" data-time="20"><div class="kicker k-res">The prediction problem</div><h2>Predict a composition from covariates</h2><div class="panel3" style="align-items:center"><div class="box"><h3>Predictors</h3><p>Environmental or geographical measurements</p><div class="eqbox">\[X\in\mathbb R^{n\times p}\]</div></div><div style="text-align:center;font-size:3rem">\(X\longrightarrow Z\)</div><div class="box"><h3>Compositional response</h3><p>One row per observation</p><div class="eqbox tn">\[Z\in[0,1]^{n\times k},\quad\sum_j Z_{ij}=1.\]</div></div></div><p class="big">Goal: predict the composition at a new predictor value \(x\).</p><aside class="notes"><p class="note-time"><b>TARGET:</b> 20 seconds</p><div class="note-say"><b>SAY:</b><p>X contains predictors, such as environmental measurements. Z contains compositions. Each response sums to one. We predict Z for new predictor values.</p></div><div class="note-point"><b>POINT TO:</b><p>Point from predictor X to compositional response Z.</p></div><div class="note-transition"><b>TRANSITION:</b><p>We combine many decision trees.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Random forest: overview" data-time="22">
+<section class="slide" data-title="Random forest overview" data-time="25">
   <div class="kicker k-res">Random forests for compositional responses</div>
   <h2>Random forest: overview</h2>
   <p style="max-width:66rem">A <b>random forest</b> is an ensemble of decision trees, usually trained on bootstrap samples of the data. Key tuning parameters:</p>
@@ -276,10 +260,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <li><b>Minimum node size</b> (\(n_{\min}\)): the minimum number of observations required to split a node</li>
     <li><b>Covariates per split</b> (\(m_{\text{try}}\)): the number of randomly selected covariates considered at each split; chosen for the task and tuned with validation</li>
   </ul>
-  <aside class="notes"><p>A random forest is an ensemble of decision trees, usually trained on bootstrap samples. Important settings are the number of trees, maximum depth, minimum node size, and covariates considered at each split. Our later comparison uses all training observations.</p><p><b>Transition:</b> Let us examine one tree.</p><p><b>Figure:</b> Point to the four settings; do not read their symbols aloud.</p><p><b>Remember:</b> Bootstrap sampling is common, not mandatory. Minimum parent and child sizes are different settings.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 25 seconds</p><div class="note-say"><b>SAY:</b><p>A random forest combines many decision trees. Each tree divides the predictor space into smaller regions. Predictions combine information across trees.</p><p>Important settings include the number of trees, the variables considered at each split, and the stopping rules.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the tree ensemble and tuning parameters.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let us look at a single tree.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Random forest: tree" data-time="20">
+<section class="slide" data-title="How a decision tree works" data-time="28">
   <div class="kicker k-res">Random forests for compositional responses</div>
   <h2>Random forest: tree</h2>
   <div class="cols" style="grid-template-columns:0.85fr 1.15fr;align-items:center">
@@ -302,7 +286,7 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       <div class="ptitle">one split: a node S into two children</div>
     </div>
     <div class="col">
-      <svg class="fig" viewBox="0 0 500 270" style="width:100%">
+      <svg id="tree-demo" class="fig" viewBox="0 0 500 270" style="width:100%">
         <g style="stroke:#4d4c48;stroke-width:1.5">
           <line x1="250" y1="34" x2="130" y2="100"/><line x1="250" y1="34" x2="370" y2="100"/>
           <line x1="130" y1="100" x2="70" y2="170"/><line x1="130" y1="100" x2="190" y2="170"/>
@@ -325,15 +309,15 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
           <text x="285" y="250">&#8942;</text><text x="335" y="250">&#8942;</text><text x="405" y="250">&#8942;</text><text x="455" y="250">&#8942;</text>
         </g>
       </svg>
-      <div class="ptitle">a binary decision tree: the split is repeated in every node</div>
+      <div class="ptitle">a binary decision tree: repeat the split at each node</div>
     </div>
   </div>
-  <aside class="notes"><p>The root contains the training observations. A rule divides them into left and right children. We split recursively until a stopping rule produces terminal nodes, also called leaves.</p><p><b>Transition:</b> How is a split chosen?</p><p><b>Figure:</b> Trace one path from the root to a terminal node.</p><p><b>Remember:</b> Each observation follows one branch at every split.</p></aside>
+  <div class="btns"><button class="btn" id="tree-trace" aria-pressed="false">Trace a prediction path</button><span class="small" id="tree-message">Each observation follows one path to a leaf.</span></div><aside class="notes"><p class="note-time"><b>TARGET:</b> 28 seconds</p><div class="note-say"><b>SAY:</b><p>We begin with the training observations in the root. A rule divides them into two groups. We repeat this process until a stopping rule is reached.</p><p>The final groups are leaves. A new observation follows the same rules to a leaf. Let me trace one path.</p></div><div class="note-point"><b>POINT TO:</b><p>Trace one path through the tree.</p></div><div class="note-transition"><b>TRANSITION:</b><p>The important question is how the tree chooses each split.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="MSE splitting" data-time="12">
+<section class="slide" data-title="Splitting a node" data-time="25">
   <div class="kicker k-res">Random forests for compositional responses &middot; splitting</div>
-  <h2>MSE splitting</h2>
+  <h2>How do we choose a split?</h2>
   <div class="sdia" style="max-width:56rem">
     <svg viewBox="0 0 160 62"><g style="stroke:#4d4c48;stroke-width:.35">
       <line x1="80" y1="8" x2="40" y2="33.6" marker-end="url(#ahI)"/><line x1="80" y1="8" x2="120" y2="33.6" marker-end="url(#ahI)"/></g>
@@ -345,10 +329,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
     <div class="q" style="left:14%;top:17%">\((c,i)=?\)</div><div class="q" style="left:86%;top:17%">\((c,i)=?\)</div>
   </div>
-  <aside class="notes"><p>A split consists of a covariate and a threshold. We compare how well the two children describe their observations.</p><p><b>Transition:</b> Consider this rule.</p><p><b>Figure:</b> Point to the two child nodes.</p><p><b>Remember:</b> Candidates must satisfy the minimum child-size constraint.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 25 seconds</p><div class="note-say"><b>SAY:</b><p>At each node, we compare candidate splits. Each split uses a predictor and a threshold. Observations on one side of the threshold go left; the others go right.</p><p>The splitting criterion tells us which candidate is best.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the parent, threshold and children.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let us consider a numerical example.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Split rule" data-time="18">
+<section class="slide" data-title="A simple split example" data-time="26">
   <div class="kicker k-res">Random forests for compositional responses &middot; splitting</div>
   <h2>Split rule</h2>
   <div class="cols" style="grid-template-columns:auto 1fr;gap:2.2rem;align-items:start">
@@ -375,10 +359,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       <p style="margin:.6rem 0 0"><b class="c-R">Right</b> &nbsp;\(x_2&gt;3.1\)<br><span class="small">obs 4, 6, 7</span></p>
     </div>
   </div>
-  <aside class="notes"><p>Consider X two less than or equal to three point one. Observations satisfying the rule go left. The others go right: five on the left, three on the right.</p><p><b>Transition:</b> We need a comparison score.</p><p><b>Figure:</b> Point to the highlighted X2 column and the child labels.</p><p><b>Remember:</b> The observation exactly at 3.1 goes left.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 26 seconds</p><div class="note-say"><b>SAY:</b><p>Here, we use the second predictor and a threshold of three point one. Values less than or equal to the threshold go left. The others go right.</p><p>Five observations go left and three go right. Notice that the observation exactly at the threshold goes left.</p></div><div class="note-point"><b>POINT TO:</b><p>Highlight the selected predictor and the left and right groups.</p></div><div class="note-transition"><b>TRANSITION:</b><p>The classical approach uses squared error.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="MSE splitting: the criterion" data-time="22">
+<section class="slide" data-title="MSE splitting" data-time="30">
   <div class="kicker k-res">Random forests for compositional responses &middot; splitting</div>
   <h2>MSE splitting</h2>
   <div class="sdia sm" style="max-width:40rem">
@@ -392,14 +376,14 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
     <div class="q" style="left:11%;top:16%">\((c,i)=?\)</div><div class="q" style="left:89%;top:16%">\((c,i)=?\)</div>
   </div>
-  <div class="eqbox" style="margin-top:.6rem">\[ (c^*,i^*)=\operatorname*{arg\,min}_{c,\,i}\Bigl\{\frac{n_1}{n}\,\mathrm{MSE}_1+\frac{n_2}{n}\,\mathrm{MSE}_2\Bigr\},\qquad \mathrm{MSE}_\ell=\frac{1}{n_\ell}\sum_{t\in\ell}\ \sum_{j=1}^{k}\bigl(y_{tj}-\bar y^{(\ell)}_{j}\bigr)^2 \]</div>
+  <div class="eqbox" style="margin-top:.6rem">\[\mathrm{SSE}(L)+\mathrm{SSE}(R),\qquad \mathrm{SSE}(A)=\sum_{i\in A}\|\bz_i-\bar{\bz}_A\|^2.\]</div>
   <div class="box" style="margin-top:.3rem">
     <p style="margin:0"><b>MSE focuses on the conditional mean.</b> It does not explicitly account for simplex geometry or model the full conditional distribution. It remains a valid prediction loss.</p>
   </div>
-  <aside class="notes"><p>With MSE splitting, we calculate the combined within-node squared error. We select the split with the smallest error. MSE focuses on the conditional mean. It does not explicitly account for simplex geometry or model the full conditional distribution.</p><p><b>Transition:</b> We can instead use a distribution-based score.</p><p><b>Figure:</b> Point to the weighted child criterion, then the box.</p><p><b>Remember:</b> MSE is a valid loss. It does not require homoscedasticity, and an average of compositions remains a composition.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 30 seconds</p><div class="note-say"><b>SAY:</b><p>Ordinary regression trees often use squared error. For each split, we calculate the error within both children and select the smallest combined error. This is a valid criterion for mean prediction.</p><p>However, a compositional distribution may contain useful information beyond its mean.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the sum of child errors.</p></div><div class="note-transition"><b>TRANSITION:</b><p>This motivates a different splitting criterion.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Dirichlet log-likelihood splitting" data-time="25">
+<section class="slide" data-title="Likelihood-based splitting" data-time="35">
   <div class="kicker k-dir">Random forests for compositional responses &middot; splitting</div>
   <h2>Likelihood-based splitting</h2>
   <div class="sdia" style="max-width:52rem">
@@ -413,14 +397,14 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="lb" style="left:27%;top:40%">\(X_i\le c\)</div><div class="lb" style="left:73%;top:40%">\(X_i&gt;c\)</div>
     <div class="q" style="left:14%;top:17%">\((c,i)=?\)</div><div class="q" style="left:86%;top:17%">\((c,i)=?\)</div>
   </div>
-  <div class="eqbox dir" style="margin-top:.4rem">\[ (c^*,i^*)=\operatorname*{arg\,max}_{c,\,i}\Bigl\{\max_{\boldsymbol\alpha}\mathcal L(Y^{n_1\times k};c,i)+\max_{\boldsymbol\alpha}\mathcal L(Y^{n_2\times k};c,i)\Bigr\} \]</div>
-  <p class="small" style="margin:0">\(\mathcal L\): the Dirichlet log-likelihood, with \(\boldsymbol\alpha\) fitted separately in each child. The parent score is constant across candidate splits. In the reported experiments, Dir-RF uses moment estimates; TN uses an approximate profiled score.</p>
-  <aside class="notes"><p>For likelihood splitting, fit a distribution in each child and choose the largest combined log-likelihood. Subtracting the fixed parent score gives the same ranking. Our experiments use moment estimates for Dirichlet and an approximate profiled score for TN.</p><p><b>Transition:</b> How does prediction work?</p><p><b>Figure:</b> Trace the parent-to-children diagram. Revisit this diagram during Kent estimation.</p><p><b>Remember:</b> Exact objective: child log-likelihoods minus parent log-likelihood. Do not describe all experimental scores as exact maximised likelihoods.</p></aside>
+  <div class="eqbox tn big">\[G=\ell(L)+\ell(R)-\ell(P).\]</div>
+  <p class="small" style="margin:0">L and R: children. P: parent. Larger gain is better. Scores use the chosen node model; the implemented Dirichlet and TN scores use moment estimates or approximations.</p>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 35 seconds</p><div class="note-say"><b>SAY:</b><p>We can instead use a distribution-based score. For each candidate split, we fit the chosen model to both children. We compare their combined score with the parent score.</p><p>A larger gain is better. The parent is fixed during this comparison. In our implementation, some scores use moment estimates or approximations.</p></div><div class="note-point"><b>POINT TO:</b><p>Trace parent → children; then indicate G.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Before discussing these distributions, let us see how the forest makes predictions.</p></div><div class="note-remember"><b>REMEMBER:</b><p>The implementation may use moment estimates or approximate profiled likelihoods. Do not describe every splitting score as an exact maximum likelihood.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Prediction based on DirichletRF" data-time="20">
+<section class="slide" data-title="Prediction using forest weights" data-time="28">
   <div class="kicker k-dir">Random forests for compositional responses &middot; prediction</div>
-  <h2>Prediction based on DirichletRF</h2>
+  <h2>Prediction using forest weights</h2>
   <div class="cols" style="grid-template-columns:0.8fr 1.2fr;align-items:center">
     <div class="col">
       <svg class="fig" viewBox="0 0 330 350" style="width:100%;max-height:31rem">
@@ -443,31 +427,20 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col">
       <p style="margin:0 0 .1rem"><b>Process</b></p>
       <ol style="margin:0 0 .5rem;padding-left:1.6rem;font-size:1.2rem"><li>Start at the root node</li><li>Traverse the tree by the decision rules</li><li>Reach a terminal node with \(n'\) observations</li></ol>
-      <p style="margin:0 0 .1rem"><b>Default approach</b></p>
-      <ul style="margin:0 0 .5rem">
-        <li style="font-size:1.2rem">Mean: \(\hat{\mathbf y}=\frac{1}{n'}\sum_{i=1}^{n'}\mathbf y_i\)</li>
-        <li style="font-size:1.2rem">Expectation: \(\hat E(Y_j)=\hat\alpha_j\big/\sum_{l=1}^{k}\hat\alpha_l\)</li>
-        <li style="font-size:1.2rem">Random forest: average across trees</li>
-      </ul>
-      <p style="margin:0 0 .1rem"><b>Distributional approach</b></p>
-      <ul style="margin:0">
-        <li style="font-size:1.2rem">Collect the terminal nodes from all trees</li>
-        <li style="font-size:1.2rem">Construct an empirical probability function (weights)</li>
-      </ul>
+      <div class="eqbox tn big">\[\widehat{\bz}(x)=\sum_i w_i(x)\bz_i.\]</div><p>Non-negative weights sum to one.</p><p>The weighted mean is a composition.</p><div class="box"><p style="margin:0">The same weights describe a conditional empirical distribution.</p></div>
     </div>
   </div>
-  <aside class="notes"><p>New observations follow the rules to a leaf. We can use a parametric distribution or the empirical responses there. Our experiments combine leaf weights and predict a weighted mean of training compositions.</p><p><b>Transition:</b> Now, the distribution models.</p><p><b>Figure:</b> Trace the dashed prediction path and point to the distributional box.</p><p><b>Remember:</b> The splitting distribution and the prediction distribution need not be the same.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 28 seconds</p><div class="note-say"><b>SAY:</b><p>A new observation reaches a leaf in each tree. Training observations in those leaves receive weights. Across the forest, these weights sum to one.</p><p>For mean prediction, we take a weighted average of the training compositions. Later, we will use the same weights for another target.</p></div><div class="note-point"><b>POINT TO:</b><p>Trace the tree path, then the weighted mean.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Now we are ready to discuss the distributional models.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<!-- ============================== 1. DIRICHLET ============================== -->
-<section class="slide" data-title="Three approaches to modelling compositional data" data-time="20"><div class="kicker k-res">Compositional random forest</div><h2>Three approaches to modelling compositional data</h2>
+<section class="slide" data-title="Three approaches to compositional modelling" data-time="30"><div class="kicker k-res">Compositional random forest</div><h2>Three approaches to modelling compositional data</h2>
 <div class="panel3">
-<div class="box"><h3>On the simplex</h3><p>Model the composition directly.</p><div class="eqbox dir">\(\mathbf x\in\mathcal S_k^1\)</div><p class="c-dir">Dirichlet</p></div>
-<div class="box"><h3>Log-ratio coordinates</h3><p>Transform to real space.</p><div class="eqbox">\(y_i=\log(x_i/x_k)\)</div><p>Multivariate logistic normal (MLN)</p></div>
-<div class="box"><h3>Square-root coordinates</h3><p>Transform to the non-negative spherical orthant.</p><div class="eqbox tn">\(u_i=\sqrt{x_i}\)</div><p><span class="c-kent">Kent</span> and <span class="c-tn">tangent normal</span></p></div>
-</div><aside class="notes"><p>Before discussing our proposed distribution, let me briefly introduce three approaches. We can model directly on the simplex. We can use log-ratios and model in real space. Or we can use square roots and model on a sphere.</p><p><b>Transition:</b> Let us start with the Dirichlet distribution.</p><p><b>Figure:</b> Point left to right across the three cards.</p><p><b>Remember:</b> MLN is the log-ratio approach; Kent and TN use spherical coordinates.</p></aside></section>
+<div class="box"><h3>On the simplex</h3><p>Model the composition directly.</p><div class="eqbox dir">\(\mathbf z\in\mathcal S_k^1\)</div><p class="c-dir">Dirichlet</p></div>
+<div class="box"><h3>Log-ratio coordinates</h3><p>Transform to real space.</p><div class="eqbox">\(y_i=\log(z_i/z_k)\)</div><p>Multivariate logistic normal (MLN)</p></div>
+<div class="box"><h3>Square-root coordinates</h3><p>Transform to the non-negative spherical orthant.</p><div class="eqbox tn">\(u_i=\sqrt{z_i}\)</div><p><span class="c-kent">Kent</span> and <span class="c-tn">tangent normal</span></p></div>
+</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 30 seconds</p><div class="note-say"><b>SAY:</b><p>We consider three geometries. First, we can model directly on the simplex, using the Dirichlet distribution. Second, we can use log-ratios and a normal model in Euclidean space.</p><p>Third, we can take square roots and work on the sphere. Our tangent-normal model uses this third approach.</p></div><div class="note-point"><b>POINT TO:</b><p>Point left to right: simplex, log-ratios, sphere.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let us begin with the Dirichlet distribution.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside></section>
 
-<section class="slide" data-title="Dirichlet distribution" data-time="32" data-init="initDir">
+<section class="slide" data-title="Dirichlet distribution" data-time="40" data-init="initDir">
   <div class="kicker k-dir">Node model 1 &middot; on the simplex</div>
   <h2>The Dirichlet distribution <span class="eq">eq. (8)</span></h2>
   <div class="cols c-l">
@@ -494,11 +467,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fDir"></div>
       <div class="ptitle" id="d-cap">150 draws from Dir(&alpha;) &middot; contours at 10, 30, 50, 70, 90% of the peak</div></div>
   </div>
-  <aside class="notes"><p>The Dirichlet distribution has K positive parameters. Its mean has K minus one free components; the remaining degree of freedom controls concentration. Mean component i is alpha i divided by the sum of the alphas. Once the mean is fixed, one concentration parameter determines the entire covariance matrix.</p><p><b>Transition:</b> Contours illustrate this restriction.</p><p><b>Figure:</b> Point to the mean and covariance formulas. Keep the default slider values.</p><p><b>Remember:</b> Only off-diagonal covariances are negative; variances are positive. Dirichlet can still be a useful model.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 40 seconds</p><div class="note-say"><b>SAY:</b><p>The Dirichlet distribution has one positive parameter for each component. We can express these through a mean composition and one concentration parameter. Concentration controls how tightly observations group around the mean.</p><p>But once the mean is fixed, this single parameter determines the entire covariance matrix. We cannot adjust the orientation and relative spreads freely. This restriction motivates a more flexible model.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to mean and covariance; keep default controls.</p></div><div class="note-transition"><b>TRANSITION:</b><p>We can see this restriction in the contour plots.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Dirichlet: dee-REE-klay. Off-diagonal covariances are negative; Dirichlet still models dependence.</p></div></aside>
 </section>
 
-<!-- ============================== 1b. DIRICHLET: WHAT IT CANNOT CAPTURE ============================== -->
-<section class="slide" data-title="Dirichlet contour sets" data-time="20" data-init="initDirContour">
+<section class="slide" data-title="Dirichlet contour sets" data-time="30" data-init="initDirContour">
   <div class="kicker k-dir">Node model 1 &middot; on the simplex</div>
   <h2>Dirichlet contour sets</h2>
   <div class="cols c-l">
@@ -518,10 +490,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fDirContour"></div>
       <div class="ptitle" id="dc-cap">150 draws from Dir(&alpha;) &middot; contours at 10, 30, 50, 70, 90% of the peak</div></div>
   </div>
-  <aside class="notes"><p>A contour line connects points where the probability density has the same value. These lines help us see the shape of a distribution. The Dirichlet can produce different contour shapes, but it cannot freely choose their orientation and elongation at a fixed mean.</p><p><b>Transition:</b> Here is one configuration where that matters.</p><p><b>Figure:</b> Use the reused Dirichlet figure. Optionally change one alpha slightly; avoid a long demonstration.</p><p><b>Remember:</b> The displayed family illustrates restrictions, not every possible Dirichlet shape.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 30 seconds</p><div class="note-say"><b>SAY:</b><p>A contour joins points with the same probability density. Changing the Dirichlet parameters changes the location and spread. However, these changes remain linked.</p><p>At a fixed mean, concentration cannot freely rotate and stretch the distribution. Let me make one small slider change.</p></div><div class="note-point"><b>POINT TO:</b><p>Move one relevant slider slowly.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let me compare this with a more flexible example.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="What the Dirichlet cannot capture" data-time="25" data-init="initDirLim">
+<section class="slide" data-title="Limitation of Dirichlet covariance" data-time="42" data-init="initDirLim">
   <div class="kicker k-dir">Node model 1 &middot; its limits</div>
   <h2>Dirichlet versus tangent normal: an example</h2>
   <div class="cols" style="grid-template-columns:0.9fr 1fr 1fr;gap:1.1rem">
@@ -539,11 +511,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fDL1"></div><div class="ptitle">data &middot; <span class="c-tn">TN density on the simplex</span> (10&ndash;90% of peak)</div></div>
     <div class="col"><div class="plot" id="fDL2"></div><div class="ptitle">same data &middot; <span class="c-dir">fitted Dirichlet</span> (10&ndash;90% of peak)</div></div>
   </div>
-  <aside class="notes"><p>Both panels show the same example data. The blue tangent normal contours follow this elongated cloud more closely than the fitted orange Dirichlet contours. This illustrates greater TN flexibility for this configuration, rather than better fit in every case.</p><p><b>Transition:</b> How do we reach TN?</p><p><b>Figure:</b> Use the default positive-correlation preset. Point to the blue ridge and orange contours.</p><p><b>Remember:</b> The Dirichlet is fitted by MLE in this demonstration. TN generated the example, so this is an illustration rather than a neutral performance experiment.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 42 seconds</p><div class="note-say"><b>SAY:</b><p>These observations form a long, narrow cloud. Its direction matters. On the left, tangent-normal contours follow that pattern.</p><p>On the right, a Dirichlet model is fitted to the same observations. It cannot reproduce the orientation as freely. This is an illustration using TN-generated data, not evidence that Dirichlet is always worse.</p><p>We need prediction experiments for a fairer comparison.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the main visual; no control change is needed.</p></div><div class="note-transition"><b>TRANSITION:</b><p>One way to obtain greater flexibility is to change the geometry.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Illustrative TN-generated example, conditioned to the orthant for this display; no neutral performance comparison is claimed.</p></div></aside>
 </section>
 
-<!-- ======================= 2. SIMPLEX TO SPHERE ======================= -->
-<section class="slide" data-title="From the simplex to the sphere" data-time="35" data-init="initLift">
+<section class="slide" data-title="Square-root transformation" data-time="50" data-init="initLift">
   <div class="kicker k-res">Square-root transformation &middot; Section 2.1</div>
   <h2>From the simplex to the sphere</h2>
   <div class="cols c-r">
@@ -563,20 +534,15 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       <p class="small">150 compositions from Dir(10, 6, 4), the Dirichlet slide's default. Drag to rotate.</p>
     </div>
   </div>
-  <aside class="notes"><p>For three-component compositional data, all observations lie on a triangle in three-dimensional space: their components are non-negative and sum to one. Take each component&#x27;s square root. The observations now lie on the non-negative part of the unit sphere, because their squared components sum to one. This is one orthant, not the whole sphere. Zeros remain admissible.</p><p><b>Transition:</b> Now consider spherical distributions.</p><p><b>Figure:</b> Hide sphere, projection lines and projected observations to show the original triangle and data. Restore projected observations, sphere and lines to introduce the map.</p><p><b>Remember:</b> Deck notation is u = square root of z; the requested z_i = square root of x_i is the same map with different letters. Keep the triangle visible.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 50 seconds</p><div class="note-say"><b>SAY:</b><p>Now take the square root of each component. The original components sum to one, so the squares of the transformed components sum to one. The transformed vector therefore lies on the unit sphere, in its non-negative region.</p><p>Watch how the triangle points map to the sphere. This map is one-to-one in that region, with squaring as its inverse. It also works when a component is zero.</p><p>We can now consider directional distributions.</p></div><div class="note-point"><b>POINT TO:</b><p>Demonstrate how a point on the triangle maps to the sphere.</p></div><div class="note-transition"><b>TRANSITION:</b><p>A well-known directional distribution is the Kent distribution.</p></div><div class="note-remember"><b>REMEMBER:</b><p>The non-negative orthant is the image of the closed simplex. Say square root slowly.</p></div></aside>
 </section>
 
-<!-- ============================== 3. KENT ============================== -->
-<section class="slide" data-title="Kent distribution: definition" data-time="28">
+<section class="slide" data-title="Kent distribution" data-time="40">
   <div class="kicker k-kent">Node model 2 &middot; on the sphere</div>
   <h2>The Kent distribution <span class="eq">eqs. (11)&ndash;(13)</span></h2>
   <div class="cols" style="grid-template-columns:1.1fr 1fr;gap:2rem">
     <div class="col">
-      <p class="small" style="margin:0">For \(\bu=\sqrt{\bz}\) on the sphere \(S^{k-1}\) (Kent 1982; for compositions, Scealy and Welsh 2011):</p>
-      <div class="eqbox kent">\[ f(\bu)=c(\kappa,\boldsymbol\beta)^{-1}\exp\Bigl\{\kappa\,\bmu^{\top}\bu+\sum_{m=2}^{k-1}\beta_m(\bgamma_m^{\top}\bu)^2-\Bigl(\sum_{m=2}^{k-1}\beta_m\Bigr)(\bgamma_k^{\top}\bu)^2\Bigr\} \tag{11}\]</div>
-      <p class="small" style="margin:.3rem 0 0">Three parts (\(k=3\), the sphere \(S^2\)), with \(\beta_2=\beta\), \(\beta_3=-\beta\) (12):</p>
-      <div class="eqbox kent" style="font-size:1.15rem">\[ f(\bu)=c(\kappa,\beta)^{-1}\exp\bigl\{\kappa\,\bmu^{\top}\bu+\beta\bigl[(\bgamma_2^{\top}\bu)^2-(\bgamma_3^{\top}\bu)^2\bigr]\bigr\} \]</div>
-      <p class="small" style="margin:.2rem 0 0">For \(k=3\): five numbers &mdash; \(\bmu\) (two angles), the turn \(\psi\) of the axes around \(\bmu\), \(\kappa\) and \(\beta\).</p>
+      <p>For directions \(\bu\in S^2\):</p><div class="eqbox kent">\[f(\bu)=\frac{\exp\{\kappa\bmu^\top\bu+\beta[(\bgamma_2^\top\bu)^2-(\bgamma_3^\top\bu)^2]\}}{c(\kappa,\beta)}.\]</div><p class="small" style="margin:.2rem 0 0">For \(k=3\): five numbers &mdash; \(\bmu\) (two angles), the turn \(\psi\) of the axes around \(\bmu\), \(\kappa\) and \(\beta\).</p>
     </div>
     <div class="col">
       <table class="cmp">
@@ -592,10 +558,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       </table>
     </div>
   </div>
-  <aside class="notes"><p>For three components, standard Kent has five free parameters. Two describe mean direction; one describes orientation around that direction. Kappa controls concentration, and beta controls ovalness. Spread and orientation can vary more freely than under a Dirichlet with fixed mean.</p><p><b>Transition:</b> Here are the contours.</p><p><b>Figure:</b> Point to the three-part formula and parameter table.</p><p><b>Remember:</b> The axes are orthonormal, not independent unrestricted vectors. Use 0 &lt;= 2 beta &lt; kappa for the standard unimodal form; orientation is unidentifiable when beta is zero.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 40 seconds</p><div class="note-say"><b>SAY:</b><p>Kent is a flexible distribution on the sphere. Its parameters describe a mean direction, concentration, ovalness, and axis orientation. For three-dimensional directions, these allow circular or elongated contours.</p><p>The axes are perpendicular to the mean direction and to each other. This flexibility makes Kent an interesting starting point for spherical modelling.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to mean direction, concentration, ovalness and axes.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let us see how these parameters affect the contours.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Kent: contours" data-time="22" data-init="initKent">
+<section class="slide" data-title="Kent contours" data-time="30" data-init="initKent">
   <div class="kicker k-kent">Node model 2 &middot; on the sphere</div>
   <h2>Kent: &kappa;, &beta; and the axes</h2>
   <div class="cols" style="grid-template-columns:0.8fr 1.15fr 0.95fr;gap:1rem">
@@ -619,12 +585,12 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
   </div>
   <div class="key"><span><i style="border-color:var(--kent)"></i>Kent contours (10&ndash;90% of peak)</span><span><i class="d" style="border-color:var(--out)"></i>outside \(\mathcal O\): not a composition</span><span><i class="d" style="border-color:var(--muted)"></i>edge of the hemisphere around &mu;</span></div>
   <p class="small" style="margin:0">Triangle curves are mapped sphere-density levels, not simplex-density contours; a density transformation requires its Jacobian.</p>
-  <aside class="notes"><p>Concentration tightens the cloud. Ovalness stretches it; rotating the axes changes its direction. The triangle shows mapped spherical contours. These are not automatically density contours on the simplex.</p><p><b>Transition:</b> There is a support issue.</p><p><b>Figure:</b> Make one small change to the axis-turn slider. Point to the sphere and mapped curves.</p><p><b>Remember:</b> Changing reference measure requires a Jacobian. Kent is not defined solely on the positive orthant.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 30 seconds</p><div class="note-say"><b>SAY:</b><p>Increasing concentration tightens the distribution. Ovalness stretches the contours, and we can rotate their axes. Let me change one control.</p><p>Kent is defined on the whole sphere, while square-root compositions occupy only the non-negative region. The curves mapped to the triangle are not automatically simplex-density contours.</p></div><div class="note-point"><b>POINT TO:</b><p>Demonstrate concentration and ovalness.</p></div><div class="note-transition"><b>TRANSITION:</b><p>This becomes especially clear when we generate observations.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Kent: simulated data" data-time="15" data-init="initKentSim">
+<section class="slide" data-title="Kent simulated data" data-time="22" data-init="initKentSim">
   <div class="kicker k-kent">Node model 2 &middot; on the sphere</div>
-  <h2>Kent: generating data</h2>
+  <h2>Kent: generating data</h2><p class="small" style="margin:0">For design K, square every Kent coordinate to obtain Z; √Z = |U| follows a folded Kent distribution. The triangle here shows only the non-negative draws.</p>
   <div class="cols" style="grid-template-columns:0.8fr 1.15fr 0.95fr;gap:1rem">
     <div class="col">
       <ul style="margin-top:0">
@@ -644,10 +610,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fKS1"></div><div class="ptitle">draws on the sphere (drag to rotate)</div></div>
     <div class="col"><div class="plot" id="fKS2"></div><div class="ptitle">the draws inside O, as compositions z = u&#178;</div></div>
   </div>
-  <aside class="notes"><p>Kent is defined on the entire sphere. Our square-root observations occupy only the non-negative orthant. An unrestricted Kent model can therefore put probability outside the admissible region. The amount depends on its parameters.</p><p><b>Transition:</b> Repeated estimation creates another difficulty.</p><p><b>Figure:</b> Point to the red simulated observations and the outside-mass readout.</p><p><b>Remember:</b> Do not claim every draw is valid at high concentration. Squaring negative coordinates gives a composition but is not the inverse of the non-negative square-root map.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 22 seconds</p><div class="note-say"><b>SAY:</b><p>Kent draws can leave the non-negative region. Squaring every coordinate gives a composition. Its non-negative square root is the absolute value of the original vector, so it follows a folded Kent distribution.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to draws outside the orthant and the folding note.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Repeated fitting creates another difficulty.</p></div><div class="note-remember"><b>REMEMBER:</b><p>The browser demo uses numerical grid inversion; experimental design K uses exact FB5 draws. Squaring folds signs.</p></div></aside>
 </section>
 
-<section class="slide" data-title="Kent: estimation cost" data-time="30" data-init="initKentCost">
+<section class="slide" data-title="Why Kent fitting is expensive" data-time="43" data-init="initKentCost">
   <div class="kicker k-kent">Node model 2 &middot; estimation</div>
   <h2>Why Kent is hard to use in a forest</h2>
   <div class="cols" style="grid-template-columns:1.05fr 1fr;gap:1.8rem">
@@ -687,13 +653,12 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
       <p class="small" style="margin:.5rem 0 0">&#185; \(B=500\) trees, \(n=1000\), \(m_{\text{try}}=3\), about 7 levels: \(2\times3\times1000\times7\times500\approx2.1\times10^{7}\) fits. This is a browser demonstration, not a forest benchmark. TN timing excludes the Jacobian and truncation term. Both fits use the same summaries (21); the Kent fit starts from the TN estimate. Order of magnitude only.</p>
     </div>
   </div>
-  <aside class="notes"><p>At each node, we evaluate many splits and fit both children. This browser example uses Nelder-Mead optimisation over five Kent parameters, with numerical integration for its normalising constant. Repeating this can be expensive. The timing is an illustration, not an entire-forest benchmark.</p><p><b>Transition:</b> We wanted simpler estimation.</p><p><b>Figure:</b> Point to the reused split diagram and timing table. Do not wait for a second run during the timed talk.</p><p><b>Remember:</b> TN timing measures the Gaussian profile only, excluding its Jacobian and truncation term. Do not interpret extrapolated forest times as measured results.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 43 seconds</p><div class="note-say"><b>SAY:</b><p>Kent has a complicated normalizing constant. Parameter estimation generally requires numerical optimization. A single fit may be manageable.</p><p>In a forest, however, we compare many candidate splits at every node and fit both children. Repeating full optimization can become expensive. This browser timing illustrates that repeated work; it is not a measured forest benchmark.</p><p>We wanted a simpler splitting calculation.</p></div><div class="note-point"><b>POINT TO:</b><p>Show the repeated parent/child fitting process.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Now I will introduce the main methodological idea.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Browser timing is illustrative, not a forest benchmark. Its TN timing includes only the Gaussian profile.</p></div></aside>
 </section>
 
-<!-- ============================== 4. TN DEFINITION ============================== -->
-<section class="slide" data-title="TN: definition" data-time="50" data-init="initTNdef">
+<section class="slide" data-title="Tangent-normal construction" data-time="65" data-init="initTNdef">
   <div class="kicker k-tn">Node model 3 &middot; the tangent-normal (TN) distribution</div>
-  <h2>A normal distribution on the tangent plane <span class="eq">Def. 1, eqs. (14)&ndash;(16)</span></h2>
+  <h2>The tangent-normal construction <span class="eq">Def. 1, eqs. (14)&ndash;(16)</span></h2>
   <div class="cols c-l">
     <div class="col">
       <p class="small" style="margin:0">Mean direction \(\bmu\); tangent plane \(T_{\bmu}=\{\mathbf x:\bmu^{\top}\mathbf x=0\}\) with orthonormal basis \(\bK\) (\(\bK^{\top}\bK=\mathbf I\)). Construction:</p>
@@ -715,11 +680,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fTNdef"></div>
       <div class="key"><span><i style="border-color:var(--tn)"></i>on the sphere: u, TN contours</span><span><i style="border-color:#0d366b"></i>on the tangent plane: v, normal contours</span><span><i class="d" style="border-color:var(--ink-2)"></i>parallel to &mu;</span></div></div>
   </div>
-  <aside class="notes"><p>We wanted flexible shapes, similar to Kent, with simpler estimation. Start with square-root observations on the sphere. Their tangent coordinates are K transpose u. In these coordinates, use a zero-mean normal distribution conditioned to lie inside the open unit ball. Map back using the formula: the tangent component plus the positive square-root component along mu. This gives a distribution on the hemisphere centred at mu. Its spherical density includes the Jacobian, mu transpose u. We call it tangent normal because we use a normal distribution in tangent coordinates.</p><p><b>Transition:</b> The variances control its shape.</p><p><b>Figure:</b> Click steps 1 through 4 in order, pausing briefly as the points move.</p><p><b>Remember:</b> This is the paper&#x27;s orthogonal tangent-coordinate construction, not the exponential or gnomonic map. Density is zero outside the open hemisphere; divide by pi_Lambda for exact normalisation.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 65 seconds</p><div class="note-say"><b>SAY:</b><p>Our construction starts with a mean direction on the sphere. We use coordinates in its tangent plane. In these coordinates, we take a normal distribution conditioned to stay inside the unit ball.</p><p>Its covariance controls size, shape, and orientation. We then map these points back to the sphere. Let me walk through the four visual stages.</p><p>The resulting TN distribution lives on a hemisphere centred at the mean direction. Its density includes a Jacobian factor. The hemisphere is larger than the compositional orthant, so TN can still place mass outside the non-negative region.</p></div><div class="note-point"><b>POINT TO:</b><p>Walk through all three visual stages slowly.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let us look more closely at the parameters.</p></div><div class="note-remember"><b>REMEMBER:</b><p>The tangent-normal model is defined on a hemisphere, not exactly the positive orthant. The normal is conditioned to the open unit ball. This is the orthogonal tangent-coordinate map, not the exponential map. TN: tangent normal.</p></div></aside>
 </section>
 
-<!-- ============================== 4b. TN: KAPPA AND BETA ============================== -->
-<section class="slide" data-title="TN: size and shape" data-time="28" data-init="initTNkb">
+<section class="slide" data-title="Tangent-normal size and shape" data-time="32" data-init="initTNkb">
   <div class="kicker k-tn">Tangent-normal &middot; the parameters</div>
   <h2>&kappa; sets the size, &beta; the shape <span class="eq">eqs. (13), (17)</span></h2>
   <div class="cols" style="grid-template-columns:0.95fr 1fr 1fr;gap:1.2rem">
@@ -740,11 +704,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fKBb"></div><div class="ptitle">on the sphere, u = &psi;(v) (14)</div></div>
   </div>
   <div class="key" style="margin-top:.3rem"><span><i style="border-color:var(--tn)"></i>contours of g (15), 10&ndash;90% of peak</span><span><i style="border-color:var(--dot)"></i>260 draws (Definition 1)</span><span><i class="d" style="border-color:var(--muted)"></i>&Vert;v&Vert; = 1 / edge of H<sub>&mu;</sub></span></div>
-  <aside class="notes"><p>For three components, we express the tangent variances using kappa and beta. Kappa mainly controls size; beta changes the relative spreads. Rotating the axes changes orientation. This gives useful flexibility, although TN and Kent remain different distributions.</p><p><b>Transition:</b> Examine one contour.</p><p><b>Figure:</b> Point to the two variance formulas and the plane and sphere panels. Use one small slider change if time allows.</p><p><b>Remember:</b> lambda2 = 1/(kappa - 2 beta), lambda3 = 1/(kappa + 2 beta). The variances parameterise the underlying normal before conditioning.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 32 seconds</p><div class="note-say"><b>SAY:</b><p>For three components, we express the two tangent variances using concentration and ovalness. Concentration mainly controls width. Ovalness changes the relative spreads along the axes.</p><p>Rotating the covariance changes orientation. These are the variances of the underlying normal before conditioning. Let me make one small change.</p></div><div class="note-point"><b>POINT TO:</b><p>Make one small ovalness change; point to the tangent spreads.</p></div><div class="note-transition"><b>TRANSITION:</b><p>These effects can also be seen in the contours.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Covariance parameters refer to the normal before conditioning. Keep 0 ≤ 2 beta &lt; kappa.</p></div></aside>
 </section>
 
-<!-- ============================== 4c. TN: THE LEVEL-SET SURFACE ============================== -->
-<section class="slide" data-title="TN: contour" data-time="20" data-init="initTNlev">
+<section class="slide" data-title="TN contours" data-time="25" data-init="initTNlev">
   <div class="kicker k-tn">Tangent-normal &middot; contour sets</div>
   <h2>Contour <span class="eq">eq. (15)</span></h2>
   <div class="cols c-l">
@@ -768,11 +731,10 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="col"><div class="plot" id="fLev"></div>
       <div class="key"><span><i style="border-color:#0d366b"></i>the contour g(u) = c</span><span><i class="d" style="border-color:var(--muted)"></i>edge of H<sub>&mu;</sub></span><span><i style="border-color:#8fbaf0"></i>level-set surface (optional)</span></div></div>
   </div>
-  <aside class="notes"><p>A TN contour connects points with equal spherical density. Both the tangent normal contribution and the Jacobian affect it. A mapped normal ellipse is therefore not simply a TN density contour.</p><p><b>Transition:</b> Now connect the coordinate systems.</p><p><b>Figure:</b> Point to a contour; leave the optional level-set surface off for the short talk.</p><p><b>Remember:</b> Distinguish a mapped Gaussian ellipse from a level set of the spherical density.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 25 seconds</p><div class="note-say"><b>SAY:</b><p>These are contours of the spherical TN density. Equal tangent variances give circular contours; unequal variances give elongated contours. Both the normal term and the Jacobian affect these curves.</p><p>A mapped normal ellipse is not exactly a TN density contour.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to one blue contour; leave the optional surface off.</p></div><div class="note-transition"><b>TRANSITION:</b><p>We can now connect these contours to the original compositions.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Spherical TN contours include the Jacobian; mapped Gaussian ellipses differ.</p></div></aside>
 </section>
 
-<!-- ============================== 5. TN CONTOURS ============================== -->
-<section class="slide" data-title="TN: contour sets" data-time="25" data-init="initTNcont">
+<section class="slide" data-title="Three connected spaces" data-time="40" data-init="initTNcont">
   <div class="kicker k-tn">Tangent-normal &middot; contour sets</div>
   <h2>One contour, three spaces</h2>
   <div class="panel3">
@@ -789,133 +751,105 @@ window.MathJax={tex:{inlineMath:[['\\(','\\)']],displayMath:[['\\[','\\]']],
     <div class="btns" style="flex:0 0 auto"><button class="btn" id="c-def">default</button><button class="btn" id="c-edge">near the edge x&#8323; = 0</button></div>
   </div>
   <div class="readout" id="c-out"></div>
-  <p class="small" style="margin:0">The hemisphere contains the full non-negative orthant when every part of \(\bmu\) is positive. TN can still put mass outside that orthant. Mapped contours do not generally remain density contours in a new space.</p><aside class="notes"><p>These panels connect the tangent plane, sphere and triangle. Compositions occupy the non-negative orthant. With a strictly positive mean direction, this orthant lies inside the TN hemisphere. However, the larger hemisphere still allows mass outside the compositional region.</p><p><b>Transition:</b> Simple summaries make computation fast.</p><p><b>Figure:</b> Use the default view and point across the three panels; point to the outside-mass readout.</p><p><b>Remember:</b> Mapped density contours are not interchangeable between spaces. TN is not an orthant-truncated model, and outside mass need not be small in every setting.</p></aside>
+  <p class="small" style="margin:0">The hemisphere contains the full non-negative orthant when every part of \(\bmu\) is positive. TN can still put mass outside that orthant. Mapped contours do not generally remain density contours in a new space.</p><aside class="notes"><p class="note-time"><b>TARGET:</b> 40 seconds</p><div class="note-say"><b>SAY:</b><p>These panels connect the tangent plane, sphere, and simplex. We map tangent coordinates to the hemisphere. In the non-negative region, squaring returns the original composition.</p><p>Outside it, squaring folds the signs. The tangent covariance helps explain the patterns in the triangle. But mapped curves need not remain equal-density contours after a change of space.</p></div><div class="note-point"><b>POINT TO:</b><p>Move visually from the plane to the sphere and then to the triangle.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Next, I will explain why this construction is computationally useful.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Only the orthant gives the inverse of the non-negative square-root map. TN can put mass outside it; mapped density levels need not remain density levels.</p></div></aside>
 </section>
 
-<!-- ============================== 6. ESTIMATION ============================== -->
-<section class="slide" data-title="TN: additive sufficient statistics" data-time="55"><div class="kicker k-res">Tangent normal ? computation</div><h2>Additive statistics make split searches fast</h2>
+<section class="slide" data-title="Additive summaries" data-time="48"><div class="kicker k-res">Tangent normal · computation</div><h2>Additive statistics make split searches fast</h2>
 <div class="cols c2"><div class="col"><div class="eqbox tn">\[T(A)=\left(n_A,\ \mathbf s_1(A)=\sum_{t\in A}\bu^{(t)},\ S_2(A)=\sum_{t\in A}\bu^{(t)}\bu^{(t)\top}\right)\]</div>
 <p>For disjoint groups:</p><div class="eqbox tn">\[T(A\cup B)=T(A)+T(B).\]</div><p>These summaries determine the moment direction, Gaussian profile score and implemented Jacobian approximation.</p></div>
 <div class="col"><div class="box"><p><b>Sort a covariate once.</b></p><p>Move a candidate threshold through its ordered values.</p><p>Add each observation to the left summaries.</p><p>Subtract from the parent summaries to get the right summaries.</p></div><div class="eqbox">\[T(R)=T(\Omega)-T(L).\]</div></div></div>
-<p class="small">The exact Jacobian \(\sum\log(\hat\bmu^{\top}\bu^{(t)})\) is not determined by these summaries. They are not sufficient statistics for the complete TN likelihood with unknown direction.</p><aside class="notes"><p>The important point is that these statistics are additive. We keep the observation count, sum of square-root vectors, and sum of their outer products. For disjoint groups, we combine them simply by adding. We do not need to recalculate everything from the original observations. Sort a covariate and move its threshold through the ordered values. Update the left summaries, then subtract from the parent to obtain the right summaries. This is useful when evaluating many splits. These summaries support our approximate score; the exact Jacobian still needs the individual observations.</p><p><b>Transition:</b> How do we obtain the score?</p><p><b>Figure:</b> Point to T(A union B), then trace the four steps in the right box.</p><p><b>Remember:</b> Sums are in square-root coordinates u, not changing tangent coordinates. The score is nonlinear in T; scores themselves are not additive. Exact full-likelihood sufficiency is not claimed.</p></aside></section>
+<p class="small">The exact Jacobian \(\sum\log(\hat\bmu^{\top}\bu^{(t)})\) is not determined by these summaries. They are not sufficient statistics for the complete TN likelihood with unknown direction.</p><aside class="notes"><p class="note-time"><b>TARGET:</b> 48 seconds</p><div class="note-say"><b>SAY:</b><p>For each node, we keep three summaries: the observation count, the sum of square-root vectors, and the sum of their outer products. These summaries are additive. We sort a predictor and move its candidate threshold through the observations.</p><p>Updating the left child is simple. Subtracting from the parent gives the right child. This supports fast repeated split evaluation.</p><p>The summaries determine our approximate score, but not the complete TN likelihood with an unknown direction.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to the main visual; no control change is needed.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Now let us see how we use them to calculate the splitting score.</p></div><div class="note-remember"><b>REMEMBER:</b><p>These summaries support the implemented approximate criterion. Do not claim they are sufficient for the complete TN likelihood with unknown direction.</p></div></aside></section>
 
-<section class="slide" data-title="Why TN is easy to use" data-time="60">
+<section class="slide" data-title="Efficient approximate TN splitting" data-time="58">
   <div class="kicker k-tn">Tangent-normal &middot; estimation and simulation &middot; Section 3.2.3</div>
-  <h2>Why TN is easy to use</h2>
+  <h2>An efficient approximate TN splitting score</h2>
   <div class="cols c2"><div class="col">
 <p><b>1. Location by moments</b></p><div class="eqbox tn">\[\hat\bmu=\bs_1/\|\bs_1\|,\qquad \hat\bM=S_2/n_A.\]</div>
-<p><b>2. Profile out the Gaussian shape</b></p><div class="eqbox tn">\[\hat\ell_G=-\frac{n_A(k-1)}2(1+\log 2\pi)-\frac{n_A}2\log|S_T|,\quad S_T=\bB^\top\hat\bM\bB.\]</div>
-<p class="small">Axes and tangent variances follow from the eigenvectors and eigenvalues of \(S_T\), if needed.</p><div class="eqbox tn">\[|S_T|=|\hat\bM|\,\hat\bmu^\top\hat\bM^{-1}\hat\bmu.\]</div></div>
+<p><b>2. Profile out the Gaussian shape</b></p><div class="eqbox tn">\[\hat\ell_G=-\frac{n_A}{2}\log|S_T|+C_{n_A},\qquad S_T=\bB^\top\hat\bM\bB.\]</div>
+<p class="small">The term C is linear in node size and cancels from the split gain. B is an orthonormal tangent basis.</p></div>
 <div class="col"><div class="box"><p style="margin:0"><b>Implemented score:</b> \(\hat\ell_G+\widetilde J\). One Cholesky factor computes the log-determinant; the shape parameters need not be fitted explicitly at each threshold.</p></div>
 <p class="small">With \(R=\|\bs_1\|\), \(\bar c=R/n_A\), the implementation uses the delta2 approximation:</p>
 <div class="eqbox tn">\[\widetilde J=n_A\log\bar c-\frac{\hat\bmu^\top S_2\hat\bmu-n_A\bar c^2}{2\bar c^2}.\]</div>
 <p class="small">No iterative parameter estimation in this split score. The moment direction is not its full MLE. Exact location MLE generally needs numerical optimisation.</p>
-<p class="small">The term \(-n_A\log\pi_\Lambda\) is omitted; the concentration bound controls this approximation. Full truncated TN shape MLE is not the Gaussian covariance estimate.</p></div></div><aside class="notes"><p>First, normalise the sum of square-root observations to estimate mean direction. This is a moment estimate, not maximum likelihood. Given this direction, we maximise the Gaussian part over shape analytically. We avoid numerical optimisation over the full parameter vector. One Cholesky factor gives the required log-determinant, without calculating every axis and variance. Then add the second-order Jacobian approximation from the same summaries. We omit the truncation term under sufficient concentration. This implemented score needs no iterative parameter estimation. Full TN maximum likelihood differs: location generally needs numerical optimisation, and retaining truncation changes shape estimation.</p><p><b>Transition:</b> This distinction matters for the comparison.</p><p><b>Figure:</b> Point in order to location, Gaussian profile, implemented score and approximation note. Do not read the full determinant formula aloud.</p><p><b>Remember:</b> Positive definiteness is required; code uses ridge safeguards. Profiling Gaussian shape conditional on a moment direction is not full truncated TN MLE. delta2 expands about the mean cosine.</p></aside>
+<p class="small">The term \(-n_A\log\pi_\Lambda\) is omitted; the concentration bound controls this approximation. Full truncated TN shape MLE is not the Gaussian covariance estimate.</p></div></div><aside class="notes"><p class="note-time"><b>TARGET:</b> 58 seconds</p><div class="note-say"><b>SAY:</b><p>First, we normalize the average square-root vector to estimate mean direction. This is a moment estimate. Given that direction, we profile the Gaussian covariance analytically.</p><p>The main calculation is a log-determinant. We add a second-order approximation to the Jacobian term. Under sufficient concentration, we omit the truncation-normalization term.</p><p>These steps avoid repeated optimization over all parameters. They define an efficient approximate score, not the exact fully maximized TN likelihood.</p></div><div class="note-point"><b>POINT TO:</b><p>Point in order to the moment direction, profile, determinant and Jacobian.</p></div><div class="note-transition"><b>TRANSITION:</b><p>An important question is whether this approximation changes the selected splits.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Do not call the approximate TN split score the exact fully maximized TN likelihood. Omit −n log pi_Lambda only under the stated concentration approximation; positive-definite covariance and ridge safeguards are needed.</p></div></aside>
 </section>
 
-<!-- ============================== 7. KENT VS TN ============================== -->
-<section class="slide" data-title="Kent vs TN" data-time="25">
-  <div class="kicker k-res">Side by side</div>
-  <h2><span class="c-kent">Kent</span> versus <span class="c-tn">tangent-normal</span></h2>
-  <table class="cmp">
-    <thead><tr><th></th><th class="c-kent">Kent (11)</th><th class="c-tn">TN (15)</th></tr></thead>
-    <tbody>
-      <tr><td>parameters</td><td colspan="2" style="text-align:center">the same: \(\bmu\), axes \(\bK\), and \(\lambda_m=(\kappa-2\beta_m)^{-1}\) (17); same normal limit as \(\kappa\to\infty\)</td></tr>
-      <tr><td>normalising constant</td><td>\(c(\kappa,\boldsymbol\beta)\): a \((k-1)\)-dimensional integral, no closed form</td><td>\(\pi_\Lambda\): depends on \(\Lambda\) only, close to 1 under sufficient concentration (19)</td></tr>
-      <tr><td>estimation</td><td>no closed-form MLE: numerical, or large-concentration moment approximations</td><td>moment direction; Gaussian shape profiled analytically; approximate Jacobian; truncation term omitted</td></tr>
-      <tr><td>cost per candidate split</td><td>numerical work for every candidate child</td><td>additive summaries and one Cholesky factor for the approximate score</td></tr>
-      <tr><td>omitted constant (App. B)</td><td>&gt; \(10^{-3}\) nats up to \(\kappa=330\) (\(k=3\), \(d_2=0.2\))</td><td>&gt; \(10^{-3}\) nats only when \(\kappa(1-2d_2)\le15\)</td></tr>
-      <tr><td>support &amp; zeros</td><td>whole sphere \(S^{k-1}\); zeros admissible</td><td>hemisphere \(H_{\bmu}\supset\mathcal O\); zeros admissible, potential mass outside \(\mathcal O\)</td></tr>
-    </tbody>
-  </table>
-  <aside class="notes"><p>Both models represent oriented, elongated shapes. Kent lives on the whole sphere; TN on a hemisphere. Neither is automatically restricted to the compositional orthant. Here, the practical difference is that our approximate TN score avoids repeated iterative parameter fitting.</p><p><b>Transition:</b> One more model enters the comparison.</p><p><b>Figure:</b> Move across the estimation, cost and support rows.</p><p><b>Remember:</b> A small truncation correction is concentration-dependent. Do not claim equal flexibility or predictive superiority for every parameter regime.</p></aside>
-</section>
+<section class="slide " data-title="Jacobian approximation validation" data-time="45"><div class="kicker k-res">Efficient splitting · saved validation results</div><h2>Does the Jacobian approximation change the split?</h2>
+<div class="hero-stat c-tn">99.979%</div><p class="big" style="text-align:center;margin:0">agreement on the selected variable and threshold</p>
+<div class="panel3" style="flex:0;margin-top:1.5rem"><div class="box"><h3>174,271 nodes</h3><p>Exact-grown trees<br>Designs D, L and K</p></div><div class="box"><h3>Delta2 versus exact</h3><p>Same moment direction and Gaussian profile</p></div><div class="box"><h3>0.35 s / 3.8 s</h3><p>Separate benchmark:<br>100 trees, n = 1,000, 5 threads</p></div></div>
+<p class="small">Agreement validates this shortcut in the tested designs; it does not establish identical forests in every dataset.</p><div class="src">TN Jacobian validation, summary_prompt1.md, §§4–5; seeds 101–110. Exact refers to the Jacobian term, not full TN maximum likelihood.</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 45 seconds</p><div class="note-say"><b>SAY:</b><p>We compared the second-order Jacobian approximation with the exact Jacobian term. Across more than one hundred and seventy-four thousand nodes in designs D, L, and K, they selected the same variable and threshold in about ninety-nine point nine eight percent of cases. A separate one-hundred-tree benchmark took zero point three five seconds with the approximation and three point eight seconds with the exact term.</p><p>This supports the shortcut in the tested settings.</p></div><div class="note-point"><b>POINT TO:</b><p>Emphasize the 99.979% figure.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let me briefly summarize the difference between Kent and TN.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Exact means exact Jacobian at the same moment direction and profiled Gaussian covariance; not full TN MLE. Separate benchmark: n=1000, 100 trees, 5 threads. Jacobian: juh-KOH-bee-un.</p></div></aside></section>
 
-<!-- ============================== 8. RESULTS (chart) ============================== -->
-<section class="slide" data-title="Multivariate logistic normal distribution" data-time="23"><div class="kicker k-res">Log-ratio approach</div><h2>Multivariate logistic normal (MLN)</h2><div class="cols c2"><div class="col"><p>Additive log-ratio coordinates:</p><div class="eqbox">\[Y_i=\log\!\left(\frac{X_i}{X_K}\right),\qquad i=1,\ldots,K-1.\]</div><div class="eqbox">\[\boldsymbol Y\sim N_{K-1}(\boldsymbol\mu,\boldsymbol\Sigma).\]</div><p>Flexible covariance in real space.</p></div><div class="col"><p>Inverse transformation:</p><div class="eqbox">\[X_i=\frac{\exp(Y_i)}{1+\sum_{j=1}^{K-1}\exp(Y_j)},\quad i&lt;K,\]</div><div class="eqbox">\[X_K=\frac1{1+\sum_{j=1}^{K-1}\exp(Y_j)}.\]</div><div class="box"><p style="margin:0">Standard log-ratios require <b>strictly positive</b> components.</p></div></div></div><aside class="notes"><p>Another common approach is the multivariate logistic normal distribution. Transform the composition using log-ratios, then assume a multivariate normal distribution. The inverse formulas return a composition. Standard log-ratios require strictly positive components.</p><p><b>Transition:</b> We include MLN in the comparison.</p><p><b>Figure:</b> Point to the forward transformation, normal model and inverse formulas.</p><p><b>Remember:</b> X and Y here denote compositions and ALR coordinates, not the earlier predictor matrix. For a nonsingular sample covariance, Gaussian ML estimates are closed form.</p></aside></section>
+<section class="slide " data-title="Kent versus TN" data-time="28"><div class="kicker k-res">Flexible spherical shapes · different fitting costs</div><h2><span class="c-kent">Kent</span> versus <span class="c-tn">tangent normal</span></h2><table class="cmp results-table"><thead><tr><th></th><th>Kent</th><th>TN</th></tr></thead><tbody><tr><td>Shape</td><td>Oriented, elongated contours</td><td>Flexible tangent covariance</td></tr><tr><td>Support</td><td>Whole sphere</td><td>Hemisphere centred at \(\bmu\)</td></tr><tr><td>Fitting</td><td>Generally numerical optimization;<br>complex normalizing constant</td><td>Moment direction; analytic Gaussian profile;<br>approximate Jacobian</td></tr><tr><td>Repeated split search</td><td>Full fitting can be expensive</td><td>Additive summaries and a log-determinant</td></tr></tbody></table><p>Neither model is automatically restricted to the non-negative orthant.</p><p class="small">The implemented TN score omits the truncation-normalization term under sufficient concentration. Computational efficiency does not imply that TN-RF is faster than MLN-RF or Dir-RF.</p><aside class="notes"><p class="note-time"><b>TARGET:</b> 28 seconds</p><div class="note-say"><b>SAY:</b><p>Kent and TN allow elongated spherical shapes. Kent generally needs numerical optimization. Our TN score uses a moment direction, an analytic Gaussian profile, and an approximate Jacobian. Their supports differ: whole sphere versus hemisphere.</p></div><div class="note-point"><b>POINT TO:</b><p>Point across the fitting and support rows.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Our other comparison uses log-ratios.</p></div><div class="note-remember"><b>REMEMBER:</b><p>TN efficiency here is relative to repeated full directional fitting. It does not establish faster fitting than MLN or Dirichlet.</p></div></aside></section>
 
-<section class="slide" data-title="Results: test error" data-time="35" data-init="initRes">
+<section class="slide" data-title="Multivariate logistic-normal" data-time="30"><div class="kicker k-res">Log-ratio approach</div><h2>Multivariate logistic normal (MLN)</h2><div class="cols c2"><div class="col"><p>Additive log-ratio coordinates:</p><div class="eqbox">\[Y_i=\log\!\left(\frac{Z_i}{Z_K}\right),\qquad i=1,\ldots,K-1.\]</div><div class="eqbox">\[\boldsymbol Y\sim N_{K-1}(\boldsymbol\mu,\boldsymbol\Sigma).\]</div><p>Flexible covariance in real space.</p></div><div class="col"><p>Inverse transformation:</p><div class="eqbox">\[Z_i=\frac{\exp(Y_i)}{1+\sum_{j=1}^{K-1}\exp(Y_j)},\quad i&lt;K,\]</div><div class="eqbox">\[Z_K=\frac1{1+\sum_{j=1}^{K-1}\exp(Y_j)}.\]</div><div class="box"><p style="margin:0">Standard log-ratios require <b>strictly positive</b> components.</p></div></div></div><aside class="notes"><p class="note-time"><b>TARGET:</b> 30 seconds</p><div class="note-say"><b>SAY:</b><p>The multivariate logistic-normal model uses another geometry. We transform a composition using log-ratios, then model those coordinates with a multivariate normal distribution. This allows flexible covariance in log-ratio space.</p><p>Standard log-ratios require every component to be positive, so exact zeros need separate handling. MLN is an important comparison.</p></div><div class="note-point"><b>POINT TO:</b><p>Point from log-ratio coordinates to the Gaussian model.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Now let us examine the prediction results.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside></section>
+
+<section class="slide" data-title="Simulation prediction accuracy" data-time="50" data-init="initRes">
   <div class="kicker k-res">Simulation study &middot; arXiv v1, Table 1</div>
   <h2>Dir-RF, MLN-RF and TN-RF: test error</h2>
   <p class="small" style="margin:0 0 .2rem">Designs: <b>D</b> Dirichlet data &middot; <b>L</b> logistic-normal, correlation &asymp; &minus;0.9 &middot; <b>K</b> exact Kent, one part near zero (30% of draws have a part below 0.01). 40 paired replications; 1000 trees.</p>
   <div class="btns"><button class="btn" id="r-ad" aria-pressed="true">Aitchison distance (42)</button><button class="btn" id="r-rm" aria-pressed="false">RMSE-averaged &times;100 (43)</button></div>
   <div class="plot" id="fRes"></div>
   <div class="src"><a href="https://arxiv.org/html/2611.14275v1#S4.T1">arXiv:2611.14275v1, Table 1</a> &middot; 40 paired replications; m = 10, depth 10, mtry = 3, 1000 trees; shared 80/20 splits, no resampling. Fixed common settings; lower is better.</div>
-  <aside class="notes"><p>These results from Table One of our arXiv preprint use the same data and eighty-twenty train-test splits, forty paired replications, and common forest settings. Lower error is better. TN improves on Dirichlet in most displayed cells. MLN is competitive and often best in the logistic-normal design. Performance depends on data structure and metric.</p><p><b>Transition:</b> Here are the TN-Dirichlet differences.</p><p><b>Figure:</b> Show Aitchison first, then click RMSE. Identify the grey MLN line using the legend.</p><p><b>Remember:</b> All 72 means match arXiv:2611.14275v1, Table 1 and the latest committed local paper table. No new significance claim is inferred from means alone.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 50 seconds</p><div class="note-say"><b>SAY:</b><p>We compare the three forests under Dirichlet, logistic-normal, and Kent-generated designs. All methods use shared data and train-test splits, forty paired repetitions, and common forest settings. Lower error is better.</p><p>Let us switch from Aitchison distance to RMSE. TN performs well in the Kent-based design, while MLN is competitive, especially under the logistic-normal design. The ranking depends on both the data structure and the metric.</p><p>These results do not show a universal winner.</p></div><div class="note-point"><b>POINT TO:</b><p>Use the Aitchison and RMSE controls.</p></div><div class="note-transition"><b>TRANSITION:</b><p>We can also look at the relative differences.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Aitchison: AT-chi-sun. All 72 means are retained and checked against the current local real-data manuscript Table 1. These are observed-response errors, not conditional-mean truth errors.</p></div></aside>
 </section>
 
-<!-- ============================== 9. RESULTS (relative) ============================== -->
-<section class="slide" data-title="Results: relative difference" data-time="12" data-init="initRel">
+<section class="slide" data-title="Relative prediction errors" data-time="25" data-init="initRel">
   <div class="kicker k-res">Simulation study &middot; the matched local experiment</div>
   <h2>TN-RF relative to Dir-RF</h2>
   <div class="plot" id="fRel"></div>
   <div class="src">Relative difference (TN-RF &minus; Dir-RF) / Dir-RF, computed from the means in arXiv v1, Table 1. Negative: TN-RF lower error. Pairwise comparison only; MLN-RF is shown on the preceding slide. These mean differences alone do not establish statistical significance.</div>
-  <aside class="notes"><p>Negative bars mean lower TN error than Dirichlet. Many differences are small, so practical size also matters.</p><p><b>Transition:</b> What about zeros?</p><p><b>Figure:</b> Point to zero and the positive RMSE exception.</p><p><b>Remember:</b> The denominator is the Dirichlet error. This plot excludes MLN and does not display uncertainty.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 25 seconds</p><div class="note-say"><b>SAY:</b><p>Here we compare TN with Dirichlet using relative errors. Negative bars favour TN. There are improvements in several settings, but some are small and one RMSE comparison goes the other way.</p><p>This plot shows mean differences; it does not establish significance.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to zero and the small positive RMSE exception.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Next, let us examine a real environmental application.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<!-- ============================== 10. ZEROS: ARGUMENT ============================== -->
-<section class="slide" data-title="Zeros: why the square root" data-time="18" data-init="initZero">
+<section class="slide " data-title="LUCAS soil-texture prediction" data-time="55"><div class="kicker k-res">LUCAS 2018 · Germany · real-data application</div><h2>Real data: predicting soil texture</h2><div class="panel3" style="flex:0"><div class="box"><h3>1,785 sites</h3><p>Clay · silt · sand<br>All observed parts positive</p></div><div class="box"><h3>180 predictor columns</h3><p>169 predictors before encoding<br>Climate · vegetation · terrain</p></div><div class="box"><h3>10 × 5-fold CV</h3><p>Shared random folds<br>1,000 trees; mtry = 60</p></div></div>
+<table class="cmp results-table" style="margin-top:1.3rem"><thead><tr><th>Forest</th><th>Aitchison distance</th><th>RMSE × 100</th><th>Clay RMSE × 100</th></tr></thead><tbody><tr><td class="c-dir">Dir-RF</td><td>0.7705</td><td>13.05</td><td>8.63</td></tr><tr><td>MLN-RF</td><td><b>0.7681</b></td><td>12.97</td><td>8.14</td></tr><tr><td class="c-tn">TN-RF</td><td>0.7684</td><td>12.97</td><td><b>8.12</b></td></tr></tbody></table>
+<p><b>Similar overall accuracy.</b> MLN and TN improve clay prediction relative to Dirichlet.</p><p class="small" style="margin:0">Random folds assess held-out sites; geographic extrapolation was not tested. TN took longer to fit than both alternatives in a separate timing check.</p><div class="src">Main_with_real_data.tex, §Real-data application, Table lucas-real. Corrected resampled comparisons: no significant overall difference.</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 55 seconds</p><div class="note-say"><b>SAY:</b><p>We also studied soil texture in Germany: clay, silt, and sand. There are seventeen hundred and eighty-five sites and one hundred and eighty predictor columns after encoding. We used ten repetitions of five-fold cross-validation with shared random folds.</p><p>Overall accuracy is very similar across the forests. For clay, MLN and TN improve on Dirichlet. TN has no clear overall advantage over MLN, and took longer to fit.</p><p>Because the folds are random, this does not test geographic extrapolation.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to clay RMSE, then to the random-fold limitation.</p></div><div class="note-transition"><b>TRANSITION:</b><p>So far, we have mainly discussed positive compositions. What happens when some components are zero?</p></div><div class="note-remember"><b>REMEMBER:</b><p>The validation uses random folds, not spatially blocked folds. Do not claim geographic extrapolation. LUCAS: LOO-kas. Ten repetitions of five random folds; 169 raw predictors become 180 columns. Component-wise improvement does not prove a boundary mechanism.</p></div></aside></section>
+
+<section class="slide" data-title="Why zeros matter" data-time="22" data-init="initZero">
   <div class="kicker k-res">Zero components</div>
-  <h2>Why zeros favour the square root</h2>
+  <h2>Zeros remain valid square-root coordinates</h2>
   <div class="cols c-l">
     <div class="col">
       <p><span class="c-dir"><b>Dirichlet</b></span>: support is the open simplex (2); a zero part lies outside it, so zeros must be replaced first.</p>
       <p><span class="c-muted"><b>Log-ratios</b></span>: undefined at zero, and highly variable near zero.</p>
-      <p><span class="c-tn"><b>Square root</b></span>: \(\sqrt0=0\) is an ordinary point on the edge of \(\mathcal O\). If \(\bmu\) has positive parts, \(\bmu^{\top}\bu&gt;0\) on \(\mathcal O\), so <b>every composition, zeros included, has positive TN density</b>; the square root stays bounded.</p>
+      <p><span class="c-tn"><b>Square root</b></span>: \(\sqrt0=0\) is an ordinary point on the edge of \(\mathcal O\). If \(\bmu\) has positive parts, \(\bmu^{\top}\bu&gt;0\) on \(\mathcal O\), so zero-containing compositions remain in the TN hemisphere; the square root stays bounded.</p>
       <p class="small">Design K (arXiv v1, Table 1): a part near zero in 30% of draws &mdash; TN-RF had the lowest Aitchison distance at every n.</p>
     </div>
     <div class="col"><div class="plot" id="fZero"></div>
       <div class="ptitle">Sphere density g(&radic;z), displayed on the triangle; not a simplex density or an atom at zero</div></div>
   </div>
-  <aside class="notes"><p>Square roots are defined at zero, while standard log-ratios are not. With a positive mean direction, zero-containing compositions remain admissible under the spherical TN model. This does not mean a continuous model assigns positive probability to an exact structural zero.</p><p><b>Transition:</b> An earlier experiment explored exact zeros.</p><p><b>Figure:</b> Point to the boundary of the triangle.</p><p><b>Remember:</b> Positive spherical density at an edge does not create a boundary probability atom. This figure displays spherical density over triangle coordinates.</p></aside>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 22 seconds</p><div class="note-say"><b>SAY:</b><p>Standard log-ratios are undefined at zero. Square roots map zero to a valid boundary coordinate. This permits TN-based forest construction with zeros. A continuous TN density still gives no probability atom at zero.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to a triangle edge and √0 = 0.</p></div><div class="note-transition"><b>TRANSITION:</b><p>An earlier study helped motivate our current experiment.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside>
 </section>
 
-<!-- ============================== 11. ZEROS: OLD TABLE ============================== -->
-<section class="slide" data-title="Zeros: earlier experiment" data-time="12">
-  <div class="kicker k-res">Exact zeros &middot; archived experiment 25 &middot; Gaussian tangent surrogate</div>
-  <h2>With exact zeros</h2>
-  <table class="cmp num">
-    <thead><tr><th>Zero prevalence</th><th style="text-align:right">0</th><th style="text-align:right">0.05</th><th style="text-align:right">0.15</th><th style="text-align:right">0.30</th><th style="text-align:right">0.50</th></tr></thead>
-    <tbody>
-      <tr><td><span class="c-dir">&#9679;</span> Dirichlet (zeros replaced)</td><td><b>0.0914</b></td><td><b>0.1072</b></td><td>0.1421</td><td>0.1916</td><td>0.2375</td></tr>
-      <tr><td><span class="c-muted">&#9679;</span> MLN (zeros replaced)</td><td>0.1024</td><td>0.1174</td><td>0.1453</td><td>0.1836</td><td>0.2247</td></tr>
-      <tr><td><span class="c-tn">&#9679;</span> square-root node (zeros replaced)</td><td>0.1017</td><td>0.1140</td><td>0.1397</td><td>0.1771</td><td>0.2189</td></tr>
-      <tr class="hl"><td><span class="c-tn">&#9679;</span> square-root node (native zeros)</td><td>0.1017</td><td>0.1139</td><td>0.1400</td><td>0.1774</td><td>0.2195</td></tr>
-      <tr><td><span class="c-muted">&#9679;</span> drf (native)</td><td>0.0948</td><td>0.1073</td><td><b>0.1335</b></td><td><b>0.1724</b></td><td><b>0.2157</b></td></tr>
-      <tr><td class="c-muted">mass displaced by replacement</td><td>0</td><td>0.0001</td><td>0.0004</td><td>0.0009</td><td>0.0015</td></tr>
-    </tbody>
-  </table>
-  <ul style="margin-top:.6rem">
-    <li>No zeros: Dirichlet best. As zeros accumulate the ordering reverses: at 0.5 the square-root node is the best parametric model, Dirichlet the worst.</li>
-    <li>Native and replaced zeros give very similar errors: this comparison alone does not identify the mechanism behind the gain. drf is best from 0.15.</li>
-  </ul>
-  <div class="src">Energy score against the raw held-out observation (lower is better), Archived experiment 25: 20 replications; 500 training and 300 test observations; 200 trees. The square-root node used the Gaussian tangent surrogate without the TN Jacobian. Source: 25_zeros.tex / Main_old.tex; separate from arXiv Table 1.</div>
-  <aside class="notes"><p>This earlier study used a TN precursor. It is separate from the main comparison.</p><p><b>Transition:</b> Here are the main messages.</p><p><b>Figure:</b> Indicate the earlier-experiment label; do not read the table values.</p><p><b>Remember:</b> Verified against archived experiment 25 and 25_zeros.tex: all 30 values match. Energy score, 20 replications, 500 training and 300 test observations, 200 trees; Gaussian tangent surrogate without the TN Jacobian. This is not current TN-RF. Similar replacement errors do not establish a causal mechanism.</p></aside>
-</section>
+<section class="slide " data-title="Earlier exploratory experiment" data-time="24"><div class="kicker k-res">Historical context · archived experiment 25</div><h2>Earlier exploratory experiment</h2><p class="big"><b>Different tangent surrogate</b></p><div class="cols c2"><div class="box"><h3>What it explored</h3><p>Exact zeros and replacement.</p><p>A Gaussian tangent score without the TN Jacobian.</p></div><div class="box"><h3>How to interpret it</h3><p>Motivation for later work.</p><p>Separate from the current TN-RF experiment.</p></div></div><p class="small">Historical settings: 20 repetitions, 500 training + 300 test observations, 200 trees; energy-score target.</p><div class="src">Archived experiment 25 / Main_old.tex. No numerical comparison with the following study is implied.</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 24 seconds</p><div class="note-say"><b>SAY:</b><p>An earlier exploratory study examined exact zeros using a different Gaussian tangent surrogate. It did not include the TN Jacobian. It helped motivate this work, but it is separate from the current method.</p><p>I will focus on the new experiment.</p></div><div class="note-point"><b>POINT TO:</b><p>Indicate the historical label; do not compare numerical scores.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let me explain the new simulation design.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Historical experiment: Gaussian tangent surrogate without TN Jacobian, 200 trees, energy score. Keep separate from current Structural K.</p></div></aside></section>
 
-<!-- ============================== 12. SUMMARY ============================== -->
-<section class="slide summary" data-title="Summary" data-time="22">
-  <div class="kicker k-res">Summary</div>
-  <h2>Four messages</h2>
-  <ol>
-<li><b class="c-dir">Dirichlet</b>: a useful simplex model with covariance tied to its mean and one concentration parameter.</li>
-<li>The <b>square root</b> maps compositions, including zeros, to the non-negative spherical orthant.</li>
-<li><b class="c-tn">TN</b>: flexible tangent covariance and a fast approximate split score, using a moment direction and additive summaries.</li>
-<li><b>Prediction depends on the data structure.</b> MLN and TN offer different coordinates; no method wins universally.</li>
-</ol>
-  <aside class="notes"><p>The Dirichlet is useful, but its covariance is restricted. Square roots provide spherical coordinates that admit zeros. TN gives flexible tangent covariance and an efficient approximate split score. Finally, the simulations favour different models under different data structures. There is no universal winner.</p><p><b>Transition:</b> The work is available as a preprint.</p><p><b>Figure:</b> Point briefly to the four messages.</p><p><b>Remember:</b> The main contribution is the TN construction and fast split criterion, with its approximations stated explicitly.</p></aside>
-</section>
+<section class="slide " data-title="Structural-zero simulation" data-time="45"><div class="kicker k-res">Structural K · current implementation</div><h2>Structural zeros: a new prediction problem</h2><div class="eqbox tn big">\[P(Z_3=0\mid X=x)=0.25+0.15\tanh(2x_6).\]</div>
+<div class="cols c2"><div class="col"><ul><li>40 shared repetitions; 1,000 observations</li><li>800 training + 200 test observations</li><li>1,000 trees; three forest methods</li><li>Kent draws → squared compositions → zero injection</li></ul><p class="small">TN: native zeros. MLN and Dirichlet: multiplicative replacement, f = 0.65.</p></div><div class="col"><svg viewBox="0 0 430 270" role="img" aria-label="A composition moves to the boundary when its third part becomes zero"><path d="M45 220 L385 220 L215 30 Z" fill="#edf3fb" stroke="#8a8883" stroke-width="2"/><path d="M245 120 L275 220" stroke="#2a78d6" stroke-width="4" stroke-dasharray="7 5"/><circle cx="245" cy="120" r="9" fill="#8a8883"/><circle cx="275" cy="220" r="11" fill="#2a78d6"/><text x="255" y="100" font-size="21">Z₃ &gt; 0</text><text x="260" y="255" font-size="21" fill="#2a78d6">Z₃ = 0</text></svg><p class="small">A known conditional probability lets us evaluate probability recovery directly.</p></div></div><div class="src">ZERO_PROBABILITY_RESULTS_REPORT.md, §§A–B · frozen full Structural K · primary setting only.</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 45 seconds</p><div class="note-say"><b>SAY:</b><p>We now use Structural K. We square Kent draws to obtain compositions, then allow the third component to become exactly zero. Its zero probability depends on predictor six through the formula shown here.</p><p>We know this probability, so we can evaluate recovery directly. All methods share forty repetitions, one thousand observations, and one thousand trees. TN uses native zeros; MLN and Dirichlet use the prespecified replacement procedure.</p></div><div class="note-point"><b>POINT TO:</b><p>Trace the point to the boundary; point to x6 in the formula.</p></div><div class="note-transition"><b>TRANSITION:</b><p>How can a random forest estimate this probability?</p></div><div class="note-remember"><b>REMEMBER:</b><p>Structural K uses exact Kent draws, squared and reclosed, then zero injection; x6 is Uniform(−1,1). Replacement is only for MLN/Dirichlet tree construction.</p></div></aside></section>
 
-<section class="slide title-slide" data-title="Thank you" data-time="8">
+<section class="slide " data-title="Predicting zero probability" data-time="45"><div class="kicker k-res">One forest · multiple conditional targets</div><h2>Forest weights can estimate zero probabilities</h2><div class="eqbox tn" style="font-size:2rem;margin:1rem 0 2rem">\[\widehat p_0(x)=\sum_i w_i(x)\mathbf1\{Z_{i3}=0\}.\]</div><div class="weight-flow"><div class="box">Training<br>observations</div><span>→</span><div class="box">Forest<br>weights</div><span>×</span><div class="box">Original<br>zero indicators</div><span>→</span><div class="box">Estimated<br>probability</div></div><p class="big" style="margin-top:2rem"><b>No new regression model is required.</b></p><p>Use the original observed indicators, including when replacement was used to grow a forest.</p><p class="small">This is a weighted empirical probability. A continuous TN density does not assign positive probability to an exact zero.</p><aside class="notes"><p class="note-time"><b>TARGET:</b> 45 seconds</p><div class="note-say"><b>SAY:</b><p>Recall the forest weights. For each training observation, we record whether the original third component is zero. The indicator is one for a zero and zero otherwise.</p><p>We multiply these indicators by the weights and add them. This estimates the conditional zero probability without fitting another regression model. We always use original indicators, even if replacement was used to grow the trees.</p><p>The probability comes from the weighted empirical distribution.</p></div><div class="note-point"><b>POINT TO:</b><p>Trace weights × original indicators → probability.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Now let us compare these estimates with the true probability.</p></div><div class="note-remember"><b>REMEMBER:</b><p>The indicator uses the original observed data, even if zero replacement was used to construct an MLN or Dirichlet forest.
+
+Do not claim that the continuous TN density itself assigns positive probability to an exact zero.</p></div></aside></section>
+
+<section class="slide " data-title="Recovering the true probability" data-time="45"><div class="kicker k-res">Structural K · 40 repetitions · primary setting</div><h2>Can the forests recover the true probability?</h2><img class="research-figure" src="assets/figure1_zero_probability_curves.png" alt="True zero-probability curve and binned mean predictions of TN, MLN, Dirichlet and the training-frequency baseline, with Monte Carlo intervals"><p class="small" style="margin:.3rem 0 0">Curves average predictions within fixed x₆ bins and over other covariates. Shading: pointwise 95% Monte Carlo intervals.</p><div class="src">Verified publication_ready / figure1_zero_probability_curves.pdf; matching high-resolution PNG.</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 45 seconds</p><div class="note-say"><b>SAY:</b><p>The dashed curve is the true zero probability. The coloured curves show the forests, and the horizontal line is the training-frequency baseline. All forests learn the general relationship with predictor six.</p><p>The baseline cannot follow it. These curves average predictions within bins and across repetitions. They can hide variation between individual predictions, so their closeness to the truth alone does not determine the overall error ranking.</p></div><div class="note-point"><b>POINT TO:</b><p>Start with the true curve, then compare the estimated curves and the baseline.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Here are the numerical results.</p></div><div class="note-remember"><b>REMEMBER:</b><p>These are binned means, not individual-forest partial dependence. TN has more attenuation but less within-bin error variation; do not infer MSE ranking from mean curves alone.</p></div></aside></section>
+
+<section class="slide " data-title="Zero-probability prediction errors" data-time="50"><div class="kicker k-res">Structural K · two distinct evaluation targets</div><h2>TN-RF has the lowest true-probability MSE</h2><table class="cmp results-table"><thead><tr><th>Forest</th><th>Brier score</th><th>True-probability MSE</th></tr></thead><tbody><tr class="hl"><td class="c-tn">TN-RF</td><td>0.183276</td><td><b>0.005312</b></td></tr><tr><td>MLN-RF</td><td><b>0.183036</b></td><td>0.005642</td></tr><tr><td class="c-dir">Dir-RF</td><td>0.183631</td><td>0.005891</td></tr><tr><td>Baseline</td><td>0.190906</td><td>0.012048</td></tr></tbody></table><div class="cols c2" style="flex:0;margin-top:1.3rem"><div class="box"><p style="margin:0"><b class="c-tn">5.85% lower probability MSE than MLN</b><br><span class="small">Holm-adjusted p = 0.0394</span></p></div><div class="box"><p style="margin:0"><b class="c-tn">9.83% lower probability MSE than Dirichlet</b><br><span class="small">Holm-adjusted p = 0.00264</span></p></div></div><p><b>No significant Brier differences among the forests.</b></p><p class="small" style="margin:0">One generator, one sample size, one replacement setting (f = 0.65). Complete procedures differ in splitting and preprocessing.</p><div class="src">ZERO_PROBABILITY_RESULTS_REPORT.md, §§B–E. 40 paired replication means; six comparisons per metric form the Holm family.</div><aside class="notes"><p class="note-time"><b>TARGET:</b> 50 seconds</p><div class="note-say"><b>SAY:</b><p>We use two errors. Brier score evaluates predictions of observed zero events. Probability MSE compares estimates with the known true probability.</p><p>TN has the lowest probability MSE: about six percent below MLN and ten percent below Dirichlet. These paired differences are significant after the reported Holm adjustment. But the forests have no significant Brier-score differences.</p><p>Our conclusion is specific to this simulation and replacement setting. Different preprocessing and splitting rules were compared together, so we cannot isolate their separate effects.</p></div><div class="note-point"><b>POINT TO:</b><p>Point to MSE first, then Brier; pause between the two targets.</p></div><div class="note-transition"><b>TRANSITION:</b><p>Let me finish with the main conclusions.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Do not claim universal superiority.
+
+The comparison includes different splitting criteria and different zero-preprocessing procedures.
+
+Only the primary replacement setting, f = 0.65, was evaluated for this probability target. Brier: BRY-er. Six paired comparisons per metric form the Holm family. Only f=0.65 was evaluated. This result is documented in the separate 15 November report, not yet in the manuscript.</p></div></aside></section>
+
+<section class="slide summary" data-title="Main conclusions" data-time="35"><div class="kicker k-res">Main conclusions</div><h2>Four messages to take away</h2><ol><li><b>Compositional geometry matters.</b></li><li><b class="c-tn">TN provides flexible tangent covariance.</b></li><li><b>Additive summaries</b> make the approximate TN split criterion efficient.</li><li><b>Forest weights</b> can estimate conditional zero probabilities.</li></ol><p class="small">No single geometry is best for every dataset.</p><aside class="notes"><p class="note-time"><b>TARGET:</b> 35 seconds</p><div class="note-say"><b>SAY:</b><p>Our main messages are these. Compositional geometry matters. TN provides flexible tangent covariance.</p><p>Additive summaries make its approximate splitting score efficient. The same forest weights can estimate conditional zero probabilities. The evidence is encouraging, but no single geometry is best for every dataset.</p></div><div class="note-point"><b>POINT TO:</b><p>Point once to each of the four messages.</p></div><div class="note-transition"><b>TRANSITION:</b><p>I will leave you with these four messages.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Pause naturally. Read symbols in words; do not read every formula aloud.</p></div></aside></section>
+
+<section class="slide title-slide" data-title="Thank you" data-time="15">
   <h1>Thank you</h1>
   <p class="sub" style="font-size:1.25rem"><b>Compositional random forest</b><br>Khaled Masoumifard, Stephan van der Westhuizen and Sugnet Gardner-Lubbe<br><a href="https://arxiv.org/abs/2611.14275">arXiv:2611.14275</a> &middot; preprint, 10 November 2026<br>Not yet published in a peer-reviewed journal.</p><p class="small">Interactive pages: xaleed.github.io/visualisations</p>
-  <div class="dots"><i style="background:var(--dir)"></i><i style="background:var(--kent)"></i><i style="background:var(--tn)"></i></div>
-  <aside class="notes"><p>The research is an arXiv preprint, not yet published in a peer-reviewed journal. Thank you.</p><p><b>Transition:</b> I welcome your questions.</p><p><b>Figure:</b> Leave the paper citation visible.</p><p><b>Remember:</b> Compositional random forest; Masoumifard, van der Westhuizen and Gardner-Lubbe; arXiv:2611.14275, submitted 10 November 2026.</p></aside>
+  <p>Stellenbosch University</p><div class="dots"><i style="background:var(--dir)"></i><i style="background:var(--kent)"></i><i style="background:var(--tn)"></i></div>
+  <aside class="notes"><p class="note-time"><b>TARGET:</b> 15 seconds</p><div class="note-say"><b>SAY:</b><p>Thank you very much for your attention. I would be happy to answer any questions.</p></div><div class="note-point"><b>POINT TO:</b><p>Leave the citation visible; face the audience.</p></div><div class="note-transition"><b>TRANSITION:</b><p>I welcome your questions.</p></div><div class="note-remember"><b>REMEMBER:</b><p>Allow the audience to finish reading the citation. End speaking, then invite questions.</p></div></aside>
 </section>
 
 <div id="ovl"></div>
 <div id="progress"></div>
-<div id="brand">Dirichlet, Kent and TN leaves</div>
+<div id="brand">Compositional random forests</div>
 <div id="num"></div>
 </div>
 <div id="help">&larr; &rarr; navigate &middot; F full screen &middot; S speaker notes &middot; N notes here &middot; P print / PDF</div>
@@ -1830,8 +1764,8 @@ function activate(i){
   $('progress').style.width=(100*i/(N-1))+'%'; $('num').textContent=(i+1)+' / '+N;
   if(location.hash!=='#'+(i+1)) history.replaceState(null,'','#'+(i+1));
   const fn=s.dataset.init;
-  if(fn&&window.Plotly&&!inited.has(i)){ inited.add(i); try{ window[fn](); }catch(e){ console.error(e); } }
-  else plotsOf(s).forEach(p=>{ if(p.data) Plotly.Plots.resize(p); });   /* initialise on first view, resize afterwards */
+  if(fn&&window.Plotly&&!inited.has(i)){ try{ window[fn](); inited.add(i); }catch(e){ console.error(e); } }
+  else plotsOf(s).forEach(p=>{ if(p.data&&window.Plotly) Plotly.Plots.resize(p); });   /* initialise on first view, resize afterwards */
   updateNotes();
 }
 function rerenderVisible(){ const s=slides[cur], fn=s.dataset.init;     /* fonts follow the stage size */
@@ -1845,7 +1779,10 @@ document.addEventListener('keydown',e=>{
   if(['ArrowRight','PageDown',' ','Enter'].includes(k)){ e.preventDefault(); activate(cur+1); }
   else if(['ArrowLeft','PageUp','Backspace'].includes(k)){ e.preventDefault(); activate(cur-1); }
   else if(k==='Home') activate(0); else if(k==='End') activate(N-1);
-  else if(k==='f'||k==='F'){ if(!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  else if(k==='f'||k==='F'){
+    const action=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+    action.catch(()=>{ $('help').textContent='Fullscreen was unavailable. Focus this window and press F again, or use the browser fullscreen command.'; $('help').classList.remove('gone'); });
+  }
   else if(k==='s'||k==='S') openNotes();
   else if(k==='n'||k==='N') $('ovl').classList.toggle('on'), updateNotes();
   else if(k==='p'||k==='P') printMode();
@@ -1881,6 +1818,7 @@ setInterval(()=>{ if(notesWin&&!notesWin.closed){ const el=notesWin.document.get
 /* ============================ print / PDF ============================ */
 async function printMode(){
   if(document.body.classList.contains('print')){ window.print(); return; }
+  await document.fonts.ready; if(window.MathJax?.startup?.promise) await MathJax.startup.promise;
   document.body.classList.add('print'); SW=1280; document.documentElement.style.fontSize='16px'; stage.style.width=''; stage.style.height='';
   /* initialise every figure once, re-render it at print size, then freeze it as an image */
   for(let i=0;i<N;i++){ const s=slides[i], fn=s.dataset.init; if(!fn||!window.Plotly) continue; cur=i;
@@ -1890,8 +1828,27 @@ async function printMode(){
       try{ const url=await Plotly.toImage(p,{format:'png',width:p.clientWidth,height:p.clientHeight,scale:2});
         const img=new Image(); img.className='static'; img.src=url; img.style.height=p.clientHeight+'px'; p.style.display='none'; p.after(img); }catch(e){ console.error(e); } }
   }
-  setTimeout(()=>window.print(),400);
+  await Promise.all([...document.querySelectorAll('img')].map(img=>img.decode().catch(()=>{})));
+  window.deckPrintReady=true; setTimeout(()=>window.print(),400);
 }
+
+/* Small introductory diagrams use the same coordinate systems as the original SVGs. */
+const simplex=$('simplex-demo');
+simplex.addEventListener('click',e=>{
+  const pt=simplex.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY;
+  const p=pt.matrixTransform(simplex.getScreenCTM().inverse());
+  const z3=(315-p.y)/277, z2=(p.x-40-160*z3)/320, z1=1-z2-z3;
+  if(Math.min(z1,z2,z3)<-1e-8) return;
+  const dot=$('simplex-point'), label=$('simplex-label');
+  dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y);
+  label.setAttribute('x',Math.max(95,Math.min(305,p.x))); label.setAttribute('y',Math.min(300,p.y+30));
+  label.textContent='('+[z1,z2,z3].map(v=>Math.max(0,v).toFixed(2)).join(', ')+')';
+});
+$('tree-trace').addEventListener('click',()=>{
+  const b=$('tree-trace'), active=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',String(active)); b.blur();
+  let route=$('tree-route');if(!route){route=document.createElementNS('http://www.w3.org/2000/svg','path');route.id='tree-route';route.setAttribute('d','M250 34 L130 100 L190 170 L215 225');route.setAttribute('fill','none');route.setAttribute('stroke','#2a78d6');route.setAttribute('stroke-width','5');route.setAttribute('opacity','.65');$('tree-demo').append(route);}
+  route.style.display=active?'':'none';$('tree-message').textContent=active?'New x: left → right → right → leaf.':'Each observation follows one path to a leaf.';
+});
 
 /* ============================ start ============================ */
 fit();

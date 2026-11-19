@@ -1,0 +1,297 @@
+%clean this format for me:
+% Auriga theme
+% find the most up-to-date version here: https://github.com/anishathalye/auriga
+\documentclass[aspectratio=169]{beamer}
+\usepackage{pgfpages}
+\usepackage{fancyvrb}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{shapes,arrows,positioning}
+\usepackage{amsmath}
+\usepackage{tcolorbox}
+\usepackage{graphicx}
+\usetikzlibrary{arrows.meta}
+\usetheme{Madrid}
+%\usecolortheme{whale}
+
+\usecolortheme{beaver}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{qrcode}
+\usepackage{amssymb, booktabs, array, colortbl}
+% PREAMBLE — add these:
+\usepackage{tikz}
+\usepackage{natbib}   % for \citet, \citep'
+\usepackage{pifont}
+\usepackage{enumitem}
+\usetikzlibrary{arrows.meta, calc, decorations.pathreplacing}
+\usecolortheme{whale}
+ 
+ \usepackage{colortbl}
+\definecolor{leftblue}{RGB}{219,234,254}
+\definecolor{rightred}{RGB}{254,226,226}
+% Custom colors
+% \definecolor{mainblue}{RGB}{25, 65, 120}
+% \definecolor{accentblue}{RGB}{65, 130, 195}
+% \definecolor{lightgray}{RGB}{245, 245, 248}
+ 
+% \setbeamercolor{frametitle}{bg=mainblue, fg=white}
+% \setbeamercolor{title}{fg=white}
+% \setbeamercolor{block title}{bg=accentblue, fg=white}
+% \setbeamercolor{block body}{bg=lightgray}
+% \setbeamercolor{structure}{fg=mainblue}
+% \definecolor{simplexfill}{RGB}{127,119,221}
+% \definecolor{simplexedge}{RGB}{83,74,183}
+% \definecolor{pointcol}{RGB}{60,52,137}
+% \definecolor{axiscol}{RGB}{136,135,128}
+% \definecolor{gridfaint}{RGB}{180,178,169}
+%\ifnotes
+% \setbeamertemplate{note page}[plain]
+% \setbeameroption{show notes on second screen=right}
+%\fi
+
+%\setbeameroption{show notes}  % in preamble
+\usetheme{auriga}
+\usecolortheme{auriga}
+% % define some colors for a consistent theme across slides
+% \definecolor{red}{RGB}{181, 23, 0}
+% \definecolor{blue}{RGB}{0, 118, 186}
+% \definecolor{gray}{RGB}{146, 146, 146}
+\title{Towards predictive modelling of compositional data}
+\author{\underline{Khaled Masoumifard } \inst{1} \and Stephan van der Westhuizen \inst{1} \and Sugnet Gardner-Lubbe \inst{1}
+}
+\institute[shortinst]{\inst{1} Dept. of Statistics and Actuarial Science, Stellenbosch University, Stellenbosch, South Africa
+% \samelineand \inst{2}  MuViSU(Centre for Multi-dimensional Data Visualisation), Stellenbosch University, Stellenbosch, South Africa
+}
+\begin{document}
+%\input{slides/Stellen_presentation.tex}
+%\input{slides/topic}
+%\input{slides/compositional}
+%\input{slides/Spurious_correlation}
+%\input{slides/transformation}
+
+% % %princples
+
+%\input{slides/RF}
+
+%\input{slides/Simulation}
+%\input{slides/MoM_paper.tex}
+%\input{slides/GitHub}
+%\input{slides/future_work}
+
+%\input{slides/principles}
+
+%\input{slides/Appendix}
+%follows are not a part of presentation
+% \input{slides/Dirichlet}
+% \input{slides/bullets}
+%\input{slides/split}
+% \input{slides/figure}
+%  \input{slides/centered}
+%  \input{slides/monospace}
+%  \input{slides/brackets}
+%  \input{slides/link}
+\input{slides/transformation}
+\end{document}
+
+
+
+
+
+% % Auriga theme
+% % https://github.com/anishathalye/auriga
+
+% \documentclass[aspectratio=169]{beamer}
+
+% % ── Fonts & Encoding ──────────────────────────────────────────────
+% \usepackage[T1]{fontenc}
+% \usepackage{lmodern}
+
+% % ── Math ──────────────────────────────────────────────────────────
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+% \usepackage{multirow}
+% % ── Graphics & Color ──────────────────────────────────────────────
+% \usepackage{graphicx}
+% \usepackage{xcolor}
+% \usepackage{colortbl}
+% \usepackage{tcolorbox}
+
+% % ── TikZ ──────────────────────────────────────────────────────────
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta, calc, decorations.pathreplacing, shapes, arrows, positioning}
+
+% % ── Plots ─────────────────────────────────────────────────────────
+% \usepackage{pgfplots}
+% \pgfplotsset{compat=1.18}
+
+% % ── Tables ────────────────────────────────────────────────────────
+% \usepackage{booktabs}
+% \usepackage{array}
+
+% % ── Lists & Symbols ───────────────────────────────────────────────
+% \usepackage{enumitem}
+% \usepackage{pifont}
+
+% % ── References & QR ───────────────────────────────────────────────
+% \usepackage{natbib}
+% \usepackage{qrcode}
+% \usepackage{fancyvrb}
+% \usepackage{pgfpages}
+
+% % ── Theme ─────────────────────────────────────────────────────────
+% \usetheme{auriga}
+% \usecolortheme{auriga}
+
+% % ── Custom Colors ─────────────────────────────────────────────────
+% \definecolor{leftblue}{RGB}{219, 234, 254}
+% \definecolor{rightred}{RGB}{254, 226, 226}
+
+% % ── Title Info ────────────────────────────────────────────────────
+% \title{Towards predictive modelling of compositional data}
+% \author{
+%   \underline{Khaled Masoumifard}\inst{1} \and
+%   Stephan van der Westhuizen\inst{1} \and
+%   Sugnet Gardner-Lubbe\inst{1}
+% }
+% \institute[shortinst]{
+%   \inst{1} Dept.\ of Statistics and Actuarial Science,
+%   Stellenbosch University, Stellenbosch, South Africa
+% }
+
+% % ─────────────────────────────────────────────────────────────────
+% \begin{document}
+% \input{slides/Stellen_presentation.tex}
+% \end{document}
+
+
+
+
+
+
+
+
+
+
+% % Auriga theme
+% % find the most up-to-date version here: https://github.com/anishathalye/auriga
+
+% \documentclass[aspectratio=169]{beamer}
+
+% % ── Fonts & Encoding ──────────────────────────────────────────────
+% \usepackage[T1]{fontenc}
+% \usepackage{lmodern}
+
+% % ── Math ──────────────────────────────────────────────────────────
+% \usepackage{amsmath}
+% \usepackage{amssymb}
+
+% % ── Graphics & Color ──────────────────────────────────────────────
+% \usepackage{graphicx}
+% \usepackage{xcolor}
+% \usepackage{colortbl}
+% \usepackage{tcolorbox}
+
+% % ── TikZ ──────────────────────────────────────────────────────────
+% \usepackage{tikz}
+% \usetikzlibrary{arrows.meta, calc, decorations.pathreplacing, shapes, arrows, positioning}
+
+% % ── Plots ─────────────────────────────────────────────────────────
+% \usepackage{pgfplots}
+% \pgfplotsset{compat=1.18}
+
+% % ── Tables ────────────────────────────────────────────────────────
+% \usepackage{booktabs}
+% \usepackage{array}
+% \usepackage{multirow}
+
+% % ── Lists & Symbols ───────────────────────────────────────────────
+% \usepackage{enumitem}
+% \usepackage{pifont}
+
+% % ── References & QR ───────────────────────────────────────────────
+% \usepackage{natbib}   % for \citet, \citep
+% \usepackage{qrcode}
+% \usepackage{fancyvrb}
+% \usepackage{pgfpages}
+
+% % ── Theme ─────────────────────────────────────────────────────────
+% \usetheme{auriga}
+% \usecolortheme{auriga}
+
+% % ── Custom Colors ─────────────────────────────────────────────────
+% \definecolor{leftblue}{RGB}{219,234,254}
+% \definecolor{rightred}{RGB}{254,226,226}
+% \definecolor{mainblue}{RGB}{25,65,120}
+% \definecolor{accentblue}{RGB}{65,130,195}
+% \definecolor{lightgray}{RGB}{245,245,248}
+
+% % \setbeamercolor{frametitle}{bg=mainblue, fg=white}
+% % \setbeamercolor{title}{fg=white}
+% % \setbeamercolor{block title}{bg=accentblue, fg=white}
+% % \setbeamercolor{block body}{bg=lightgray}
+% % \setbeamercolor{structure}{fg=mainblue}
+% % \definecolor{simplexfill}{RGB}{127,119,221}
+% % \definecolor{simplexedge}{RGB}{83,74,183}
+% % \definecolor{pointcol}{RGB}{60,52,137}
+% % \definecolor{axiscol}{RGB}{136,135,128}
+% % \definecolor{gridfaint}{RGB}{180,178,169}
+
+% %\ifnotes
+% % \setbeamertemplate{note page}[plain]
+% % \setbeameroption{show notes on second screen=right}
+% %\fi
+
+% %\setbeameroption{show notes}  % in preamble
+
+% % % define some colors for a consistent theme across slides
+% % \definecolor{red}{RGB}{181, 23, 0}
+% % \definecolor{blue}{RGB}{0, 118, 186}
+% % \definecolor{gray}{RGB}{146, 146, 146}
+
+% % ── Title Info ────────────────────────────────────────────────────
+% \title{Towards predictive modelling of compositional data}
+% \author{
+%   \underline{Khaled Masoumifard}\inst{1} \and
+%   Stephan van der Westhuizen\inst{1} \and
+%   Sugnet Gardner-Lubbe\inst{1}
+% }
+% \institute[shortinst]{
+%   \inst{1} Dept.\ of Statistics and Actuarial Science,
+%   Stellenbosch University, Stellenbosch, South Africa
+%   % \samelineand \inst{2}  MuViSU(Centre for Multi-dimensional Data Visualisation), Stellenbosch University, Stellenbosch, South Africa
+% }
+
+% % ─────────────────────────────────────────────────────────────────
+% \begin{document}
+% \input{slides/Stellen_presentation.tex}
+% %\input{slides/topic}
+% %\input{slides/compositional}
+% %\input{slides/Spurious_correlation}
+% %\input{slides/transformation}
+
+% % % %princples
+
+% %\input{slides/RF}
+
+% %\input{slides/Simulation}
+% %\input{slides/MoM_paper.tex}
+% %\input{slides/GitHub}
+% %\input{slides/future_work}
+
+% %\input{slides/principles}
+
+% %\input{slides/Appendix}
+% %follows are not a part of presentation
+% % \input{slides/Dirichlet}
+% % \input{slides/bullets}
+% %\input{slides/split}
+% % \input{slides/figure}
+% %  \input{slides/centered}
+% %  \input{slides/monospace}
+% %  \input{slides/brackets}
+% %  \input{slides/link}
+% \end{document}

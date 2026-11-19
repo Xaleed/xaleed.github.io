@@ -1,0 +1,35 @@
+
+\begin{frame}
+\only<1>{
+\frametitle{Dirichlet distribution}
+\note{The only familiar class of distributions on simplex space is dirichlet distribution. This model operates directly on the simplex without requiring the data to be transformed into another space.
+}
+
+
+\vspace{1em}
+
+\begin{center}
+\colorbox{green!10}{\parbox{0.95\textwidth}{
+\begin{center}
+\resizebox{\linewidth}{!}{%
+\[
+    f_{\mathbf{Z}}((z_1,\ldots,z_k); \boldsymbol{\alpha}) = \frac{\Gamma( \alpha_0)}{\prod_{i=1}^k \Gamma(\alpha_i)} \prod_{i=1}^k z_i^{\alpha_i - 1},
+\quad  z_i \in [0, 1], \quad \sum_{i=1}^k z_i = 1,
+\]
+}
+\end{center}
+}}
+\end{center}
+
+\vspace{1.5em}
+
+\begin{itemize}[itemsep=0.8em]
+
+
+\item[\textcolor{blue}{\large$\blacktriangleright$}] The sum-constant requirement of the simplex is satisfied under the Dirichlet distribution.
+
+\item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{Extensions available:} Zero-inflated Dirichlet and Kummer–Dirichlet
+\end{itemize}
+}
+
+\end{frame}

@@ -1,0 +1,398 @@
+% =============================================================
+%  SPURIOUS CORRELATION
+%  \input{slides/Spurious_correlation}
+% =============================================================
+
+
+% ------------------------------------------------------------------
+%  SLIDE 1 – Spurious Correlation (Pearson)
+% ------------------------------------------------------------------
+
+\begin{frame}{Correlation}
+  \note{
+Now, I extend this example to 500 different job opportunities.
+
+In other words, I generated 500 similar datasets, although only a few rows are shown in this table. Each row represents the number of applicants for one job opportunity.
+
+If we calculate the correlation between applicants with a Mathematics background and applicants with a Statistics background in the original count data, the result is close to zero, as you can see.
+
+This is exactly what we expect, because the variables were generated independently.
+
+Now, if we transform the same data into the simplex space, we obtain a very different result. The Mathematics and Statistics components become strongly negatively correlated.
+
+So, what does this correlation actually mean? What kind of information can we extract from it?
+
+This is not an easy question to answer.
+
+A common mistake is to interpret this as an ordinary correlation between applicants from Mathematics and Statistics backgrounds, as we would do in a standard data table.
+
+However, this interpretation is misleading.
+
+These types of correlations are known as spurious correlations.
+
+      }
+\only<1>{
+  \begin{columns}
+    \column{0.5\textwidth}
+    \textbf{Original Data (Counts)}
+
+    \vspace{0.2cm}
+    \begin{center}
+    \begin{tabular}{ccc}
+      \hline
+      Math & Stats & CS \\
+      \hline
+      48  & 230 & 59  \\
+      286 & 181 & 73  \\
+      286 & 98  & 147 \\
+      35  & 14  & 12  \\
+      255 & 104 & 235 \\
+      $\vdots$ & $\vdots$ & $\vdots$ \\
+      \hline
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+    \[
+      \mathrm{corr}(\text{Math},\,\text{Stats}) = 0.087
+    \]
+
+    \column{0.5\textwidth}
+    
+  \end{columns}
+
+
+}
+\only<2>{
+\begin{columns}
+    \column{0.5\textwidth}
+    \textbf{Original Data (Counts)}
+
+    \vspace{0.2cm}
+    \begin{center}
+    \begin{tabular}{ccc}
+      \hline
+      Math & Stats & CS \\
+      \hline
+      48  & 230 & 59  \\
+      286 & 181 & 73  \\
+      286 & 98  & 147 \\
+      35  & 14  & 12  \\
+      255 & 104 & 235 \\
+      $\vdots$ & $\vdots$ & $\vdots$ \\
+      \hline
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+    \[
+      \mathrm{corr}(\text{Math},\,\text{Stats}) = 0.087
+    \]
+
+    \column{0.5\textwidth}
+    \textbf{Compositional Data (Normalized to 100)}
+
+    \vspace{0.2cm}
+    \begin{center}
+    \begin{tabular}{ccc}
+      \hline
+      Math & Stats & CS \\
+      \hline
+      14.2 & 68.2 & 17.5 \\
+      53.0 & 33.5 & 13.5 \\
+      53.9 & 18.5 & 27.7 \\
+      57.4 & 23.0 & 19.7 \\
+      42.9 & 17.5 & 39.6 \\
+      $\vdots$ & $\vdots$ & $\vdots$ \\
+      \hline
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+    \[
+      \mathrm{corr}(X_{\text{math}},\, X_{\text{stats}}) = -0.874
+    \]
+  \end{columns}
+
+}
+
+\end{frame}
+
+\end{frame}
+\begin{frame}{Spurious Correlation}
+
+ 
+
+
+\only<1>{
+\note{Remove this slide:
+Spurious correlation
+
+One important consequence of working with compositional data is spurious correlation.
+
+This phenomenon was introduced by Pearson in 1897.
+
+He showed that ratios that share a common denominator can appear correlated, even when the original variables are completely independent.
+
+To see this, let us consider three independent random variables: A, B, and C.
+
+Now suppose we construct two new variables by dividing A by C and B by C.
+
+Even though A and B are independent, these two ratios can become correlated because they share the same denominator.
+
+}
+  \begin{block}{Pearson (1897)}
+    Ratios that share a common denominator are correlated even when the
+    original variables are \emph{completely independent}.
+  \end{block}
+
+  \vspace{0.4em}
+  \textbf{Simple illustration:} Let $A$, $B$, $C$ be mutually independent. Then:
+  \[
+    \operatorname{corr}\!\left(\frac{A}{C},\;\frac{B}{C}\right) \neq 0
+  \]
+  \vspace{0.2em}
+  The shared denominator $C$ couples the two ratios artificially.
+  The observed correlation reflects the \textbf{denominator's variability},
+  not any true relationship between $A$ and $B$.
+}
+
+\only<2>{
+\note{Spurious correlation
+
+One important consequence of working with compositional data is spurious correlation.
+
+This phenomenon was introduced by Pearson in 1897.
+
+He showed that ratios that share a common denominator can appear correlated, even when the original variables are completely independent.
+
+To see this, let us consider three independent random variables: A, B, and C.
+
+Now suppose we construct two new variables by dividing A by C and B by C.
+
+Even though A and B are independent, these two ratios can become correlated because they share the same denominator.
+
+We observe exactly the same phenomenon in compositional data.
+
+Since all components are normalized by the same sum, a common dependency is introduced.
+
+As a result, even if two components are independent in the original space, they may appear dependent in the simplex space.
+
+However, this is not a mistake.
+
+}
+  \begin{block}{Pearson (1897)}
+    Ratios that share a common denominator are correlated even when the
+    original variables are \emph{completely independent}.
+  \end{block}
+
+  \vspace{0.4em}
+
+  \begin{columns}[t]
+    \begin{column}{0.38\textwidth}
+      \textbf{Original vector:}\\[4pt]
+      $\mathbf{Y} = (Y_1, Y_2, \ldots, Y_K) \in \mathbb{R}_+^K$
+    \end{column}
+    \begin{column}{0.58\textwidth}
+      \textbf{Simplex (normalized):}\\[4pt]
+      $\mathbf{s}(\mathbf{Y}) = \!\left(\dfrac{Y_1}{S},\, \dfrac{Y_2}{S},\, \ldots,\, \dfrac{Y_K}{S}\right),
+      \quad S = \sum_{j=1}^{K} Y_j$
+    \end{column}
+  \end{columns}
+
+  \vspace{0.5em}
+  \rule{\textwidth}{0.3pt}
+  \vspace{0.3em}
+
+  Even if $\operatorname{corr}(Y_1,\, Y_2) = 0$, we usually observe:
+  \[
+    \boxed{\operatorname{corr}\!\left(\frac{Y_1}{S},\,\frac{Y_2}{S}\right) \neq 0}
+  \]
+}
+
+\only<3>{
+\note{Mathematically, everything is correct.
+
+The problem is only interpretation.
+
+Pearson’s warning was exactly about this point: we should not interpret correlations between ratios as correlations between the original variables.
+
+Unfortunately, this mistake often happens in practice.
+
+}
+  \[
+  \boxed{
+    \operatorname{corr}\!\left(\frac{Y_1}{S}, \frac{Y_2}{S}\right)
+    =
+    \frac{
+      \mathbb{E}\!\left(\frac{Y_1 Y_2}{S^2}\right)
+      - \mathbb{E}\!\left(\frac{Y_1}{S}\right)\mathbb{E}\!\left(\frac{Y_2}{S}\right)
+    }{
+      \sqrt{\operatorname{Var}\!\left(\frac{Y_1}{S}\right)}\;
+      \sqrt{\operatorname{Var}\!\left(\frac{Y_2}{S}\right)}
+    }
+  }
+  \]
+  \vspace{0.4em}
+  \begin{block}{Pearson's warning}
+    The danger arises when one interprets a correlation between ratios as evidence
+    of a genuine association between the \emph{original} variables.
+    Such an inference is \textbf{not justified} -- the correlation may exist
+    entirely because of the shared denominator, with no signal from the data at all.
+  \end{block}
+}
+
+
+
+\only<4>{
+  \note{
+  For example, consider a job application dataset with different academic backgrounds such as mathematics, statistics, and computer science.
+
+In the original count data (On the left), the correlation between mathematics and statistics may be very small, close to zero.
+
+However, after normalization to percentages — that is, after moving to the simplex space — the same variables can become strongly negatively or positively correlated.
+
+      }
+
+  \begin{columns}
+    \column{0.5\textwidth}
+    \textbf{Original Data (Counts)}
+
+    \vspace{0.2cm}
+    \begin{center}
+    \begin{tabular}{ccc}
+      \hline
+      Math & Stats & CS \\
+      \hline
+      48  & 230 & 59  \\
+      286 & 181 & 73  \\
+      286 & 98  & 147 \\
+      35  & 14  & 12  \\
+      255 & 104 & 235 \\
+      $\vdots$ & $\vdots$ & $\vdots$ \\
+      \hline
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+    \[
+      \mathrm{corr}(\text{Math},\,\text{Stats}) = 0.087
+    \]
+
+    \column{0.5\textwidth}
+    \textbf{Compositional Data (Normalized to 100)}
+
+    \vspace{0.2cm}
+    \begin{center}
+    \begin{tabular}{ccc}
+      \hline
+      Math & Stats & CS \\
+      \hline
+      14.2 & 68.2 & 17.5 \\
+      53.0 & 33.5 & 13.5 \\
+      53.9 & 18.5 & 27.7 \\
+      57.4 & 23.0 & 19.7 \\
+      42.9 & 17.5 & 39.6 \\
+      $\vdots$ & $\vdots$ & $\vdots$ \\
+      \hline
+    \end{tabular}
+    \end{center}
+
+    \vspace{0.2cm}
+    \[
+      \mathrm{corr}(X_{\text{math}},\, X_{\text{stats}}) = -0.874
+    \]
+  \end{columns}
+
+  \vspace{0.3em}
+  \textbf{Key message:} Spurious dependence:
+  This correlation does \textbf{not} necessarily reflect a true relationship.
+}
+
+\end{frame}
+
+
+% ------------------------------------------------------------------
+%  SLIDE 2 – Statistical Difficulties: Singular Matrix
+% ------------------------------------------------------------------
+\begin{frame}{Statistical Difficulties}
+
+\note{
+Singularity of the covariance matrix
+
+Another important consequence is that the covariance matrix is not invertible in the simplex space.
+
+This can be shown quite easily.
+
+Because of the constant-sum constraint, the components are not independent.
+
+As a result, one degree of freedom is lost, and the covariance matrix becomes singular.
+
+This creates a practical limitation.
+
+Many standard statistical methods require the inverse of the covariance matrix, such as regression models and multivariate techniques.
+
+Therefore, these methods cannot be directly applied to compositional data.
+
+There are also several other difficulties that arise from working in the simplex space.
+
+I will not go into all of them here.
+
+However, all of these challenges motivated researchers to develop new methods specifically designed for compositional data.
+}
+
+\only<1>{
+  \vspace{0.4em}
+  \[
+  \Sigma_{\mathbf{X}} =
+  \begin{pmatrix}
+    \operatorname{Var}(X_1)     & \operatorname{cov}(X_1,X_2) & \cdots & \operatorname{cov}(X_1,X_K) \\
+    \operatorname{cov}(X_2,X_1) & \operatorname{Var}(X_2)     & \cdots & \operatorname{cov}(X_2,X_K) \\
+    \vdots                      & \vdots                       & \ddots & \vdots \\
+    \operatorname{cov}(X_K,X_1) & \operatorname{cov}(X_K,X_2) & \cdots & \operatorname{Var}(X_K)
+  \end{pmatrix}
+  \in \mathbb{R}^{K \times K}
+  \]
+  \vspace{0.2em}
+  The \textbf{last row (and column) is linearly determined} by the others via the
+  sum-to-constant constraint, confirming $\operatorname{rank}(\Sigma_{\mathbf{X}}) = K-1$.
+}
+
+\only<2>{
+  The sum-to-constant constraint causes the \textbf{sample covariance matrix to be singular}:
+  \[
+    \sum_{i=1}^{K} \operatorname{cov}(X_1, X_i)
+    = \operatorname{cov}\!\left(X_1,\, \sum_{i=1}^K X_i\right)
+    = \operatorname{cov}(X_1,\, 1) = 0
+  \]
+  \[
+    \Rightarrow\quad
+    \sum_{i=2}^{K} \operatorname{cov}(X_1, X_i) = -\operatorname{Var}(X_1).
+  \]
+
+  \vspace{0.3em}
+  $\Sigma_{\mathbf{X}}$ has rank $K-1$ $\;\Rightarrow\;$ \textbf{not invertible}.
+
+  \vspace{0.5em}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Technical consequence:}
+      \begin{itemize}
+        \item Regression, LDA, and standard PCA all require $\Sigma^{-1}$ -- unavailable.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \textbf{Conceptual consequence:}
+      \begin{itemize}
+        \item No universally accepted definition of correlation for compositional data exists yet.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+}
+
+\end{frame}
+
+
+% ------------------------------------------------------------------
+%  SLIDE 3 – The Log-Ratio Idea
+% ------------------------------------------------------------------

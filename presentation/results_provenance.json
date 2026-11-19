@@ -235,7 +235,7 @@
         0.2157
       ],
       [
-        0.0,
+        0,
         0.0001,
         0.0004,
         0.0009,
@@ -243,5 +243,61 @@
       ]
     ],
     "matched_values": 30
+  },
+  "current_review": {
+    "date": "2026-11-15",
+    "primary_manuscript": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/Main_with_real_data.tex",
+    "verified_simulation_means": 72,
+    "lucas": {
+      "n": 1785,
+      "encoded_predictors": 180,
+      "raw_predictors": 169,
+      "cv": "10 repetitions of 5 random folds",
+      "mtry": 60,
+      "table": "tab:lucas-real"
+    },
+    "jacobian": {
+      "source": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/paper/experiments_tn_jacobian/results/prompt1/summary_prompt1.md",
+      "nodes": 174271,
+      "split_agreement_percent": 99.979,
+      "benchmark": "100 trees, n=1000, 5 threads; delta2 0.35 s, exact Jacobian 3.8 s"
+    },
+    "zero_probability": {
+      "source": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/final_experiments/lucas_zeros/results/zero_probability/ZERO_PROBABILITY_RESULTS_REPORT.md",
+      "status": "Separate completed results report; not incorporated in the located manuscript",
+      "replications": 40,
+      "n": 1000,
+      "training": 800,
+      "test": 200,
+      "trees": 1000,
+      "replacement_f": 0.65,
+      "holm_family": "six paired comparisons within each metric"
+    },
+    "source_hashes": [
+      {
+        "file": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/Main_with_real_data.tex",
+        "sha256": "d86cdb8b723ee1727f5294eb3f087e6734a78f80b954bd4cdc66ca887fd2ab4b"
+      },
+      {
+        "file": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/Main_new.tex",
+        "sha256": "4e5665c90fcef7b703a5633205bdbd38cefe1ba17213d928cc8d4d63c03d3798"
+      },
+      {
+        "file": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/Main_old.tex",
+        "sha256": "7edd725b25fa3f95debf9b043d121b84c3c5d912ac1d5556b23cc770b5de318c"
+      },
+      {
+        "file": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/References.bib",
+        "sha256": "2363d4ecf21e28b0d10e72239f6616ce238f56da981f31b986bb4e435ca75f66"
+      },
+      {
+        "file": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/paper/experiments_tn_jacobian/results/prompt1/summary_prompt1.md",
+        "sha256": "8997d4205a150aa5e22cbaa302fd00504ce9f5350c329b0ed9c1f588b826e95d"
+      },
+      {
+        "file": "C:/Users/29827094/OneDrive - Stellenbosch University/Documents/GitHub/CompositionalRF/dev/28072026_2/final_experiments/lucas_zeros/results/zero_probability/ZERO_PROBABILITY_RESULTS_REPORT.md",
+        "sha256": "b67a6b22fc8eb1961fbd5296b020a5320552096810aef0b9526ba56a546cadaa"
+      }
+    ]
   }
 }

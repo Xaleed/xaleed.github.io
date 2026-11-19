@@ -1,0 +1,75 @@
+
+\begin{frame}
+ 
+\frametitle{\resizebox{.95\linewidth}{!}{%
+Addressing Dirichlet's Limitations: Extensions \& Alternatives}}
+\note{Now, I want to talk about three useful versions of the Dirichlet distribution:
+
+First, the Zero-Inflated Dirichlet. This model is good when we have many zeros in the data. The standard Dirichlet cannot handle zeros well, but this one can.
+
+Second, the Nested Dirichlet. The standard Dirichlet assumes all parts are negatively related. This is not always true in real data. The nested version helps fix that.
+
+Third, the Kummer–Dirichlet. This model is better when the data has outliers. It is more flexible and gives more stable results.}
+\begin{itemize}
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{ Zero-Inflated Dirichlet Models:}  
+  Handle compositional data with many zeros.
+
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{ Nested–Dirichlet Models:}  
+  Address the limitation of standard Dirichlet where all components are negatively correlated.
+
+  \item[\textcolor{blue}{\large$\blacktriangleright$}] \textbf{Kummer–Dirichlet Models:}  
+  Offer greater robustness to outliers compared to the standard Dirichlet.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Distributional Dirichlet Random Forests (DRF)}
+\note{
+Another idea that I really like is to fit an empirical probability function.
+
+Actually, we can fit a probability function on the training dataset. Then, for a new observation, we can evaluate this probability function to obtain its predicted distribution.
+
+Actually, we can fit a probability function on the training dataset. This method was introduced in 2022. I will not go into the details of how it works. I have a simple example to explain it, but I will skip it to save time.
+}
+
+\begin{equation*}
+P(Y = y_i \mid X = \mathbf{x}_{\text{new}}) = w_i(\mathbf{x}_{\text{new}}), \quad i = 1, \dots, n, \quad \sum_{i=1}^{n} w_i(\mathbf{x}_{\text{new}}) = 1.
+\end{equation*}
+
+\vspace{0.5em}
+\begin{block}{}
+The formula for the normalized weight $w_i$ is:
+\[
+w_i(\mathbf{x}_{\text{new}})
+= \frac{1}{B} \sum_{k=1}^B 
+\frac{\mathbf{1}\!\left(\mathbf{x}_{\text{new}} \in L_k(i)\right)}{|L_k(i)|}.
+\]
+where $|L_k(i)|$ is the size of the terminal node in tree $k$ where $\mathbf{x}_{\text{new}}$ falls.
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}[plain]
+  \begin{center}
+    \vspace{2cm}
+
+    {\Huge \textbf{Thank You!}\par}
+
+    \vspace{1cm}
+
+    \includegraphics[width=0.15\linewidth]{slides/DirichletRF.jpg}
+
+    %\vspace{0.8cm}
+
+    % QR code (requires: \usepackage{qrcode})
+    \qrcode[height=1.8cm]{https://github.com/Xaleed/DirichletRF.git}
+
+    \vspace{0.1cm}
+
+    {\small QR code for the GitHub repository}
+
+  \end{center}
+\end{frame}

@@ -1,0 +1,304 @@
+
+
+% ---------------------------------------------------------------
+%  SLIDE 1 — Overview of the controversy
+% ---------------------------------------------------------------
+\begin{frame}{The Controversy: To Transform or Not?}
+
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{The CoDa School (Aitchison)}
+      \begin{itemize}
+        \item Work \textbf{exclusively} on log-ratio transformed data
+        \item Imposes strict \textbf{Principles}: scale invariance,
+              subcompositional coherence, permutation invariance
+        \item Any method not satisfying these Principles is
+              considered \textbf{invalid}
+      \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{block}{The Alternative View}
+      \begin{itemize}
+        \item Work \textbf{directly on the simplex}, or use other
+              transformations ($\alpha$-transformation, square-root, \ldots)
+        \item The Principles are \textbf{neither necessary nor
+              always appropriate}
+        \item Choice of method should be \textbf{data-driven} and
+              problem-dependent
+      \end{itemize}
+    \end{block}
+  \end{column}
+
+  \begin{column}{0.48\textwidth}
+    \begin{alertblock}{Why Does This Matter?}
+      The CoDa Principles act as a \textbf{gatekeeping criterion}:
+      valid and useful methods have been dismissed simply for not
+      conforming to them.
+
+      \vspace{0.2cm}
+      This is \textbf{unusual, perhaps unique, in statistical
+      data analysis} (Scealy \& Welsh 2014).
+    \end{alertblock}
+
+    \vspace{0.3cm}
+    \begin{block}{Key Questions}
+      \begin{enumerate}
+        \item Is \textbf{scale invariance} always meaningful?
+        \item Is \textbf{subcompositional coherence} always required?
+        \item Should the Principles \textbf{exclude} alternative methods?
+      \end{enumerate}
+    \end{block}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ---------------------------------------------------------------
+%  SLIDE 2 — Watson
+% ---------------------------------------------------------------
+\begin{frame}{Key Critics: D.F.\ Watson}
+
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    \textbf{Watson \& Philip (1989)} were among the \textbf{earliest} voices
+    to challenge the log-ratio framework in the pages of
+    \textit{Mathematical Geology}.
+
+    \vspace{0.3cm}
+    \begin{block}{Core Argument}
+      \begin{itemize}
+        \item Questioned whether \textbf{scale invariance} is a
+              fundamental requirement for compositional analysis
+        \item If compositions are strictly defined as summing to one,
+              scale invariance is \textbf{already built in} — and imposing
+              it as a separate principle becomes circular
+        \item Their exchanges with Aitchison (1989--1992) were
+              instrumental in \emph{sharpening} the CoDa Principles,
+              even if from an adversarial position
+      \end{itemize}
+    \end{block}
+  \end{column}
+
+  \begin{column}{0.42\textwidth}
+    \begin{alertblock}{Historical Note}
+      The debate was cut short by a notable incident: Aitchison
+      used \textbf{derogatory language} toward Watson in the
+      published exchange, which effectively ended Watson's
+      participation.
+
+      \vspace{0.2cm}
+      This incident itself illustrates the \textbf{heated and
+      personal} nature of the controversy.
+    \end{alertblock}
+
+    \vspace{0.3cm}
+    \begin{block}{Legacy}
+      Watson's questions about scale invariance remain
+      \textbf{unresolved} and were later taken up more formally
+      by Scealy \& Welsh (2011, 2014).
+    \end{block}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ---------------------------------------------------------------
+%  SLIDE 3 — Zier & Rehder
+% ---------------------------------------------------------------
+\begin{frame}{Key Critics: Zier \& Rehder (1998, 2001)}
+
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    Zier \& Rehder continued the challenge against the CoDa School,
+    focusing on \textbf{technical and foundational} issues.
+
+    \vspace{0.3cm}
+    \begin{block}{Core Arguments}
+      \begin{itemize}
+        \item Challenged the mathematical definition of a
+              \textbf{metric} within compositional data analysis
+        \item Argued that scale invariance is \textbf{problematic}
+              when compositions are strictly constrained to sum to one
+        \item Pointed out that even \textbf{Aitchison's own earlier
+              work} did not strictly adhere to the current CoDa
+              definition of scale invariance
+        \item Made the case that log-ratio methods are not the
+              \emph{only} valid approach
+      \end{itemize}
+    \end{block}
+  \end{column}
+
+  \begin{column}{0.42\textwidth}
+    \begin{block}{Reception by the CoDa School}
+      Despite raising \textbf{some valid points}, their criticisms
+      were \textit{dismissed relatively easily} — partly because
+      of technical errors in their own work that the CoDa School
+      used to deflect the substantive arguments.
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{Broader Pattern}
+      This illustrates a recurring dynamic: \textbf{genuine
+      methodological concerns} are sidelined when the critic
+      makes any technical mistake, however minor relative to
+      the central point.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ---------------------------------------------------------------
+%  SLIDE 4 — Butler & Glasbey
+% ---------------------------------------------------------------
+\begin{frame}{Key Critics: Butler \& Glasbey (2008)}
+
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    Butler \& Glasbey represent a different kind of challenge:
+    \textbf{practical, application-driven} work that did not
+    conform to the CoDa Principles.
+
+    \vspace{0.3cm}
+    \begin{block}{Their Approach}
+      \begin{itemize}
+        \item Developed a \textbf{latent Gaussian model} — an
+              otherwise sensible method — that projects a
+              multivariate Gaussian onto the unit simplex
+        \item The method handles \textbf{zero values} naturally,
+              a genuine limitation of the log-ratio framework
+        \item Useful, interpretable, and practically motivated
+      \end{itemize}
+    \end{block}
+
+    \vspace{0.2cm}
+    \begin{alertblock}{The CoDa School's Response}
+      They were required to \textbf{list and explain their
+      ``failings''} relative to the Principles, and their method
+      was downgraded to a \emph{diagnostic or exploratory tool}
+      — not a full analysis method.
+    \end{alertblock}
+  \end{column}
+
+  \begin{column}{0.42\textwidth}
+    \begin{block}{What This Reveals}
+      \begin{itemize}
+        \item The Principles function as a \textbf{barrier to
+              methodological innovation}
+        \item A method can be \textbf{statistically sound and
+              practically useful} yet be excluded from the CoDa
+              canon
+        \item The question is not \emph{does it work?} but
+              \emph{does it comply?}
+      \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{block}{Zero Problem}
+      Ironically, the log-ratio approach cannot handle zeros at
+      all, while Butler \& Glasbey's ``non-compliant'' method
+      does — a \textbf{practical advantage} dismissed on
+      theoretical grounds.
+    \end{block}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ---------------------------------------------------------------
+%  SLIDE 5 — Stewart, Tsagris, Scealy & Welsh
+% ---------------------------------------------------------------
+\begin{frame}{Key Critics: Stewart, Tsagris, Scealy \& Welsh}
+
+\begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    A cluster of influential papers from \textbf{2010--2014}
+    provided both empirical and theoretical challenges.
+
+    \vspace{0.3cm}
+    \begin{block}{Stewart \& Field (2010); Tsagris, Preston \& Wood (2011)}
+      \begin{itemize}
+        \item Provided \textbf{real data examples} showing that
+              different methods can yield \textbf{substantively
+              different conclusions}
+        \item Differences are largest for \textbf{highly variable
+              data near or on the boundary of the simplex} — exactly
+              where log-ratio methods struggle most (zeros,
+              near-zeros)
+        \item Proposed the \textbf{$\alpha$-transformation} as a
+              flexible, data-driven alternative
+      \end{itemize}
+    \end{block}
+  \end{column}
+
+  \begin{column}{0.42\textwidth}
+    \begin{block}{Scealy \& Welsh (2011a, 2014)}
+      The most \textbf{theoretically rigorous} critique:
+      \begin{itemize}
+        \item Challenged the \textbf{logical motivation} for scale
+              invariance and subcompositional coherence
+        \item Proposed \textbf{amalgamations} as more natural
+              marginals for compositional data
+        \item Applied the \textbf{Kent distribution} on the
+              hypersphere — a principled alternative geometry
+        \item Argued that the Principles are \textbf{not logically
+              necessary} for valid inference
+      \end{itemize}
+    \end{block}
+
+    \vspace{0.1cm}
+    \begin{alertblock}{}
+      Their work shifts the debate from \emph{practice} to
+      \textbf{foundations}.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+
+\end{frame}
+
+% ---------------------------------------------------------------
+%  SLIDE 6 — Conclusion on the controversy
+% ---------------------------------------------------------------
+\begin{frame}{Where Does the Controversy Stand?}
+
+\begin{columns}[T]
+  \begin{column}{0.48\textwidth}
+    \begin{block}{What the Critics Agree On}
+      \begin{enumerate}
+        \item The definition of a \textbf{composition} is contested
+        \item \textbf{Scale invariance} is not always meaningful or
+              necessary
+        \item \textbf{Subcompositional coherence} has questionable
+              logical foundations
+        \item The CoDa Principles \textbf{actively exclude} valid
+              alternative methods
+        \item The log-ratio approach \textbf{fails with zeros} and
+              near-boundary data
+      \end{enumerate}
+    \end{block}
+  \end{column}
+
+  \begin{column}{0.48\textwidth}
+    \begin{block}{The Current Landscape}
+      \begin{itemize}
+        \item No consensus — the debate \textbf{remains open}
+        \item A growing body of work (Tsagris, Scealy, Stewart,
+              \ldots) offers \textbf{principled alternatives}
+        \item Practitioners increasingly \textbf{try multiple
+              methods} and let the data decide
+      \end{itemize}
+    \end{block}
+
+    \vspace{0.3cm}
+    \begin{alertblock}{Our Position}
+      We take the view that the \textbf{choice of method should
+      be data-driven}. We will explore the $\alpha$-transformation
+      and random forest models as flexible tools that do not
+      require adherence to the CoDa Principles.
+    \end{alertblock}
+  \end{column}
+\end{columns}
+
+\end{frame}
+

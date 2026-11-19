@@ -1,0 +1,511 @@
+
+
+
+
+
+
+
+\begingroup
+\setslidetemplate
+\begin{frame}[t]
+  \frametitle{Additive Log-Ratio (ALR) Transformation}
+
+  \vspace{0.2cm}
+\note{One of the earliest and most influential ideas was to transform the data from the simplex into real space using log-ratio transformations. Introduced By Aitchison (1982). 
+
+One of the simplest examples is the additive log-ratio transformation, or ALR.
+
+In this approach, we choose one component as a reference, divide the remaining components by that reference, and then take logarithms.
+
+This maps the data into real space, where standard statistical methods become easier to apply, and the covariance matrix is full rank.
+
+However, this comes with a limitation: the result depends on the choice of the reference component.
+
+If we change the reference, the transformed data also change.}
+
+  \sechead{Definition.}
+  For $\mathbf{x}=(x_1,\ldots,x_K)^\top \in \mathcal{S}^{K-1}$,
+  choose a reference component $x_K$:
+
+  \vspace{0.35cm}
+  \[
+    \mathrm{ALR}(\mathbf{x})
+    =\left(
+      \log\frac{x_1}{x_K},\;
+      \log\frac{x_2}{x_K},\;\ldots,\;
+      \log\frac{x_{K-1}}{x_K}
+    \right)
+    \in \mathbb{R}^{K-1}
+  \]
+
+  \vspace{0.3cm}
+
+  \only<1>{
+    \begin{itemize}\setlength\itemsep{6pt}
+      \item Maps compositional data to Euclidean space $\mathbb{R}^{K-1}$
+      \item Covariance matrix becomes full rank $\Rightarrow$ standard methods applicable
+      \item \textcolor{red!70!black}{Depends on choice of reference component $x_K$}
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \refcite{Aitchison (1982)}
+  }
+
+\end{frame}
+\endgroup
+ 
+% ══════════════════════════════════════════════════════════════
+% SLIDE 2 — CLR
+% ══════════════════════════════════════════════════════════════
+\begingroup
+\setslidetemplate
+\begin{frame}[t]
+  \frametitle{Centered Log-Ratio (CLR) Transformation}
+
+  \vspace{0.2cm}
+\note{To avoid this dependence, Aitchison (1982) introduced another transformation the centered log-ratio transformation, or CLR.
+
+Here we divide each component by the geometric mean of all components.
+
+
+But,  the covariance matrix remains singular, which leads us to the next transformation.}
+  \sechead{Definition.}
+  Normalize by the geometric mean:
+
+  \vspace{0.3cm}
+  \[
+    \mathrm{CLR}(\mathbf{x})
+    = \left(
+      \log\frac{x_1}{g(\mathbf{x})},\ldots,
+      \log\frac{x_K}{g(\mathbf{x})}
+    \right)
+    \in \mathbb{R}^K
+  \]
+
+  \[
+    g(\mathbf{x}) = \left(\prod_{j=1}^K x_j\right)^{1/K}
+  \]
+
+  \vspace{0.2cm}
+
+  \only<1>{
+    \begin{itemize}\setlength\itemsep{6pt}
+      \item Symmetric representation (no reference component)
+      \item Components satisfy: $\sum_{i=1}^K \mathrm{CLR}_i = 0$
+      \item Still lies in a constrained subspace $\Rightarrow$ singular covariance
+    \end{itemize}
+
+    \vspace{0.3cm}
+    \refcite{Aitchison (1982)}
+  }
+
+\end{frame}
+\endgroup
+ 
+% ══════════════════════════════════════════════════════════════
+% SLIDE 3 — ILR
+% ══════════════════════════════════════════════════════════════
+\begingroup
+\setslidetemplate
+\begin{frame}[t]
+  \frametitle{Isometric Log-Ratio (ILR) Transformation}
+  \vspace{0.2cm}
+\note{To address this, one more step is added.
+
+By projecting the CLR coordinates onto an orthonormal basis, usually with a Helmert sub-matrix, we obtain the isometric log-ratio transformation, or ILR.
+
+This gives a representation in real Euclidean space with full rank covariance.
+
+Among these methods, ILR is one of the most commonly used in practice.}
+ 
+      \sechead{Definition.} (\refcite{Barceló-Vidal et al.\ (2001); Egozcue et al.\ (2003)})
+
+      By projecting the CLR coordinates onto an orthonormal basis, usually with a $(K{-}1)\!\times\! K$ Helmert sub-matrix $\mathbf{H}$, we obtain the isometric log-ratio transformation, or ILR:
+ 
+      \vspace{0.2cm}
+      \[
+        \mathrm{ILR}(\mathbf{x})
+        = \mathbf{H}\;\mathrm{CLR}(\mathbf{x})
+        = (z_1,\;z_2,\;\ldots,\;z_{K-1})
+        \in\mathbb{R}^{K-1}
+      \]
+      \[
+        \mathbf{H}\mathbf{H}^\top = \mathbf{I}_{K-1}
+        \quad\text{(rows orthonormal)}
+      \]
+ \only<1>{
+      \begin{alertblock}{Properties.}
+      \begin{itemize}\setlength\itemsep{4pt}
+        \item Resolves CLR singularity: $\Sigma_{\mathrm{ILR}}$ is \textbf{full rank}
+        \item Any $(K{-}1)\!\times\!K$ orthonormal matrix works in place of $\mathbf{H}$
+        \item \textcolor[HTML]{2A9D8F}{\textbf{Isometric:}} Distances preserved by $\mathbf{H}$:
+          $\|\mathrm{CLR}(\mathbf{x})-\mathrm{CLR}(\mathbf{y})\| = \|\mathrm{ILR}(\mathbf{x})-\mathrm{ILR}(\mathbf{y})\|$
+       
+        
+      \end{itemize}
+      
+            \end{alertblock}
+
+ }
+
+\end{frame}
+\endgroup
+
+
+
+\begin{frame}{One Idea: Transforming to Real Space}
+
+
+\only<1>{
+\note{These transformations are useful, and in many applications they work very well.
+
+But A group of researchers strongly argued that log-ratio transformations are not just useful, but necessary for compositional data analysis.
+
+To support this view, they introduced a set of principles that any valid method for compositional data should satisfy.
+
+
+}
+\begin{itemize}
+    \item[1)]
+    CoDA School: Some researchers claim that log-ratio transformations are necessary for compositional data.
+    \item[2)]
+    To support this view, a set of principles (CoDA principles) was proposed that any valid compositional method should satisfy.
+\end{itemize}
+
+  \vspace{0.2cm}
+  \renewcommand{\arraystretch}{1.35}
+  \setlength{\tabcolsep}{8pt}
+
+  \begin{tabular}{>{\bfseries}l l >{\footnotesize\itshape\color{gray}}l}
+    \toprule
+    \rowcolor{mainblue}
+    \color{white}Method &
+    \color{white}Formula &
+    \color{white}Reference \\
+    \midrule
+
+    \rowcolor{accentblue!20}
+    ALR & $\log x_i - \log x_K$ & Aitchison (1982) \\
+
+    \rowcolor{accentblue!20}
+    CLR & $\log x_i - K^{-1}\sum_{j=1}^{K} \log y_j$ & Aitchison (1983) \\
+
+    \rowcolor{accentblue!20}
+    ILR & $\mathbf{H}\!\left(\log y_i - K^{-1}\sum_{j=1}^{K} \log y_j\right)$ & Egozcue et al.\ (2003) \\
+
+    \midrule
+
+    \bottomrule
+  \end{tabular}
+
+}
+
+
+
+\only<2>{
+
+     \note{
+The three most well-known are scale invariance, permutation invariance, and subcompositional coherence.
+
+Scale invariance means that changing the scale of the composition should not affect the result.
+
+Permutation invariance means that the analysis should not depend on the order of the components.
+
+And subcompositional coherence means that conclusions based on a subset of components should remain consistent with conclusions from the full composition.
+
+Based on these principles, researchers developed new definitions of distance, geometry, and statistical operations specifically for compositional data.
+
+
+I mention these principles because they appear everywhere in the compositional data literature.
+
+
+
+I spent more than enough time trying to understand why they are important?
+
+And I failed. I don't know what role they play in statistical analysis of compositional data.
+
+But I realized that I'm not alone in this and that there has been a lot of disagreement about these principles and logarithmic ratio transformations.
+
+I would like to briefly mention one smal part of that debate before moving on.
+
+
+
+}
+
+   \begin{alertblock}{Principles of CODA}
+      \begin{itemize}
+       \item 
+   \textbf{scale invariance},
+   \item
+   \textbf{permutation invariance}, and 
+   \item \textbf{subcompositional coherence}
+   If \( \Delta_p(\mathbf{x}, \mathbf{y}) \) denotes a distance measure between compositions with \( p \) parts, then
+    \begin{equation*}
+    \Delta_k(\mathbf{x}, \mathbf{y}) \geq \Delta_d(\mathbf{x}_d, \mathbf{y}_d),
+    \end{equation*}
+    where \( \mathbf{x}, \mathbf{y} \) are compositions with \( k \) parts, and \( \mathbf{x}_d, \mathbf{y}_d \) are corresponding subcompositions with \( d < k \) parts.
+    \end{itemize}
+    \end{alertblock}
+
+    
+      \begin{itemize}
+        \item[1)] \textbf{Basic mathematical operations} on the simplex (perturbation, powering, inner product)
+        \item[2)] \textbf{Measures of central tendency}: simplicial means and medians
+
+        \item[3)] \textbf{Distances and metrics} between compositions
+        \item[4)] \textbf{Distributions} defined on or adapted to the simplex
+      \end{itemize}
+}
+
+
+
+
+\end{frame}
+
+\begin{frame}{Frame Title}
+
+     \note{
+
+an example of principles, personaly after one year working on this topice I still dont know which problem this principle try to solve and I am not alone in this regard. there is a long-term contrvery around this topic.
+
+}
+
+\[
+\mathbf{T}'_4 = T\Big(\frac{Y'_1}{S'_4},\frac{Y'_2}{S'_4},\frac{Y'_3}{S'_4},\frac{Y'_4}{S'_4}\Big):(T'_1,T'_2,T'_3,T'_4)
+\\
+\mathbf{T}'_3 = T\Big(\frac{Y'_1}{S'_4},\frac{Y'_2}{S'_4},\frac{Y'_3}{S'_4}\Big):(T'_1,T'_2,T'_3)
+\\
+D_3(\mathbf{T}_3,\mathbf{T}'_3) \le D_4(\mathbf{T}_4,\mathbf{T}'_4)
+\]
+
+
+
+\end{frame}
+
+% \begin{frame}{A Fundamental Controversy}
+%     There have been long term debates between researcher in this field from the beginning sofar.
+
+% Aitchison (1982) pioneered efforts to address the analysis of compositional data by arguing that such data should be transformed to Euclidean space using log-ratio methods.
+   
+%   % \bibliographystyle{plainnat}
+%   % \bibliography{references} 
+
+    
+% \end{frame}
+% \begin{frame}{Key Critics: D.F.\ Watson}
+% \note{Wantson and philip were the first one that chalenged this principles and from 1989 to 1992 depates exchanges between them and published in... journal}
+
+%     \textbf{Watson \& Philip (1989)} were among the \textbf{earliest} voices
+%     to challenge the log-ratio framework.
+%  \only<1>{
+%     \vspace{0.3cm}
+%     \begin{block}{Core Argument}
+%       \begin{itemize}
+%         \item Questioned whether \textbf{scale invariance} is a
+%               fundamental requirement for compositional analysis.
+%         \item If compositions are strictly defined as summing to one,
+%               scale invariance is \textbf{already built in} — and imposing
+%               it as a separate principle becomes circular
+%         \item Their exchanges with Aitchison (1989--1992) were
+%               instrumental in \emph{sharpening} the CoDa Principles,
+%               even if from an adversarial position.
+%       \end{itemize}
+%     \end{block}}
+%     \only<2>{
+% \note{
+% Then Aitchison used the word "Stupid" in one of his note letter and undermind Watson knowledge... this mad Watson to leave the debates.
+
+% Then Aitchison and other new researcher developed his idea and published more paper including a book...
+% }
+%     \begin{alertblock}{Historical Note}
+%       The debate was cut short by a notable incident: Aitchison
+%       used \textbf{derogatory language} toward Watson in the
+%       published exchange, which effectively ended Watson's
+%       participation.
+ 
+    
+%     \end{alertblock}
+ 
+%     \vspace{0.3cm}
+%     \begin{block}{Legacy}
+%       Watson's questions about scale invariance remain
+%       \textbf{unresolved} and were later taken up more formally
+%       by Scealy \& Welsh (2011, 2014).
+%     \end{block}
+
+%  }
+% \end{frame}
+
+% \begin{frame}{Key Critics: Zier \& Rehder (1998, 2001)}
+% \note{ Zier and Rehder in 1998 to 2001 started to chalenged CoDa School principles. One interesting point was even log-ration transformations are not satosfied principles in some sense.}
+%     Zier \& Rehder continued the challenge against the CoDa School,
+%     focusing on \textbf{technical and foundational} issues.
+%  \only<1>{
+%     \vspace{0.3cm}
+%     \begin{block}{Core Arguments}
+%       \begin{itemize}
+%         \item Challenged the mathematical definition of a
+
+%         \item \colortext{yellow}{Pointed out that even \textbf{Aitchison's own earlier
+%               work} did not strictly adhere to the current CoDa
+%               definition of scale invariance}
+%               \textbf{metric} within compositional data analysis
+%         \item Argued that scale invariance is \textbf{problematic}
+%               when compositions are strictly constrained to sum to one
+        
+%         \item Made the case that log-ratio methods are not the
+%               \emph{only} valid approach
+%       \end{itemize}
+%     \end{block}
+% }
+% \only<2>{
+% \note{Despide they made some valid points but they most of thier points were ignored partly becuase of some technical errors that they made}
+%     \begin{block}{Reception by the CoDa School}
+%       Despite raising \textbf{some valid points}, their criticisms
+%       were \textit{dismissed relatively easily} — partly because
+%       of technical errors in their own work that the CoDa School
+%       used to deflect the substantive arguments.
+%     \end{block}
+ 
+ 
+% }
+ 
+% \end{frame}
+
+
+\begin{frame}
+\begin{itemize}
+    \item[\textcolor{blue}{\large$\blacktriangleright$}] These transformations were introduced by Aitchison in 1982, but the principles of CoDA have been developing over the years since then.
+    \item[\textcolor{blue}{\large$\blacktriangleright$}] In 1989, Watson and Philip challenged both the log-ratio approach and the notion that these principles should be treated as universal requirements, proposing alternatives such as directional approaches.
+    \item[\textcolor{blue}{\large$\blacktriangleright$}] This sparked a debate between Watson and Aitchison that unfolded over several years through a series of published exchanges in \textit{Mathematical Geology}.
+    \item[\textcolor{blue}{\large$\blacktriangleright$}] What began as a methodological disagreement gradually escalated in tone, becoming increasingly confrontational.
+    \item[\textcolor{blue}{\large$\blacktriangleright$}] The debate ultimately ended with Watson's withdrawal --- Aitchison's use of the word \textcolor{red}{``stupid''} to dismiss Watson's contributions led Watson to disengage from further discussion.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\begin{itemize}
+    \item[1.] Following this period, the CoDA framework grew increasingly dominant:
+    \begin{itemize}
+        \item[1.1] Aitchison continued to advance the framework through numerous publications, including an influential book.
+        \item[1.2] A broader research community developed around the field that supported these principles.
+    \end{itemize}
+    \item[2.] As a result, alternative approaches received considerably less attention.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{The Controversy: To Transform or Not?}
+\only<1>{
+The CoDA school has redefined these principles several times in response to criticism.
+
+
+
+        \begin{alertblock}{ (Zier & Rehder (1998, 2001))}
+     They pointed out that even Aitchison’s own earlier work did not strictly satisfy the later CoDA definition of scale invariance.
+    \end{alertblock}
+
+
+        \begin{alertblock}{ (Scealy \& Welsh 2014)}
+      The CoDa Principles act as a \textbf{gatekeeping criterion}:
+      valid and useful methods have been dismissed simply for not
+      conforming to them.
+ 
+      \vspace{0.2cm}
+      This is \textbf{unusual, perhaps unique, in statistical
+      data analysis}.
+    \end{alertblock}
+}
+\end{frame}
+
+
+
+\begin{frame}{One Idea: Transforming to Real Space}
+
+
+\note{
+Despite the strong emphasis of the CoDA school on log-ratio transformations, they are not the only way to work with compositional data.
+
+Several other transformations have also been developed, including approaches that are not based on logarithms and do not strictly follow the classical CoDA framework.
+
+Some of these alternatives are listed in the table.
+
+And in practice, depending on the data and the modeling objective, they can sometimes perform as well as — or even better than — log-ratio transformations.
+
+
+Still, even when these transformations are useful, one important difficulty remains.
+
+Once we move the data out of the simplex, interpretation becomes less direct.
+
+Some results, such as predictions, can often be mapped back into the simplex.
+
+But many others become much harder to interpret in the original compositional space.
+
+So while transformation can be useful computationally, it often makes interpretation less natural.
+
+This is one of the main reasons why working directly in the simplex can be valuable.
+
+And this is exactly the direction we followed in the cotext of machine learning:
+
+
+}
+
+\only<1>{
+  \framesubtitle{A transformation $\mathcal{S}^{K-1} \to \mathbb{R}^{K-1}$ unlocks standard inference: regression, PCA, LDA}
+
+  \vspace{0.2cm}
+  \renewcommand{\arraystretch}{1.35}
+  \setlength{\tabcolsep}{8pt}
+
+  \begin{tabular}{>{\bfseries}l l >{\footnotesize\itshape\color{gray}}l}
+    \toprule
+    \rowcolor{mainblue}
+    \color{white}Method &
+    \color{white}Formula &
+    \color{white}Reference \\
+    \midrule
+
+    \rowcolor{accentblue!20}
+    ALR & $\log y_i - \log y_K$ & Aitchison (1982) \\
+
+    \rowcolor{accentblue!20}
+    CLR & $\log y_i - K^{-1}\sum_{j=1}^{K} \log y_j$ & Aitchison (1983) \\
+
+    \rowcolor{accentblue!20}
+    ILR & $\mathbf{H}\!\left(\log y_i - K^{-1}\sum_{j=1}^{K} \log y_j\right)$ & Egozcue et al.\ (2003) \\
+
+    \midrule
+  
+    {\normalfont $\alpha$} &
+    {\footnotesize $\mathbf{H}[K_\alpha^{-1}(\mathbf{y} \otimes \alpha)]$} &
+    Tsagris et al.\ (2011) \\
+
+    {\normalfont BC$_1$} &
+    {\footnotesize $\lambda^{-1}\!\left[(y_i / y_K)^\lambda - 1\right]$} &
+    Aitchison (2003) \\
+
+    {\normalfont BC$_2$} &
+    {\footnotesize $\theta^{-1}(y_i^\theta - 1)$} &
+    Greenacre (2010) \\
+
+    {\normalfont Hyper-spherical} &
+    {\footnotesize $\arccos\!\left(\dfrac{y_i}{\prod_{j=i+1}^{K} y_j}\right)$} &
+    Wang et al.\ (2007) \\
+
+    {\normalfont Square root} &
+    {\footnotesize $\sqrt{y_i}$} &
+    Stephens (1982) \\
+
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.2cm}
+  {\small\textbf{Key:} ALR, CLR, ILR are the most widely used;
+  all resolve singularity of $\Sigma_{\mathbf{X}}$ by mapping to unconstrained $\mathbb{R}^{K-1}$.}
+}
+
+
+
+\end{frame}
+
+

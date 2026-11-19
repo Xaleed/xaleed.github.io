@@ -1,0 +1,90 @@
+\documentclass{beamer}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning}
+
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{}
+
+\begin{document}
+
+\begin{frame}{Decision Tree Prediction Methods}
+
+\begin{columns}[T]
+
+% Left column - Graph
+\begin{column}{0.45\textwidth}
+\begin{tikzpicture}[
+    node/.style={ellipse, draw, minimum width=1.2cm, minimum height=0.8cm, thick},
+    leaf/.style={rectangle, draw, minimum width=1.8cm, minimum height=0.6cm, thick},
+    arrow/.style={->, thick, blue},
+    scale=0.7,
+    every node/.style={transform shape}
+]
+
+% Root node
+\node[node] (root) at (0,0) {};
+
+% Level 1
+\node[node] (n1) at (-2,-2) {};
+\node (dots1) at (1,-2) {\vdots};
+
+% Level 2
+\node (dots2) at (-3,-3.5) {\vdots};
+\node[node] (n2) at (-1,-4) {};
+
+% Level 3
+\node (dots3) at (-2.5,-5.5) {\vdots};
+\node[node] (n3) at (0,-6) {};
+
+% Level 4
+\node (dots4) at (1,-7.5) {\vdots};
+\node[leaf] (leaf) at (-1,-8) {$\{y_1, y_2, \ldots, y_n\}$};
+
+% Arrows - traversal path highlighted
+\draw[arrow, line width=1.5pt] (root) -- (n1);
+\draw[arrow, dashed] (root) -- (dots1);
+\draw[arrow, dashed] (n1) -- (dots2);
+\draw[arrow, line width=1.5pt] (n1) -- (n2);
+\draw[arrow, dashed] (n2) -- (dots3);
+\draw[arrow, line width=1.5pt] (n2) -- (n3);
+\draw[arrow, line width=1.5pt] (n3) -- (leaf);
+\draw[arrow, dashed] (n3) -- (dots4);
+
+\end{tikzpicture}
+\end{column}
+
+% Right column - Explanation
+\begin{column}{0.52\textwidth}
+\small
+
+\textbf{Process:}
+\begin{enumerate}
+    \item Start at root node
+    \item Traverse tree based on decision rules
+    \item Reach terminal node with observations
+\end{enumerate}
+
+\vspace{0.4cm}
+
+\textbf{Default Approach:}
+\begin{itemize}
+    \item Mean: $\hat{y} = \frac{1}{n}\sum_{i=1}^{n} y_i$
+    \item Or use Dirichlet parameters
+    \item Random Forest: average across trees
+\end{itemize}
+
+\vspace{0.4cm}
+
+\textbf{Alternative Approach:}
+\begin{itemize}
+    \item Collect terminal nodes from all trees
+    \item Construct empirical probability function
+\end{itemize}
+
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+\end{document}
