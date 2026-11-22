@@ -28,5 +28,75 @@
     "alt": "An archival view of vineyards and mountains in Jonkershoek valley",
     "date": "1994",
     "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "babylonstoren_pond.jpg",
+    "author": "Heribert Bechen",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:DSC04935_BABYLONSTOREN_(16094034029).jpg",
+    "alt": "A long pond in the Babylonstoren garden, with mountains behind",
+    "date": "2015",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "babylonstoren_garden.jpg",
+    "author": "Heribert Bechen",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:DSC04992_BABYLONSTOREN_(15660246283).jpg",
+    "alt": "Vegetable beds and marigolds in the Babylonstoren garden",
+    "date": "2015",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "babylonstoren_figures.jpg",
+    "author": "Heribert Bechen",
+    "license": "CC BY-SA 2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:DSC05006_BABYLONSTOREN_(16278525071).jpg",
+    "alt": "Figures made from terracotta pots in the Babylonstoren garden",
+    "date": "2015",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "stark_conde.jpg",
+    "author": "Julie Anne Workman",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Hottentots-Holland_range_from_Stark-Cond%C3%A9_winery.jpg",
+    "alt": "The Hottentots-Holland mountains seen from Stark-Condé, home of the Postcard Café",
+    "date": "2011",
+    "changes": "Resized to 1800 px wide and recompressed. Responsive display cropping only."
+  },
+  {
+    "file": "lanzerac_manor.jpg",
+    "author": "Jensn",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Lanzerac_Slave_Bell_and_Manor_House.jpg",
+    "alt": "The bell tower and Cape Dutch manor house at Lanzerac",
+    "date": "2014",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "lanzerac_entrance.jpg",
+    "author": "Jensn",
+    "license": "CC BY-SA 3.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Lanzerac_Entrance.jpg",
+    "alt": "The entrance avenue to the Lanzerac estate",
+    "date": "2014",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
+  },
+  {
+    "file": "boschendal.jpg",
+    "author": "DocDaysleeper",
+    "license": "CC BY-SA 4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Boschendal_2011.jpg",
+    "alt": "The Cape Dutch manor house at Boschendal",
+    "date": "2011",
+    "changes": "Responsive display cropping only. Downloaded Wikimedia thumbnail bytes unchanged."
   }
 ]

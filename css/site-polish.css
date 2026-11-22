@@ -20,3 +20,5 @@ body.page-home .slider>.slide{min-width:0;max-width:100vw;overflow-x:hidden}body
 @media(max-width:600px){body.page-home .album-card{aspect-ratio:16/9!important}.albums-header{max-width:100%}.nature-title{font-size:2rem}.gallery-credit{font-size:10px}.profile-card{margin-bottom:5rem}}
 
 @media print{.cv-download-bar,.cv-panel .filter-bar{display:none!important}.cv-panel .pub-item{display:grid!important}.cv-panel .pub-year-group{display:block!important}.cv-block-title{break-after:avoid}}
+/* home Life panel: eight albums fit two rows of four on wide screens */
+@media(min-width:901px){body.page-home .album-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:.8rem!important}}
